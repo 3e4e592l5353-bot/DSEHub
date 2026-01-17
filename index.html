@@ -2,660 +2,427 @@
 <html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DSE Hub v57.2 Complete</title>
-    <link rel="icon" href="data:,">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DSE Hub (Live Tables)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 🎨 Aurora Glass System ================= */
+        /* ================= 样式部分 (保持 v59 极光玻璃风格) ================= */
         :root {
-            --accent: #007AFF; 
-            --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --glass-bg: rgba(255, 255, 255, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text: #1d1d1f;
-            --text-sub: #6e6e73;
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            --radius: 20px;
+            --accent: #007AFF; --bg-grad: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75); --glass-border: rgba(255, 255, 255, 0.5);
+            --text: #1d1d1f; --text-sub: #6e6e73; --radius: 20px;
         }
-
-        /* Themes */
-        [data-theme="blue"]   { --accent: #007AFF; --bg-grad: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
-        [data-theme="green"]  { --accent: #34C759; --bg-grad: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-        [data-theme="pink"]   { --accent: #FF2D55; --bg-grad: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
-        [data-theme="orange"] { --accent: #FF9500; --bg-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
-        [data-theme="white"]  { --accent: #666;    --bg-grad: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); --glass-bg: rgba(255,255,255,0.85); }
-        [data-theme="dark"] {
-            --accent: #0A84FF;
-            --text: #F5F5F7; --text-sub: #86868b;
-            --glass-bg: rgba(20, 20, 30, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-
-        body { 
-            margin: 0; font-family: -apple-system, "SF Pro Text", BlinkMacSystemFont, sans-serif; 
-            background-image: var(--bg-grad); background-attachment: fixed; background-size: cover;
-            color: var(--text); height: 100vh; display: flex; overflow: hidden; 
-            transition: background-image 0.5s ease;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
-        /* Glass Utility */
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            border-radius: var(--radius);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px; padding: 30px 20px; display: flex; flex-direction: column; z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .brand { font-size: 24px; font-weight: 800; margin-bottom: 30px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background-image: var(--bg-grad); background-attachment: fixed; background-size: cover; color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        .glass { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
         
-        .nav-item { 
-            padding: 14px 16px; margin-bottom: 8px; border-radius: 16px; cursor: pointer; 
-            font-size: 15px; font-weight: 600; color: var(--text-sub); 
-            display: flex; align-items: center; gap: 14px; transition: all 0.2s; 
-        }
-        .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text); transform: translateX(5px); }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transform: translateX(5px); }
-        .nav-item i { width: 20px; text-align: center; }
-
-        /* Main Area */
+        /* 布局 */
+        .sidebar { width: 260px; padding: 25px 20px; display: flex; flex-direction: column; z-index: 100; transition: 0.3s; }
         .main { flex: 1; overflow-y: auto; padding: 30px 5%; position: relative; scroll-behavior: smooth; }
-        .page { display: none; max-width: 900px; margin: 0 auto; animation: slideUp 0.4s ease; }
+        .page { display: none; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* Components */
-        .card { padding: 24px; margin-bottom: 20px; }
-        h1 { font-size: 28px; margin-bottom: 20px; font-weight: 800; }
+        /* 组件 */
+        .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 14px; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 600; }
+        .nav-item.active { background: var(--accent); color: white; }
+        .admin-tag { background: #FF9500; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight:bold; display:none; margin-left:auto; }
         
-        input, select, textarea { 
-            width: 100%; padding: 14px; border-radius: 12px; 
-            background: rgba(125,125,125,0.08); border: 1px solid transparent; 
-            font-size: 16px; color: var(--text); margin-bottom: 12px; font-family: inherit; 
-            transition: 0.2s;
-        }
-        input:focus, textarea:focus { background: rgba(125,125,125,0.15); border-color: var(--accent); }
+        h1 { margin: 0 0 20px 0; font-size: 26px; font-weight: 800; }
+        .card { padding: 20px; margin-bottom: 20px; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(125,125,125,0.1); margin-bottom: 10px; font-size: 15px; }
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
+        button.danger { background: #FF3B30; }
+        button.ghost { background: transparent; color: var(--text-sub); border: 1px solid var(--glass-border); }
+        button.small { width: auto; padding: 6px 12px; font-size: 12px; }
 
-        button { 
-            background: var(--accent); color: white; border: none; padding: 14px; 
-            border-radius: 14px; font-weight: 700; font-size: 16px; width: 100%; cursor: pointer; 
-            transition: transform 0.1s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        button:active { transform: scale(0.98); }
-        button.ghost { background: transparent; color: var(--accent); box-shadow: none; }
-        button.danger { background: #FF3B30; color: white; }
-        button.small { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 10px; }
+        /* 知识点手风琴 */
+        .k-item { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
+        .k-body { max-height: 0; overflow: hidden; opacity: 0; transition: 0.3s; margin-top: 0; }
+        .k-item.open .k-body { max-height: 1000px; opacity: 1; margin-top: 15px; }
 
-        /* Knowledge Accordion */
-        .k-item { padding: 20px; border-bottom: 1px solid rgba(125,125,125,0.1); cursor: pointer; transition: background 0.2s; }
-        .k-item:hover { background: rgba(125,125,125,0.05); }
-        .k-head { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 17px; }
-        .k-body { 
-            max-height: 0; overflow: hidden; opacity: 0; 
-            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s; 
-            font-size: 15px; color: var(--text-sub); line-height: 1.6; 
-        }
-        .k-item.open .k-body { max-height: 800px; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(125,125,125,0.3); }
-        .badge { font-size: 11px; padding: 5px 10px; border-radius: 8px; background: rgba(125,125,125,0.15); color: var(--text); margin-right: 10px; font-weight: 600; }
-
-        /* Rich Text */
-        .fmt-b { font-weight: 900; color: var(--text); }
-        .fmt-u { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
-        .fmt-i { font-style: italic; color: var(--accent); font-family: serif; }
-
-        /* Theme Dots */
-        .theme-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.6); box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .theme-dot:hover { transform: scale(1.2); }
-
-        /* Mobile */
-        .mobile-bar { display: none; padding: 12px 15px; position: fixed; top:0; width:100%; z-index: 200; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); border-radius: 0 0 20px 20px; }
+        /* 移动端 */
+        .mobile-bar { display: none; padding: 10px 15px; align-items: center; justify-content: space-between; position: fixed; top:0; width:100%; z-index: 200; }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; transform: translateX(-110%); width: 85%; height: 100%; top:0; left:0; box-shadow: 30px 0 60px rgba(0,0,0,0.4); background: var(--glass-bg); backdrop-filter: blur(30px); }
-            .sidebar.open { transform: translateX(0); }
+            .sidebar { position: fixed; left: -100%; height: 100%; background: var(--glass-bg); box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
+            .sidebar.open { left: 0; }
             .mobile-bar { display: flex; }
-            .main { padding: 90px 20px 40px 20px; }
+            .main { padding-top: 70px; }
         }
 
-        /* Modal */
-        .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); z-index: 999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .modal-mask.show { opacity: 1; pointer-events: all; }
-        .modal-box { width: 320px; padding: 30px; transform: scale(0.9); transition: 0.3s; }
-        .modal-mask.show .modal-box { transform: scale(1); }
+        /* 登录框 */
+        .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 999; display: flex; align-items: center; justify-content: center; }
+        .modal-box { width: 320px; padding: 30px; }
     </style>
 </head>
-<body data-theme="blue">
+<body>
 
     <div class="mobile-bar glass">
-        <button class="ghost" style="width:auto; padding:5px;" onclick="toggleSidebar()"><i class="fas fa-bars" style="font-size:20px"></i></button>
-        <b style="font-size:16px; opacity:0.8;">DSE Hub v57.2</b>
-        <div id="mob-u" style="font-size:12px; font-weight:800; color:var(--accent)">游客</div>
+        <button class="ghost" style="width:auto; border:none;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <b>DSE Hub</b>
+        <div style="width:30px"></div>
     </div>
 
     <div class="sidebar glass" id="sidebar">
-        <div class="brand"><i class="fas fa-layer-group"></i> DSE HUB</div>
+        <h2 style="margin:0 0 30px 10px; color:var(--accent); display:flex; align-items:center; gap:10px;">
+            <i class="fas fa-cube"></i> DSE HUB
+            <span id="badge-admin" class="admin-tag">ADMIN</span>
+        </h2>
         
-        <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book-open"></i> 知识库</div>
+        <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
         <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
         <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决</div>
-        <div class="nav-item" onclick="nav('game', this)"><i class="fas fa-shapes"></i> 连连看</div>
-        <div class="nav-item" onclick="nav('rank', this)"><i class="fas fa-trophy"></i> 积分榜</div>
-        <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen-nib"></i> 投稿</div>
-
-        <div style="flex:1"></div>
-        <div class="nav-item" onclick="nav('admin', this)" id="btn-admin" style="display:none; color:var(--accent); background:rgba(0,122,255,0.1);">
+        <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen"></i> 投稿中心</div>
+        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
+        
+        <div class="nav-item" id="nav-admin" onclick="nav('admin', this)" style="display:none; color:#FF9500; background:rgba(255,149,0,0.1); margin-top:20px;">
             <i class="fas fa-shield-alt"></i> 管理后台
         </div>
-        
-        <div style="padding:15px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <div class="theme-dot" style="background:#007AFF" onclick="setTheme('blue')"></div>
-            <div class="theme-dot" style="background:#34C759" onclick="setTheme('green')"></div>
-            <div class="theme-dot" style="background:#FF2D55" onclick="setTheme('pink')"></div>
-            <div class="theme-dot" style="background:#FF9500" onclick="setTheme('orange')"></div>
-            <div class="theme-dot" style="background:#0f2027" onclick="setTheme('dark')"></div>
-            <div class="theme-dot" style="background:#ffffff" onclick="setTheme('white')"></div>
-        </div>
 
-        <div class="card glass" style="margin:10px 0 0 0; padding:12px; cursor:pointer; display:flex; align-items:center; gap:12px; border:none; background:rgba(125,125,125,0.05);" onclick="checkAuth()">
-            <div style="width:40px; height:40px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:18px;" id="av">?</div>
-            <div style="flex:1; overflow:hidden;">
-                <div style="font-weight:800; font-size:15px;" id="u-nm">点击登录</div>
-                <div style="font-size:12px; opacity:0.6;" id="u-sc">游客模式</div>
-            </div>
+        <div style="flex:1"></div>
+        
+        <div class="glass" style="padding:15px; border:none; background:rgba(125,125,125,0.05);">
+            <div style="font-weight:bold; margin-bottom:5px;" id="u-nm">User</div>
+            <div style="font-size:12px; opacity:0.6; margin-bottom:10px;" id="u-sc">0 pts</div>
+            <button class="small ghost" onclick="logout()" style="width:100%">退出登录</button>
         </div>
     </div>
 
-    <div class="main" onclick="if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open')">
+    <div class="main">
 
         <div id="view-home" class="page active">
-            <h1>全科知识库</h1>
-            <div class="card glass" style="display:flex; gap:10px; flex-wrap:wrap;">
-                <input id="search-k" placeholder="🔍 搜索标题或内容..." style="margin:0; min-width:150px; flex:1;" onkeyup="renderHome()">
-                <select id="filter-sub" style="margin:0; width:auto;" onchange="renderHome()"></select>
+            <h1>📚 全科知识库</h1>
+            <div class="card glass" style="display:flex; gap:10px;">
+                <select id="filter-sub" style="width:auto;" onchange="fetchHome()"></select>
+                <input id="search-k" placeholder="🔍 搜索..." onkeyup="fetchHome()">
             </div>
-            <div class="card glass" style="padding:0;" id="list-home"></div>
+            <div id="home-list"></div>
         </div>
 
         <div id="view-chat" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h1 style="margin:0">留言板</h1>
-                <input id="chat-user-search" placeholder="👤 搜用户..." style="width:120px; font-size:13px; padding:8px; margin:0;" onkeyup="renderChat()">
-            </div>
-            <div class="card glass" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="list-chat"></div>
+            <h1>💬 留言板</h1>
+            <div class="card glass" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="chat-list"></div>
             <div class="card glass" style="display:flex; gap:10px;">
-                <input id="chat-in" placeholder="支持 *粗体* _下划线_ ...">
-                <button onclick="sendChat()" style="width:auto;"><i class="fas fa-paper-plane"></i></button>
+                <input id="chat-input" placeholder="说点什么...">
+                <button style="width:auto" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
 
         <div id="view-duel" class="page">
-            <h1>线上对决</h1>
+            <h1>⚡️ 线上对决</h1>
             <div class="card glass" style="text-align:center; padding:50px 20px;">
                 <div id="duel-lobby">
                     <i class="fas fa-fist-raised" style="font-size:60px; color:var(--accent); margin-bottom:20px;"></i>
-                    <h2>实时知识 PK</h2>
-                    <p style="color:var(--text-sub); margin-bottom:30px;">系统将从知识库随机抽题</p>
-                    <button onclick="startDuel()" style="max-width:200px">匹配对手</button>
+                    <p>从题库随机抽题PK</p>
+                    <button onclick="startDuel()" style="max-width:200px">开始匹配</button>
                 </div>
-                
                 <div id="duel-game" style="display:none;">
-                    <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:30px; font-size:14px;">
-                        <span style="color:var(--accent)">YOU</span>
-                        <span style="color:#FF3B30">OPPONENT</span>
-                    </div>
-                    <div id="dq-text" style="font-size:20px; font-weight:800; margin-bottom:30px; min-height:60px;"></div>
-                    <div id="dq-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div>
+                    <h3 id="dq-text">题目...</h3>
+                    <div id="dq-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;"></div>
                 </div>
             </div>
-        </div>
-
-        <div id="view-game" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1>连连看</h1>
-                <button class="ghost small" onclick="initGame()"><i class="fas fa-redo"></i> 重置</button>
-            </div>
-            <div class="card glass" id="game-board" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
-        </div>
-
-        <div id="view-rank" class="page">
-            <h1>积分榜</h1>
-            <div class="card glass" id="rank-list" style="padding:0;"></div>
         </div>
 
         <div id="view-submit" class="page">
-            <h1>投稿中心</h1>
+            <h1>✏️ 投稿</h1>
             <div class="card glass">
                 <select id="sub-type" onchange="toggleSubUI()">
-                    <option value="know">📚 投稿知识点 (需审核)</option>
-                    <option value="chat">💬 发送留言 (即时)</option>
+                    <option value="know">📚 知识点 (需审核)</option>
+                    <option value="chat">💬 留言 (即时)</option>
                 </select>
 
-                <div id="f-know">
+                <div id="form-know">
                     <select id="sub-sub"></select>
                     <input id="sub-t" placeholder="标题">
-                    <textarea id="sub-d" rows="5" placeholder="详细解释 (支持 *粗体* 等)"></textarea>
-                    <input id="sub-ex" placeholder="例子 (重要! 用于对决题目): 正确答案 // 干扰项(可选)">
+                    <textarea id="sub-d" rows="5" placeholder="内容..."></textarea>
+                    <input id="sub-ex" placeholder="例子 (正确答案 // 干扰项)">
                 </div>
                 
-                <div id="f-chat" style="display:none;">
-                    <textarea id="sub-msg" rows="3" placeholder="说点什么..."></textarea>
+                <div id="form-chat" style="display:none;">
+                    <textarea id="sub-msg" rows="3" placeholder="留言内容..."></textarea>
                 </div>
-                <button onclick="doSubmit()">提交</button>
+
+                <button onclick="submitItem()">提交</button>
+            </div>
+        </div>
+
+        <div id="view-settings" class="page">
+            <h1>⚙️ 设置</h1>
+            <div class="card glass">
+                <h3>👤 账号信息</h3>
+                <p>ID: <span id="set-uid"></span></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px; margin-top:15px;">
+                    <span>🛡 管理员模式</span>
+                    <button id="btn-adm" class="small" style="width:auto" onclick="toggleAdmin()">开启</button>
+                </div>
             </div>
         </div>
 
         <div id="view-admin" class="page">
-            <h1>🛡 管理后台</h1>
-            <div class="card glass" style="padding:0; overflow:hidden;">
-                <div style="display:flex; border-bottom:1px solid rgba(125,125,125,0.1);">
-                    <button class="ghost" style="border-radius:0" onclick="renderAdmin('audit')">📚 待审 / 举报</button>
-                    <button class="ghost" style="border-radius:0" onclick="renderAdmin('users')">👥 用户封禁</button>
+            <h1 style="color:#FF9500">🛡 管理控制台</h1>
+            <div class="card glass">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="small ghost" onclick="fetchAdmin('audit')">待审知识</button>
+                    <button class="small ghost" onclick="fetchAdmin('reported')">举报留言</button>
                 </div>
-                <div id="admin-box" style="padding:20px;"></div>
+                <div id="admin-content"></div>
             </div>
         </div>
+
     </div>
 
     <div class="modal-mask" id="auth-modal">
         <div class="modal-box glass">
-            <h2 style="margin-top:0">DSE Pass</h2>
-            <p style="font-size:13px; color:var(--text-sub); margin-bottom:20px;">管理员请输入密码 admin</p>
-            <input id="lg-u" placeholder="用户名">
+            <h2 style="margin-top:0">登录 DSE Hub</h2>
+            <input id="lg-e" placeholder="邮箱">
             <input id="lg-p" type="password" placeholder="密码">
-            <button onclick="login()">登录 / 注册</button>
-            <button class="ghost" style="margin-top:10px;" onclick="document.getElementById('auth-modal').classList.remove('show')">关闭</button>
+            <button onclick="auth('in')">登录</button>
+            <button class="ghost" style="margin-top:10px" onclick="auth('up')">注册</button>
         </div>
     </div>
 
     <script>
-        // ================= CONFIG & DATA =================
-        const CONFIG = { URL: "https://alsalyskulozwakhmzoa.supabase.co", KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr" }; 
-        const SUBJECTS = [
-            {code:"chi",name:"中文"}, {code:"eng",name:"英文"}, {code:"math",name:"数学"}, 
-            {code:"cs",name:"公社科"}, {code:"phy",name:"物理"}, {code:"chem",name:"化学"}, 
-            {code:"bio",name:"生物"}, {code:"econ",name:"经济"}, {code:"bafs",name:"企会财"}, 
-            {code:"ict",name:"ICT"}, {code:"hist",name:"历史"}, {code:"geog",name:"地理"}, 
-            {code:"m1",name:"M1"}, {code:"m2",name:"M2"}, {code:"lit",name:"文学"}, {code:"other",name:"其他"}
-        ];
+        // ================= ⚠️ 这里填入你的 Supabase URL 和 Key ⚠️ =================
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // 全局变量
+        let user = null;
+        let profile = null;
+        const SUBJECTS = ["chi","eng","math","cs","phy","chem","bio","econ","bafs","ict","hist","geog"];
 
-        let dbData = {
-            users: [
-                { name: 'Admin', pass: 'admin', score: 9999, isAdmin: true, isBanned: false },
-                { name: 'StudentA', pass: '123', score: 150, isAdmin: false, isBanned: false }
-            ],
-            items: [
-                { id:1, type:'know', status:'approved', sub:'econ', t:'Opportunity Cost', d:'The value of the *highest-valued* option forgone.', ex:'Choosing A over B // Money', author:'Admin' },
-                { id:2, type:'know', status:'approved', sub:'chi', t:'借代', d:'不直接说出人或事物名称，而用与它有密切关系的事物来代替。', ex:'巾帼不让须眉 // 借喻', author:'Admin' },
-                { id:3, type:'chat', status:'approved', d:'System: Welcome to v57 with Real Logic!', author:'Admin' }
-            ]
-        };
-
-        let currentUser = null;
-        let db = null; 
-
-        // ================= LOGIC START =================
-        window.onload = () => {
-            // Init Selects
-            const opts = SUBJECTS.map(s => `<option value="${s.code}">${s.name}</option>`).join('');
-            document.getElementById('filter-sub').innerHTML = `<option value="all">全科</option>` + opts;
+        // ================= 初始加载 =================
+        window.onload = async () => {
+            // 生成下拉框
+            const opts = SUBJECTS.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('');
+            document.getElementById('filter-sub').innerHTML = `<option value="all">ALL</option>` + opts;
             document.getElementById('sub-sub').innerHTML = opts;
 
-            // Session check
-            const sess = sessionStorage.getItem('dse_sess_v57');
-            if(sess) {
-                const u = JSON.parse(sess);
-                const fresh = dbData.users.find(x => x.name === u.name);
-                if(fresh && !fresh.isBanned) {
-                    currentUser = fresh;
-                    updateUI();
-                } else {
-                    sessionStorage.removeItem('dse_sess_v57');
-                }
-            } else {
-                checkAuth();
+            // 检查登录
+            const { data } = await sb.auth.getSession();
+            if (data.session) {
+                user = data.session.user;
+                await loadProfile();
             }
-
-            if(CONFIG.URL) db = supabase.createClient(CONFIG.URL, CONFIG.KEY);
-            nav('home');
         };
 
-        function fmt(str) {
-            if(!str) return '';
-            return str.replace(/</g, "&lt;")
-                      .replace(/\*(.*?)\*/g, '<span class="fmt-b">$1</span>')
-                      .replace(/_(.*?)_/g, '<span class="fmt-u">$1</span>')
-                      .replace(/\\(.*?)\\/g, '<span class="fmt-i">$1</span>');
-        }
+        // ================= 认证模块 =================
+        async function auth(type) {
+            const email = document.getElementById('lg-e').value;
+            const password = document.getElementById('lg-p').value;
+            let res;
+            
+            if(type === 'up') res = await sb.auth.signUp({ email, password });
+            else res = await sb.auth.signInWithPassword({ email, password });
 
-        function checkAuth() { 
-            if(currentUser) return; 
-            document.getElementById('auth-modal').classList.add('show'); 
-        }
-
-        function login() {
-            const u = document.getElementById('lg-u').value.trim();
-            const p = document.getElementById('lg-p').value.trim();
-            if(!u) return;
-
-            let user = dbData.users.find(x => x.name === u);
-            if(user) {
-                if(user.isBanned) return alert("⛔️ 该账号已被管理员封禁！");
-                if(user.isAdmin && p !== 'admin') return alert("❌ 管理员密码错误");
-                if(!user.isAdmin && p && user.pass !== p) return alert("❌ 密码错误");
-            } else {
-                user = { name: u, pass: p, score: 50, isAdmin: (p==='admin'), isBanned: false };
-                dbData.users.push(user);
+            if(res.error) alert(res.error.message);
+            else {
+                user = res.data.user;
+                if(type==='up') alert("注册成功！请登录"); // 防止未验证邮箱问题
+                else {
+                    await loadProfile();
+                    document.getElementById('auth-modal').style.display = 'none';
+                }
             }
-            currentUser = user;
-            sessionStorage.setItem('dse_sess_v57', JSON.stringify(user));
-            document.getElementById('auth-modal').classList.remove('show');
+        }
+        
+        async function logout() {
+            await sb.auth.signOut();
+            location.reload();
+        }
+
+        async function loadProfile() {
+            // 读取 profiles 表
+            let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+            
+            // 如果没profile（旧数据），自动创建
+            if(!data) {
+                const newP = { id: user.id, username: user.email.split('@')[0], score: 0, is_admin: false };
+                await sb.from('profiles').insert(newP);
+                data = newP;
+            }
+            profile = data;
             updateUI();
+            nav('home');
         }
 
         function updateUI() {
-            document.getElementById('u-nm').innerText = currentUser.name;
-            document.getElementById('u-sc').innerText = `积分: ${currentUser.score}`;
-            document.getElementById('mob-u').innerText = `${currentUser.name}`;
-            document.getElementById('av').innerText = currentUser.name[0].toUpperCase();
+            document.getElementById('u-nm').innerText = profile.username;
+            document.getElementById('u-sc').innerText = profile.score + ' pts';
+            document.getElementById('set-uid').innerText = user.id;
             
-            const btnAdmin = document.getElementById('btn-admin');
-            if(currentUser.isAdmin) btnAdmin.style.display = 'flex';
-            else btnAdmin.style.display = 'none';
+            // 管理员 Tag
+            const isAdmin = profile.is_admin;
+            document.getElementById('nav-admin').style.display = isAdmin ? 'flex' : 'none';
+            document.getElementById('badge-admin').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('btn-adm').innerText = isAdmin ? "关闭权限" : "开启";
+            document.getElementById('btn-adm').className = isAdmin ? "small danger" : "small";
         }
 
-        function nav(id, el) {
-            document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-            document.getElementById('view-'+id).classList.add('active');
-            
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-                el.classList.add('active');
-            }
-            toggleSidebar(false);
-            
-            if(id==='home') renderHome();
-            if(id==='chat') renderChat();
-            if(id==='rank') renderRank();
-            if(id==='game') initGame();
-            if(id==='admin') renderAdmin('audit');
-        }
-
-        function toggleSidebar(force) {
-            const sb = document.getElementById('sidebar');
-            if(force === false) sb.classList.remove('open');
-            else sb.classList.toggle('open');
-        }
-
-        function setTheme(t) {
-            document.body.setAttribute('data-theme', t);
-        }
-
-        function renderHome() {
-            const k = document.getElementById('search-k').value.toLowerCase();
-            const s = document.getElementById('filter-sub').value;
-            
-            const list = dbData.items.filter(i => 
-                i.type==='know' && i.status==='approved' && 
-                (s==='all' || i.sub===s) && 
-                (i.t.toLowerCase().includes(k) || i.d.toLowerCase().includes(k))
-            );
-            
-            const container = document.getElementById('list-home');
-            if(list.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; opacity:0.6">没有找到相关知识点</div>`;
-                return;
-            }
-
-            container.innerHTML = list.map(i => {
-                const subName = SUBJECTS.find(x=>x.code===i.sub)?.name || i.sub;
-                return `
-                <div class="k-item glass" onclick="this.classList.toggle('open')">
-                    <div class="k-head">
-                        <div><span class="badge">${subName}</span> ${i.t}</div>
-                        <i class="fas fa-chevron-down" style="font-size:12px; opacity:0.5;"></i>
-                    </div>
-                    <div class="k-body">
-                        ${fmt(i.d)}<br><br>
-                        ${i.ex ? `<div style="padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; font-size:13px;">
-                            <b>Example:</b> ${i.ex.split('//')[0]}
-                        </div>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        function renderChat() {
-            const uFilter = document.getElementById('chat-user-search').value.toLowerCase();
-            const list = dbData.items.filter(i => 
-                i.type==='chat' && i.status!=='deleted' && 
-                (!uFilter || i.author.toLowerCase().includes(uFilter))
-            );
-
-            document.getElementById('list-chat').innerHTML = list.map(i => {
-                const isRep = i.status === 'reported';
-                return `
-                <div style="padding:12px; background:${isRep?'rgba(255,59,48,0.1)':'rgba(255,255,255,0.4)'}; border-radius:12px; margin-bottom:10px; border:1px solid rgba(255,255,255,0.2);">
-                    <div style="font-size:12px; color:var(--text-sub); display:flex; justify-content:space-between;">
-                        <b>${i.author}</b> 
-                        ${!isRep ? `<span onclick="report(${i.id})" style="cursor:pointer; opacity:0.5">⚠️</span>` : '<span style="color:red; font-weight:bold">已举报</span>'}
-                    </div>
-                    <div style="margin-top:5px; ${isRep?'filter:blur(4px); user-select:none;':''}">${fmt(i.d)}</div>
-                </div>`;
-            }).join('');
-        }
-
-        function sendChat() {
-            if(!currentUser) return checkAuth();
-            const val = document.getElementById('chat-in').value;
-            if(!val) return;
-            
-            dbData.items.push({
-                id: Date.now(), type:'chat', status:'approved', author:currentUser.name, d:val
-            });
-            currentUser.score += 1; updateUI();
-            document.getElementById('chat-in').value = '';
-            renderChat();
-        }
-
-        function report(id) {
-            if(!confirm("确定举报这条留言吗？")) return;
-            const i = dbData.items.find(x => x.id === id);
-            if(i) i.status = 'reported';
-            renderChat();
-            alert("举报成功，管理员将在后台审核。");
-        }
-
-        function startDuel() {
-            if(!currentUser) return checkAuth();
-            
-            const pool = dbData.items.filter(i => i.type==='know' && i.ex);
-            if(pool.length < 2) return alert("❌ 题库不足 (至少2题)，请先投稿！");
-
-            document.getElementById('duel-lobby').style.display = 'none';
-            document.getElementById('duel-game').style.display = 'block';
-
-            const q = pool[Math.floor(Math.random() * pool.length)];
-            const correctAns = q.ex.split('//')[0].trim();
-            
-            let wrongPool = pool.filter(x => x.id !== q.id).map(x => x.ex.split('//')[0].trim());
-            while(wrongPool.length < 3) { wrongPool.push("N/A"); }
-            wrongPool.sort(() => Math.random() - 0.5);
-            const wrongs = wrongPool.slice(0, 3);
-
-            const options = [...wrongs, correctAns].sort(() => Math.random() - 0.5);
-            const subName = SUBJECTS.find(x=>x.code===q.sub)?.name;
-
-            document.getElementById('dq-text').innerHTML = `
-                <span class="badge" style="font-size:14px">${subName}</span> ${q.t}<br>
-                <div style="font-weight:normal; font-size:15px; margin-top:10px; opacity:0.8">${q.d.substring(0,30)}...</div>
-            `;
-            
-            document.getElementById('dq-opts').innerHTML = options.map(o => `
-                <button class="glass" style="box-shadow:none; text-align:left; font-size:14px;" 
-                onclick="checkDuel('${o === correctAns}')">${o}</button>
-            `).join('');
-        }
-
-        function checkDuel(isWin) {
-            if(isWin === 'true') {
-                alert("🎉 正确！积分 +50");
-                currentUser.score += 50; updateUI();
+        // ================= 管理员提权 (核心) =================
+        async function toggleAdmin() {
+            if (profile.is_admin) {
+                await sb.from('profiles').update({ is_admin: false }).eq('id', user.id);
+                profile.is_admin = false;
             } else {
-                alert("😵 答错了！");
-            }
-            document.getElementById('duel-game').style.display = 'none';
-            document.getElementById('duel-lobby').style.display = 'block';
-        }
-
-        function initGame() {
-            const pool = dbData.items.filter(i => i.type==='know' && i.ex).slice(0, 4);
-            let cards = [];
-            pool.forEach(p => {
-                cards.push({ txt: p.t, id: p.id });
-                cards.push({ txt: p.ex.split('//')[0], id: p.id });
-            });
-            cards.sort(() => Math.random() - 0.5);
-
-            document.getElementById('game-board').innerHTML = cards.map((c, i) => `
-                <div id="gc-${i}" onclick="tapCard(${i}, ${c.id})" 
-                     style="height:80px; background:rgba(255,255,255,0.4); border-radius:12px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:bold; cursor:pointer; padding:5px;">
-                    ${c.txt}
-                </div>
-            `).join('');
-            window.sel = null;
-        }
-
-        function tapCard(idx, pid) {
-            const el = document.getElementById(`gc-${idx}`);
-            if(el.style.opacity === '0') return; 
-
-            el.style.background = 'var(--accent)';
-            el.style.color = '#fff';
-
-            if(!window.sel) {
-                window.sel = { idx, pid };
-            } else {
-                if(window.sel.idx !== idx && window.sel.pid === pid) {
-                    setTimeout(() => {
-                        document.getElementById(`gc-${window.sel.idx}`).style.opacity = 0;
-                        el.style.opacity = 0;
-                        window.sel = null;
-                    }, 200);
+                const p = prompt("输入管理员密码 (admin):");
+                if (p === 'admin') {
+                    await sb.from('profiles').update({ is_admin: true }).eq('id', user.id);
+                    profile.is_admin = true;
                 } else {
-                    setTimeout(() => {
-                        const prev = document.getElementById(`gc-${window.sel.idx}`);
-                        prev.style.background = 'rgba(255,255,255,0.4)'; prev.style.color = 'var(--text)';
-                        el.style.background = 'rgba(255,255,255,0.4)'; el.style.color = 'var(--text)';
-                        window.sel = null;
-                    }, 500);
+                    alert("密码错误");
                 }
             }
+            updateUI();
         }
 
-        function toggleSubUI() {
-            const t = document.getElementById('sub-type').value;
-            document.getElementById('f-know').style.display = t==='know'?'block':'none';
-            document.getElementById('f-chat').style.display = t==='chat'?'block':'none';
-        }
-
-        function doSubmit() {
-            if(!currentUser) return checkAuth();
-            const t = document.getElementById('sub-type').value;
+        // ================= 1. 知识库 (读取 submissions) =================
+        async function fetchHome() {
+            const sub = document.getElementById('filter-sub').value;
+            const key = document.getElementById('search-k').value;
             
-            if(t === 'know') {
-                const title = document.getElementById('sub-t').value;
-                if(!title) return alert("标题不能为空");
+            let q = sb.from('submissions').select('*').eq('status', 'approved');
+            if(sub !== 'all') q = q.eq('subject', sub);
+            if(key) q = q.ilike('title', `%${key}%`);
+            
+            const { data } = await q;
+            document.getElementById('home-list').innerHTML = data ? data.map(i => `
+                <div class="k-item glass" onclick="this.classList.toggle('open')">
+                    <b>[${i.subject}] ${i.title}</b>
+                    <div class="k-body">${i.content}</div>
+                </div>
+            `).join('') : '无内容';
+        }
+
+        // ================= 2. 留言板 (读取 feedbacks) =================
+        async function fetchChat() {
+            const { data } = await sb.from('feedbacks').select('*')
+                .neq('status', 'deleted')
+                .order('created_at', { ascending: false }).limit(20);
                 
-                dbData.items.push({
-                    id: Date.now(), type: 'know', status: 'pending', author: currentUser.name,
-                    sub: document.getElementById('sub-sub').value,
-                    t: title,
-                    d: document.getElementById('sub-d').value,
-                    ex: document.getElementById('sub-ex').value
-                });
-                alert("✅ 知识点已提交，待管理员审核！");
-            } else {
-                const msg = document.getElementById('sub-msg').value;
-                if(!msg) return;
-                dbData.items.push({
-                    id: Date.now(), type: 'chat', status: 'approved', author: currentUser.name, d: msg
-                });
-                alert("✅ 留言已发送");
+            document.getElementById('chat-list').innerHTML = data ? data.map(i => `
+                <div style="padding:10px; margin-bottom:5px; border-bottom:1px solid rgba(0,0,0,0.05)">
+                    <div style="font-size:12px; color:var(--accent)">${i.author_name}</div>
+                    <div>${i.content}</div>
+                    ${i.status==='reported'?'<span style="color:red;font-size:10px">⚠️ 已举报</span>':
+                    `<span style="font-size:10px;cursor:pointer;opacity:0.5" onclick="report(${i.id})">举报</span>`}
+                </div>
+            `).join('') : '';
+        }
+
+        async function sendChat() {
+            const txt = document.getElementById('chat-input').value;
+            if(!txt) return;
+            await sb.from('feedbacks').insert({
+                author_name: profile.username, content: txt, status: 'normal'
+            }); // 注意: 不需要 user_id 如果你还没建外键，如有需要请加上 user_id: user.id
+            document.getElementById('chat-input').value = '';
+            fetchChat();
+        }
+        
+        async function report(id) {
+            if(confirm('举报此留言？')) {
+                await sb.from('feedbacks').update({ status: 'reported' }).eq('id', id);
+                fetchChat();
             }
         }
 
-        function renderRank() {
-            const list = [...dbData.users].sort((a,b) => b.score - a.score);
-            document.getElementById('rank-list').innerHTML = list.map((u, i) => `
-                <div style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; align-items:center;">
-                    <b style="width:30px; color:var(--accent)">#${i+1}</b>
-                    <div style="flex:1">${u.name} ${u.isBanned?'<span style="color:red;font-size:10px">(封禁)</span>':''}</div>
-                    <b>${u.score}</b>
-                </div>
-            `).join('');
+        // ================= 4. 投稿 (Insert submissions/feedbacks) =================
+        function toggleSubUI() {
+            const t = document.getElementById('sub-type').value;
+            document.getElementById('form-know').style.display = t==='know'?'block':'none';
+            document.getElementById('form-chat').style.display = t==='chat'?'block':'none';
         }
 
-        function renderAdmin(tab) {
-            if(!currentUser || !currentUser.isAdmin) return;
-            const box = document.getElementById('admin-box');
+        async function submitItem() {
+            const t = document.getElementById('sub-type').value;
+            if(t === 'know') {
+                await sb.from('submissions').insert({
+                    author_name: profile.username,
+                    subject: document.getElementById('sub-sub').value,
+                    title: document.getElementById('sub-t').value,
+                    content: document.getElementById('sub-d').value,
+                    example: document.getElementById('sub-ex').value,
+                    status: 'pending'
+                });
+                alert("已投稿知识点，待审核");
+            } else {
+                await sb.from('feedbacks').insert({
+                    author_name: profile.username,
+                    content: document.getElementById('sub-msg').value,
+                    status: 'normal'
+                });
+                nav('chat');
+            }
+        }
+
+        // ================= 6. 管理后台 (审核) =================
+        async function fetchAdmin(tab) {
+            const box = document.getElementById('admin-content');
+            box.innerHTML = '加载中...';
             
             if(tab === 'audit') {
-                const list = dbData.items.filter(i => (i.type==='know' && i.status==='pending') || i.status==='reported');
-                box.innerHTML = list.length ? list.map(i => `
-                    <div class="glass" style="padding:15px; margin-bottom:10px; background:rgba(255,255,255,0.5)">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                            <span class="badge">${i.type==='know'?'知识点':'留言举报'}</span>
-                            <span style="font-size:12px; color:var(--text-sub)">From: ${i.author}</span>
-                        </div>
-                        <div style="font-weight:bold; margin-bottom:5px;">${i.t || '-'}</div>
-                        <div style="font-size:13px; margin-bottom:10px;">${i.d}</div>
-                        <div style="display:flex; gap:10px;">
-                            <button class="small" onclick="admAct(${i.id}, 'approved')">通过/恢复</button>
-                            <button class="small danger" onclick="admAct(${i.id}, 'deleted')">删除</button>
-                        </div>
+                // 读 submissions
+                const { data } = await sb.from('submissions').select('*').eq('status', 'pending');
+                box.innerHTML = data.map(i => `
+                    <div class="glass" style="padding:10px; margin-bottom:10px;">
+                        <b>${i.title}</b>
+                        <p>${i.content}</p>
+                        <button class="small" onclick="admAct('submissions',${i.id},'approved')">通过</button>
+                        <button class="small danger" onclick="admAct('submissions',${i.id},'deleted')">删除</button>
                     </div>
-                `).join('') : '<div style="text-align:center; opacity:0.5">暂无待办事项</div>';
-            
-            } else if(tab === 'users') {
-                box.innerHTML = dbData.users.map(u => `
-                    <div style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:bold">${u.name} ${u.isAdmin?'(管理员)':''}</div>
-                            <div style="font-size:12px; color:var(--text-sub)">${u.pass} | 分数: ${u.score}</div>
-                        </div>
-                        ${!u.isAdmin ? `
-                            <button class="small ${u.isBanned ? '' : 'danger'}" style="width:auto" onclick="toggleBan('${u.name}')">
-                                ${u.isBanned ? '🔓 解封' : '⛔️ 封禁'}
-                            </button>
-                        ` : ''}
+                `).join('');
+            } else {
+                // 读 feedbacks
+                const { data } = await sb.from('feedbacks').select('*').eq('status', 'reported');
+                box.innerHTML = data.map(i => `
+                    <div class="glass" style="padding:10px; margin-bottom:10px;">
+                        <p>${i.content}</p>
+                        <button class="small danger" onclick="admAct('feedbacks',${i.id},'deleted')">删除</button>
+                        <button class="small" onclick="admAct('feedbacks',${i.id},'normal')">恢复</button>
                     </div>
                 `).join('');
             }
         }
 
-        function admAct(id, status) {
-            const i = dbData.items.find(x => x.id === id);
-            if(i) i.status = status;
-            renderAdmin('audit');
+        async function admAct(table, id, status) {
+            await sb.from(table).update({ status: status }).eq('id', id);
+            fetchAdmin(table==='submissions'?'audit':'reported');
         }
 
-        function toggleBan(name) {
-            const u = dbData.users.find(x => x.name === name);
-            if(u) {
-                u.isBanned = !u.isBanned;
-                alert(`用户 ${name} 已${u.isBanned ? '被封禁' : '解封'}`);
-                renderAdmin('users');
+        // ================= 导航 =================
+        function nav(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-'+id).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
             }
+            if(id==='home') fetchHome();
+            if(id==='chat') fetchChat();
+            if(id==='admin') fetchAdmin('audit');
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        
+        // ================= 对决 (简化版: 读 submissions) =================
+        async function startDuel() {
+             const { data } = await sb.from('submissions').select('*').eq('status', 'approved').limit(50);
+             if(!data || data.length < 2) return alert("题库不足");
+             
+             const q = data[Math.floor(Math.random()*data.length)];
+             const ans = q.example ? q.example.split('//')[0] : "答案";
+             
+             document.getElementById('duel-lobby').style.display='none';
+             document.getElementById('duel-game').style.display='block';
+             document.getElementById('dq-text').innerText = q.title;
+             document.getElementById('dq-opts').innerHTML = [ans, "A","B","C"].sort(()=>Math.random()-0.5).map(o=>
+                 `<button onclick="alert('${o===ans?'WIN':'LOSE'}');nav('home')">${o}</button>`
+             ).join('');
         }
     </script>
 </body>
