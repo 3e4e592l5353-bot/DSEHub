@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DSE Hub v57 Aurora</title>
+    <title>DSE Hub v57.2 Complete</title>
+    <link rel="icon" href="data:,">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* ================= 🎨 Aurora Glass System ================= */
         :root {
-            /* 动态覆盖的变量 */
             --accent: #007AFF; 
             --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
             --glass-bg: rgba(255, 255, 255, 0.65);
@@ -21,14 +21,12 @@
             --radius: 20px;
         }
 
-        /* 6色主题定义 */
+        /* Themes */
         [data-theme="blue"]   { --accent: #007AFF; --bg-grad: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
         [data-theme="green"]  { --accent: #34C759; --bg-grad: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
         [data-theme="pink"]   { --accent: #FF2D55; --bg-grad: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
         [data-theme="orange"] { --accent: #FF9500; --bg-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
-        [data-theme="white"]  { --accent: #666666; --bg-grad: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); --glass-bg: rgba(255,255,255,0.85); }
-        
-        /* 深色模式 (Deep Blue/Black) */
+        [data-theme="white"]  { --accent: #666;    --bg-grad: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); --glass-bg: rgba(255,255,255,0.85); }
         [data-theme="dark"] {
             --accent: #0A84FF;
             --text: #F5F5F7; --text-sub: #86868b;
@@ -60,7 +58,7 @@
             width: 280px; padding: 30px 20px; display: flex; flex-direction: column; z-index: 100;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .brand { font-size: 24px; font-weight: 800; margin-bottom: 30px; color: var(--accent); display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .brand { font-size: 24px; font-weight: 800; margin-bottom: 30px; color: var(--accent); display: flex; align-items: center; gap: 10px; }
         
         .nav-item { 
             padding: 14px 16px; margin-bottom: 8px; border-radius: 16px; cursor: pointer; 
@@ -73,13 +71,13 @@
 
         /* Main Area */
         .main { flex: 1; overflow-y: auto; padding: 30px 5%; position: relative; scroll-behavior: smooth; }
-        .page { display: none; max-width: 900px; margin: 0 auto; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .page { display: none; max-width: 900px; margin: 0 auto; animation: slideUp 0.4s ease; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity:0; transform:translateY(30px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 
         /* Components */
         .card { padding: 24px; margin-bottom: 20px; }
-        h1 { font-size: 28px; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+        h1 { font-size: 28px; margin-bottom: 20px; font-weight: 800; }
         
         input, select, textarea { 
             width: 100%; padding: 14px; border-radius: 12px; 
@@ -87,34 +85,34 @@
             font-size: 16px; color: var(--text); margin-bottom: 12px; font-family: inherit; 
             transition: 0.2s;
         }
-        input:focus, textarea:focus { background: rgba(125,125,125,0.15); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(125,125,125,0.1); }
+        input:focus, textarea:focus { background: rgba(125,125,125,0.15); border-color: var(--accent); }
 
         button { 
             background: var(--accent); color: white; border: none; padding: 14px; 
             border-radius: 14px; font-weight: 700; font-size: 16px; width: 100%; cursor: pointer; 
-            transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         button:active { transform: scale(0.98); }
         button.ghost { background: transparent; color: var(--accent); box-shadow: none; }
         button.danger { background: #FF3B30; color: white; }
         button.small { width: auto; padding: 8px 16px; font-size: 13px; border-radius: 10px; }
 
-        /* Knowledge Accordion (手风琴) */
+        /* Knowledge Accordion */
         .k-item { padding: 20px; border-bottom: 1px solid rgba(125,125,125,0.1); cursor: pointer; transition: background 0.2s; }
         .k-item:hover { background: rgba(125,125,125,0.05); }
         .k-head { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 17px; }
         .k-body { 
             max-height: 0; overflow: hidden; opacity: 0; 
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin 0.3s; 
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s; 
             font-size: 15px; color: var(--text-sub); line-height: 1.6; 
         }
-        .k-item.open .k-body { max-height: 600px; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(125,125,125,0.3); }
+        .k-item.open .k-body { max-height: 800px; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(125,125,125,0.3); }
         .badge { font-size: 11px; padding: 5px 10px; border-radius: 8px; background: rgba(125,125,125,0.15); color: var(--text); margin-right: 10px; font-weight: 600; }
 
-        /* Rich Text FMT */
+        /* Rich Text */
         .fmt-b { font-weight: 900; color: var(--text); }
         .fmt-u { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
-        .fmt-i { font-style: italic; color: var(--accent); font-family: "Georgia", serif; letter-spacing: 0.5px; }
+        .fmt-i { font-style: italic; color: var(--accent); font-family: serif; }
 
         /* Theme Dots */
         .theme-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.6); box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s; }
@@ -132,7 +130,7 @@
         /* Modal */
         .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); z-index: 999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-mask.show { opacity: 1; pointer-events: all; }
-        .modal-box { width: 320px; padding: 30px; transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-box { width: 320px; padding: 30px; transform: scale(0.9); transition: 0.3s; }
         .modal-mask.show .modal-box { transform: scale(1); }
     </style>
 </head>
@@ -140,7 +138,7 @@
 
     <div class="mobile-bar glass">
         <button class="ghost" style="width:auto; padding:5px;" onclick="toggleSidebar()"><i class="fas fa-bars" style="font-size:20px"></i></button>
-        <b style="font-size:16px; opacity:0.8;">DSE Hub v57</b>
+        <b style="font-size:16px; opacity:0.8;">DSE Hub v57.2</b>
         <div id="mob-u" style="font-size:12px; font-weight:800; color:var(--accent)">游客</div>
     </div>
 
@@ -195,7 +193,7 @@
             </div>
             <div class="card glass" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="list-chat"></div>
             <div class="card glass" style="display:flex; gap:10px;">
-                <input id="chat-in" placeholder="支持 *粗体* _下划线_ \斜体\ ...">
+                <input id="chat-in" placeholder="支持 *粗体* _下划线_ ...">
                 <button onclick="sendChat()" style="width:auto;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
@@ -204,9 +202,9 @@
             <h1>线上对决</h1>
             <div class="card glass" style="text-align:center; padding:50px 20px;">
                 <div id="duel-lobby">
-                    <i class="fas fa-fist-raised" style="font-size:60px; color:var(--accent); margin-bottom:20px; filter: drop-shadow(0 0 10px var(--accent));"></i>
+                    <i class="fas fa-fist-raised" style="font-size:60px; color:var(--accent); margin-bottom:20px;"></i>
                     <h2>实时知识 PK</h2>
-                    <p style="color:var(--text-sub); margin-bottom:30px;">系统将从知识库随机抽题<br>不仅考知识，还考手速！</p>
+                    <p style="color:var(--text-sub); margin-bottom:30px;">系统将从知识库随机抽题</p>
                     <button onclick="startDuel()" style="max-width:200px">匹配对手</button>
                 </div>
                 
@@ -217,7 +215,6 @@
                     </div>
                     <div id="dq-text" style="font-size:20px; font-weight:800; margin-bottom:30px; min-height:60px;"></div>
                     <div id="dq-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"></div>
-                    <div id="dq-timer" style="margin-top:20px; color:var(--text-sub); font-variant-numeric: tabular-nums;"></div>
                 </div>
             </div>
         </div>
@@ -245,8 +242,8 @@
 
                 <div id="f-know">
                     <select id="sub-sub"></select>
-                    <input id="sub-t" placeholder="标题 (例如: Opportunity Cost)">
-                    <textarea id="sub-d" rows="5" placeholder="详细解释 (支持 *粗体* 等格式)"></textarea>
+                    <input id="sub-t" placeholder="标题">
+                    <textarea id="sub-d" rows="5" placeholder="详细解释 (支持 *粗体* 等)"></textarea>
                     <input id="sub-ex" placeholder="例子 (重要! 用于对决题目): 正确答案 // 干扰项(可选)">
                 </div>
                 
@@ -267,13 +264,12 @@
                 <div id="admin-box" style="padding:20px;"></div>
             </div>
         </div>
-
     </div>
 
     <div class="modal-mask" id="auth-modal">
         <div class="modal-box glass">
             <h2 style="margin-top:0">DSE Pass</h2>
-            <p style="font-size:13px; color:var(--text-sub); margin-bottom:20px;">未注册自动创建账号<br>管理员请输入密码 admin</p>
+            <p style="font-size:13px; color:var(--text-sub); margin-bottom:20px;">管理员请输入密码 admin</p>
             <input id="lg-u" placeholder="用户名">
             <input id="lg-p" type="password" placeholder="密码">
             <button onclick="login()">登录 / 注册</button>
@@ -282,8 +278,8 @@
     </div>
 
     <script>
-        // ================= CONFIG & CONSTANTS =================
-        const CONFIG = { URL: "https://alsalyskulozwakhmzoa.supabase.co", KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr” }; // 留空则使用本地模拟
+        // ================= CONFIG & DATA =================
+        const CONFIG = { URL: "https://alsalyskulozwakhmzoa.supabase.co", KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr" }; 
         const SUBJECTS = [
             {code:"chi",name:"中文"}, {code:"eng",name:"英文"}, {code:"math",name:"数学"}, 
             {code:"cs",name:"公社科"}, {code:"phy",name:"物理"}, {code:"chem",name:"化学"}, 
@@ -292,27 +288,22 @@
             {code:"m1",name:"M1"}, {code:"m2",name:"M2"}, {code:"lit",name:"文学"}, {code:"other",name:"其他"}
         ];
 
-        // ================= DATA STORE (LOCAL MOCK) =================
-        // 这里的逻辑是真实的：增删改查都在内存中跑
         let dbData = {
             users: [
                 { name: 'Admin', pass: 'admin', score: 9999, isAdmin: true, isBanned: false },
-                { name: 'StudentA', pass: '123', score: 150, isAdmin: false, isBanned: false },
-                { name: 'Troll', pass: '123', score: 0, isAdmin: false, isBanned: true }
+                { name: 'StudentA', pass: '123', score: 150, isAdmin: false, isBanned: false }
             ],
             items: [
                 { id:1, type:'know', status:'approved', sub:'econ', t:'Opportunity Cost', d:'The value of the *highest-valued* option forgone.', ex:'Choosing A over B // Money', author:'Admin' },
                 { id:2, type:'know', status:'approved', sub:'chi', t:'借代', d:'不直接说出人或事物名称，而用与它有密切关系的事物来代替。', ex:'巾帼不让须眉 // 借喻', author:'Admin' },
-                { id:3, type:'know', status:'approved', sub:'chem', t:'pH Value', d:'Measure of acidity or alkalinity.', ex:'pH < 7 is acidic // pH > 7', author:'StudentA' },
-                { id:4, type:'chat', status:'approved', d:'System: Welcome to v57 with \\Real Logic\\!', author:'Admin' },
-                { id:5, type:'chat', status:'reported', d:'Bad message...', author:'Troll' }
+                { id:3, type:'chat', status:'approved', d:'System: Welcome to v57 with Real Logic!', author:'Admin' }
             ]
         };
 
         let currentUser = null;
-        let db = null; // Supabase instance
+        let db = null; 
 
-        // ================= CORE & AUTH =================
+        // ================= LOGIC START =================
         window.onload = () => {
             // Init Selects
             const opts = SUBJECTS.map(s => `<option value="${s.code}">${s.name}</option>`).join('');
@@ -324,7 +315,6 @@
             if(sess) {
                 const u = JSON.parse(sess);
                 const fresh = dbData.users.find(x => x.name === u.name);
-                // 每次刷新都检查是否被封禁
                 if(fresh && !fresh.isBanned) {
                     currentUser = fresh;
                     updateUI();
@@ -332,7 +322,7 @@
                     sessionStorage.removeItem('dse_sess_v57');
                 }
             } else {
-                checkAuth(); // 首次访问弹窗
+                checkAuth();
             }
 
             if(CONFIG.URL) db = supabase.createClient(CONFIG.URL, CONFIG.KEY);
@@ -363,7 +353,6 @@
                 if(user.isAdmin && p !== 'admin') return alert("❌ 管理员密码错误");
                 if(!user.isAdmin && p && user.pass !== p) return alert("❌ 密码错误");
             } else {
-                // Auto Register
                 user = { name: u, pass: p, score: 50, isAdmin: (p==='admin'), isBanned: false };
                 dbData.users.push(user);
             }
@@ -379,13 +368,11 @@
             document.getElementById('mob-u').innerText = `${currentUser.name}`;
             document.getElementById('av').innerText = currentUser.name[0].toUpperCase();
             
-            // 只有管理员显示后台入口
             const btnAdmin = document.getElementById('btn-admin');
             if(currentUser.isAdmin) btnAdmin.style.display = 'flex';
             else btnAdmin.style.display = 'none';
         }
 
-        // ================= NAVIGATION =================
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
@@ -396,7 +383,6 @@
             }
             toggleSidebar(false);
             
-            // Refresh Logic
             if(id==='home') renderHome();
             if(id==='chat') renderChat();
             if(id==='rank') renderRank();
@@ -414,7 +400,6 @@
             document.body.setAttribute('data-theme', t);
         }
 
-        // ================= KNOWLEDGE BASE (ACCORDION) =================
         function renderHome() {
             const k = document.getElementById('search-k').value.toLowerCase();
             const s = document.getElementById('filter-sub').value;
@@ -437,19 +422,18 @@
                 <div class="k-item glass" onclick="this.classList.toggle('open')">
                     <div class="k-head">
                         <div><span class="badge">${subName}</span> ${i.t}</div>
-                        <i class="fas fa-chevron-down" style="font-size:12px; opacity:0.5; transition:0.3s"></i>
+                        <i class="fas fa-chevron-down" style="font-size:12px; opacity:0.5;"></i>
                     </div>
                     <div class="k-body">
                         ${fmt(i.d)}<br><br>
                         ${i.ex ? `<div style="padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; font-size:13px;">
-                            <i class="fas fa-lightbulb" style="color:var(--accent)"></i> <b>Example:</b> ${i.ex.split('//')[0]}
+                            <b>Example:</b> ${i.ex.split('//')[0]}
                         </div>` : ''}
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // ================= CHAT (SEARCH USER) =================
         function renderChat() {
             const uFilter = document.getElementById('chat-user-search').value.toLowerCase();
             const list = dbData.items.filter(i => 
@@ -491,34 +475,26 @@
             alert("举报成功，管理员将在后台审核。");
         }
 
-        // ================= DUEL (REAL LOGIC) =================
         function startDuel() {
             if(!currentUser) return checkAuth();
             
-            // 1. 获取所有有例子的题目
             const pool = dbData.items.filter(i => i.type==='know' && i.ex);
-            if(pool.length < 2) return alert("❌ 题库题目不足 (至少需要2题)，请先去投稿知识点！");
+            if(pool.length < 2) return alert("❌ 题库不足 (至少2题)，请先投稿！");
 
             document.getElementById('duel-lobby').style.display = 'none';
             document.getElementById('duel-game').style.display = 'block';
 
-            // 2. 随机抽1题
             const q = pool[Math.floor(Math.random() * pool.length)];
             const correctAns = q.ex.split('//')[0].trim();
             
-            // 3. 随机抽3个错误答案 (从其他题目的 ex 中取)
             let wrongPool = pool.filter(x => x.id !== q.id).map(x => x.ex.split('//')[0].trim());
-            // 如果不够3个，就补一些假的
             while(wrongPool.length < 3) { wrongPool.push("N/A"); }
-            // 打乱并取前3
             wrongPool.sort(() => Math.random() - 0.5);
             const wrongs = wrongPool.slice(0, 3);
 
-            // 4. 合并选项并打乱
             const options = [...wrongs, correctAns].sort(() => Math.random() - 0.5);
-
-            // 5. 渲染
             const subName = SUBJECTS.find(x=>x.code===q.sub)?.name;
+
             document.getElementById('dq-text').innerHTML = `
                 <span class="badge" style="font-size:14px">${subName}</span> ${q.t}<br>
                 <div style="font-weight:normal; font-size:15px; margin-top:10px; opacity:0.8">${q.d.substring(0,30)}...</div>
@@ -537,12 +513,10 @@
             } else {
                 alert("😵 答错了！");
             }
-            // 回大厅
             document.getElementById('duel-game').style.display = 'none';
             document.getElementById('duel-lobby').style.display = 'block';
         }
 
-        // ================= GAME (LINK) =================
         function initGame() {
             const pool = dbData.items.filter(i => i.type==='know' && i.ex).slice(0, 4);
             let cards = [];
@@ -563,7 +537,7 @@
 
         function tapCard(idx, pid) {
             const el = document.getElementById(`gc-${idx}`);
-            if(el.style.opacity === '0') return; // 已消除
+            if(el.style.opacity === '0') return; 
 
             el.style.background = 'var(--accent)';
             el.style.color = '#fff';
@@ -572,14 +546,12 @@
                 window.sel = { idx, pid };
             } else {
                 if(window.sel.idx !== idx && window.sel.pid === pid) {
-                    // Match
                     setTimeout(() => {
                         document.getElementById(`gc-${window.sel.idx}`).style.opacity = 0;
                         el.style.opacity = 0;
                         window.sel = null;
                     }, 200);
                 } else {
-                    // Fail
                     setTimeout(() => {
                         const prev = document.getElementById(`gc-${window.sel.idx}`);
                         prev.style.background = 'rgba(255,255,255,0.4)'; prev.style.color = 'var(--text)';
@@ -590,7 +562,6 @@
             }
         }
 
-        // ================= ADMIN & SUBMIT =================
         function toggleSubUI() {
             const t = document.getElementById('sub-type').value;
             document.getElementById('f-know').style.display = t==='know'?'block':'none';
@@ -639,7 +610,6 @@
             const box = document.getElementById('admin-box');
             
             if(tab === 'audit') {
-                // 显示 待审核知识点 和 被举报留言
                 const list = dbData.items.filter(i => (i.type==='know' && i.status==='pending') || i.status==='reported');
                 box.innerHTML = list.length ? list.map(i => `
                     <div class="glass" style="padding:15px; margin-bottom:10px; background:rgba(255,255,255,0.5)">
@@ -657,7 +627,6 @@
                 `).join('') : '<div style="text-align:center; opacity:0.5">暂无待办事项</div>';
             
             } else if(tab === 'users') {
-                // 用户管理：封禁/解封
                 box.innerHTML = dbData.users.map(u => `
                     <div style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
                         <div>
