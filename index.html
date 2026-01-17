@@ -3,40 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub (Live Tables)</title>
+    <title>DSE Hub (Final Color Edition)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 样式部分 (保持 v59 极光玻璃风格) ================= */
+        /* ================= 🎨 核心主题系统 (颜色切换都在这) ================= */
         :root {
-            --accent: #007AFF; --bg-grad: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%);
-            --glass-bg: rgba(255, 255, 255, 0.75); --glass-border: rgba(255, 255, 255, 0.5);
-            --text: #1d1d1f; --text-sub: #6e6e73; --radius: 20px;
+            /* 默认蓝色 (Blue) */
+            --accent: #007AFF; 
+            --bg-grad: linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text: #1d1d1f;
+            --text-sub: #6e6e73;
+            --radius: 20px;
         }
-        body { margin: 0; font-family: -apple-system, sans-serif; background-image: var(--bg-grad); background-attachment: fixed; background-size: cover; color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+
+        /* 🟢 绿色主题 (Green) */
+        [data-theme="green"] { 
+            --accent: #34C759; 
+            --bg-grad: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); 
+        }
+
+        /* 🟠 橙色主题 (Orange) */
+        [data-theme="orange"] { 
+            --accent: #FF9500; 
+            --bg-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%); 
+        }
+
+        /* ⚫️ 暗黑模式 (Dark) */
+        [data-theme="dark"] { 
+            --accent: #0A84FF; 
+            --text: #f5f5f7; 
+            --text-sub: #a1a1a6;
+            --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --glass-bg: rgba(30, 30, 40, 0.85); 
+            --glass-border: rgba(255,255,255,0.1);
+        }
+
+        /* 基础布局 */
+        body { margin: 0; font-family: -apple-system, sans-serif; background-image: var(--bg-grad); background-attachment: fixed; background-size: cover; color: var(--text); height: 100vh; display: flex; overflow: hidden; transition: 0.5s; }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        .glass { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
         
-        /* 布局 */
+        /* 玻璃拟态 */
+        .glass { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: 0.3s; }
+
+        /* 侧边栏 */
         .sidebar { width: 260px; padding: 25px 20px; display: flex; flex-direction: column; z-index: 100; transition: 0.3s; }
+        .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 14px; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 600; transition: 0.2s; }
+        .nav-item:hover { background: rgba(125,125,125,0.1); }
+        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        .admin-tag { background: #FF9500; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight:bold; display:none; margin-left:auto; }
+        
+        /* 主区域 */
         .main { flex: 1; overflow-y: auto; padding: 30px 5%; position: relative; scroll-behavior: smooth; }
         .page { display: none; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
         /* 组件 */
-        .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 14px; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .nav-item.active { background: var(--accent); color: white; }
-        .admin-tag { background: #FF9500; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight:bold; display:none; margin-left:auto; }
-        
         h1 { margin: 0 0 20px 0; font-size: 26px; font-weight: 800; }
         .card { padding: 20px; margin-bottom: 20px; }
-        input, textarea, select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(125,125,125,0.1); margin-bottom: 10px; font-size: 15px; }
-        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 12px; border: none; background: rgba(125,125,125,0.1); margin-bottom: 10px; font-size: 15px; color:var(--text); }
+        
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.97); }
         button.danger { background: #FF3B30; }
         button.ghost { background: transparent; color: var(--text-sub); border: 1px solid var(--glass-border); }
         button.small { width: auto; padding: 6px 12px; font-size: 12px; }
+
+        /* 颜色切换圆点 */
+        .theme-dot { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.5); display:inline-block; margin-right:15px; transition:0.2s; }
+        .theme-dot:hover { transform: scale(1.1); }
 
         /* 知识点手风琴 */
         .k-item { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); cursor: pointer; }
@@ -46,7 +86,7 @@
         /* 移动端 */
         .mobile-bar { display: none; padding: 10px 15px; align-items: center; justify-content: space-between; position: fixed; top:0; width:100%; z-index: 200; }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; height: 100%; background: var(--glass-bg); box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
+            .sidebar { position: fixed; left: -100%; height: 100%; background: var(--glass-bg); backdrop-filter: blur(30px); box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
             .sidebar.open { left: 0; }
             .mobile-bar { display: flex; }
             .main { padding-top: 70px; }
@@ -57,9 +97,7 @@
         .modal-box { width: 320px; padding: 30px; }
     </style>
 </head>
-<body>
-
-    <div class="mobile-bar glass">
+<body data-theme="blue"> <div class="mobile-bar glass">
         <button class="ghost" style="width:auto; border:none;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         <b>DSE Hub</b>
         <div style="width:30px"></div>
@@ -90,7 +128,7 @@
         </div>
     </div>
 
-    <div class="main">
+    <div class="main" onclick="if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open')">
 
         <div id="view-home" class="page active">
             <h1>📚 全科知识库</h1>
@@ -150,10 +188,21 @@
 
         <div id="view-settings" class="page">
             <h1>⚙️ 设置</h1>
+            
+            <div class="card glass">
+                <h3>🎨 主题风格</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <div class="theme-dot" style="background:#007AFF" onclick="setTheme('blue')"></div>
+                    <div class="theme-dot" style="background:#34C759" onclick="setTheme('green')"></div>
+                    <div class="theme-dot" style="background:#FF9500" onclick="setTheme('orange')"></div>
+                    <div class="theme-dot" style="background:#333" onclick="setTheme('dark')"></div>
+                </div>
+            </div>
+
             <div class="card glass">
                 <h3>👤 账号信息</h3>
                 <p>ID: <span id="set-uid"></span></p>
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #eee; padding-top:15px; margin-top:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(125,125,125,0.2); padding-top:15px; margin-top:15px;">
                     <span>🛡 管理员模式</span>
                     <button id="btn-adm" class="small" style="width:auto" onclick="toggleAdmin()">开启</button>
                 </div>
@@ -184,7 +233,7 @@
     </div>
 
     <script>
-        // ================= ⚠️ 这里填入你的 Supabase URL 和 Key ⚠️ =================
+        // ================= ⚠️ 填入你的 Key ⚠️ =================
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
@@ -194,6 +243,12 @@
         let user = null;
         let profile = null;
         const SUBJECTS = ["chi","eng","math","cs","phy","chem","bio","econ","bafs","ict","hist","geog"];
+
+        // ================= 🎨 主题切换函数 (你想要的功能) =================
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            // 这里可以加个 localStorage 保存用户偏好，但我先不加，免得代码太乱
+        }
 
         // ================= 初始加载 =================
         window.onload = async () => {
@@ -222,7 +277,7 @@
             if(res.error) alert(res.error.message);
             else {
                 user = res.data.user;
-                if(type==='up') alert("注册成功！请登录"); // 防止未验证邮箱问题
+                if(type==='up') alert("注册成功！请登录");
                 else {
                     await loadProfile();
                     document.getElementById('auth-modal').style.display = 'none';
@@ -236,10 +291,9 @@
         }
 
         async function loadProfile() {
-            // 读取 profiles 表
+            // 匹配你的 profiles 表 (4 columns)
             let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
             
-            // 如果没profile（旧数据），自动创建
             if(!data) {
                 const newP = { id: user.id, username: user.email.split('@')[0], score: 0, is_admin: false };
                 await sb.from('profiles').insert(newP);
@@ -263,7 +317,7 @@
             document.getElementById('btn-adm').className = isAdmin ? "small danger" : "small";
         }
 
-        // ================= 管理员提权 (核心) =================
+        // ================= 管理员提权 =================
         async function toggleAdmin() {
             if (profile.is_admin) {
                 await sb.from('profiles').update({ is_admin: false }).eq('id', user.id);
@@ -280,7 +334,7 @@
             updateUI();
         }
 
-        // ================= 1. 知识库 (读取 submissions) =================
+        // ================= 1. 知识库 (submissions) =================
         async function fetchHome() {
             const sub = document.getElementById('filter-sub').value;
             const key = document.getElementById('search-k').value;
@@ -298,7 +352,7 @@
             `).join('') : '无内容';
         }
 
-        // ================= 2. 留言板 (读取 feedbacks) =================
+        // ================= 2. 留言板 (feedbacks) =================
         async function fetchChat() {
             const { data } = await sb.from('feedbacks').select('*')
                 .neq('status', 'deleted')
@@ -319,7 +373,7 @@
             if(!txt) return;
             await sb.from('feedbacks').insert({
                 author_name: profile.username, content: txt, status: 'normal'
-            }); // 注意: 不需要 user_id 如果你还没建外键，如有需要请加上 user_id: user.id
+            }); 
             document.getElementById('chat-input').value = '';
             fetchChat();
         }
@@ -331,7 +385,7 @@
             }
         }
 
-        // ================= 4. 投稿 (Insert submissions/feedbacks) =================
+        // ================= 4. 投稿 =================
         function toggleSubUI() {
             const t = document.getElementById('sub-type').value;
             document.getElementById('form-know').style.display = t==='know'?'block':'none';
@@ -360,13 +414,12 @@
             }
         }
 
-        // ================= 6. 管理后台 (审核) =================
+        // ================= 6. 管理后台 =================
         async function fetchAdmin(tab) {
             const box = document.getElementById('admin-content');
             box.innerHTML = '加载中...';
             
             if(tab === 'audit') {
-                // 读 submissions
                 const { data } = await sb.from('submissions').select('*').eq('status', 'pending');
                 box.innerHTML = data.map(i => `
                     <div class="glass" style="padding:10px; margin-bottom:10px;">
@@ -377,7 +430,6 @@
                     </div>
                 `).join('');
             } else {
-                // 读 feedbacks
                 const { data } = await sb.from('feedbacks').select('*').eq('status', 'reported');
                 box.innerHTML = data.map(i => `
                     <div class="glass" style="padding:10px; margin-bottom:10px;">
@@ -409,7 +461,7 @@
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
         
-        // ================= 对决 (简化版: 读 submissions) =================
+        // ================= 对决 =================
         async function startDuel() {
              const { data } = await sb.from('submissions').select('*').eq('status', 'approved').limit(50);
              if(!data || data.length < 2) return alert("题库不足");
