@@ -3,260 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DSE Hub v55</title>
+    <title>DSE Hub v56 - Ultimate</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 🎨 5-Color System ================= */
+        /* ================= 🎨 System Design ================= */
         :root {
             --hue: 210; --sat: 100%; --lig: 50%;
             --accent: hsl(var(--hue), var(--sat), var(--lig));
-            --accent-soft: hsl(var(--hue), var(--sat), 90%);
-            --bg-grad-1: hsla(var(--hue), 80%, 60%, 0.2);
-            --bg-grad-2: hsla(calc(var(--hue) + 40), 80%, 60%, 0.2);
-            --bg-color: #F5F5F7; --card-bg: rgba(255, 255, 255, 0.75); --sidebar-bg: rgba(255, 255, 255, 0.65);
-            --text-main: #1D1D1F; --text-sub: #86868B;
-            --radius: 18px; --shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+            --bg-color: #F2F2F7; --card-bg: #FFFFFF; --sidebar-bg: rgba(255,255,255,0.8);
+            --text-main: #000; --text-sub: #8E8E93;
+            --radius: 16px; 
+            --font-stack: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
         }
         [data-theme="dark"] {
-            --bg-color: #000000; --card-bg: rgba(30, 30, 32, 0.8); --sidebar-bg: rgba(20, 20, 22, 0.7);
-            --text-main: #F5F5F7; --text-sub: #98989D;
-            --accent-soft: hsla(var(--hue), var(--sat), 20%, 0.5); --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            --bg-color: #000; --card-bg: #1C1C1E; --sidebar-bg: rgba(30,30,30,0.8);
+            --text-main: #FFF; --text-sub: #98989D;
         }
-        /* Themes */
-        body.theme-purple { --hue: 260; }
-        body.theme-green { --hue: 150; --sat: 60%; --lig: 45%; }
-        body.theme-orange { --hue: 25; }
-        body.theme-graphite { --hue: 200; --sat: 10%; --lig: 40%; }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; transition: background 0.5s; }
         
-        /* Aurora BG */
-        .aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-image: radial-gradient(at 0% 0%, var(--bg-grad-1) 0px, transparent 50%), radial-gradient(at 100% 100%, var(--bg-grad-2) 0px, transparent 50%); filter: blur(40px); opacity: 0.8; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: var(--font-stack); background: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
         /* Sidebar */
-        .sidebar { width: 260px; height: 100%; display: flex; flex-direction: column; background: var(--sidebar-bg); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); padding: 25px 16px; z-index: 100; transition: transform 0.3s; }
-        .brand { font-size: 22px; font-weight: 800; margin-bottom: 30px; padding-left: 12px; display: flex; align-items: center; gap: 10px; }
-        .nav-item { padding: 12px 16px; margin-bottom: 4px; border-radius: 12px; cursor: pointer; font-size: 15px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .nav-item:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
-        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--bg-grad-1); }
-        
-        .user-card { margin-top: auto; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .sidebar { width: 260px; background: var(--sidebar-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid rgba(0,0,0,0.1); padding: 20px 14px; display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s; }
+        .brand { font-size: 20px; font-weight: 900; margin-bottom: 25px; padding-left: 10px; display: flex; align-items: center; gap: 8px; color: var(--accent); }
+        .nav-item { padding: 10px 14px; margin-bottom: 4px; border-radius: 10px; cursor: pointer; font-size: 15px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item:hover { background: rgba(125,125,125,0.1); color: var(--text-main); }
+        .nav-item.active { background: var(--accent); color: white; font-weight: 600; }
+        .nav-item i { width: 20px; text-align: center; }
 
-        /* Main */
-        .main-content { flex: 1; height: 100%; overflow-y: auto; padding: 40px 8%; position: relative; scroll-behavior: smooth; }
-        .page { display: none; animation: fadeUp 0.4s ease; max-width: 900px; margin: 0 auto; }
+        /* Main Content */
+        .main { flex: 1; overflow-y: auto; padding: 30px 5%; position: relative; scroll-behavior: smooth; }
+        .page { display: none; animation: fadeIn 0.3s ease; max-width: 900px; margin: 0 auto; }
         .page.active { display: block; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* Components */
-        .card { background: var(--card-bg); backdrop-filter: blur(25px); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2); margin-bottom: 24px; }
-        input, select, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; background: rgba(0,0,0,0.04); border: 1px solid transparent; font-size: 15px; color: var(--text-main); }
-        input:focus, textarea:focus { background: transparent; border-color: var(--accent); }
-        button { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; }
+        /* Cards & UI */
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; background: rgba(125,125,125,0.1); border: none; font-size: 15px; color: var(--text-main); }
+        input:focus, textarea:focus { background: rgba(125,125,125,0.05); box-shadow: 0 0 0 2px var(--accent); }
+        
+        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; }
         button.ghost { background: transparent; color: var(--accent); }
         button.danger { background: #FF3B30; }
+        button.small { width: auto; padding: 6px 12px; font-size: 13px; }
 
-        /* List Items */
-        .list-item { padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700; margin-right: 8px; }
+        /* Knowledge Item (Slide Down) */
+        .k-item { padding: 16px; border-bottom: 1px solid rgba(125,125,125,0.1); cursor: pointer; }
+        .k-header { display: flex; justify-content: space-between; align-items: center; }
+        .k-detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0.8; font-size: 15px; line-height: 1.6; }
+        .k-item.open .k-detail { max-height: 500px; padding-top: 12px; transition: max-height 0.4s ease-in; }
+        
+        /* Badges & Text */
+        .badge { font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: 700; background: rgba(125,125,125,0.1); color: var(--text-sub); margin-right: 6px; }
+        .fmt-bold { font-weight: 900; }
+        .fmt-under { text-decoration: underline; text-decoration-color: var(--accent); }
+        .fmt-italic { font-style: italic; color: var(--accent); }
+
+        /* Duel & Game */
+        .duel-arena { text-align: center; padding: 40px; }
+        .vs-badge { font-size: 24px; font-weight: 900; color: #FF3B30; margin: 0 20px; }
+        .rank-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(125,125,125,0.1); }
+        .rank-row:first-child { color: #FFD60A; font-weight: bold; } /* Gold */
 
         /* Mobile */
-        .mobile-bar { display: none; padding: 15px; background: var(--sidebar-bg); backdrop-filter: blur(20px); position: fixed; top:0; width:100%; z-index: 200; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .mobile-bar { display: none; padding: 15px; background: var(--card-bg); position: fixed; top:0; width:100%; z-index: 200; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; transform: translateX(-100%); width: 80%; box-shadow: 10px 0 40px rgba(0,0,0,0.2); }
+            .sidebar { position: fixed; transform: translateX(-100%); width: 80%; box-shadow: 10px 0 50px rgba(0,0,0,0.2); }
             .sidebar.open { transform: translateX(0); }
             .mobile-bar { display: flex; }
-            .main-content { padding: 80px 20px 40px 20px; }
+            .main { padding: 80px 20px 40px 20px; }
         }
 
         /* Modal */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .modal-overlay.show { opacity: 1; pointer-events: all; }
-        .modal { width: 90%; max-width: 360px; background: var(--bg-color); padding: 30px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-mask.show { opacity: 1; pointer-events: all; }
+        .modal-box { background: var(--card-bg); width: 300px; padding: 25px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
     </style>
 </head>
-<body class="theme-blue">
-    <div class="aurora-bg"></div>
+<body>
 
     <div class="mobile-bar">
-        <i class="fas fa-bars" onclick="document.getElementById('sidebar').classList.toggle('open')"></i>
-        <div style="font-weight:800;">DSE Hub v55</div>
-        <div class="avatar" style="width:28px; height:28px; font-size:12px;" onclick="checkAuth()">?</div>
+        <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+        <b>DSE Hub v56</b>
+        <div id="mob-score" style="font-size:12px; font-weight:bold; color:var(--accent);"></div>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="brand"><i class="fas fa-rocket"></i> DSE HUB</div>
+        <div class="brand"><i class="fas fa-cube"></i> DSE HUB</div>
+        
         <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
         <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
-        <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen-nib"></i> 投稿中心</div>
+        <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决</div>
         <div class="nav-item" onclick="nav('game', this)"><i class="fas fa-gamepad"></i> 连连看</div>
+        <div class="nav-item" onclick="nav('rank', this)"><i class="fas fa-trophy"></i> 排行榜</div>
+        <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-feather-alt"></i> 投稿</div>
+
         <div style="flex:1"></div>
-        <div class="nav-item" onclick="nav('admin', this)" id="btn-admin" style="display:none;"><i class="fas fa-shield-alt"></i> 管理后台</div>
-        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
-        <div class="user-card" onclick="checkAuth()">
-            <div class="avatar" id="sb-av">?</div>
-            <div style="flex:1; margin-left:10px;"><div style="font-weight:600;" id="sb-nm">未登录</div></div>
+        <div class="nav-item" onclick="nav('admin', this)" id="btn-admin" style="display:none;"><i class="fas fa-user-shield"></i> 管理后台</div>
+        
+        <div class="card" style="margin:0; padding:12px; cursor:pointer; display:flex; align-items:center; gap:10px;" onclick="checkAuth()">
+            <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold;" id="av">?</div>
+            <div style="flex:1; overflow:hidden;">
+                <div style="font-weight:bold; font-size:14px;" id="u-nm">未登录</div>
+                <div style="font-size:11px; opacity:0.6;">积分: <span id="u-sc">0</span></div>
+            </div>
         </div>
     </div>
 
-    <div class="main-content" onclick="if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open')">
-        
+    <div class="main" onclick="if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open')">
+
         <div id="view-home" class="page active">
-            <h1>知识宝库</h1>
-            <div class="card" style="display:flex; gap:10px;">
-                <input placeholder="搜索..." onkeyup="renderHome()" id="s-kw" style="margin:0;">
-                <select id="s-cat" onchange="renderHome()" style="width:auto; margin:0;"><option value="all">全科</option><option value="chi">中文</option><option value="eng">Eng</option></select>
+            <h1>全科知识库</h1>
+            <div class="card" style="display:flex; gap:10px; flex-wrap:wrap;">
+                <input id="search-k" placeholder="搜索知识..." style="margin:0; min-width:150px; flex:1;" onkeyup="renderHome()">
+                <select id="filter-sub" style="margin:0; width:auto;" onchange="renderHome()"></select>
             </div>
-            <div id="list-home"></div>
+            <div class="card" style="padding:0;" id="list-home"></div>
         </div>
 
         <div id="view-chat" class="page">
-            <div style="display:flex; justify-content:space-between;"><h1>留言板</h1><button class="ghost" style="width:auto;" onclick="renderChat()">🔄</button></div>
-            <div class="card" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="list-chat"></div>
-            <div class="card" style="display:flex; gap:10px;"><input id="chat-in" placeholder="说点什么..."><button onclick="sendChat()" style="width:auto;">🚀</button></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1>留言板</h1>
+                <input id="chat-filter-user" placeholder="搜用户..." style="width:120px; font-size:12px; padding:6px;" onkeyup="renderChat()">
+            </div>
+            <div class="card" style="height:55vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="list-chat"></div>
+            <div class="card" style="display:flex; gap:10px;">
+                <input id="chat-in" placeholder="支持 *粗体* _下划线_ \斜体\ ...">
+                <button onclick="sendChat()" style="width:auto;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <div id="view-duel" class="page">
+            <h1>线上对决 (Beta)</h1>
+            <div class="card duel-arena">
+                <div id="duel-lobby">
+                    <i class="fas fa-swords" style="font-size:48px; color:var(--text-sub); margin-bottom:20px;"></i>
+                    <p>匹配在线玩家，进行知识问答 PK！<br>赢家获得 <b>50 积分</b>。</p>
+                    <button onclick="startDuelSearch()">开始匹配</button>
+                </div>
+                
+                <div id="duel-game" style="display:none;">
+                    <div style="display:flex; justify-content:center; align-items:center; margin-bottom:30px;">
+                        <div id="p1-name" style="font-weight:bold; color:var(--accent);">我</div>
+                        <div class="vs-badge">VS</div>
+                        <div id="p2-name" style="font-weight:bold;">Guest_99</div>
+                    </div>
+                    <div id="duel-q-box" style="font-size:18px; font-weight:bold; margin-bottom:20px;">题目加载中...</div>
+                    <div id="duel-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+                    <div id="duel-timer" style="margin-top:20px; color:red; font-weight:bold;">10s</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-rank" class="page">
+            <h1>积分风云榜</h1>
+            <div class="card" id="rank-list"></div>
         </div>
 
         <div id="view-submit" class="page">
             <h1>投稿中心</h1>
             <div class="card">
                 <select id="sub-type" onchange="toggleSub()">
-                    <option value="knowledge">📚 投稿知识点 (需审核)</option>
-                    <option value="chat">💬 发送留言 (即时发布)</option>
+                    <option value="know">📚 知识点 (+10分, 需审)</option>
+                    <option value="chat">💬 留言 (+1分, 即时)</option>
                 </select>
                 
                 <div id="field-know">
-                    <select id="sub-cat"><option value="chi">中文</option><option value="eng">Eng</option></select>
-                    <input id="sub-t" placeholder="标题 (e.g. 借代)">
-                    <textarea id="sub-d" rows="4" placeholder="解释..."></textarea>
+                    <select id="sub-sub-select"></select>
+                    <input id="sub-t" placeholder="标题">
+                    <textarea id="sub-d" rows="4" placeholder="支持 fmt(): *粗体*..."></textarea>
                     <input id="sub-ex" placeholder="例子 (用于游戏): A // B">
                 </div>
                 
                 <div id="field-chat" style="display:none;">
-                    <textarea id="sub-msg" rows="3" placeholder="想说什么？"></textarea>
+                    <textarea id="sub-msg" rows="3" placeholder="说点什么..."></textarea>
                 </div>
-
                 <button onclick="doSubmit()">提交</button>
             </div>
         </div>
 
+        <div id="view-game" class="page">
+            <div style="display:flex; justify-content:space-between;"><h1>连连看</h1><button class="ghost small" style="width:auto" onclick="initLinkGame()">刷新</button></div>
+            <div class="card" id="game-board" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;"></div>
+        </div>
+
         <div id="view-admin" class="page">
-            <h1>后台</h1>
+            <h1>管理后台</h1>
             <div class="card" style="padding:0;">
                 <div style="display:flex; border-bottom:1px solid #eee;">
-                    <button class="ghost" onclick="renderAdmin('knowledge')">📚 待审知识</button>
-                    <button class="ghost" onclick="renderAdmin('chat')">💬 留言/举报</button>
+                    <button class="ghost" onclick="renderAdmin('audit')">📚 待审</button>
+                    <button class="ghost" onclick="renderAdmin('users')">👥 用户/封禁</button>
                 </div>
-                <div id="admin-list" style="padding:10px;"></div>
+                <div id="admin-list" style="padding:15px;"></div>
             </div>
         </div>
 
-        <div id="view-settings" class="page">
-            <h1>设置</h1>
-            <div class="card">
-                <h3>主题色</h3>
-                <div style="display:flex; gap:10px;">
-                    <div style="width:30px;height:30px;border-radius:50%;background:#007AFF" onclick="setTheme('theme-blue')"></div>
-                    <div style="width:30px;height:30px;border-radius:50%;background:#AF52DE" onclick="setTheme('theme-purple')"></div>
-                    <div style="width:30px;height:30px;border-radius:50%;background:#34C759" onclick="setTheme('theme-green')"></div>
-                    <div style="width:30px;height:30px;border-radius:50%;background:#FF9500" onclick="setTheme('theme-orange')"></div>
-                    <div style="width:30px;height:30px;border-radius:50%;background:#444" onclick="setTheme('theme-graphite')"></div>
-                </div>
-                <br><button class="ghost" onclick="toggleDark()">🌗 深色模式</button>
-                <br><br><button class="danger" onclick="logout()">退出登录</button>
-            </div>
-        </div>
-        
-        <div id="view-game" class="page"><h1>游戏</h1><div class="card">需更多知识点数据激活游戏。</div></div>
     </div>
 
-    <div class="modal-overlay" id="auth-modal">
-        <div class="modal">
-            <h2>欢迎</h2>
-            <input id="au-u" placeholder="用户名">
-            <input id="au-p" type="password" placeholder="密码 (admin)">
-            <button onclick="login()">登录</button>
-            <button class="ghost" onclick="document.getElementById('auth-modal').classList.remove('show')">暂不登录</button>
+    <div class="modal-mask" id="auth-modal">
+        <div class="modal-box">
+            <h2>DSE Pass</h2>
+            <input id="lg-u" placeholder="用户名">
+            <input id="lg-p" type="password" placeholder="密码 (admin)">
+            <button onclick="login()">登录 / 注册</button>
+            <button class="ghost" onclick="document.getElementById('auth-modal').classList.remove('show')">关闭</button>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // ⚠️ 请在这里填入你的 URL 和 Key
-        // ============================================
-        const CONFIG = {
-            URL: "https://alsalyskulozwakhmzoa.supabase.co", 
-            KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr" 
-        };
-        // ============================================
-
-        let db = null;
-        let currentUser = null;
-        let localData = [
-            {id:1, type:'knowledge', status:'approved', cat:'chi', t:'明喻', d:'本体喻体都出现', ex:'脸像红苹果'},
-            {id:2, type:'chat', status:'approved', author:'System', d:'欢迎来到 v55', time:'12:00'}
+        // ================= 配置区 =================
+        const CONFIG = { URL: "https://alsalyskulozwakhmzoa.supabase.co", KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr" };
+        
+        const SUBJECTS = [
+            {code:"chi",name:"中文"}, {code:"eng",name:"英文"}, {code:"math",name:"数学"}, 
+            {code:"cs",name:"公社科"}, {code:"phy",name:"物理"}, {code:"chem",name:"化学"}, 
+            {code:"bio",name:"生物"}, {code:"econ",name:"经济"}, {code:"bafs",name:"企会财"}, 
+            {code:"ict",name:"ICT"}, {code:"hist",name:"历史"}, {code:"geog",name:"地理"}, 
+            {code:"m1",name:"M1"}, {code:"m2",name:"M2"}, {code:"lit",name:"文学"}, {code:"other",name:"其他"}
         ];
 
-        // Init
-        window.onload = async () => {
-            // 1. 初始化 Supabase
-            if(CONFIG.URL.includes('https://') && CONFIG.KEY.length > 20) {
-                db = supabase.createClient(CONFIG.URL, CONFIG.KEY);
-                await loadRemoteData();
-            } else {
-                console.log('⚠️ 使用本地模拟数据 (未填 Key)');
-            }
+        // ================= 状态管理 =================
+        let db = null;
+        let currentUser = null;
+        let dbData = {
+            users: [
+                { name: 'Admin', score: 9999, isBanned: false, isAdmin: true },
+                { name: 'StudentA', score: 120, isBanned: false, isAdmin: false },
+                { name: 'BadUser', score: 0, isBanned: true, isAdmin: false }
+            ],
+            items: [
+                { id:1, type:'know', status:'approved', sub:'chi', t:'借代', d:'用相关事物代替本体。', ex:'朱门酒肉臭 // 巾帼不让须眉', author:'Admin' },
+                { id:2, type:'know', status:'approved', sub:'eng', t:'Passive Voice', d:'Subject receives action.', ex:'Cake was eaten', author:'Admin' },
+                { id:3, type:'chat', status:'approved', d:'System: Welcome to v56!', author:'Admin', time:'12:00' }
+            ]
+        };
 
-            // 2. 恢复 Session (使用 sessionStorage 防止跨标签页自动登入)
-            const savedUser = sessionStorage.getItem('dse-user');
-            if(savedUser) {
-                currentUser = JSON.parse(savedUser);
-                updateUserUI();
+        // ================= 核心工具 =================
+        function fmt(str) {
+            if(!str) return '';
+            return str.replace(/</g, "&lt;")
+                      .replace(/\*(.*?)\*/g, '<span class="fmt-bold">$1</span>')
+                      .replace(/_(.*?)_/g, '<span class="fmt-under">$1</span>')
+                      .replace(/\\(.*?)\\/g, '<span class="fmt-italic">$1</span>');
+        }
+
+        window.onload = async () => {
+            // Init Dropdowns
+            const opts = SUBJECTS.map(s => `<option value="${s.code}">${s.name}</option>`).join('');
+            document.getElementById('filter-sub').innerHTML = `<option value="all">全科</option>` + opts;
+            document.getElementById('sub-sub-select').innerHTML = opts;
+
+            // Session check
+            const sess = sessionStorage.getItem('dse_sess');
+            if(sess) {
+                const u = JSON.parse(sess);
+                // 重新检查是否被封禁 (模拟从数据库拉取最新状态)
+                const freshUser = dbData.users.find(x => x.name === u.name);
+                if(freshUser && !freshUser.isBanned) {
+                    currentUser = freshUser;
+                    updateUI();
+                } else {
+                    sessionStorage.removeItem('dse_sess');
+                }
             } else {
                 checkAuth(true);
             }
 
-            const th = localStorage.getItem('dse-theme');
-            if(th) document.body.className = th;
-            renderHome(); renderChat();
+            if(CONFIG.URL.includes("https")) db = supabase.createClient(CONFIG.URL, CONFIG.KEY);
+            
+            nav('home');
         };
 
-        async function loadRemoteData() {
-            // 这里连接真实数据库逻辑，简化起见先跳过具体 fetch
-            // const { data } = await db.from('items').select('*');
-            // if(data) localData = data;
-        }
-
-        // ================= Auth (Session Storage) =================
+        // ================= Auth =================
         function checkAuth(silent=false) {
             if(currentUser) return;
             if(!silent) document.getElementById('auth-modal').classList.add('show');
         }
         function login() {
-            const u = document.getElementById('au-u').value;
-            const p = document.getElementById('au-p').value;
-            if(!u) return alert('请输入用户名');
-            
-            currentUser = { name: u, isAdmin: (p === 'admin') };
-            sessionStorage.setItem('dse-user', JSON.stringify(currentUser)); // 👈 关键：仅当前会话有效
-            
-            updateUserUI();
+            const u = document.getElementById('lg-u').value;
+            const p = document.getElementById('lg-p').value;
+            if(!u) return;
+
+            let user = dbData.users.find(x => x.name === u);
+            if(!user) {
+                // Register
+                user = { name: u, score: 50, isBanned: false, isAdmin: (p==='admin') };
+                dbData.users.push(user);
+            }
+
+            if(user.isBanned) return alert("⛔️ 该账户已被封禁！");
+
+            if(p==='admin' && !user.isAdmin) return alert("密码错误"); // 简单模拟
+
+            currentUser = user;
+            sessionStorage.setItem('dse_sess', JSON.stringify(user));
             document.getElementById('auth-modal').classList.remove('show');
+            updateUI();
         }
         function logout() {
-            sessionStorage.removeItem('dse-user');
+            sessionStorage.removeItem('dse_sess');
             location.reload();
         }
-        function updateUserUI() {
-            document.getElementById('sb-nm').innerText = currentUser.name;
-            document.getElementById('sb-av').innerText = currentUser.name[0].toUpperCase();
-            if(currentUser.isAdmin) document.getElementById('btn-admin').style.display = 'flex';
+        function updateUI() {
+            document.getElementById('u-nm').innerText = currentUser.name;
+            document.getElementById('u-sc').innerText = currentUser.score;
+            document.getElementById('av').innerText = currentUser.name[0].toUpperCase();
+            if(currentUser.isAdmin) document.getElementById('btn-admin').style.display='flex';
         }
 
-        // ================= Navigation =================
+        // ================= Nav =================
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
@@ -265,108 +323,228 @@
                 el.classList.add('active');
             }
             if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
-            if(id==='admin') renderAdmin('knowledge');
-        }
-        function setTheme(c) { document.body.className=c; localStorage.setItem('dse-theme',c); }
-        function toggleDark() { 
-            const d = document.documentElement; 
-            d.setAttribute('data-theme', d.getAttribute('data-theme')==='dark'?'light':'dark'); 
-        }
+            toggleSidebar(); // Close sidebar on mobile select
 
-        // ================= Logic: Home & Chat =================
+            if(id==='home') renderHome();
+            if(id==='chat') renderChat();
+            if(id==='rank') renderRank();
+            if(id==='game') initLinkGame();
+            if(id==='admin') renderAdmin('audit');
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        // ================= Features =================
+        
+        // 1. Knowledge (Accordion + Fmt)
         function renderHome() {
-            const k = document.getElementById('s-kw').value.toLowerCase();
-            const c = document.getElementById('s-cat').value;
-            const list = localData.filter(i => i.type==='knowledge' && i.status==='approved' && (c==='all'||i.cat===c) && (i.t.includes(k)||i.d.includes(k)));
-            document.getElementById('list-home').innerHTML = list.map(i=>`
-                <div class="card" style="padding:15px;margin-bottom:15px;">
-                    <div style="color:var(--accent);font-weight:700;">[${i.cat.toUpperCase()}] ${i.t}</div>
-                    <div style="margin-top:5px;">${i.d}</div>
-                </div>`).join('') || '<div style="text-align:center;color:#999">无内容</div>';
+            const k = document.getElementById('search-k').value.toLowerCase();
+            const s = document.getElementById('filter-sub').value;
+            const list = dbData.items.filter(i => i.type==='know' && i.status==='approved' && (s==='all'||i.sub===s) && (i.t.includes(k)||i.d.includes(k)));
+            
+            document.getElementById('list-home').innerHTML = list.map(i => {
+                const subName = SUBJECTS.find(x=>x.code===i.sub)?.name || i.sub;
+                return `
+                <div class="k-item" onclick="this.classList.toggle('open')">
+                    <div class="k-header">
+                        <div><span class="badge">${subName}</span> <b>${i.t}</b></div>
+                        <i class="fas fa-chevron-down" style="font-size:12px; opacity:0.5;"></i>
+                    </div>
+                    <div class="k-detail">
+                        ${fmt(i.d)}<br><br>
+                        ${i.ex ? `<span style="font-size:13px; color:var(--text-sub)">💡 ${i.ex}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('') || '<div style="padding:20px; text-align:center; color:#999">暂无内容</div>';
         }
 
+        // 2. Chat (User Search + Fmt)
         function renderChat() {
-            const list = localData.filter(i => i.type==='chat' && i.status==='approved');
-            document.getElementById('list-chat').innerHTML = list.map(i=>`
-                <div style="padding:10px;background:rgba(0,0,0,0.03);border-radius:12px;margin-bottom:10px;">
-                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#888">
-                        <b>${i.author}</b> <span onclick="report(${i.id})">⚠️ 举报</span>
+            const uFilter = document.getElementById('chat-filter-user').value.toLowerCase();
+            const list = dbData.items.filter(i => i.type==='chat' && i.status==='approved' && (!uFilter || i.author.toLowerCase().includes(uFilter)));
+            
+            document.getElementById('list-chat').innerHTML = list.map(i => `
+                <div style="padding:10px; background:rgba(0,0,0,0.03); border-radius:10px; margin-bottom:8px;">
+                    <div style="font-size:12px; color:var(--text-sub); display:flex; justify-content:space-between;">
+                        <b>${i.author}</b> <span onclick="report(${i.id})">⚠️</span>
                     </div>
-                    <div style="margin-top:4px;">${i.d}</div>
+                    <div style="margin-top:4px;">${fmt(i.d)}</div>
                 </div>`).join('');
         }
         function sendChat() {
             if(!currentUser) return checkAuth();
             const t = document.getElementById('chat-in').value;
             if(!t) return;
-            localData.push({id:Date.now(), type:'chat', author:currentUser.name, status:'approved', d:t});
-            document.getElementById('chat-in').value='';
+            dbData.items.push({id:Date.now(), type:'chat', status:'approved', author:currentUser.name, d:t, time:new Date().toLocaleTimeString()});
+            currentUser.score += 1; updateUI(); // 积分
+            document.getElementById('chat-in').value = '';
             renderChat();
         }
         function report(id) {
-            if(!currentUser) return checkAuth();
-            if(confirm('举报此条消息？')) {
-                const it = localData.find(i=>i.id==id);
-                if(it) { it.status='reported'; renderChat(); alert('已举报，进入审核'); }
-            }
+            if(!confirm('举报此留言？')) return;
+            const it = dbData.items.find(x=>x.id==id);
+            if(it) { it.status='reported'; renderChat(); alert('已举报'); }
         }
 
-        // ================= Logic: Submit =================
+        // 3. Duel (Online Simulation)
+        function startDuelSearch() {
+            if(!currentUser) return checkAuth();
+            document.getElementById('duel-lobby').innerHTML = '<h3>🔍 正在搜索对手...</h3>';
+            setTimeout(() => {
+                document.getElementById('duel-lobby').style.display = 'none';
+                document.getElementById('duel-game').style.display = 'block';
+                startDuelRound();
+            }, 1500);
+        }
+        function startDuelRound() {
+            // Pick a random question from Knowledge Base
+            const q = dbData.items.filter(i=>i.type==='know')[Math.floor(Math.random()*dbData.items.length)];
+            const wrong = "错误答案"; // Simplified for demo
+            
+            document.getElementById('duel-q-box').innerText = q ? `${q.t} 是什么？` : '1+1=?';
+            const ans = q ? q.d.substring(0, 15)+'...' : '2';
+            
+            // Randomize buttons
+            const isLeft = Math.random() > 0.5;
+            document.getElementById('duel-opts').innerHTML = `
+                <button onclick="${isLeft ? 'duelWin()' : 'duelLose()'}">${isLeft ? ans : wrong}</button>
+                <button onclick="${!isLeft ? 'duelWin()' : 'duelLose()'}">${!isLeft ? ans : wrong}</button>
+            `;
+        }
+        function duelWin() {
+            alert('🎉 胜利！你比 Guest_99 快了 0.5s！\n获得 50 积分。');
+            currentUser.score += 50; updateUI();
+            resetDuel();
+        }
+        function duelLose() { alert('❌ 答错了 / 太慢了！'); resetDuel(); }
+        function resetDuel() {
+            document.getElementById('duel-game').style.display='none';
+            document.getElementById('duel-lobby').style.display='block';
+            document.getElementById('duel-lobby').innerHTML = '<i class="fas fa-swords" style="font-size:48px;margin-bottom:20px;"></i><p>再来一局？</p><button onclick="startDuelSearch()">开始匹配</button>';
+        }
+
+        // 4. Rank
+        function renderRank() {
+            const sorted = [...dbData.users].sort((a,b) => b.score - a.score).slice(0, 10);
+            document.getElementById('rank-list').innerHTML = sorted.map((u, i) => `
+                <div class="rank-row">
+                    <span>#${i+1} ${u.name}</span>
+                    <span>${u.score} pts</span>
+                </div>`).join('');
+        }
+
+        // 5. Submit
         function toggleSub() {
             const t = document.getElementById('sub-type').value;
-            // 隐藏逻辑：Chat 不需要标题和例子
-            document.getElementById('field-know').style.display = t==='knowledge'?'block':'none';
+            document.getElementById('field-know').style.display = t==='know'?'block':'none';
             document.getElementById('field-chat').style.display = t==='chat'?'block':'none';
         }
         function doSubmit() {
             if(!currentUser) return checkAuth();
             const type = document.getElementById('sub-type').value;
             
-            if(type === 'knowledge') {
-                localData.push({
-                    id:Date.now(), type:'knowledge', author:currentUser.name, status:'pending',
-                    cat:document.getElementById('sub-cat').value,
-                    t:document.getElementById('sub-t').value,
-                    d:document.getElementById('sub-d').value,
-                    ex:document.getElementById('sub-ex').value
+            if(type === 'know') {
+                dbData.items.push({
+                    id: Date.now(), type: 'know', status: 'pending', author: currentUser.name,
+                    sub: document.getElementById('sub-sub-select').value,
+                    t: document.getElementById('sub-t').value,
+                    d: document.getElementById('sub-d').value,
+                    ex: document.getElementById('sub-ex').value
                 });
-                alert('✅ 知识点已提交，等待审核');
+                alert('✅ 已提交审核 (+10分 审核通过后发放)');
             } else {
-                localData.push({
-                    id:Date.now(), type:'chat', author:currentUser.name, status:'approved',
-                    d:document.getElementById('sub-msg').value
+                dbData.items.push({
+                    id: Date.now(), type: 'chat', status: 'approved', author: currentUser.name,
+                    d: document.getElementById('sub-msg').value
                 });
-                alert('✅ 留言已发布');
+                currentUser.score += 1; updateUI();
+                alert('✅ 留言已发布 (+1分)');
             }
-            nav(type==='knowledge'?'home':'chat');
         }
 
-        // ================= Logic: Admin =================
-        let admTab = 'knowledge';
+        // 6. Link Game (Simplified)
+        function initLinkGame() {
+            // Pick items with examples
+            const pool = dbData.items.filter(i => i.type==='know' && i.ex).slice(0, 4);
+            let cards = [];
+            pool.forEach(p => {
+                cards.push({txt: p.t, id: p.id, type: 'top'});
+                cards.push({txt: p.ex.split('//')[0], id: p.id, type: 'ex'});
+            });
+            cards.sort(() => Math.random() - 0.5);
+            
+            document.getElementById('game-board').innerHTML = cards.map((c, i) => `
+                <div class="card g-card" id="gc-${i}" onclick="tapCard(${i}, ${c.id})" 
+                     style="margin:0; min-height:80px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:12px; font-weight:bold; ${c.type==='top'?'color:var(--accent)':''}">
+                    ${c.txt}
+                </div>`).join('');
+            window.gSel = null;
+        }
+        function tapCard(idx, pid) {
+            const el = document.getElementById(`gc-${idx}`);
+            if(el.style.opacity === '0') return;
+            
+            el.style.border = "2px solid var(--accent)";
+            
+            if(!window.gSel) {
+                window.gSel = { idx, pid };
+            } else {
+                const prev = window.gSel;
+                if(prev.idx !== idx && prev.pid === pid) {
+                    // Match
+                    document.getElementById(`gc-${prev.idx}`).style.opacity = 0;
+                    el.style.opacity = 0;
+                } else {
+                    // Fail
+                    setTimeout(() => {
+                        document.getElementById(`gc-${prev.idx}`).style.border = "none";
+                        el.style.border = "none";
+                    }, 500);
+                }
+                window.gSel = null;
+            }
+        }
+
+        // 7. Admin (Ban & Audit)
         function renderAdmin(tab) {
             if(!currentUser?.isAdmin) return;
-            admTab = tab;
-            let list = [];
-            if(tab==='knowledge') list = localData.filter(i=>i.type==='knowledge' && i.status==='pending');
-            else list = localData.filter(i=>i.type==='chat' && i.status!=='deleted').sort((a,b)=>(a.status==='reported'?-1:1));
+            const box = document.getElementById('admin-list');
             
-            document.getElementById('admin-list').innerHTML = list.map(i=>`
-                <div class="list-item" style="${i.status==='reported'?'background:rgba(255,59,48,0.1);border:1px solid red':''}">
-                    <div>
-                        ${i.status==='reported'?'<b style="color:red">已举报:</b> ':''}
-                        <b>${i.t||'留言'}</b> <span style="font-size:12px">${i.d.substr(0,15)}...</span>
-                    </div>
-                    <div>
-                        ${(tab==='knowledge'||i.status==='reported')?`<button class="ghost" style="width:auto" onclick="audit(${i.id},'approved')">✔</button>`:''}
-                        <button class="ghost" style="color:red;width:auto" onclick="audit(${i.id},'deleted')">✘</button>
-                    </div>
-                </div>`).join('') || '<div style="padding:20px;text-align:center">无待办</div>';
+            if(tab === 'audit') {
+                const list = dbData.items.filter(i => (i.type==='know' && i.status==='pending') || i.status==='reported');
+                box.innerHTML = list.map(i => `
+                    <div class="card" style="padding:10px; margin-bottom:10px; border-left:4px solid ${i.status==='reported'?'red':'orange'}">
+                        <div><b>${i.t || '留言'}</b> by ${i.author}</div>
+                        <div style="font-size:12px; margin:5px 0;">${i.d}</div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="ghost small" onclick="audit(${i.id}, 'approved')">通过/恢复</button>
+                            <button class="danger small" onclick="audit(${i.id}, 'deleted')">删除</button>
+                            ${i.status==='reported' ? `<button class="danger small" onclick="banUser('${i.author}')">封禁用户</button>` : ''}
+                        </div>
+                    </div>`).join('') || '无待办';
+            } else {
+                // Users List
+                box.innerHTML = dbData.users.map(u => `
+                    <div class="list-item">
+                        <div>
+                            <b>${u.name}</b> (${u.score}pts) 
+                            ${u.isBanned ? '<span class="badge" style="background:red;color:white">封禁中</span>' : ''}
+                        </div>
+                        ${!u.isAdmin ? `<button class="danger small" style="width:auto" onclick="toggleBan('${u.name}')">${u.isBanned?'解封':'封禁'}</button>` : ''}
+                    </div>`).join('');
+            }
         }
+
         function audit(id, s) {
-            const it = localData.find(i=>i.id==id);
-            if(it) it.status = s;
-            renderAdmin(admTab);
+            const i = dbData.items.find(x=>x.id==id);
+            if(i) i.status = s;
+            renderAdmin('audit');
         }
+        function banUser(name) { toggleBan(name); renderAdmin('audit'); }
+        function toggleBan(name) {
+            const u = dbData.users.find(x=>x.name===name);
+            if(u) { u.isBanned = !u.isBanned; renderAdmin('users'); }
+        }
+
     </script>
 </body>
 </html>
