@@ -3,381 +3,675 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v63 - Auto Sync</title>
+    <title>DSE Hub v52 - macOS Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
-        /* ================= 🍎 Mac 风格 (深灰版) ================= */
+        /* ================= 🍎 macOS Design System ================= */
         :root {
-            --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            
-            /* 深空灰主题 (Dark Space Grey) */
-            --bg: #1e1e1e;            /* 这种灰比纯黑更有质感 */
-            --sidebar: #252526;       /* 侧边栏稍浅 */
-            --card: #2d2d2d;          /* 卡片悬浮感 */
-            --text-main: #e0e0e0;     /* 柔和白 */
-            --text-sub: #858585;      /* 次要文字 */
-            --primary: #0a84ff;       /* macOS 蓝色 */
-            --border: #3e3e3e;        /* 边框 */
-            --input-bg: #333333;      /* 输入框背景 */
-            --shadow: 0 8px 24px rgba(0,0,0,0.4);
+            --mac-bg: #F5F5F7;
+            --sidebar-bg: rgba(240, 240, 245, 0.6);
+            --content-bg: #FFFFFF;
+            --accent: #007AFF; /* Apple Blue */
+            --accent-hover: #0062cc;
+            --text-primary: #1D1D1F;
+            --text-secondary: #86868B;
+            --border: rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+            --radius-m: 10px;
+            --radius-l: 16px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
-
-        /* 侧边栏 */
-        .sidebar { 
-            width: 250px; background: var(--sidebar); border-right: 1px solid var(--border);
-            padding: 20px; display: flex; flex-direction: column; z-index: 100;
+        [data-theme="dark"] {
+            --mac-bg: #1E1E1E; /* 略微深色背景 */
+            --sidebar-bg: rgba(40, 40, 40, 0.6);
+            --content-bg: #2C2C2C;
+            --text-primary: #F5F5F7;
+            --text-secondary: #A1A1A6;
+            --border: rgba(255, 255, 255, 0.1);
         }
-        
-        /* 🚥 经典的红绿灯 */
-        .traffic-lights { display: flex; gap: 8px; margin-bottom: 25px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .r { background: #ff5f57; } .y { background: #febc2e; } .g { background: #28c840; }
 
-        .nav-item { 
-            padding: 10px 12px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; 
-            color: var(--text-sub); display: flex; align-items: center; font-size: 14px;
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            font-family: var(--font-stack);
+            background: url('https://images.unsplash.com/photo-1621600411688-4be93cd68504?q=80&w=2600&auto=format&fit=crop') center/cover no-repeat fixed; /* Abstract Wallpaper */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: var(--text-primary);
         }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .nav-item.active { background: rgba(10, 132, 255, 0.15); color: var(--primary); font-weight: 500; }
 
-        .main { flex: 1; overflow-y: auto; padding: 40px; position: relative; }
-        .page { display: none; max-width: 700px; margin: 0 auto; animation: fadeUp 0.3s ease-out; }
-        .page.active { display: block; }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-        /* 卡片与控件 */
-        .card { background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 20px; }
-        
-        input, textarea, select { 
-            width: 100%; padding: 10px 12px; margin-bottom: 12px; background: var(--input-bg); 
-            border: 1px solid var(--border); color: var(--text-main); border-radius: 6px; font-size: 14px; outline: none;
+        /* 🖥️ 主窗口容器 (Window) */
+        .app-window {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: var(--content-bg);
+            border-radius: var(--radius-l);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.4);
         }
-        input:focus { border-color: var(--primary); }
-        
-        button { 
-            background: var(--primary); color: white; border: none; padding: 10px 16px; 
-            border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; width: 100%; 
-        }
-        button:hover { filter: brightness(1.1); }
-        button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text-sub); }
-        button.small { width: auto; padding: 4px 10px; font-size: 12px; }
 
-        /* 评论区 */
-        .fb-item { padding: 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .fb-item:last-child { border-bottom: none; }
-        .chip { background: var(--input-bg); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; color: var(--text-sub); }
-
-        /* 移动端菜单按钮 */
-        .menu-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 200; background: var(--card); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; }
+        /* 📱 移动端适配 */
         @media (max-width: 768px) {
-            .sidebar { position: fixed; transform: translateX(-100%); height: 100%; }
-            .sidebar.show { transform: translateX(0); box-shadow: 10px 0 50px rgba(0,0,0,0.5); }
-            .menu-toggle { display: block; }
-            .main { padding: 60px 20px; }
+            .app-window { width: 100%; height: 100%; border-radius: 0; }
+            body { background: var(--content-bg); }
+        }
+
+        /* ================= 侧边栏 (Sidebar) ================= */
+        .sidebar {
+            width: 240px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 10px;
+            flex-shrink: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        /* 🚥 交通灯 */
+        .traffic-lights {
+            display: flex; gap: 8px; margin-bottom: 25px; padding-left: 10px;
+        }
+        .light { width: 12px; height: 12px; border-radius: 50%; }
+        .light.red { background: #FF5F56; border: 1px solid #E0443E; }
+        .light.yellow { background: #FFBD2E; border: 1px solid #DEA123; }
+        .light.green { background: #27C93F; border: 1px solid #1AAB29; }
+
+        .nav-group-title {
+            font-size: 11px; font-weight: 600; color: var(--text-secondary);
+            padding: 0 12px; margin: 15px 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex; align-items: center; gap: 10px;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { background: rgba(0,0,0,0.05); }
+        .nav-item.active { background: var(--accent); color: white; }
+        .nav-item.active .icon { filter: brightness(0) invert(1); } /* 图标变白 */
+
+        /* ================= 主内容区 (Main) ================= */
+        .main-content {
+            flex: 1;
+            background: var(--content-bg);
+            overflow-y: auto;
+            position: relative;
+            scroll-behavior: smooth;
+        }
+
+        .view-container {
+            display: none;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view-container.active { display: block; }
+        @keyframes fadeIn { from{opacity:0;transform:scale(0.98);} to{opacity:1;transform:scale(1);} }
+
+        h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.5px; }
+
+        /* 🛠️ UI 组件 */
+        .search-bar {
+            display: flex; align-items: center;
+            background: rgba(0,0,0,0.05);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+            transition: 0.2s;
+        }
+        .search-bar:focus-within { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.2); }
+        .search-bar input { border: none; background: transparent; width: 100%; font-size: 14px; margin: 0; padding:0; }
+        
+        .mac-btn {
+            background: var(--accent); color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .mac-btn:hover { background: var(--accent-hover); }
+        .mac-btn:active { transform: scale(0.96); }
+        .mac-btn.secondary { background: rgba(0,0,0,0.08); color: var(--text-primary); }
+        .mac-btn.secondary:hover { background: rgba(0,0,0,0.12); }
+        .mac-btn.danger { background: #FF3B30; }
+
+        textarea, select, input.std-input {
+            width: 100%; padding: 10px; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--mac-bg);
+            font-family: inherit; margin-bottom: 12px;
+            font-size: 14px;
+        }
+        textarea:focus, select:focus, input.std-input:focus { border-color: var(--accent); }
+
+        /* 📦 列表卡片 */
+        .list-item {
+            background: var(--mac-bg);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .list-item:hover { background: #fff; box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+        .list-item.expanded { background: #fff; box-shadow: var(--shadow-lg); border-color: var(--accent); }
+        
+        .tag-pill {
+            font-size: 10px; padding: 3px 8px; border-radius: 100px;
+            background: rgba(0,122,255,0.1); color: var(--accent); font-weight: 600; text-transform: uppercase;
+            margin-right: 8px;
+        }
+
+        .detail-box { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); font-size: 14px; line-height: 1.6; color: var(--text-primary); }
+        .list-item.expanded .detail-box { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-5px);} to{opacity:1;transform:translateY(0);} }
+
+        /* 🍞 Toast 通知 */
+        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 999; pointer-events: none; }
+        .toast {
+            background: rgba(50,50,50,0.9); color: white; backdrop-filter: blur(10px);
+            padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500;
+            margin-top: 10px; opacity: 0; transform: translateY(10px); transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* 🎮 游戏网格 */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+        .g-card {
+            aspect-ratio: 1; background: var(--mac-bg); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 600; text-align: center; padding: 8px;
+            cursor: pointer; transition: 0.3s; border: 2px solid transparent; user-select: none;
+            box-shadow: var(--shadow-sm);
+        }
+        .g-card:hover { transform: translateY(-3px); }
+        .g-card.topic { color: var(--accent); background: #EFF6FF; border-color: rgba(0,122,255,0.2); }
+        .g-card.selected { background: var(--accent); color: white; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); }
+        .g-card.matched { transform: scale(0); opacity: 0; }
+        .g-card.shake { animation: shake 0.4s; border-color: #FF3B30; color: #FF3B30; background: #FFF0F0; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+        /* 📱 Mobile Menu Toggle */
+        .mobile-toggle { display: none; position: absolute; top: 20px; left: 20px; z-index: 200; font-size: 24px; cursor: pointer; }
+        @media (max-width: 768px) {
+            .mobile-toggle { display: block; }
+            .sidebar { position: absolute; height: 100%; transform: translateX(-100%); width: 260px; box-shadow: 2px 0 20px rgba(0,0,0,0.2); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { padding-top: 50px; }
+            .view-container { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="mobile-toggle" onclick="toggleSidebar()">☰</div>
 
-    <div class="sidebar" id="sidebar">
-        <div class="traffic-lights"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
-        <div style="font-weight:700; font-size:18px; margin-bottom:20px; color:var(--text-main);">DSE Hub</div>
-        
-        <div id="user-zone" style="background:var(--input-bg); padding:12px; border-radius:8px; margin-bottom:20px; text-align:center;">
-            <div id="u-name" style="margin-bottom:8px; font-size:13px; font-weight:500;">未登录</div>
-            <button class="small ghost" onclick="nav('auth')">登录 / 注册</button>
+    <div class="app-window">
+        <div class="sidebar" id="sidebar">
+            <div class="traffic-lights">
+                <div class="light red" onclick="showToast('Close? Nah.')"></div>
+                <div class="light yellow" onclick="toggleTheme()"></div>
+                <div class="light green" onclick="requestFullScreen()"></div>
+            </div>
+
+            <div class="nav-group-title">Menu</div>
+            <div class="nav-item active" onclick="nav('home', this)">
+                <span>📚</span> 知识库
+            </div>
+            <div class="nav-item" onclick="nav('game', this)">
+                <span>🎮</span> 连连看
+            </div>
+            <div class="nav-item" onclick="nav('chat', this)">
+                <span>💬</span> 留言板
+            </div>
+
+            <div class="nav-group-title">Actions</div>
+            <div class="nav-item" onclick="nav('submit', this)">
+                <span>✏️</span> 投稿
+            </div>
+            <div class="nav-item" onclick="checkAdmin()">
+                <span>🛡️</span> 管理后台
+            </div>
+            
+            <div style="margin-top: auto; font-size: 10px; color: #aaa; text-align: center; padding-top: 20px;">
+                DSE HUB v52 <br> macOS Edition
+            </div>
         </div>
 
-        <div class="nav-item active" onclick="nav('home')">📚 知识库</div>
-        <div class="nav-item" onclick="nav('duel')">⚔️ 在线对战</div>
-        <div class="nav-item" onclick="nav('submit')">📝 投稿</div>
-        <div class="nav-item" onclick="tryAdmin()">⚙️ 管理员</div>
-    </div>
-
-    <div class="main">
-        
-        <div id="view-auth" class="page">
-            <div class="card" style="max-width:350px; margin:50px auto; text-align:center;">
-                <h3 style="margin-top:0;">账号通行证</h3>
-                <div id="auth-status" style="margin-bottom:15px; font-size:12px; color:var(--text-sub);">
-                    请输入邮箱和密码
+        <div class="main-content">
+            
+            <div id="view-home" class="view-container active">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h1>知识宝库</h1>
+                    <select id="cat-filter" onchange="renderHome()" style="width: auto; padding: 6px 12px; margin:0;">
+                        <option value="all">全科</option>
+                        <option value="中文">中文</option>
+                        <option value="English">English</option>
+                        <option value="Math">Math</option>
+                    </select>
                 </div>
-                
-                <input id="email" type="email" placeholder="Email">
-                <input id="pass" type="password" placeholder="Password (6位+)">
-                <input id="username" placeholder="昵称 (仅注册需填)" style="display:none;">
 
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button id="btn-login" onclick="handleLogin()">登录</button>
-                    <button id="btn-reg-mode" class="ghost" onclick="toggleMode()">没有账号?</button>
+                <div class="search-bar">
+                    <span style="margin-right:8px; opacity:0.5;">🔍</span>
+                    <input id="search-input" placeholder="Search knowledge..." onkeyup="renderHome()">
                 </div>
-                <button id="btn-reg-action" onclick="handleRegister()" style="display:none; background:#34c759; margin-top:10px;">注册并发送邮件</button>
-                <button id="btn-logout" class="ghost" onclick="logout()" style="display:none; margin-top:20px; color:#ff453a; border-color:#ff453a;">退出登录</button>
-            </div>
-        </div>
 
-        <div id="view-home" class="page active">
-            <div class="card" style="display:flex; gap:10px;">
-                <input id="search" placeholder="🔍 搜索..." onkeyup="renderList()" style="margin:0;">
-                <select id="cat-filter" onchange="renderList()" style="width:100px; margin:0;"><option value="all">全部</option><option value="math">Math</option><option value="chi">Chi</option><option value="eng">Eng</option></select>
+                <div id="knowledge-list">
+                    </div>
             </div>
-            <div id="list-container"></div>
-        </div>
 
-        <div id="view-duel" class="page">
-            <div class="card" id="duel-lobby" style="text-align:center; padding:50px;">
-                <h2>⚡ 极速对决</h2>
-                <p style="color:var(--text-sub)">实时匹配，拼速度。</p>
-                <button onclick="findMatch()" style="width:150px; margin-top:20px;">开始匹配</button>
-                <div id="match-msg" style="margin-top:20px; color:var(--primary);"></div>
-            </div>
-            <div class="card" id="duel-game" style="display:none;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:20px; font-weight:bold;">
-                    <span style="color:var(--primary)">我: <span id="my-s">0</span></span>
-                    <span style="color:#ff453a">敌: <span id="op-s">0</span></span>
+            <div id="view-game" class="view-container">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <div>
+                        <h1>连连看</h1>
+                        <p style="color:#888; font-size:13px; margin:0;">母题 (Topic) 只有在消除所有例子 (Ex) 后才会消失。</p>
+                    </div>
+                    <button class="mac-btn" onclick="initGame()">🔄 Restart</button>
                 </div>
-                <div id="duel-board" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+                <div id="game-board" class="game-grid"></div>
             </div>
-        </div>
 
-        <div id="view-submit" class="page">
-            <div class="card">
-                <h3>投稿新题</h3>
-                <input id="sub-t" placeholder="标题">
-                <select id="sub-cat"><option value="math">Math</option><option value="chi">Chi</option><option value="eng">Eng</option></select>
-                <textarea id="sub-d" rows="5" placeholder="详细解答..."></textarea>
-                <button onclick="submitItem()" style="background:#34c759;">提交</button>
+            <div id="view-chat" class="view-container">
+                <h1>留言板</h1>
+                <div id="chat-stream" style="height: 400px; overflow-y: auto; background: var(--mac-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px;">
+                    </div>
+                <div style="display: flex; gap: 10px;">
+                    <input id="chat-user" class="std-input" placeholder="Nickname" style="width: 30%; margin:0;">
+                    <input id="chat-msg" class="std-input" placeholder="Say something..." style="margin:0;">
+                    <button class="mac-btn" onclick="sendChat()">Send</button>
+                </div>
             </div>
-        </div>
 
-        <div id="view-admin" class="page">
-            <div class="card">
-                <h3 style="color:#ff453a">审核后台</h3>
-                <button class="ghost small" onclick="loadPending()" style="width:auto; margin-bottom:10px;">刷新</button>
+            <div id="view-submit" class="view-container">
+                <h1>投稿新知识</h1>
+                <div style="background: var(--mac-bg); padding: 25px; border-radius: 16px;">
+                    <select id="sub-cat">
+                        <option value="中文">中文</option>
+                        <option value="English">English</option>
+                        <option value="Math">Math</option>
+                        <option value="LS">公社科</option>
+                    </select>
+                    <input id="sub-title" class="std-input" placeholder="标题 (e.g. 修辞手法)">
+                    <textarea id="sub-desc" rows="5" placeholder="详细解释..."></textarea>
+                    <textarea id="sub-ex" rows="3" placeholder="例子 (用于连连看): 使用 // 分隔多个例子&#10;e.g. 像个红苹果 // 像个大西瓜" style="border-color:#FCD34D;"></textarea>
+                    <button class="mac-btn" style="width:100%; margin-top:10px;" onclick="submitPost()">提交审核</button>
+                </div>
+            </div>
+
+            <div id="view-admin" class="view-container">
+                <h1>Admin Console</h1>
+                <div style="margin-bottom: 20px;">
+                    <button class="mac-btn secondary" onclick="renderAdmin('pending')">待审核</button>
+                    <button class="mac-btn secondary" onclick="renderAdmin('approved')">已发布</button>
+                    <button class="mac-btn secondary" onclick="renderAdmin('deleted')">垃圾桶</button>
+                </div>
                 <div id="admin-list"></div>
             </div>
-        </div>
 
+        </div>
     </div>
 
+    <div class="toast-container" id="toast-box"></div>
+
     <script>
-        // ⚠️⚠️⚠️ 这里填入你的 KEY ⚠️⚠️⚠️
-        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-
-        let supabase, auth;
-        let currentUser = null;
-        let appData = [];
-        let isRegMode = false;
-        let activeRoom = null;
-
-        window.onload = async () => {
-            if(SUPABASE_URL.includes('YOUR_')) return alert('请填写 API KEY');
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            auth = supabase.auth;
-
-            // 1. 初始化检查 Session
-            const { data } = await auth.getSession();
-            if(data.session) handleUser(data.session.user);
-
-            // 2. 核心修复：监听身份变化 (自动同步多标签页)
-            auth.onAuthStateChange(async (event, session) => {
-                console.log("Auth Event:", event);
-                if (session?.user) {
-                    // 如果在其他标签页登录了，这里会自动触发
-                    await handleUser(session.user);
-                    if(document.getElementById('view-auth').classList.contains('active')){
-                         nav('home'); // 如果当前停留在登录页，自动切走
-                    }
-                } else {
-                    currentUser = null;
-                    updateUserUI();
-                }
-            });
-
-            // 3. 双保险：当窗口重新获得焦点时，再次检查 (防止 onAuthStateChange 漏发)
-            window.addEventListener('focus', async () => {
-                const { data } = await auth.getSession();
-                if (data.session && !currentUser) {
-                    await handleUser(data.session.user);
-                    nav('home');
-                }
-            });
-
-            loadData();
+        // ================= ⚙️ 配置与数据层 =================
+        const CONFIG = {
+            SUPABASE_URL: 'https://alsalyskulozwakhmzoa.supabase.co', // 填这里
+            SUPABASE_KEY: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'  // 填这里
         };
 
-        // 用户逻辑
-        async function handleUser(user) {
-            currentUser = user;
-            // 获取 username，拿不到就用 email 前缀
-            const { data } = await supabase.from('profiles').select('username, is_admin').eq('id', user.id).single();
-            currentUser.username = data ? data.username : user.email.split('@')[0];
-            currentUser.is_admin = data ? data.is_admin : false;
-            updateUserUI();
+        // 演示数据 (当没有连接数据库时使用)
+        let mockData = [
+            {id:1, cat:'中文', t:'明喻 (Simile)', d:'本体、喻体都出现，中间用喻词“像、似、若”等连接。', ex:'太阳像个大火球//她的脸像红苹果//人生若只如初见', status:'approved', created_at: new Date().toISOString()},
+            {id:2, cat:'English', t:'Past Tense', d:'Used to describe things that happened in the past.', ex:'I ate an apple//He went to school//She played games', status:'approved', created_at: new Date().toISOString()},
+            {id:3, cat:'Math', t:'Pythagoras Theorem', d:'a² + b² = c². Only for right-angled triangles.', ex:'3, 4, 5//5, 12, 13//6, 8, 10', status:'approved', created_at: new Date().toISOString()},
+            {id:4, cat:'LS', t:'可持续发展', d:'既满足当代人需求，又不损害后代人需求的发展模式。', ex:'减少碳排放//使用再生能源', status:'approved', created_at: new Date().toISOString()},
+            {id:99, cat:'GB_MSG', t:'System', d:'欢迎来到 DSE Hub macOS 版！', status:'approved', created_at: new Date().toISOString()}
+        ];
+
+        let appData = [];
+        let db = null;
+        let isAdmin = false;
+
+        // ================= 🚀 初始化 =================
+        window.onload = async () => {
+            // 尝试连接 Supabase，如果没有 Key 则使用 Mock 模式
+            if (CONFIG.SUPABASE_URL.includes('YOUR_') || typeof supabase === 'undefined') {
+                showToast('⚠️ 未配置 Key，使用演示模式');
+                appData = mockData;
+            } else {
+                try {
+                    db = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+                    await loadRemoteData();
+                } catch(e) {
+                    console.error(e);
+                    appData = mockData;
+                }
+            }
+            renderHome();
+            renderChat();
+        };
+
+        async function loadRemoteData() {
+            const { data, error } = await db.from('submissions').select('*').order('created_at', {ascending: false});
+            if(data) appData = data;
+            if(error) showToast('数据加载失败');
         }
 
-        function updateUserUI() {
-            const el = document.getElementById('u-name');
-            const btn = document.querySelector('#user-zone button');
-            const logBtn = document.getElementById('btn-logout');
+        // ================= 🧭 导航与 UI =================
+        function nav(viewId, btnEl) {
+            // 切换 Tab 样式
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active');
             
-            if(currentUser) {
-                el.innerHTML = `👋 ${currentUser.username}` + (currentUser.is_admin ? ' <span style="color:#ff453a; font-size:10px;">ADMIN</span>' : '');
-                btn.style.display = 'none'; // 隐藏登录按钮
-                logBtn.style.display = 'block';
+            // 切换 View
+            document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-'+viewId).classList.add('active');
+
+            // 移动端自动收起菜单
+            if(window.innerWidth < 768) toggleSidebar();
+
+            // 特殊逻辑
+            if(viewId === 'game') initGame();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            const div = document.createElement('div');
+            div.className = 'toast';
+            div.innerText = msg;
+            box.appendChild(div);
+            // 强制重绘以触发 transition
+            setTimeout(() => div.classList.add('show'), 10); 
+            setTimeout(() => {
+                div.classList.remove('show');
+                setTimeout(() => div.remove(), 300);
+            }, 3000);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            showToast(isDark ? '☀️ Light Mode' : '🌙 Dark Mode');
+        }
+
+        function requestFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e=>{});
             } else {
-                el.innerHTML = '未登录';
-                btn.style.display = 'inline-block';
-                btn.innerText = '登录 / 注册';
-                logBtn.style.display = 'none';
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
-        // 登录/注册逻辑
-        function toggleMode() {
-            isRegMode = !isRegMode;
-            document.getElementById('username').style.display = isRegMode ? 'block' : 'none';
-            document.getElementById('btn-reg-action').style.display = isRegMode ? 'block' : 'none';
-            document.getElementById('btn-login').style.display = isRegMode ? 'none' : 'block';
-            document.getElementById('btn-reg-mode').innerText = isRegMode ? '返回登录' : '没有账号?';
-            document.getElementById('auth-status').innerText = isRegMode ? '新用户注册' : '老用户登录';
-        }
+        // ================= 📚 核心功能：知识库 =================
+        function renderHome() {
+            const filter = document.getElementById('cat-filter').value;
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const container = document.getElementById('knowledge-list');
 
-        async function handleLogin() {
-            const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-            const { error } = await auth.signInWithPassword({ email: e, password: p });
-            if(error) {
-                if(error.message.includes('Email not confirmed')) alert("❌ 你的邮箱还没验证！请去邮箱点链接。");
-                else alert(error.message);
-            } else {
-                nav('home');
+            const list = appData.filter(item => 
+                item.cat !== 'GB_MSG' && 
+                item.status === 'approved' &&
+                (filter === 'all' || item.cat === filter) &&
+                (item.t.toLowerCase().includes(search) || item.d.toLowerCase().includes(search))
+            );
+
+            if(list.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px; color:#999;">Nothing found...</div>`;
+                return;
             }
-        }
 
-        async function handleRegister() {
-            const e = document.getElementById('email').value, p = document.getElementById('pass').value, u = document.getElementById('username').value;
-            if(!u) return alert("请填写昵称");
-            
-            // 注册时，重定向 URL 设为当前页面
-            const { data, error } = await auth.signUp({ 
-                email: e, password: p, 
-                options: { data: { username: u }, emailRedirectTo: window.location.href }
-            });
-
-            if(error) return alert(error.message);
-            
-            // 提示用户去邮箱
-            document.getElementById('auth-status').innerHTML = `<span style="color:#34c759">✅ 邮件已发送！<br>请去邮箱确认，确认后<b>回到本页面</b>即可自动登录。</span>`;
-            document.getElementById('email').value = '';
-            document.getElementById('pass').value = '';
-        }
-
-        async function logout() { await auth.signOut(); location.reload(); }
-
-        // 数据与评论
-        async function loadData() {
-            const { data } = await supabase.from('submissions').select('*').eq('status','approved').order('created_at',{ascending:false});
-            appData = data || []; renderList();
-        }
-
-        function renderList() {
-            const k = document.getElementById('search').value.toLowerCase();
-            const c = document.getElementById('cat-filter').value;
-            const filtered = appData.filter(i => (c==='all'||i.cat===c) && i.t.toLowerCase().includes(k));
-            
-            document.getElementById('list-container').innerHTML = filtered.map(i => `
-                <div class="card" onclick="toggleDetail(this)">
-                    <div style="display:flex; justify-content:space-between; font-weight:600;">
-                        ${i.t} <span class="chip">${i.cat.toUpperCase()}</span>
+            container.innerHTML = list.map(item => `
+                <div class="list-item" onclick="this.classList.toggle('expanded')">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span class="tag-pill">${item.cat}</span>
+                            <span style="font-weight:600;">${item.t}</span>
+                        </div>
+                        <span style="opacity:0.3; font-size:12px;">▼</span>
                     </div>
-                    <div class="detail" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid var(--border);">
-                        <p style="color:var(--text-sub)">${i.d}</p>
-                        <button class="ghost small" onclick="loadComments('${i.id}', event)">💬 评论区</button>
-                        <div id="cmt-${i.id}" style="margin-top:10px;"></div>
+                    <div class="detail-box">
+                        ${item.d.replace(/\n/g, '<br>')}
+                        ${item.ex ? `<div style="margin-top:10px; background:rgba(0,0,0,0.03); padding:8px; border-radius:6px; color:var(--text-secondary); font-size:12px;">💡 例: ${item.ex}</div>` : ''}
                     </div>
                 </div>
             `).join('');
         }
-        window.toggleDetail = (e) => { const d = e.querySelector('.detail'); d.style.display = d.style.display==='none'?'block':'none'; };
 
-        // 评论
-        window.loadComments = async (kid, e) => {
-            e.stopPropagation();
-            const box = document.getElementById(`cmt-${kid}`);
-            // 订阅实时评论
-            supabase.channel(`c-${kid}`).on('postgres_changes', {event:'*', schema:'public', table:'feedbacks', filter:`knowledge_id=eq.${kid}`}, ()=>renderCmts(kid)).subscribe();
-            renderCmts(kid);
+        async function submitPost() {
+            const p = {
+                cat: document.getElementById('sub-cat').value,
+                t: document.getElementById('sub-title').value,
+                d: document.getElementById('sub-desc').value,
+                ex: document.getElementById('sub-ex').value,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
+
+            if(!p.t || !p.d) return showToast('❌ 请填写标题和内容');
+
+            if(db) {
+                await db.from('submissions').insert([p]);
+                showToast('✅ 已提交至云端审核');
+            } else {
+                appData.unshift({...p, id: Date.now()}); // 本地模拟
+                showToast('✅ 演示模式：已自动通过 (Mock)');
+            }
+            // 清空
+            document.getElementById('sub-title').value = '';
+            document.getElementById('sub-desc').value = '';
+            document.getElementById('sub-ex').value = '';
         }
-        async function renderCmts(kid) {
-            const { data } = await supabase.from('feedbacks').select('*').eq('knowledge_id', kid).order('created_at');
-            let h = (data||[]).map(c => `
-                <div class="fb-item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <b style="color:var(--primary)">${c.user_name}</b>
-                        ${(currentUser?.is_admin || currentUser?.username === c.user_name) ? `<span onclick="delCmt('${c.id}')" style="cursor:pointer; color:#ff453a;">🗑️</span>` : ''}
-                    </div>
-                    <div>${c.custom_text}</div>
-                </div>`).join('');
+
+        // ================= 🎮 游戏逻辑：连连看 (Topic vs Examples) =================
+        let gameState = { selected: null, lock: false };
+
+        function initGame() {
+            const board = document.getElementById('game-board');
+            // 筛选出有例子的题目
+            const pool = appData.filter(i => i.status === 'approved' && i.cat !== 'GB_MSG' && i.ex && i.ex.trim().length > 0);
             
-            h += `<div style="display:flex; gap:5px; margin-top:10px;">
-                <input id="in-${kid}" placeholder="说点什么..." style="margin:0;">
-                <button class="small" style="width:50px;" onclick="postCmt('${kid}')">发</button>
-            </div>`;
-            document.getElementById(`cmt-${kid}`).innerHTML = h;
-        }
-        window.postCmt = async (kid) => {
-            if(!currentUser) return alert('请先登录');
-            const txt = document.getElementById(`in-${kid}`).value;
-            if(!txt) return;
-            await supabase.from('feedbacks').insert([{knowledge_id:kid, user_name:currentUser.username, custom_text:txt, is_admin:currentUser.is_admin}]);
-            document.getElementById(`in-${kid}`).value = '';
-        }
-        window.delCmt = async (id) => { if(confirm('删?')) await supabase.from('feedbacks').delete().eq('id', id); }
+            if(pool.length < 2) {
+                board.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999;">题目不足 (需要至少2个带例子的知识点)</div>`;
+                return;
+            }
 
-        // 投稿
-        async function submitItem() {
-            if(!currentUser) return alert('请登录');
-            const t=document.getElementById('sub-t').value, d=document.getElementById('sub-d').value, c=document.getElementById('sub-cat').value;
-            await supabase.from('submissions').insert([{t,d,cat:c, status:'pending', user_id:currentUser.id}]);
-            alert('已投稿，待审核'); nav('home');
+            // 随机取4个知识点
+            const targets = pool.sort(() => 0.5 - Math.random()).slice(0, 4);
+            let cards = [];
+
+            targets.forEach(item => {
+                // 1. 母题卡
+                cards.push({ type: 'topic', txt: item.t, id: item.id, parentId: item.id });
+                // 2. 例子卡 (解析 // 分隔符)
+                let examples = item.ex.split(/(\/\/|\n)+/).filter(s => s.trim().length > 1 && s.trim() !== '//');
+                // 最多取3个例子防止太多
+                examples.slice(0, 3).forEach(exStr => {
+                    cards.push({ type: 'ex', txt: exStr.trim(), id: item.id + '_ex_' + Math.random(), parentId: item.id });
+                });
+            });
+
+            // 打乱
+            cards.sort(() => 0.5 - Math.random());
+
+            board.innerHTML = cards.map((c, idx) => `
+                <div class="g-card ${c.type === 'topic' ? 'topic' : ''}" 
+                     id="card-${idx}" 
+                     data-pid="${c.parentId}"
+                     data-type="${c.type}"
+                     onclick="handleCardClick(${idx})">
+                    ${c.txt}
+                </div>
+            `).join('');
+
+            gameState = { selected: null, lock: false };
         }
 
-        // 管理员
-        async function tryAdmin() {
-            if(!currentUser) return alert('请登录');
-            if(currentUser.is_admin) return nav('admin');
-            if(prompt('Admin Key?') === '888888') {
-                await supabase.from('profiles').update({is_admin:true}).eq('id', currentUser.id);
-                currentUser.is_admin = true; nav('admin'); updateUserUI();
+        function handleCardClick(idx) {
+            if(gameState.lock) return;
+            const el = document.getElementById(`card-${idx}`);
+            if(el.classList.contains('matched')) return; // 已消除的不处理
+            if(el.classList.contains('selected')) {
+                // 取消选择
+                el.classList.remove('selected');
+                gameState.selected = null;
+                return;
+            }
+
+            // 第一张卡
+            if(!gameState.selected) {
+                gameState.selected = { idx, pid: el.dataset.pid, type: el.dataset.type };
+                el.classList.add('selected');
+            } 
+            // 第二张卡
+            else {
+                const prev = gameState.selected;
+                const prevEl = document.getElementById(`card-${prev.idx}`);
+
+                // 如果是同一个 ID (比如点了自己)，前面已经处理了取消，这里不用管
+                // 判断配对：PID 相同 且 类型不同 (一个是 Topic 一个是 Ex)
+                const isMatch = (el.dataset.pid === prev.pid) && (el.dataset.type !== prev.type);
+
+                if(isMatch) {
+                    // ✅ 配对成功
+                    // 1. 例子(Ex) 消失
+                    const exEl = el.dataset.type === 'ex' ? el : prevEl;
+                    const topicEl = el.dataset.type === 'topic' ? el : prevEl;
+                    
+                    exEl.classList.remove('selected');
+                    exEl.classList.add('matched'); // 例子消失
+                    
+                    topicEl.classList.remove('selected'); // 母题取消高亮，但不消失
+
+                    // 2. 检查该母题是否还有剩余的例子在场上？
+                    const remainingEx = document.querySelectorAll(`.g-card[data-pid="${el.dataset.pid}"][data-type="ex"]:not(.matched)`);
+                    if(remainingEx.length === 0) {
+                        // 例子全没了，母题也消失
+                        setTimeout(() => topicEl.classList.add('matched'), 300);
+                        showToast('✨ 完成一组!');
+                    } else {
+                        showToast('Good! 继续消除');
+                    }
+                    gameState.selected = null;
+                } else {
+                    // ❌ 配对失败
+                    gameState.lock = true;
+                    el.classList.add('selected');
+                    el.classList.add('shake');
+                    prevEl.classList.add('shake');
+                    
+                    setTimeout(() => {
+                        el.classList.remove('selected', 'shake');
+                        prevEl.classList.remove('selected', 'shake');
+                        gameState.selected = null;
+                        gameState.lock = false;
+                    }, 500);
+                }
             }
         }
-        async function loadPending() {
-            const {data} = await supabase.from('submissions').select('*').eq('status','pending');
-            document.getElementById('admin-list').innerHTML = data.map(i=>`
-                <div class="card">
-                    <b>${i.t}</b><br>${i.d}<br>
-                    <button class="small" style="background:#34c759; margin-top:5px;" onclick="audit('${i.id}','approved')">通过</button>
-                    <button class="small" style="background:#ff453a; margin-top:5px;" onclick="audit('${i.id}','rejected')">拒绝</button>
-                </div>
-            `).join('') || '无待办';
-        }
-        async function audit(id,s){ await supabase.from('submissions').update({status:s}).eq('id',id); loadPending(); loadData(); }
 
-        // 基础路由
-        function nav(id) {
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-            document.getElementById('view-'+id).classList.add('active');
-            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('show');
-            if(id === 'admin') loadPending();
+        // ================= 💬 留言与管理 =================
+        function renderChat() {
+            const list = appData.filter(i => i.cat === 'GB_MSG' && i.status === 'approved');
+            document.getElementById('chat-stream').innerHTML = list.map(i => `
+                <div style="margin-bottom:10px;">
+                    <div style="font-size:12px; color:var(--accent); font-weight:bold;">${i.t} <span style="color:#ccc; font-weight:normal;">${new Date(i.created_at).toLocaleTimeString()}</span></div>
+                    <div style="background:#fff; display:inline-block; padding:8px 12px; border-radius: 0 12px 12px 12px; box-shadow:0 1px 2px rgba(0,0,0,0.05); font-size:14px;">${i.d}</div>
+                </div>
+            `).join('');
         }
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('show'); }
+
+        async function sendChat() {
+            const u = document.getElementById('chat-user').value || 'Anonymous';
+            const m = document.getElementById('chat-msg').value;
+            if(!m) return;
+
+            const p = { cat: 'GB_MSG', t: u, d: m, status: 'approved', created_at: new Date().toISOString() };
+            
+            // 乐观更新
+            appData.unshift(p);
+            renderChat();
+            document.getElementById('chat-msg').value = '';
+
+            if(db) await db.from('submissions').insert([p]);
+        }
+
+        function checkAdmin() {
+            if(isAdmin) { nav('admin'); return; }
+            // 简单密码保护
+            const pwd = prompt("Enter Admin Password:");
+            if(pwd === 'admin') {
+                isAdmin = true;
+                nav('admin');
+                renderAdmin('pending');
+                showToast('🔓 Admin Mode Unlocked');
+            } else {
+                showToast('❌ Access Denied');
+            }
+        }
+
+        function renderAdmin(status) {
+            const list = appData.filter(i => i.status === status && i.cat !== 'GB_MSG'); // 仅管理知识点
+            const div = document.getElementById('admin-list');
+            
+            if(list.length === 0) {
+                div.innerHTML = '<p style="text-align:center; color:#999; margin-top:20px;">无数据</p>';
+                return;
+            }
+
+            div.innerHTML = list.map(i => `
+                <div class="list-item">
+                    <div style="font-weight:bold; margin-bottom:5px;">${i.t} <span class="tag-pill">${i.cat}</span></div>
+                    <div style="font-size:12px; color:#666; margin-bottom:10px;">${i.d}</div>
+                    <div style="display:flex; gap:10px;">
+                        ${status === 'pending' || status === 'deleted' ? `<button class="mac-btn" onclick="audit(${i.id}, 'approved')">✅ 通过</button>` : ''}
+                        ${status === 'approved' ? `<button class="mac-btn danger" onclick="audit(${i.id}, 'deleted')">🗑️ 删除</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function audit(id, newStatus) {
+            // 本地更新
+            const idx = appData.findIndex(i => i.id == id);
+            if(idx > -1) appData[idx].status = newStatus;
+            
+            // 刷新界面
+            renderAdmin(newStatus === 'approved' ? 'pending' : 'approved');
+            showToast(`Status updated to ${newStatus}`);
+
+            // 云端更新
+            if(db) await db.from('submissions').update({status: newStatus}).eq('id', id);
+        }
     </script>
 </body>
 </html>
+
+
