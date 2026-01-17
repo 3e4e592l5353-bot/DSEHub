@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v51 - 终极完全体</title>
+    <title>DSE Hub v52 - 互动增强版</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -33,7 +33,7 @@
             margin: 0; font-family: 'Noto Sans SC', sans-serif; 
             background: var(--bg-gradient); color: var(--text-main); 
             height: 100vh; display: flex; overflow: hidden; 
-            min-height: 100vh; width: 100%; /* 防止动画露馅 */
+            min-height: 100vh; width: 100%;
         }
         
         /* 侧边栏 */
@@ -81,17 +81,39 @@
         .format-toolbar { display: flex; gap: 10px; margin-bottom: 10px; overflow-x: auto; }
         .format-code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; color: var(--primary); font-weight: bold; cursor:pointer; font-size: 12px; white-space: nowrap;}
 
-        /* 📚 列表项 (折叠功能) */
+        /* 📚 列表项 */
         .item { padding: 15px; background: rgba(255,255,255,0.5); border-radius: 12px; margin-bottom: 10px; border: 1px solid transparent; cursor: pointer; }
         .item:hover { background: rgba(255,255,255,0.8); border-color: var(--primary); transform: scale(1.005); }
         .tag { font-size: 10px; padding: 3px 6px; background: var(--primary); color: #fff; border-radius: 4px; margin-right: 8px; }
         
-        /* 详情区域 (默认隐藏) */
+        /* 详情区域 */
         .item-detail { 
             display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.1);
             font-size: 15px; line-height: 1.6; color: var(--text-main); white-space: pre-wrap;
         }
         .item.open .item-detail { display: block; }
+
+        /* ========= 💬 评论区新样式 ========= */
+        .fb-section { margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(0,0,0,0.2); }
+        .fb-list { margin-bottom: 15px; max-height: 400px; overflow-y: auto; }
+        .fb-item { padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.6); border-radius: 8px; font-size: 13px; position: relative; border: 1px solid rgba(0,0,0,0.05); }
+        
+        /* 缩进层级 */
+        .d-1 { margin-left: 20px; border-left: 3px solid var(--primary); }
+        .d-2 { margin-left: 40px; border-left: 3px solid var(--primary); }
+        .d-3 { margin-left: 60px; border-left: 3px solid var(--primary); }
+        .d-4 { margin-left: 80px; border-left: 3px solid var(--primary); }
+        .d-5 { margin-left: 100px; border-left: 3px solid #EF4444; background: rgba(239, 68, 68, 0.05); } 
+
+        .preset-btn { 
+            display: inline-block; padding: 4px 10px; background: rgba(0,0,0,0.05); 
+            border-radius: 15px; margin-right: 5px; margin-bottom: 5px; cursor: pointer; 
+            font-size: 11px; transition:0.2s; border: 1px solid rgba(0,0,0,0.1);
+        }
+        .preset-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .fb-reply-btn { float: right; cursor: pointer; color: var(--primary); font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+        .fb-reply-btn:hover { background: rgba(0,0,0,0.05); }
+        /* ===================================== */
         
         /* 格式化样式 */
         .fmt-bold { font-weight: 900; background: linear-gradient(to top, #ffeb3b 40%, transparent 0); color:#000; }
@@ -127,8 +149,8 @@
             .card { padding: 20px; } 
         }
 
-        /* ✨ 全局丝滑动画 (放在最后) ✨ */
-        body, .sidebar, .card, .nav-item, .item, button, input, textarea, select, .g-card, .tag, .status-badge {
+        /* ✨ 全局丝滑动画 ✨ */
+        body, .sidebar, .card, .nav-item, .item, button, input, textarea, select, .g-card, .tag, .status-badge, .fb-item, .preset-btn {
             transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                         color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
                         border-color 0.5s ease,
@@ -143,7 +165,7 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-scroll">
             <div style="font-size:20px; font-weight:900; color:var(--primary); margin-bottom:30px; display:flex; justify-content:space-between;">
-                <span>🚀 DSE HUB v51</span>
+                <span>🚀 DSE HUB v52</span>
                 <span onclick="toggleSidebar()" style="cursor:pointer; opacity:0.5; font-size:16px;">✕</span>
             </div>
             <div class="nav-item active" onclick="nav('home')">📚 知识库</div>
@@ -198,7 +220,7 @@
             <div class="card">
                 <div id="chat-box" style="height:400px; overflow-y:auto; margin-bottom:15px; padding-right:5px;"></div>
                 <div style="display:flex; gap:10px;">
-                    <input id="chat-u" placeholder="昵称" style="width:30%">
+                    <input id="chat-u" placeholder="昵称 (评论时也会用)" style="width:30%">
                     <input id="chat-m" placeholder="说点什么...">
                     <button onclick="sendChat()" style="width:auto">🚀</button>
                 </div>
@@ -255,6 +277,15 @@
         let isAdmin = false;
         let adminTab = 'know';
 
+        // 💬 预设回复字典
+        const PRESET_REPLIES = {
+            'thx': '🙏 感谢分享，很有帮助！',
+            'clear': '👍 解释得非常清晰。',
+            'imp': '💡 这是一个常考重点！',
+            'more': '🤔 能否举个具体的例子？',
+            'hard': '🤯 这个概念有点难懂。'
+        };
+
         window.onload = async () => {
             if(CONFIG.URL.includes('YOUR_')) return alert('请先配置 API Key');
             // @ts-ignore
@@ -263,7 +294,6 @@
         };
 
         async function loadData() {
-            // 拉取所有数据（软删除的也要，为了后台管理）
             const { data } = await db.from('submissions').select('*').order('created_at',{ascending:false});
             if(data) appData = data;
             renderKnowledge();
@@ -271,7 +301,6 @@
             if(isAdmin) renderAdmin(adminTab);
         }
 
-        // 格式化文本
         function fmt(text) {
             if(!text) return '';
             return text.replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -295,7 +324,7 @@
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
         function setTheme(t) { document.documentElement.setAttribute('data-theme', t); }
 
-        // ================= 📚 知识库 (筛选 + 折叠) =================
+        // ================= 📚 知识库 (含评论入口) =================
         function renderKnowledge() {
             const kw = document.getElementById('search').value.toLowerCase();
             const cat = document.getElementById('filter-cat').value;
@@ -308,25 +337,142 @@
             );
             
             document.getElementById('list').innerHTML = list.map(i => `
-                <div class="item" onclick="this.classList.toggle('open')">
+                <div class="item" onclick="toggleItem(this)">
                     <div style="display:flex; align-items:center;">
                         <span class="tag">${i.cat}</span> <b>${i.t}</b>
                     </div>
-                    <div class="item-detail">
+                    <div class="item-detail" onclick="event.stopPropagation()">
                         ${fmt(i.d)} 
                         ${i.ex ? `<div style="margin-top:10px;padding:8px;background:rgba(255,255,0,0.1);border-radius:6px;font-size:13px;">💡 ${fmt(i.ex)}</div>`:''}
+                        
+                        <div id="fb-box-${i.id}" class="fb-section">
+                            <button class="small" onclick="toggleComments('${i.id}')" style="background:#e5e7eb; color:#333;">💬 展开讨论 / 提问</button>
+                        </div>
                     </div>
                 </div>`).join('') || '<div style="text-align:center;color:#999;padding:20px;">暂无相关内容</div>';
         }
 
+        // 修复：防止点击评论区时折叠卡片
+        function toggleItem(el) { el.classList.toggle('open'); }
+
+        // ================= 💬 评论系统逻辑 (核心新增) =================
+        async function loadFeedbacks(kId) {
+            const { data, error } = await db.from('feedbacks').select('*').eq('knowledge_id', kId).order('created_at', { ascending: true });
+            if (error) { console.error(error); return []; }
+            return data;
+        }
+
+        async function toggleComments(kId) {
+            const box = document.getElementById(`fb-box-${kId}`);
+            // 简单切换：如果已加载则移除（关闭）
+            if(box.querySelector('.fb-container')) {
+                box.innerHTML = `<button class="small" onclick="toggleComments('${kId}')" style="background:#e5e7eb; color:#333;">💬 展开讨论 / 提问</button>`;
+                return;
+            }
+
+            box.innerHTML = '<div style="text-align:center;font-size:12px;">加载评论中...</div>';
+            const feedbacks = await loadFeedbacks(kId);
+            
+            let html = `<div class="fb-container"><div class="fb-list">`;
+            if(feedbacks.length === 0) html += `<div style="color:#999;font-size:12px;text-align:center;margin:10px;">暂无讨论，来抢沙发！</div>`;
+            
+            feedbacks.forEach(f => {
+                const indentClass = f.depth > 0 ? `d-${Math.min(f.depth, 5)}` : '';
+                const content = f.preset_key ? PRESET_REPLIES[f.preset_key] : fmt(f.custom_text);
+                html += `
+                    <div class="fb-item ${indentClass}">
+                        <div style="font-weight:bold; color:#555; display:flex; justify-content:space-between;">
+                            <span>${f.user_name}</span>
+                            <span class="fb-reply-btn" onclick="openReplyForm('${kId}', '${f.id}', ${f.depth}, '${f.user_name}')">↩ 回复</span>
+                        </div>
+                        <div style="margin-top:4px;">${content}</div>
+                    </div>`;
+            });
+            html += `</div>`; // end list
+
+            // 输入区
+            html += `
+                <div id="fb-input-${kId}" style="background:rgba(255,255,255,0.4); padding:10px; border-radius:8px; margin-top:10px;">
+                    <div id="fb-target-desc-${kId}" style="font-size:11px; color:#888; margin-bottom:5px;">发起新讨论 (300字内):</div>
+                    <div style="margin-bottom:8px;">
+                        ${Object.keys(PRESET_REPLIES).map(k => `<span class="preset-btn" onclick="submitPreset('${kId}', '${k}')">${PRESET_REPLIES[k]}</span>`).join('')}
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <input id="fb-txt-${kId}" placeholder="输入观点..." style="margin:0; font-size:13px;">
+                        <button class="small" onclick="submitCustom('${kId}')" style="width:60px;">发送</button>
+                    </div>
+                    <input type="hidden" id="fb-pid-${kId}" value=""><input type="hidden" id="fb-pdepth-${kId}" value="0">
+                </div></div>`;
+            box.innerHTML = html;
+        }
+
+        function openReplyForm(kId, parentId, parentDepth, parentName) {
+            document.getElementById(`fb-pid-${kId}`).value = parentId;
+            document.getElementById(`fb-pdepth-${kId}`).value = parentDepth;
+            document.getElementById(`fb-target-desc-${kId}`).innerHTML = `回复 <b>${parentName}</b> (100字内): <span onclick="resetReply('${kId}')" style="cursor:pointer;color:red;margin-left:5px;">[取消]</span>`;
+            document.getElementById(`fb-txt-${kId}`).focus();
+        }
+
+        function resetReply(kId) {
+            document.getElementById(`fb-pid-${kId}`).value = "";
+            document.getElementById(`fb-pdepth-${kId}`).value = 0;
+            document.getElementById(`fb-target-desc-${kId}`).innerText = "发起新讨论 (300字内):";
+        }
+
+        async function submitCustom(kId) {
+            const txt = document.getElementById(`fb-txt-${kId}`).value;
+            const pid = document.getElementById(`fb-pid-${kId}`).value;
+            const pdepth = parseInt(document.getElementById(`fb-pdepth-${kId}`).value || 0);
+            if(!txt) return alert("请输入内容");
+            if(await postFeedback(kId, pid || null, txt, null, pdepth)) {
+                resetReply(kId); // 重置状态
+                const box = document.getElementById(`fb-box-${kId}`);
+                box.querySelector('.fb-container').remove(); // 移除旧的
+                toggleComments(kId); // 重新加载
+            }
+        }
+
+        async function submitPreset(kId, key) {
+            const pid = document.getElementById(`fb-pid-${kId}`).value;
+            const pdepth = parseInt(document.getElementById(`fb-pdepth-${kId}`).value || 0);
+            if(await postFeedback(kId, pid || null, null, key, pdepth)) {
+                resetReply(kId);
+                const box = document.getElementById(`fb-box-${kId}`);
+                box.querySelector('.fb-container').remove();
+                toggleComments(kId);
+            }
+        }
+
+        async function postFeedback(kId, parentId, text, presetKey, parentDepth = 0) {
+            const limit = parentId ? 100 : 300;
+            if (text && text.length > limit) { alert(`字数超出限制！当前上限：${limit}字`); return false; }
+
+            // 社交引导
+            if (parentDepth >= 4) {
+                if(!confirm("🔥 讨论太热烈了！\n\n建议交换 WhatsApp/TG 进行更深入的交流，或者组建学习小组。\n\n[确定] 继续在此回复 (字数受限)\n[取消] 去私下交流")) return false;
+            }
+
+            // 获取用户名 (如果没填就用默认)
+            const u = document.getElementById('chat-u').value || '匿名同学'; 
+
+            const payload = {
+                knowledge_id: kId, user_name: u, parent_id: parentId || null,
+                preset_key: presetKey || null, custom_text: text || null
+            };
+
+            const { error } = await db.from('feedbacks').insert([payload]);
+            if (error) { alert("发送失败：" + error.message); return false; }
+            return true;
+        }
+
+        // ================= 📝 投稿 & 留言板 =================
         async function submitKnowledge() {
             const p = {
                 cat: document.getElementById('sub-sub').value,
                 t: document.getElementById('sub-t').value,
                 d: document.getElementById('sub-d').value,
                 ex: document.getElementById('sub-ex').value,
-                status: 'pending',
-                created_at: new Date()
+                status: 'pending', created_at: new Date()
             };
             if(!p.t || !p.d) return alert("写点东西吧");
             await db.from('submissions').insert([p]);
@@ -336,17 +482,14 @@
             document.getElementById('sub-ex').value = '';
         }
 
-        // ================= 💬 留言板 (即时 + 举报) =================
         async function sendChat() {
             const u = document.getElementById('chat-u').value || '匿名';
             const m = document.getElementById('chat-m').value;
             if(!m) return;
             const p = { cat: 'GB_MSG', t: u, d: m, status: 'approved', created_at: new Date().toISOString() };
-            // 乐观更新
             appData.unshift({...p, id: 'temp_'+Date.now()}); 
             renderChat();
             document.getElementById('chat-m').value = '';
-            // 提交后台
             await db.from('submissions').insert([p]);
             loadData();
         }
@@ -372,7 +515,7 @@
             alert("已提交举报");
         }
 
-        // ================= 🛡️ 后台管理 (CMS + 软删除) =================
+        // ================= 🛡️ 后台管理 =================
         function checkAdmin() {
             if(isAdmin) { nav('admin'); return; }
             if(prompt("密码") === 'admin') { isAdmin = true; nav('admin'); renderAdmin('know'); }
@@ -420,22 +563,17 @@
             renderAdmin(adminTab); renderKnowledge(); renderChat();
         }
 
-        // ================= 🎮 游戏 (母题 + 多子题逻辑) =================
+        // ================= 🎮 游戏 =================
         function initGame() {
             const b = document.getElementById('game-board');
             const pool = appData.filter(i => i.status === 'approved' && i.cat !== 'GB_MSG' && i.ex);
             if(pool.length < 2) { b.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#999">题目不足</div>'; return; }
             let cards = [];
-            
-            // 随机选4个母题
             pool.sort(()=>0.5-Math.random()).slice(0,4).forEach(item => {
-                // 母题卡 (isM=true)
                 cards.push({id:item.id+'_m', t:item.t, gid:item.id, isM:true});
-                // 子例子卡 (isM=false) - 使用 // 或 换行 分割
                 let exs = item.ex.split(/(?:\/\/|\n)+/).filter(e=>e.trim()).slice(0,3);
                 exs.forEach((e,i)=>cards.push({id:item.id+'_e_'+i, t:e, gid:item.id, isM:false}));
             });
-            
             cards.sort(()=>0.5-Math.random());
             b.innerHTML = cards.map((c,i)=>`<div id="c-${i}" class="g-card ${c.isM?'topic':''}" onclick="tap(${i})">${c.t}</div>`).join('');
             window.gState = { cards, sel: null };
@@ -452,24 +590,17 @@
             } else {
                 const prevEl = document.getElementById(`c-${s.sel.idx}`);
                 const prevCard = s.sel;
-                // 判断：同组ID，且类型不同(一母一子)
                 if (clickedCard.gid === prevCard.gid && clickedCard.isM !== prevCard.isM) {
                     const exIdx = clickedCard.isM ? prevCard.idx : idx;
                     const mIdx = clickedCard.isM ? idx : prevCard.idx;
                     const mEl = document.getElementById(`c-${mIdx}`);
                     const exEl = document.getElementById(`c-${exIdx}`);
-
-                    // 消除例子
                     exEl.classList.remove('sel'); exEl.classList.add('done'); s.cards[exIdx].done = true;
-                    // 母题闪烁成功绿色
                     prevEl.classList.remove('sel'); el.classList.remove('sel');
                     mEl.classList.add('success'); setTimeout(() => mEl.classList.remove('success'), 300);
-
-                    // 核心：检查是否所有例子都没了
                     const remaining = s.cards.some(c => c.gid === clickedCard.gid && !c.isM && !c.done);
                     if (!remaining) { setTimeout(() => { mEl.classList.add('done'); s.cards[mIdx].done = true; }, 400); }
                 } else {
-                    // 错误：变红震动
                     el.classList.add('sel'); el.style.borderColor='red'; prevEl.style.borderColor='red';
                     setTimeout(()=>{ el.classList.remove('sel'); prevEl.classList.remove('sel'); el.style.borderColor=''; prevEl.style.borderColor=''; }, 400);
                 }
@@ -479,3 +610,4 @@
     </script>
 </body>
 </html>
+
