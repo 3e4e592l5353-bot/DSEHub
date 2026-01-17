@@ -3,479 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DSE Hub v53 - Pro Clean</title>
+    <title>DSE Hub v55</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ================= 🎨 Apple Design System (Web) ================= */
+        /* ================= 🎨 5-Color System ================= */
         :root {
-            --bg-color: #F5F5F7;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --sidebar-bg: rgba(255, 255, 255, 0.7);
-            --text-primary: #1D1D1F;
-            --text-secondary: #86868B;
-            --accent: #007AFF;
-            --accent-hover: #005ECB;
-            --danger: #FF3B30;
-            --success: #34C759;
-            --radius: 18px;
-            --shadow: 0 8px 40px rgba(0,0,0,0.08);
-            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            --hue: 210; --sat: 100%; --lig: 50%;
+            --accent: hsl(var(--hue), var(--sat), var(--lig));
+            --accent-soft: hsl(var(--hue), var(--sat), 90%);
+            --bg-grad-1: hsla(var(--hue), 80%, 60%, 0.2);
+            --bg-grad-2: hsla(calc(var(--hue) + 40), 80%, 60%, 0.2);
+            --bg-color: #F5F5F7; --card-bg: rgba(255, 255, 255, 0.75); --sidebar-bg: rgba(255, 255, 255, 0.65);
+            --text-main: #1D1D1F; --text-sub: #86868B;
+            --radius: 18px; --shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
         }
-
         [data-theme="dark"] {
-            --bg-color: #000000;
-            --card-bg: rgba(28, 28, 30, 0.85);
-            --sidebar-bg: rgba(30, 30, 30, 0.7);
-            --text-primary: #F5F5F7;
-            --text-secondary: #98989D;
-            --shadow: 0 8px 40px rgba(0,0,0,0.3);
+            --bg-color: #000000; --card-bg: rgba(30, 30, 32, 0.8); --sidebar-bg: rgba(20, 20, 22, 0.7);
+            --text-main: #F5F5F7; --text-sub: #98989D;
+            --accent-soft: hsla(var(--hue), var(--sat), 20%, 0.5); --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
         }
+        /* Themes */
+        body.theme-purple { --hue: 260; }
+        body.theme-green { --hue: 150; --sat: 60%; --lig: 45%; }
+        body.theme-orange { --hue: 25; }
+        body.theme-graphite { --hue: 200; --sat: 10%; --lig: 40%; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; transition: background 0.5s; }
+        
+        /* Aurora BG */
+        .aurora-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-image: radial-gradient(at 0% 0%, var(--bg-grad-1) 0px, transparent 50%), radial-gradient(at 100% 100%, var(--bg-grad-2) 0px, transparent 50%); filter: blur(40px); opacity: 0.8; }
 
-        body {
-            margin: 0; padding: 0;
-            font-family: var(--font-stack);
-            background: var(--bg-color);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-            /* 极光背景动画 */
-            background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.3) 0px, transparent 50%),
-                              radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.3) 0px, transparent 50%),
-                              radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.3) 0px, transparent 50%);
-            background-size: 100% 100%;
-        }
+        /* Sidebar */
+        .sidebar { width: 260px; height: 100%; display: flex; flex-direction: column; background: var(--sidebar-bg); backdrop-filter: blur(30px); border-right: 1px solid rgba(0,0,0,0.05); padding: 25px 16px; z-index: 100; transition: transform 0.3s; }
+        .brand { font-size: 22px; font-weight: 800; margin-bottom: 30px; padding-left: 12px; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 12px 16px; margin-bottom: 4px; border-radius: 12px; cursor: pointer; font-size: 15px; color: var(--text-sub); display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item:hover { background: rgba(0,0,0,0.03); color: var(--text-main); }
+        .nav-item.active { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--bg-grad-1); }
+        
+        .user-card { margin-top: auto; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* ================= 📱 侧边栏 (iPadOS Style) ================= */
-        .sidebar {
-            width: 260px;
-            height: 100%;
-            background: var(--sidebar-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(0,0,0,0.05);
-            padding: 30px 16px;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .brand {
-            font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
-            margin-bottom: 30px; padding-left: 12px;
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            -webkit-background-clip: text; color: transparent;
-        }
-
-        .nav-item {
-            padding: 12px 16px;
-            margin-bottom: 4px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 15px; font-weight: 500;
-            color: var(--text-secondary);
-            transition: 0.2s;
-            display: flex; align-items: center; gap: 12px;
-        }
-        .nav-item:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); }
-        .nav-item.active { background: var(--accent); color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(0,122,255,0.25); }
-        .nav-item i { width: 20px; text-align: center; }
-
-        /* ================= 📄 主内容区 ================= */
-        .main {
-            flex: 1;
-            height: 100%;
-            overflow-y: auto;
-            position: relative;
-            padding: 40px 8%; /* 宽屏留白 */
-            scroll-behavior: smooth;
-        }
-
-        .page { 
-            display: none; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            animation: fadeScale 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
+        /* Main */
+        .main-content { flex: 1; height: 100%; overflow-y: auto; padding: 40px 8%; position: relative; scroll-behavior: smooth; }
+        .page { display: none; animation: fadeUp 0.4s ease; max-width: 900px; margin: 0 auto; }
         .page.active { display: block; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
 
-        @keyframes fadeScale { from{opacity:0;transform:scale(0.98) translateY(10px);} to{opacity:1;transform:scale(1) translateY(0);} }
+        /* Components */
+        .card { background: var(--card-bg); backdrop-filter: blur(25px); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2); margin-bottom: 24px; }
+        input, select, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; background: rgba(0,0,0,0.04); border: 1px solid transparent; font-size: 15px; color: var(--text-main); }
+        input:focus, textarea:focus { background: transparent; border-color: var(--accent); }
+        button { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; }
+        button.ghost { background: transparent; color: var(--accent); }
+        button.danger { background: #FF3B30; }
 
-        /* 标题大字 */
-        h1 { font-size: 34px; font-weight: 800; margin: 0 0 24px 0; letter-spacing: -1px; }
+        /* List Items */
+        .list-item { padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700; margin-right: 8px; }
 
-        /* 卡片容器 */
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255,255,255,0.3);
-            margin-bottom: 24px;
-        }
-
-        /* 🛠 控件 (Inputs & Buttons) */
-        input, select, textarea {
-            width: 100%; padding: 14px; margin-bottom: 12px;
-            background: rgba(0,0,0,0.05); border: none; border-radius: 12px;
-            font-size: 16px; color: var(--text-primary); font-family: inherit;
-            transition: 0.2s;
-        }
-        input:focus, textarea:focus { background: rgba(0,0,0,0.08); transform: scale(1.005); }
-
-        button {
-            background: var(--accent); color: white;
-            border: none; padding: 14px 24px; border-radius: 12px;
-            font-size: 15px; font-weight: 600; cursor: pointer;
-            width: 100%; transition: 0.2s; box-shadow: 0 2px 10px rgba(0,122,255,0.2);
-        }
-        button:active { transform: scale(0.96); }
-        button.text-btn { background: transparent; color: var(--accent); box-shadow: none; padding: 8px; width: auto; }
-        button.text-btn:hover { background: rgba(0,122,255,0.1); }
-
-        /* 📚 列表项 */
-        .item-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; border-bottom: 1px solid rgba(0,0,0,0.05);
-            cursor: pointer; transition: 0.2s;
-        }
-        .item-row:last-child { border-bottom: none; }
-        .item-row:hover { background: rgba(0,0,0,0.03); }
-        
-        .badge { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: rgba(0,122,255,0.1); color: var(--accent); font-weight: 700; margin-right: 8px; }
-
-        .detail-content { display: none; padding: 16px; font-size: 15px; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; background: rgba(0,0,0,0.02); }
-        
-        /* 🎮 游戏网格 */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
-        .g-card {
-            aspect-ratio: 1; background: #fff; border-radius: 16px;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            font-weight: 700; font-size: 14px; padding: 8px; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s;
-            border: 2px solid transparent; user-select: none;
-        }
-        .g-card.active { border-color: var(--accent); transform: scale(0.95); background: #F0F9FF; color: var(--accent); }
-        .g-card.matched { opacity: 0; transform: scale(0); pointer-events: none; }
-        .g-card.topic { color: var(--accent); background: #EEF2FF; }
-
-        /* 📱 移动端适配 */
-        .mobile-header { display: none; padding: 15px 20px; align-items: center; justify-content: space-between; z-index: 200; position: fixed; top: 0; width: 100%; background: var(--sidebar-bg); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .menu-btn { font-size: 24px; cursor: pointer; }
-
+        /* Mobile */
+        .mobile-bar { display: none; padding: 15px; background: var(--sidebar-bg); backdrop-filter: blur(20px); position: fixed; top:0; width:100%; z-index: 200; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; transform: translateX(-100%); width: 280px; box-shadow: 5px 0 30px rgba(0,0,0,0.1); }
-            .sidebar.show { transform: translateX(0); }
-            .mobile-header { display: flex; }
-            .main { padding: 80px 20px 40px 20px; } /* 顶部留出 header 高度 */
-            h1 { font-size: 28px; }
-            .card { padding: 20px; border-radius: 20px; }
+            .sidebar { position: fixed; transform: translateX(-100%); width: 80%; box-shadow: 10px 0 40px rgba(0,0,0,0.2); }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-bar { display: flex; }
+            .main-content { padding: 80px 20px 40px 20px; }
         }
 
-        /* Toast */
-        #toast {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: rgba(0,0,0,0.8); color: white; padding: 10px 24px; border-radius: 50px;
-            font-size: 14px; font-weight: 600; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 999;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); backdrop-filter: blur(10px);
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* Modal */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal { width: 90%; max-width: 360px; background: var(--bg-color); padding: 30px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body>
+<body class="theme-blue">
+    <div class="aurora-bg"></div>
 
-    <div class="mobile-header">
-        <div class="menu-btn" onclick="toggleSidebar()">≡</div>
-        <div style="font-weight:700;">DSE HUB v53</div>
-        <div onclick="toggleTheme()" style="font-size:20px;">◑</div>
+    <div class="mobile-bar">
+        <i class="fas fa-bars" onclick="document.getElementById('sidebar').classList.toggle('open')"></i>
+        <div style="font-weight:800;">DSE Hub v55</div>
+        <div class="avatar" style="width:28px; height:28px; font-size:12px;" onclick="checkAuth()">?</div>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="brand">🚀 DSE HUB v53</div>
-        
-        <div class="nav-item active" onclick="nav('home', this)"><i>📚</i> 知识库</div>
-        <div class="nav-item" onclick="nav('game', this)"><i>🎮</i> 连连看</div>
-        <div class="nav-item" onclick="nav('chat', this)"><i>💬</i> 留言板</div>
-        <div class="nav-item" onclick="nav('submit', this)"><i>📝</i> 投稿</div>
-        
-        <div style="flex:1"></div> <div class="nav-item" onclick="checkAdmin()"><i>🛡</i> 管理后台</div>
-        <div class="nav-item" onclick="toggleTheme()" style="display:none;" id="pc-theme-btn"><i>◑</i> 切换主题</div>
+        <div class="brand"><i class="fas fa-rocket"></i> DSE HUB</div>
+        <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
+        <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
+        <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen-nib"></i> 投稿中心</div>
+        <div class="nav-item" onclick="nav('game', this)"><i class="fas fa-gamepad"></i> 连连看</div>
+        <div style="flex:1"></div>
+        <div class="nav-item" onclick="nav('admin', this)" id="btn-admin" style="display:none;"><i class="fas fa-shield-alt"></i> 管理后台</div>
+        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
+        <div class="user-card" onclick="checkAuth()">
+            <div class="avatar" id="sb-av">?</div>
+            <div style="flex:1; margin-left:10px;"><div style="font-weight:600;" id="sb-nm">未登录</div></div>
+        </div>
     </div>
 
-    <div class="main" onclick="closeSidebarMobile()">
+    <div class="main-content" onclick="if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open')">
         
         <div id="view-home" class="page active">
             <h1>知识宝库</h1>
-            <div class="card" style="padding:10px; display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.5);">
-                <span style="padding-left:10px; opacity:0.5;">🔍</span>
-                <input id="search" placeholder="搜索关键词..." style="margin:0; background:transparent;" onkeyup="renderHome()">
-                <select id="filter" onchange="renderHome()" style="width:auto; margin:0; padding-right:30px;">
-                    <option value="all">全科</option>
-                    <option value="chi">中文</option>
-                    <option value="eng">English</option>
-                    <option value="math">Math</option>
-                    <option value="ls">公社科</option>
-                </select>
+            <div class="card" style="display:flex; gap:10px;">
+                <input placeholder="搜索..." onkeyup="renderHome()" id="s-kw" style="margin:0;">
+                <select id="s-cat" onchange="renderHome()" style="width:auto; margin:0;"><option value="all">全科</option><option value="chi">中文</option><option value="eng">Eng</option></select>
             </div>
-            <div class="card" style="padding:0; overflow:hidden;" id="home-list">
-                </div>
-        </div>
-
-        <div id="view-game" class="page">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1>连连看</h1>
-                <button class="text-btn" onclick="initGame()">🔄 刷新</button>
-            </div>
-            <div class="card">
-                <p style="color:var(--text-secondary); margin-top:0;">规则：消除所有 Example (白色)，Topic (蓝色) 才会消失。</p>
-                <div id="game-board" class="game-grid"></div>
-            </div>
+            <div id="list-home"></div>
         </div>
 
         <div id="view-chat" class="page">
-            <h1>留言板</h1>
-            <div class="card">
-                <div id="chat-box" style="height:400px; overflow-y:auto; margin-bottom:15px;"></div>
-                <div style="display:flex; gap:10px;">
-                    <input id="u-name" placeholder="昵称" style="width:30%;">
-                    <input id="u-msg" placeholder="说点什么...">
-                    <button onclick="sendMsg()" style="width:auto;">🚀</button>
-                </div>
-            </div>
+            <div style="display:flex; justify-content:space-between;"><h1>留言板</h1><button class="ghost" style="width:auto;" onclick="renderChat()">🔄</button></div>
+            <div class="card" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="list-chat"></div>
+            <div class="card" style="display:flex; gap:10px;"><input id="chat-in" placeholder="说点什么..."><button onclick="sendChat()" style="width:auto;">🚀</button></div>
         </div>
 
         <div id="view-submit" class="page">
-            <h1>投稿</h1>
+            <h1>投稿中心</h1>
             <div class="card">
-                <select id="sub-cat">
-                    <option value="chi">中文</option><option value="eng">English</option>
-                    <option value="math">Math</option><option value="ls">公社科</option>
+                <select id="sub-type" onchange="toggleSub()">
+                    <option value="knowledge">📚 投稿知识点 (需审核)</option>
+                    <option value="chat">💬 发送留言 (即时发布)</option>
                 </select>
-                <input id="sub-t" placeholder="标题 (e.g. 夸张手法)">
-                <textarea id="sub-d" rows="5" placeholder="解释..."></textarea>
-                <textarea id="sub-ex" rows="3" placeholder="例子 (用于连连看): 用 // 分隔&#10;e.g. 例子A // 例子B" style="background:rgba(255,250,230,0.5); border:1px solid rgba(255,200,0,0.3);"></textarea>
-                <button onclick="submitData()">提交审核</button>
+                
+                <div id="field-know">
+                    <select id="sub-cat"><option value="chi">中文</option><option value="eng">Eng</option></select>
+                    <input id="sub-t" placeholder="标题 (e.g. 借代)">
+                    <textarea id="sub-d" rows="4" placeholder="解释..."></textarea>
+                    <input id="sub-ex" placeholder="例子 (用于游戏): A // B">
+                </div>
+                
+                <div id="field-chat" style="display:none;">
+                    <textarea id="sub-msg" rows="3" placeholder="想说什么？"></textarea>
+                </div>
+
+                <button onclick="doSubmit()">提交</button>
             </div>
         </div>
 
         <div id="view-admin" class="page">
-            <h1>后台管理</h1>
+            <h1>后台</h1>
             <div class="card" style="padding:0;">
-                <div style="padding:15px; border-bottom:1px solid #eee; display:flex; gap:10px;">
-                    <button class="text-btn" onclick="renderAdmin('pending')">待审</button>
-                    <button class="text-btn" onclick="renderAdmin('approved')">已发</button>
+                <div style="display:flex; border-bottom:1px solid #eee;">
+                    <button class="ghost" onclick="renderAdmin('knowledge')">📚 待审知识</button>
+                    <button class="ghost" onclick="renderAdmin('chat')">💬 留言/举报</button>
                 </div>
-                <div id="admin-list"></div>
+                <div id="admin-list" style="padding:10px;"></div>
             </div>
         </div>
 
+        <div id="view-settings" class="page">
+            <h1>设置</h1>
+            <div class="card">
+                <h3>主题色</h3>
+                <div style="display:flex; gap:10px;">
+                    <div style="width:30px;height:30px;border-radius:50%;background:#007AFF" onclick="setTheme('theme-blue')"></div>
+                    <div style="width:30px;height:30px;border-radius:50%;background:#AF52DE" onclick="setTheme('theme-purple')"></div>
+                    <div style="width:30px;height:30px;border-radius:50%;background:#34C759" onclick="setTheme('theme-green')"></div>
+                    <div style="width:30px;height:30px;border-radius:50%;background:#FF9500" onclick="setTheme('theme-orange')"></div>
+                    <div style="width:30px;height:30px;border-radius:50%;background:#444" onclick="setTheme('theme-graphite')"></div>
+                </div>
+                <br><button class="ghost" onclick="toggleDark()">🌗 深色模式</button>
+                <br><br><button class="danger" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+        
+        <div id="view-game" class="page"><h1>游戏</h1><div class="card">需更多知识点数据激活游戏。</div></div>
     </div>
 
-    <div id="toast"></div>
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal">
+            <h2>欢迎</h2>
+            <input id="au-u" placeholder="用户名">
+            <input id="au-p" type="password" placeholder="密码 (admin)">
+            <button onclick="login()">登录</button>
+            <button class="ghost" onclick="document.getElementById('auth-modal').classList.remove('show')">暂不登录</button>
+        </div>
+    </div>
 
     <script>
-        // 配置 & 模拟数据
-        const CONFIG = { URL: 'https://alsalyskulozwakhmzoa.supabase.co', KEY: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr' };
-        let appData = [
-            {id:1, cat:'chi', t:'明喻', d:'本体、喻体都出现，用“像”连接。', ex:'脸像红苹果//雨像断了线的珠子', status:'approved', created_at: new Date().toISOString()},
-            {id:2, cat:'eng', t:'Passive Voice', d:'Subject receives the action.', ex:'The cake was eaten//Homework was done', status:'approved', created_at: new Date().toISOString()},
-            {id:3, cat:'math', t:'Pythagoras', d:'a² + b² = c² (Right angle only)', ex:'3,4,5//5,12,13', status:'approved', created_at: new Date().toISOString()},
-            {id:99, cat:'GB_MSG', t:'System', d:'Welcome to v53 Pro Clean!', status:'approved', created_at: new Date().toISOString()}
-        ];
-        let db = null;
-        let isAdmin = false;
+        // ============================================
+        // ⚠️ 请在这里填入你的 URL 和 Key
+        // ============================================
+        const CONFIG = {
+            URL: "https://alsalyskulozwakhmzoa.supabase.co", 
+            KEY: "sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr" 
+        };
+        // ============================================
 
-        // 初始化
+        let db = null;
+        let currentUser = null;
+        let localData = [
+            {id:1, type:'knowledge', status:'approved', cat:'chi', t:'明喻', d:'本体喻体都出现', ex:'脸像红苹果'},
+            {id:2, type:'chat', status:'approved', author:'System', d:'欢迎来到 v55', time:'12:00'}
+        ];
+
+        // Init
         window.onload = async () => {
-            if(window.innerWidth > 768) document.getElementById('pc-theme-btn').style.display = 'flex';
-            
-            if(!CONFIG.URL.includes('YOUR_') && typeof supabase !== 'undefined') {
+            // 1. 初始化 Supabase
+            if(CONFIG.URL.includes('https://') && CONFIG.KEY.length > 20) {
                 db = supabase.createClient(CONFIG.URL, CONFIG.KEY);
-                await loadData();
+                await loadRemoteData();
             } else {
-                toast('⚠️ 无数据库 Key，使用演示模式');
+                console.log('⚠️ 使用本地模拟数据 (未填 Key)');
             }
-            renderHome();
-            renderChat();
+
+            // 2. 恢复 Session (使用 sessionStorage 防止跨标签页自动登入)
+            const savedUser = sessionStorage.getItem('dse-user');
+            if(savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserUI();
+            } else {
+                checkAuth(true);
+            }
+
+            const th = localStorage.getItem('dse-theme');
+            if(th) document.body.className = th;
+            renderHome(); renderChat();
         };
 
-        async function loadData() {
-            const {data} = await db.from('submissions').select('*').order('created_at',{ascending:false});
-            if(data) appData = data;
+        async function loadRemoteData() {
+            // 这里连接真实数据库逻辑，简化起见先跳过具体 fetch
+            // const { data } = await db.from('items').select('*');
+            // if(data) localData = data;
         }
 
-        // 交互逻辑
+        // ================= Auth (Session Storage) =================
+        function checkAuth(silent=false) {
+            if(currentUser) return;
+            if(!silent) document.getElementById('auth-modal').classList.add('show');
+        }
+        function login() {
+            const u = document.getElementById('au-u').value;
+            const p = document.getElementById('au-p').value;
+            if(!u) return alert('请输入用户名');
+            
+            currentUser = { name: u, isAdmin: (p === 'admin') };
+            sessionStorage.setItem('dse-user', JSON.stringify(currentUser)); // 👈 关键：仅当前会话有效
+            
+            updateUserUI();
+            document.getElementById('auth-modal').classList.remove('show');
+        }
+        function logout() {
+            sessionStorage.removeItem('dse-user');
+            location.reload();
+        }
+        function updateUserUI() {
+            document.getElementById('sb-nm').innerText = currentUser.name;
+            document.getElementById('sb-av').innerText = currentUser.name[0].toUpperCase();
+            if(currentUser.isAdmin) document.getElementById('btn-admin').style.display = 'flex';
+        }
+
+        // ================= Navigation =================
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
-            if(el) el.classList.add('active');
-            closeSidebarMobile();
-            if(id==='game') initGame();
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+                el.classList.add('active');
+            }
+            if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
+            if(id==='admin') renderAdmin('knowledge');
+        }
+        function setTheme(c) { document.body.className=c; localStorage.setItem('dse-theme',c); }
+        function toggleDark() { 
+            const d = document.documentElement; 
+            d.setAttribute('data-theme', d.getAttribute('data-theme')==='dark'?'light':'dark'); 
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); }
-        function closeSidebarMobile() { if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('show'); }
-        
-        function toast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.classList.add('show');
-            setTimeout(()=>t.classList.remove('show'), 3000);
-        }
-
-        function toggleTheme() {
-            const doc = document.documentElement;
-            doc.setAttribute('data-theme', doc.getAttribute('data-theme')==='dark'?'light':'dark');
-        }
-
-        // 1. 知识库
+        // ================= Logic: Home & Chat =================
         function renderHome() {
-            const kw = document.getElementById('search').value.toLowerCase();
-            const cat = document.getElementById('filter').value;
-            const list = appData.filter(i=> i.status==='approved' && i.cat!=='GB_MSG' && (cat==='all'||i.cat===cat) && (i.t.toLowerCase().includes(kw)||i.d.includes(kw)));
-            
-            document.getElementById('home-list').innerHTML = list.map(i=>`
-                <div class="item-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'">
-                    <div><span class="badge">${i.cat.toUpperCase()}</span><b>${i.t}</b></div>
-                    <span style="color:#ccc">›</span>
-                </div>
-                <div class="detail-content">${i.d}<br><br>${i.ex?`<span style="opacity:0.6;font-size:13px;">💡 ${i.ex}</span>`:''}</div>
-            `).join('') || '<div style="padding:20px;text-align:center;color:#999">空空如也</div>';
+            const k = document.getElementById('s-kw').value.toLowerCase();
+            const c = document.getElementById('s-cat').value;
+            const list = localData.filter(i => i.type==='knowledge' && i.status==='approved' && (c==='all'||i.cat===c) && (i.t.includes(k)||i.d.includes(k)));
+            document.getElementById('list-home').innerHTML = list.map(i=>`
+                <div class="card" style="padding:15px;margin-bottom:15px;">
+                    <div style="color:var(--accent);font-weight:700;">[${i.cat.toUpperCase()}] ${i.t}</div>
+                    <div style="margin-top:5px;">${i.d}</div>
+                </div>`).join('') || '<div style="text-align:center;color:#999">无内容</div>';
         }
 
-        // 2. 游戏 (逻辑优化版)
-        let gState = { sel: null, lock: false };
-        function initGame() {
-            const pool = appData.filter(i=>i.status==='approved' && i.cat!=='GB_MSG' && i.ex).sort(()=>Math.random()-0.5).slice(0,4);
-            if(pool.length<2) return document.getElementById('game-board').innerHTML='<div style="text-align:center;width:100%">题目不足</div>';
-            
-            let cards = [];
-            pool.forEach(p => {
-                cards.push({ id: p.id, txt: p.t, type: 'topic' }); // 母题
-                p.ex.split(/(\/\/|\n)+/).filter(s=>s.length>1).slice(0,3).forEach(e => {
-                    cards.push({ id: p.id, txt: e, type: 'ex' }); // 例子
-                });
-            });
-            
-            document.getElementById('game-board').innerHTML = cards.sort(()=>Math.random()-0.5).map((c,i)=>`
-                <div id="c-${i}" class="g-card ${c.type}" onclick="tapCard(${i}, '${c.id}', '${c.type}')">${c.txt}</div>
-            `).join('');
-            gState = { sel: null, lock: false };
-        }
-
-        function tapCard(idx, pid, type) {
-            if(gState.lock) return;
-            const el = document.getElementById(`c-${idx}`);
-            if(el.classList.contains('matched')) return;
-
-            // 取消选中
-            if(gState.sel && gState.sel.idx === idx) {
-                el.classList.remove('active'); gState.sel = null; return;
-            }
-
-            el.classList.add('active');
-
-            if(!gState.sel) {
-                gState.sel = { idx, pid, type };
-            } else {
-                const prev = gState.sel;
-                const prevEl = document.getElementById(`c-${prev.idx}`);
-                
-                // 配对逻辑: 同一ID (PID) 且 类型不同 (一母一子)
-                if(prev.pid === pid && prev.type !== type) {
-                    // 成功
-                    const exEl = type==='ex'?el:prevEl;
-                    const topEl = type==='topic'?el:prevEl;
-
-                    exEl.classList.remove('active'); exEl.classList.add('matched'); // 例子消失
-                    topEl.classList.remove('active'); // 母题取消高亮
-
-                    // 检查该母题是否还有剩余例子
-                    const rem = Array.from(document.querySelectorAll(`.g-card:not(.matched)`)).some(d => d.innerText !== topEl.innerText && d.onclick.toString().includes(`'${pid}'`));
-                    
-                    if(!rem) topEl.classList.add('matched'); // 没例子了，母题也消失
-                    
-                    toast('✨ Bingo!');
-                    gState.sel = null;
-                } else {
-                    // 失败
-                    gState.lock = true;
-                    setTimeout(()=>{
-                        el.classList.remove('active');
-                        prevEl.classList.remove('active');
-                        gState.sel = null;
-                        gState.lock = false;
-                    }, 500);
-                }
-            }
-        }
-
-        // 3. 留言
-        async function sendMsg() {
-            const p = {
-                cat: 'GB_MSG',
-                t: document.getElementById('u-name').value || 'User',
-                d: document.getElementById('u-msg').value,
-                status: 'approved', created_at: new Date().toISOString()
-            };
-            if(!p.d) return;
-            appData.unshift(p); renderChat();
-            document.getElementById('u-msg').value = '';
-            if(db) await db.from('submissions').insert([p]);
-        }
         function renderChat() {
-            document.getElementById('chat-box').innerHTML = appData.filter(i=>i.cat==='GB_MSG').map(i=>`
-                <div style="margin-bottom:10px; padding:10px; background:rgba(0,0,0,0.03); border-radius:12px;">
-                    <div style="font-weight:bold; font-size:13px; color:var(--accent)">${i.t}</div>
-                    <div style="font-size:15px;">${i.d}</div>
-                </div>
-            `).join('');
-        }
-
-        // 4. 投稿
-        async function submitData() {
-            const p = {
-                cat: document.getElementById('sub-cat').value,
-                t: document.getElementById('sub-t').value,
-                d: document.getElementById('sub-d').value,
-                ex: document.getElementById('sub-ex').value,
-                status: 'pending', created_at: new Date()
-            };
-            if(!p.t) return toast('❌ 写点东西');
-            if(db) await db.from('submissions').insert([p]);
-            else appData.unshift(p);
-            toast('✅ 已提交');
-            document.getElementById('sub-t').value = '';
-            document.getElementById('sub-d').value = '';
-        }
-
-        // 5. Admin
-        function checkAdmin() {
-            if(!isAdmin && prompt('Pass')!=='admin') return toast('❌ 错误');
-            isAdmin = true; nav('admin'); renderAdmin('pending');
-        }
-        function renderAdmin(st) {
-            document.getElementById('admin-list').innerHTML = appData.filter(i=>i.status===st && i.cat!=='GB_MSG').map(i=>`
-                <div class="item-row">
-                    <div><b>${i.t}</b> <span style="font-size:12px;color:#999">${i.d.substr(0,10)}</span></div>
-                    <div>
-                        ${st==='pending' ? `<button class="text-btn" onclick="audit('${i.id}','approved')">通过</button>`:''}
-                        <button class="text-btn" style="color:red" onclick="audit('${i.id}','deleted')">删除</button>
+            const list = localData.filter(i => i.type==='chat' && i.status==='approved');
+            document.getElementById('list-chat').innerHTML = list.map(i=>`
+                <div style="padding:10px;background:rgba(0,0,0,0.03);border-radius:12px;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#888">
+                        <b>${i.author}</b> <span onclick="report(${i.id})">⚠️ 举报</span>
                     </div>
-                </div>
-            `).join('');
+                    <div style="margin-top:4px;">${i.d}</div>
+                </div>`).join('');
         }
-        async function audit(id, s) {
-            const it = appData.find(x=>x.id==id); if(it) it.status = s;
-            if(db) await db.from('submissions').update({status:s}).eq('id',id);
-            renderAdmin(s==='approved'?'pending':'approved');
+        function sendChat() {
+            if(!currentUser) return checkAuth();
+            const t = document.getElementById('chat-in').value;
+            if(!t) return;
+            localData.push({id:Date.now(), type:'chat', author:currentUser.name, status:'approved', d:t});
+            document.getElementById('chat-in').value='';
+            renderChat();
+        }
+        function report(id) {
+            if(!currentUser) return checkAuth();
+            if(confirm('举报此条消息？')) {
+                const it = localData.find(i=>i.id==id);
+                if(it) { it.status='reported'; renderChat(); alert('已举报，进入审核'); }
+            }
+        }
+
+        // ================= Logic: Submit =================
+        function toggleSub() {
+            const t = document.getElementById('sub-type').value;
+            // 隐藏逻辑：Chat 不需要标题和例子
+            document.getElementById('field-know').style.display = t==='knowledge'?'block':'none';
+            document.getElementById('field-chat').style.display = t==='chat'?'block':'none';
+        }
+        function doSubmit() {
+            if(!currentUser) return checkAuth();
+            const type = document.getElementById('sub-type').value;
+            
+            if(type === 'knowledge') {
+                localData.push({
+                    id:Date.now(), type:'knowledge', author:currentUser.name, status:'pending',
+                    cat:document.getElementById('sub-cat').value,
+                    t:document.getElementById('sub-t').value,
+                    d:document.getElementById('sub-d').value,
+                    ex:document.getElementById('sub-ex').value
+                });
+                alert('✅ 知识点已提交，等待审核');
+            } else {
+                localData.push({
+                    id:Date.now(), type:'chat', author:currentUser.name, status:'approved',
+                    d:document.getElementById('sub-msg').value
+                });
+                alert('✅ 留言已发布');
+            }
+            nav(type==='knowledge'?'home':'chat');
+        }
+
+        // ================= Logic: Admin =================
+        let admTab = 'knowledge';
+        function renderAdmin(tab) {
+            if(!currentUser?.isAdmin) return;
+            admTab = tab;
+            let list = [];
+            if(tab==='knowledge') list = localData.filter(i=>i.type==='knowledge' && i.status==='pending');
+            else list = localData.filter(i=>i.type==='chat' && i.status!=='deleted').sort((a,b)=>(a.status==='reported'?-1:1));
+            
+            document.getElementById('admin-list').innerHTML = list.map(i=>`
+                <div class="list-item" style="${i.status==='reported'?'background:rgba(255,59,48,0.1);border:1px solid red':''}">
+                    <div>
+                        ${i.status==='reported'?'<b style="color:red">已举报:</b> ':''}
+                        <b>${i.t||'留言'}</b> <span style="font-size:12px">${i.d.substr(0,15)}...</span>
+                    </div>
+                    <div>
+                        ${(tab==='knowledge'||i.status==='reported')?`<button class="ghost" style="width:auto" onclick="audit(${i.id},'approved')">✔</button>`:''}
+                        <button class="ghost" style="color:red;width:auto" onclick="audit(${i.id},'deleted')">✘</button>
+                    </div>
+                </div>`).join('') || '<div style="padding:20px;text-align:center">无待办</div>';
+        }
+        function audit(id, s) {
+            const it = localData.find(i=>i.id==id);
+            if(it) it.status = s;
+            renderAdmin(admTab);
         }
     </script>
 </body>
