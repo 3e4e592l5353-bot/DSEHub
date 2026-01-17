@@ -3,94 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v56 - 自动鉴权版</title>
+    <title>DSE Hub v61 - 管理员完全体</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ... 样式保持不变，新增管理员标签样式 ... */
-        :root { --primary: #6366f1; --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-        body { margin: 0; font-family: 'Noto Sans SC', sans-serif; background: var(--bg-gradient); height: 100vh; display: flex; overflow: hidden; color:#333; }
-        .sidebar { width: 260px; background: #fff; display: flex; flex-direction: column; padding: 20px; border-right:1px solid #ddd; z-index:50; transition:0.3s; }
-        .nav-item { padding: 12px; margin-bottom: 5px; cursor: pointer; border-radius: 8px; font-weight: 600; color: #666; display:flex; align-items:center; gap:8px;}
-        .nav-item.active { background: var(--primary); color: #fff; }
-        .main { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
-        .page { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.3s; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .card { background: rgba(255,255,255,0.95); padding: 25px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
-        button.small { width: auto; padding: 5px 12px; font-size: 12px; }
-        .btn-green { background: #10B981; } .btn-red { background: #EF4444; }
+        /* ================= 🎨 五色主题定义 ================= */
+        :root {
+            /* 默认: 深蓝 (Blue) */
+            --bg: #0f172a; --sidebar-bg: #1e293b; --card-bg: #1e293b;
+            --text-main: #f1f5f9; --text-sub: #94a3b8;
+            --primary: #6366f1; --border: #334155; --input-bg: #0f172a;
+            --shadow: rgba(0,0,0,0.3);
+        }
+        [data-theme="black"] { /* 纯黑 */
+            --bg: #000000; --sidebar-bg: #111111; --card-bg: #111111;
+            --text-main: #e5e5e5; --text-sub: #a3a3a3;
+            --primary: #2563eb; --border: #333333; --input-bg: #000000;
+            --shadow: rgba(255,255,255,0.15);
+        }
+        [data-theme="white"] { /* 纯白 */
+            --bg: #f3f4f6; --sidebar-bg: #ffffff; --card-bg: #ffffff;
+            --text-main: #1f2937; --text-sub: #6b7280;
+            --primary: #3b82f6; --border: #e5e7eb; --input-bg: #f9fafb;
+            --shadow: rgba(0,0,0,0.08);
+        }
+        [data-theme="orange"] { /* 活力橙 */
+            --bg: #fff7ed; --sidebar-bg: #ffffff; --card-bg: #ffffff;
+            --text-main: #7c2d12; --text-sub: #d97706;
+            --primary: #f97316; --border: #fed7aa; --input-bg: #ffedd5;
+            --shadow: rgba(249, 115, 22, 0.15);
+        }
+        [data-theme="pink"] { /* 樱花粉 */
+            --bg: #fff0f5; --sidebar-bg: #ffffff; --card-bg: #ffffff;
+            --text-main: #831843; --text-sub: #db2777;
+            --primary: #ec4899; --border: #fbcfe8; --input-bg: #fdf2f8;
+            --shadow: rgba(236, 72, 153, 0.15);
+        }
 
-        /* 评论区样式 */
-        .fb-area { margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px; }
-        .fb-list { max-height: 400px; overflow-y: auto; padding: 5px; }
-        .fb-item { padding: 8px 12px; margin-bottom: 6px; background: #f9fafb; border-radius: 8px; font-size: 13px; border-left: 3px solid transparent; cursor: pointer; }
-        .fb-item.active-target { background: #eef2ff; border-left-color: var(--primary); }
+        /* ================= ✨ 动画 & 布局 ================= */
+        body, .sidebar, .card, input, textarea, select, .nav-item, button, .chip, .fb-item, .theme-btn {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body { margin: 0; font-family: 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+
+        .sidebar { width: 260px; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 20px; border-right: 1px solid var(--border); z-index: 50; }
+        .nav-item { padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; font-weight: 500; color: var(--text-sub); display: flex; align-items: center; gap: 8px; }
+        .nav-item:hover { background: rgba(125,125,125,0.1); }
+        .nav-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px var(--shadow); }
+
+        .main { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
+        .page { display: none; max-width: 800px; margin: 0 auto; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
+
+        .card { background: var(--card-bg); padding: 25px; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 20px var(--shadow); }
         
-        /* 管理员标签样式 */
-        .admin-badge { background: #fee2e2; color: #b91c1c; font-size: 10px; padding: 1px 4px; border-radius: 4px; border: 1px solid #fecaca; margin-left: 5px; font-weight: bold; }
-        .user-badge { background: #e0e7ff; color: #4f46e5; padding: 1px 4px; border-radius: 4px; margin-left: 5px; font-size: 10px; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); border-radius: 10px; box-sizing: border-box; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
         
-        /* 其他样式省略，保持原样 */
-        .fb-input-box { background: #fff; padding: 10px; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 10px; }
-        .preset-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 5px; }
-        .chip { font-size: 11px; padding: 4px 10px; background: #f3f4f6; border-radius: 20px; white-space: nowrap; cursor: pointer; color: #555; }
+        button { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        button.small { width: auto; padding: 6px 14px; font-size: 12px; }
+        .btn-green { background: #10b981; } .btn-red { background: #ef4444; }
+
+        .theme-switch { display: flex; gap: 8px; margin-top: auto; justify-content: center; padding-top: 20px; border-top: 1px solid var(--border); }
+        .theme-btn { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .theme-btn:hover { transform: scale(1.3); }
+        .t-blue { background: #0f172a; border-color: #6366f1; }
+        .t-black { background: #000000; border-color: #555; }
+        .t-white { background: #ffffff; border-color: #ccc; }
+        .t-orange { background: #f97316; border-color: #fed7aa; }
+        .t-pink { background: #ec4899; border-color: #fbcfe8; }
+
+        /* 评论与管理 */
+        .fb-item { padding: 10px; margin-bottom: 8px; background: rgba(125,125,125,0.05); border-radius: 8px; font-size: 13px; border-left: 3px solid transparent; position: relative; }
+        .fb-item:hover .del-btn { display: block; } /* 鼠标悬停显示删除按钮 */
+        .fb-item.active-target { background: rgba(99, 102, 241, 0.1); border-left-color: var(--primary); }
+        .admin-badge { background: #fee2e2; color: #b91c1c; font-size: 10px; padding: 2px 5px; border-radius: 4px; border:1px solid #fecaca; font-weight:bold;}
+        
+        .del-btn { display: none; position: absolute; right: 10px; top: 10px; color: #ef4444; font-weight: bold; cursor: pointer; padding: 2px 6px; background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .del-btn:hover { background: #ef4444; color: white; }
+
+        .chip { background: rgba(125,125,125,0.1); padding: 5px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; color: var(--text-sub); }
         .chip.selected { background: var(--primary); color: #fff; }
-        .menu-btn { display: none; position: fixed; top: 10px; left: 10px; z-index: 100; background: #fff; padding: 5px 10px; }
-        @media (max-width: 768px) { .sidebar { position: fixed; transform: translateX(-100%); height:100%; } .sidebar.active { transform: translateX(0); } .menu-btn { display: block; } .main { padding: 60px 15px 20px 15px; } }
+
+        .menu-btn { display: none; position: fixed; top: 10px; left: 10px; z-index: 100; background: var(--card-bg); border: 1px solid var(--border); color:var(--text-main); padding: 5px 10px; border-radius:6px;}
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; transform: translateX(-100%); height:100%; box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
+            .sidebar.active { transform: translateX(0); }
+            .menu-btn { display: block; }
+            .main { padding: 60px 15px 20px 15px; }
+            .del-btn { display: block; } /* 手机端常显删除按钮 */
+        }
     </style>
 </head>
-<body>
+<body data-theme="blue">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     
     <div class="sidebar" id="sidebar">
-        <div style="font-size:20px; font-weight:900; color:var(--primary); margin-bottom:30px;">DSE HUB v56</div>
+        <div style="font-size:22px; font-weight:900; color:var(--primary); margin-bottom:30px; letter-spacing:-1px;">DSE HUB</div>
         
-        <div id="user-panel" style="background:#f3f4f6; padding:10px; border-radius:10px; margin-bottom:20px; text-align:center;">
-            <div id="u-name" style="font-weight:bold; font-size:14px; margin-bottom:5px;">未登录</div>
+        <div id="user-panel" style="background:rgba(125,125,125,0.08); padding:15px; border-radius:12px; margin-bottom:20px; text-align:center;">
+            <div id="u-name" style="font-weight:bold; font-size:14px; margin-bottom:10px; color:var(--text-main);">未登录</div>
             <button class="small" onclick="nav('auth')">👤 登录/注册</button>
         </div>
 
         <div class="nav-item active" onclick="nav('home')">📚 知识库</div>
         <div class="nav-item" onclick="nav('duel')">⚔️ 在线对战</div>
         <div class="nav-item" onclick="nav('submit')">📝 投稿</div>
-        <div class="nav-item" onclick="tryEnterAdmin()" style="color:#EF4444;">⚖️ 审阅后台</div>
+        <div class="nav-item" onclick="tryEnterAdmin()" style="color:#ef4444;">⚖️ 审阅后台</div>
+
+        <div class="theme-switch">
+            <div class="theme-btn t-blue" onclick="setTheme('blue')"></div>
+            <div class="theme-btn t-black" onclick="setTheme('black')"></div>
+            <div class="theme-btn t-white" onclick="setTheme('white')"></div>
+            <div class="theme-btn t-orange" onclick="setTheme('orange')"></div>
+            <div class="theme-btn t-pink" onclick="setTheme('pink')"></div>
+        </div>
     </div>
 
     <div class="main">
         <div id="view-auth" class="page">
-            <div class="card" style="text-align:center;">
-                <h2>通行证</h2>
+            <div class="card" style="text-align:center; max-width:400px; margin:50px auto;">
+                <h2 style="color:var(--primary)">通行证</h2>
+                <div id="auth-msg" style="background:rgba(16, 185, 129, 0.1); color:#10b981; padding:10px; border-radius:8px; font-size:12px; margin-bottom:15px; display:none;"></div>
                 <input id="auth-email" placeholder="邮箱" type="email">
                 <input id="auth-pass" placeholder="密码 (6位+)" type="password">
                 <input id="auth-user" placeholder="昵称 (仅注册需要)">
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:10px; margin-top:15px;">
                     <button onclick="doLogin()">登录</button>
                     <button onclick="doRegister()" class="btn-green">注册</button>
                 </div>
-                <button onclick="doLogout()" id="btn-logout" class="btn-red" style="margin-top:10px; display:none;">退出登录</button>
+                <button onclick="doLogout()" id="btn-logout" class="btn-red" style="margin-top:15px; display:none;">退出登录</button>
             </div>
         </div>
 
         <div id="view-home" class="page active">
             <div class="card">
-                <input id="search" placeholder="🔍 搜索..." onkeyup="renderKnowledge()">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <input id="search" placeholder="🔍 搜索..." onkeyup="renderKnowledge()" style="margin-bottom:0;">
+                    <select id="filter-cat" onchange="renderKnowledge()" style="width:120px; margin-bottom:0;">
+                        <option value="all">全部</option><option value="math">数学</option><option value="chi">中文</option><option value="eng">英文</option>
+                    </select>
+                </div>
                 <div id="list"></div>
             </div>
         </div>
 
         <div id="view-duel" class="page">
-            <div class="card" id="duel-lobby">
-                <h2>在线对决</h2>
-                <button onclick="findMatch()" style="padding:20px;">🔍 开始匹配</button>
-                <div id="match-status" style="margin-top:15px; text-align:center;"></div>
+            <div class="card" id="duel-lobby" style="text-align:center; padding:50px;">
+                <h2 style="color:var(--primary)">⚡ 极速对决</h2>
+                <button onclick="findMatch()" style="padding:15px 40px; font-size:18px; margin-top:20px;">🔍 匹配对手</button>
+                <div id="match-status" style="margin-top:20px; color:var(--text-sub);"></div>
             </div>
             <div class="card" id="duel-arena" style="display:none;">
-                <div class="duel-stat"><span id="my-score">0</span> VS <span id="op-score">0</span></div>
-                <div id="duel-board" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
+                <div style="display:flex; justify-content:space-around; font-size:24px; font-weight:bold; margin-bottom:20px; color:var(--primary);">
+                    <span id="my-score">0</span> VS <span id="op-score">0</span>
+                </div>
+                <div id="duel-board" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;"></div>
             </div>
         </div>
 
@@ -100,302 +171,187 @@
                 <input id="sub-t" placeholder="标题">
                 <select id="sub-cat"><option value="math">数学</option><option value="chi">中文</option><option value="eng">英文</option></select>
                 <textarea id="sub-d" rows="5" placeholder="内容..."></textarea>
-                <button onclick="submitKnowledge()">提交审核</button>
+                <button onclick="submitKnowledge()" class="btn-green">提交</button>
             </div>
         </div>
 
         <div id="view-admin" class="page">
-            <div class="card">
-                <h2>👑 管理员控制台</h2>
-                <p>这里只显示【待审核】的内容。</p>
-                <button class="small" onclick="loadPending()" style="margin-bottom:10px; width:auto;">🔄 刷新</button>
+            <div class="card" style="border:1px solid #ef4444;">
+                <h2 style="color:#ef4444">👑 管理员后台</h2>
+                <button class="small" onclick="loadPending()" style="width:auto; margin-bottom:10px;">🔄 刷新待审核</button>
                 <div id="admin-list"></div>
+                <p style="font-size:12px; color:var(--text-sub); margin-top:10px;">* 管理评论请直接去知识库文章下的评论区，已为您解锁删除按钮。</p>
             </div>
         </div>
     </div>
 
     <script>
-        // ⚠️ 配置区
+        // ⚠️⚠️⚠️ 填入 KEY ⚠️⚠️⚠️
         const CONFIG = { URL: 'https://alsalyskulozwakhmzoa.supabase.co', KEY: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr' };
-        const ADMIN_SECRET = '260117'; // 👈 这里设置你的管理员密码
+        const ADMIN_SECRET = '888888'; 
 
-        const CODE_MAP = {
-            '/1': '🙏 感谢分享，很有帮助！',
-            '/2': '👍 解释得非常清晰，懂了。',
-            '/3': '💡 这是一个常考重点，Mark。',
-            '/4': '🤯 太难，求更详细解释。'
-        };
+        // 主题逻辑
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('dse_theme', theme);
+        }
+        setTheme(localStorage.getItem('dse_theme') || 'blue');
 
-        let db, auth, currentUser = null;
-        let appData = [];
-        let activeRoomId = null;
+        const CODE_MAP = { '/1': '🙏 感谢大神！', '/2': '👍 清晰易懂。', '/3': '💡 重点Mark。', '/4': '🤯 求例子。' };
+        let db, auth, currentUser = null, appData = [], activeRoomId = null;
 
         window.onload = async () => {
             if(CONFIG.URL.includes('YOUR_')) return alert('请配置 API Key');
             const sb = window.supabase.createClient(CONFIG.URL, CONFIG.KEY);
             db = sb; auth = sb.auth;
-
+            
+            // 处理从邮件链接跳回来的情况
             const { data: { session } } = await auth.getSession();
             if(session) handleUser(session.user);
-
-            auth.onAuthStateChange((_, s) => { 
+            
+            auth.onAuthStateChange((event, s) => { 
                 if(s) handleUser(s.user); 
                 else { currentUser = null; updateProfileUI(); }
+                if(event === 'SIGNED_IN') nav('home');
             });
-
             await loadData();
-            
-            // 点击空白关闭输入框
             document.addEventListener('click', (e) => {
                 if(!e.target.closest('.fb-input-box') && !e.target.closest('.fb-item')) {
-                    document.querySelectorAll('.fb-input-box').forEach(box => {
-                        const kId = box.id.replace('box-', '');
-                        if(kId) resetInputState(kId); 
-                    });
+                    document.querySelectorAll('.fb-input-box').forEach(box => resetInputState(box.id.replace('box-', '')));
                 }
             });
         };
 
-        // ================= 🔐 核心：权限处理 =================
-
-        // 处理用户信息 + 读取权限
+        // 用户处理
         async function handleUser(u) {
             currentUser = u;
-            // 读取 profiles 表里的 username 和 is_admin
             const {data} = await db.from('profiles').select('username, is_admin').eq('id',u.id).single();
-            if(data) {
-                currentUser.username = data.username;
-                currentUser.is_admin = data.is_admin; // 存储当前用户的权限
-            }
+            if(data) { currentUser.username = data.username; currentUser.is_admin = data.is_admin; }
             updateProfileUI();
         }
 
-        // 尝试进入后台（核心逻辑）
-        async function tryEnterAdmin() {
-            if(!currentUser) return alert("请先登录");
+        // 注册 (兼顾验证开启/关闭)
+        async function doRegister() {
+            const e=document.getElementById('auth-email').value, p=document.getElementById('auth-pass').value, u=document.getElementById('auth-user').value;
+            if(!u) return alert("请填写昵称");
+            
+            // 默认重定向到当前页面 URL (Supabase会自动处理)
+            const { data, error } = await auth.signUp({ 
+                email: e, password: p, 
+                options: { data: { username: u }, emailRedirectTo: window.location.href } 
+            });
 
-            // 1. 已经是管理员 -> 直接进
-            if(currentUser.is_admin) {
-                nav('admin');
-                return;
-            }
-
-            // 2. 不是管理员 -> 输密码
-            const input = prompt("🔐 请输入管理员密钥进行身份验证：");
-            if(input === ADMIN_SECRET) {
-                // 密码正确 -> 升级数据库
-                const { error } = await db.from('profiles').update({ is_admin: true }).eq('id', currentUser.id);
-                if(error) {
-                    alert("升级失败: " + error.message);
-                } else {
-                    alert("🎉 验证成功！您已升级为管理员账号。");
-                    currentUser.is_admin = true; // 本地立即更新
-                    nav('admin');
-                }
-            } else if(input !== null) {
-                alert("❌ 密钥错误");
+            if(error) return alert(error.message);
+            if(data.session) {
+                alert("🎉 注册成功并自动登录！"); handleUser(data.session.user); nav('home');
+            } else {
+                document.getElementById('auth-msg').innerHTML = `📧 <b>邮件已发送</b><br>请去邮箱点击链接，通过后将跳转回本页自动登录。`;
+                document.getElementById('auth-msg').style.display='block';
             }
         }
-
-        // ================= 📚 知识库 & 渲染 =================
-        async function loadData() {
-            const { data } = await db.from('submissions').select('*').eq('status', 'approved').order('created_at',{ascending:false});
-            appData = data || [];
-            renderKnowledge();
+        async function doLogin() {
+            const {error}=await auth.signInWithPassword({email:document.getElementById('auth-email').value,password:document.getElementById('auth-pass').value});
+            if(!error) nav('home'); else alert(error.message);
         }
 
-        function renderKnowledge() {
-            const kw = document.getElementById('search').value.toLowerCase();
-            const list = appData.filter(i => i.t.toLowerCase().includes(kw));
-            document.getElementById('list').innerHTML = list.map(i => `
-                <div class="item card" style="padding:15px; margin-bottom:10px;">
-                    <div onclick="this.parentElement.classList.toggle('open')" style="cursor:pointer; display:flex; justify-content:space-between;">
-                        <b>${i.t}</b> <span>🔽</span>
-                    </div>
-                    <div style="margin-top:10px; display:none;" class="detail-box">
-                        <div style="color:#555; margin-bottom:15px;">${i.d}</div>
-                        <div id="fb-container-${i.id}" class="fb-area">
-                            <button class="small" onclick="loadComments('${i.id}')" style="background:#f3f4f6; color:#333; width:100%;">💬 展开讨论</button>
-                        </div>
-                    </div>
-                </div>
-                <style>.open .detail-box { display:block; }</style>
-            `).join('');
-        }
-
-        // ================= 💬 评论系统 (含管理员标签) =================
+        // 核心：评论加载与管理 (包含删除功能)
         async function loadComments(kId) {
-            const container = document.getElementById(`fb-container-${kId}`);
-            db.channel(`fb-${kId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'feedbacks', filter: `knowledge_id=eq.${kId}` }, 
-                () => refreshComments(kId)
-            ).subscribe();
-            await refreshComments(kId);
+            db.channel(`fb-${kId}`).on('postgres_changes', { event: '*', schema: 'public', table: 'feedbacks', filter: `knowledge_id=eq.${kId}` }, () => refreshComments(kId)).subscribe();
+            refreshComments(kId);
         }
-
         async function refreshComments(kId) {
-            // 注意：这里我们select出了 is_admin 字段
             const { data } = await db.from('feedbacks').select('*').eq('knowledge_id', kId).order('created_at');
             const container = document.getElementById(`fb-container-${kId}`);
             
+            // 渲染评论列表
             let html = `<div class="fb-list" id="list-${kId}">`;
-            if(data && data.length) {
-                html += data.map(f => {
-                    // 判断是否显示标签
-                    const adminTag = f.is_admin ? `<span class="admin-badge">管理员</span>` : '';
-                    const presetTag = CODE_MAP[f.custom_text] ? `<span class="user-badge">快捷</span>` : '';
-                    const content = CODE_MAP[f.custom_text] || f.custom_text;
+            html += (data||[]).map(f => `
+                <div class="fb-item d-${Math.min(f.depth||0,3)}" id="item-${f.id}" onclick="selectReplyTarget('${kId}','${f.id}','${f.user_name}')">
+                    ${currentUser?.is_admin ? `<span class="del-btn" onclick="deleteComment('${f.id}', '${kId}', event)">🗑️ 删除</span>` : ''}
                     
-                    return `
-                    <div class="fb-item d-${Math.min(f.depth||0,3)}" id="item-${f.id}" onclick="selectReplyTarget('${kId}', '${f.id}', '${f.user_name}')">
-                        <div style="color:#888; font-size:11px; display:flex; align-items:center;">
-                            <b>${f.user_name}</b> ${adminTag} ${presetTag}
-                        </div>
-                        <div style="margin-top:2px;">${content}</div>
-                    </div>`;
-                }).join('');
-            } else { html += `<div style="text-align:center;color:#ccc;padding:10px;">暂无评论</div>`; }
-            html += `</div>`;
-
-            // 输入框 (保持不变)
-            html += `
-            <div class="fb-input-box" id="box-${kId}" onclick="event.stopPropagation()">
-                <div class="status-bar">
-                    <span id="st-${kId}">📝 新评论</span>
-                    <span id="reset-${kId}" style="display:none; cursor:pointer; color:red;" onclick="resetInputState('${kId}')">× 重置</span>
+                    <div style="color:var(--text-sub); font-size:11px;">
+                        <b>${f.user_name}</b> ${f.is_admin?'<span class="admin-badge">管理员</span>':''}
+                    </div>
+                    <div style="margin-top:2px;">${CODE_MAP[f.custom_text]||f.custom_text}</div>
+                </div>`).join('') + `</div>`;
+            
+            // 输入框
+            html += `<div class="fb-input-box" id="box-${kId}" onclick="event.stopPropagation()">
+                <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-sub); margin-bottom:5px;">
+                    <span id="st-${kId}">📝 评论</span><span id="reset-${kId}" style="display:none; cursor:pointer; color:#ef4444;" onclick="resetInputState('${kId}')">× 取消</span>
                 </div>
-                <div class="preset-chips">
-                    ${Object.keys(CODE_MAP).map(k => `<span class="chip" id="chip-${kId}-${k.replace('/','_')}" onclick="togglePreset('${kId}', '${k}')">${CODE_MAP[k]}</span>`).join('')}
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <input id="in-${kId}" placeholder="输入..." autocomplete="off" oninput="handleUserTyping('${kId}')" onclick="unlockInput('${kId}')">
-                    <button class="small" style="width:60px;" onclick="send('${kId}')">发送</button>
-                </div>
-                <input type="hidden" id="pid-${kId}"><input type="hidden" id="pcode-${kId}">
-            </div>`;
+                <div class="preset-chips">${Object.keys(CODE_MAP).map(k => `<span class="chip" id="chip-${kId}-${k.replace('/','_')}" onclick="togglePreset('${kId}', '${k}')">${CODE_MAP[k]}</span>`).join('')}</div>
+                <div style="display:flex; gap:5px;"><input id="in-${kId}" placeholder="..." oninput="handleUserTyping('${kId}')" onclick="unlockInput('${kId}')"><button class="small" style="width:60px;" onclick="send('${kId}')">发送</button></div>
+                <input type="hidden" id="pid-${kId}"><input type="hidden" id="pcode-${kId}"></div>`;
             container.innerHTML = html;
         }
+        
+        // ⚠️ 新增：管理员删除评论功能
+        async function deleteComment(cId, kId, event) {
+            event.stopPropagation(); // 防止触发回复
+            if(!confirm("确定要删除这条评论吗？")) return;
+            const { error } = await db.from('feedbacks').delete().eq('id', cId);
+            if(error) alert("删除失败，可能没有权限: " + error.message);
+            // 实时监听会自动刷新 UI
+        }
 
+        // 发送逻辑
         window.send = async function(kId) {
             if(!currentUser) return alert("请先登录");
-            const txt = document.getElementById(`in-${kId}`).value;
-            const code = document.getElementById(`pcode-${kId}`).value;
-            const pid = document.getElementById(`pid-${kId}`).value || null;
-            const content = code ? code : txt;
-            
-            if(!content) return;
-
-            // 核心：发送时带上当前的 is_admin 状态
-            await db.from('feedbacks').insert([{ 
-                knowledge_id: kId, 
-                user_name: currentUser.username, 
-                parent_id: pid, 
-                custom_text: content,
-                is_admin: currentUser.is_admin // 👈 记录身份
-            }]);
+            const txt=document.getElementById(`in-${kId}`).value, code=document.getElementById(`pcode-${kId}`).value, pid=document.getElementById(`pid-${kId}`).value;
+            if(!code && !txt) return;
+            await db.from('feedbacks').insert([{ knowledge_id:kId, user_name:currentUser.username, parent_id:pid||null, custom_text:code||txt, is_admin:currentUser.is_admin }]);
             resetInputState(kId);
         }
 
-        // --- 辅助交互函数 (保持不变) ---
-        window.selectReplyTarget = function(kId, cId, uName) {
-            event.stopPropagation();
-            document.querySelectorAll(`#list-${kId} .fb-item`).forEach(e => e.classList.remove('active-target'));
-            document.getElementById(`item-${cId}`).classList.add('active-target');
-            document.getElementById(`pid-${kId}`).value = cId;
-            document.getElementById(`st-${kId}`).innerHTML = `回复 <b>${uName}</b>`;
-            document.getElementById(`reset-${kId}`).style.display = 'block';
-            document.getElementById(`in-${kId}`).focus();
+        // 投稿与管理
+        async function tryEnterAdmin() {
+            if(!currentUser) return alert("请先登录");
+            if(currentUser.is_admin) { nav('admin'); return; }
+            const input = prompt("🔐 管理员密钥：");
+            if(input === ADMIN_SECRET) {
+                await db.from('profiles').update({ is_admin: true }).eq('id', currentUser.id);
+                currentUser.is_admin = true; alert("🎉 权限已升级！现在您可以审核题目并删除评论。"); nav('admin'); updateProfileUI();
+            }
         }
-        window.togglePreset = function(kId, code) {
-            const input = document.getElementById(`in-${kId}`);
-            document.getElementById(`pcode-${kId}`).value = code;
-            document.querySelectorAll(`#box-${kId} .chip`).forEach(c => c.classList.remove('selected'));
-            document.getElementById(`chip-${kId}-${code.replace('/','_')}`).classList.add('selected');
-            input.value = ""; input.placeholder = `[已选] ${CODE_MAP[code]}`; input.disabled = true;
-            document.getElementById(`reset-${kId}`).style.display = 'block';
+        async function loadData() {
+            const { data } = await db.from('submissions').select('*').eq('status', 'approved').order('created_at',{ascending:false});
+            appData = data || []; renderKnowledge();
         }
-        window.handleUserTyping = function(kId) {
-            document.getElementById(`pcode-${kId}`).value = "";
-            document.querySelectorAll(`#box-${kId} .chip`).forEach(c => c.classList.remove('selected'));
-        }
-        window.unlockInput = function(kId) {
-            const input = document.getElementById(`in-${kId}`);
-            if(input.disabled) { input.disabled = false; input.placeholder = "输入内容..."; input.focus(); handleUserTyping(kId); }
-        }
-        window.resetInputState = function(kId) {
-            document.getElementById(`pid-${kId}`).value = ""; document.getElementById(`pcode-${kId}`).value = "";
-            const input = document.getElementById(`in-${kId}`);
-            input.value = ""; input.disabled = false; input.placeholder = "输入内容...";
-            document.querySelectorAll(`#list-${kId} .fb-item`).forEach(e => e.classList.remove('active-target'));
-            document.querySelectorAll(`#box-${kId} .chip`).forEach(c => c.classList.remove('selected'));
-            document.getElementById(`st-${kId}`).innerHTML = "📝 新评论";
-            document.getElementById(`reset-${kId}`).style.display = 'none';
-        }
-
-        // ================= ⚖️ 管理员审核 =================
-        async function loadPending() {
-            // 只有权限为 true 才能看
-            if(!currentUser || !currentUser.is_admin) return alert("无权访问");
-            
-            const { data } = await db.from('submissions').select('*').eq('status', 'pending');
-            const list = document.getElementById('admin-list');
-            if(!data || data.length === 0) { list.innerHTML = '<div style="color:#999;">暂无待审核内容</div>'; return; }
-
-            list.innerHTML = data.map(i => `
-                <div class="card" style="padding:15px;">
-                    <div><b>${i.t}</b> <span style="font-size:12px;color:#999">(${i.cat})</span></div>
-                    <div style="font-size:12px;color:#666;margin:5px 0;">${i.d}</div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="small btn-green" onclick="audit('${i.id}', 'approved')">✅ 通过</button>
-                        <button class="small btn-red" onclick="audit('${i.id}', 'rejected')">❌ 拒绝</button>
+        function renderKnowledge() {
+            const kw = document.getElementById('search').value.toLowerCase();
+            const cat = document.getElementById('filter-cat').value;
+            const list = appData.filter(i => (cat==='all'||i.cat===cat) && i.t.toLowerCase().includes(kw));
+            document.getElementById('list').innerHTML = list.map(i => `
+                <div class="item card" style="padding:15px; margin-bottom:10px;">
+                    <div onclick="this.parentElement.classList.toggle('open')" style="cursor:pointer; display:flex; justify-content:space-between;"><b>${i.t}</b> <span>▼</span></div>
+                    <div style="margin-top:10px; display:none;" class="detail-box">
+                        <div style="color:var(--text-sub); margin-bottom:15px;">${i.d}</div>
+                        <div id="fb-container-${i.id}"><button class="small" onclick="loadComments('${i.id}')" style="background:var(--input-bg); color:var(--text-sub); width:100%;">💬 展开评论</button></div>
                     </div>
                 </div>
-            `).join('');
+                <style>.open .detail-box { display:block; }</style>`).join('');
         }
+        // 审核
+        async function loadPending() { if(!currentUser?.is_admin) return; const {data} = await db.from('submissions').select('*').eq('status','pending'); document.getElementById('admin-list').innerHTML = (data||[]).map(i=>`<div class="card" style="padding:10px;"><b>${i.t}</b><br><span style="font-size:12px">${i.d}</span><div style="margin-top:5px;"><button class="small btn-green" onclick="audit('${i.id}','approved')">通过</button> <button class="small btn-red" onclick="audit('${i.id}','rejected')">拒绝</button></div></div>`).join('') || '无待审核'; }
+        async function audit(id,s){ await db.from('submissions').update({status:s}).eq('id',id); loadPending(); if(s==='approved') loadData(); }
+        async function submitKnowledge() { if(!currentUser) return alert("请登录"); const t=document.getElementById('sub-t').value, d=document.getElementById('sub-d').value, cat=document.getElementById('sub-cat').value; if(!t||!d) return; const {error} = await db.from('submissions').insert([{t,d,cat,status:'pending',user_id:currentUser.id}]); if(!error){ alert("已投稿，等待审核"); nav('home'); } }
 
-        async function audit(id, status) {
-            await db.from('submissions').update({ status: status }).eq('id', id);
-            loadPending();
-            if(status === 'approved') loadData(); // 如果通过，刷新主页
-        }
-        async function submitKnowledge() {
-            if(!currentUser) return alert("请先登录");
-            const t = document.getElementById('sub-t').value;
-            const d = document.getElementById('sub-d').value;
-            const cat = document.getElementById('sub-cat').value;
-            if(!t || !d) return alert("请填写完整");
-            const { error } = await db.from('submissions').insert([{ t, d, cat, status: 'pending', user_id: currentUser.id }]);
-            if(error) alert("失败: "+error.message); else { alert("投稿成功，待审核"); nav('home'); }
-        }
+        // 对战
+        async function findMatch() { if(!currentUser) return alert("请登录"); document.getElementById('match-status').innerText = "📡 ..."; const {data:rooms} = await db.from('duel_rooms').select('*').eq('status','waiting').neq('player1_id',currentUser.id).limit(1); if(rooms?.length){ activeRoomId=rooms[0].id; await db.from('duel_rooms').update({player2_id:currentUser.id, status:'playing'}).eq('id',activeRoomId); startGame('p2'); } else { const {data}=await db.from('duel_rooms').insert([{player1_id:currentUser.id,status:'waiting'}]).select().single(); activeRoomId=data.id; document.getElementById('match-status').innerText="🏠 等待..."; db.channel(`r-${activeRoomId}`).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duel_rooms',filter:`id=eq.${activeRoomId}`}, p=>{if(p.new.status==='playing') startGame('p1')}).subscribe(); } }
+        function startGame(role){ document.getElementById('duel-lobby').style.display='none'; document.getElementById('duel-arena').style.display='block'; document.getElementById('duel-board').innerHTML = appData.slice(0,4).map(i=>`<div class="card" style="margin:0; text-align:center; cursor:pointer; display:flex; align-items:center; justify-content:center; height:100px; font-weight:bold;" onclick="hit(this)">${i.t}</div>`).join(''); db.channel(`play-${activeRoomId}`).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duel_rooms',filter:`id=eq.${activeRoomId}`}, p=>{ document.getElementById('my-score').innerText=role==='p1'?p.new.p1_score:p.new.p2_score; document.getElementById('op-score').innerText=role==='p1'?p.new.p2_score:p.new.p1_score; }).subscribe(); window.role=role; window.score=0; }
+        async function hit(e){ if(e.style.opacity==='0')return; e.style.opacity='0'; window.score++; await db.from('duel_rooms').update(window.role==='p1'?{p1_score:window.score}:{p2_score:window.score}).eq('id',activeRoomId); }
 
-        // ================= 🔐 Auth & 路由 =================
-        function updateProfileUI() {
-            document.getElementById('u-name').innerText = currentUser ? `👋 ${currentUser.username}` + (currentUser.is_admin?'(管)':'') : '未登录';
-            document.getElementById('btn-logout').style.display = currentUser ? 'block' : 'none';
-        }
-        async function doRegister() {
-            const e=document.getElementById('auth-email').value, p=document.getElementById('auth-pass').value, u=document.getElementById('auth-user').value;
-            if(!u) return alert("请填昵称");
-            const {error} = await auth.signUp({email:e, password:p, options:{data:{username:u}}});
-            if(error) alert(error.message); else alert("注册邮件已发送");
-        }
-        async function doLogin() {
-            const {error} = await auth.signInWithPassword({email:document.getElementById('auth-email').value, password:document.getElementById('auth-pass').value});
-            if(!error) nav('home'); else alert(error.message);
-        }
-        async function doLogout() { await auth.signOut(); window.location.reload(); }
-        
-        function nav(id) {
-            document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
-            document.getElementById('view-'+id).classList.add('active');
-            if(id==='admin' && currentUser?.is_admin) loadPending();
-            toggleSidebar();
-        }
+        // UI & Utils
+        window.selectReplyTarget=(k,i,u)=>{ event.stopPropagation(); document.querySelectorAll(`#list-${k} .fb-item`).forEach(e=>e.classList.remove('active-target')); document.getElementById(`item-${i}`).classList.add('active-target'); document.getElementById(`pid-${k}`).value=i; document.getElementById(`st-${k}`).innerHTML=`回复 <b>${u}</b>`; document.getElementById(`reset-${k}`).style.display='block'; document.getElementById(`in-${k}`).focus(); }
+        window.togglePreset=(k,c)=>{ document.getElementById(`pcode-${k}`).value=c; document.querySelectorAll(`#box-${k} .chip`).forEach(e=>e.classList.remove('selected')); document.getElementById(`chip-${k}-${c.replace('/','_')}`).classList.add('selected'); const i=document.getElementById(`in-${k}`); i.value=""; i.placeholder="[已选]"; i.disabled=true; document.getElementById(`reset-${k}`).style.display='block'; }
+        window.handleUserTyping=(k)=>{ document.getElementById(`pcode-${k}`).value=""; document.querySelectorAll(`#box-${k} .chip`).forEach(e=>e.classList.remove('selected')); }
+        window.unlockInput=(k)=>{ const i=document.getElementById(`in-${k}`); if(i.disabled){ i.disabled=false; i.placeholder="..."; i.focus(); handleUserTyping(k); }}
+        window.resetInputState=(k)=>{ document.getElementById(`pid-${k}`).value=""; document.getElementById(`pcode-${k}`).value=""; const i=document.getElementById(`in-${k}`); i.value=""; i.disabled=false; i.placeholder="..."; document.querySelectorAll(`#list-${k} .fb-item`).forEach(e=>e.classList.remove('active-target')); document.querySelectorAll(`#box-${k} .chip`).forEach(e=>e.classList.remove('selected')); document.getElementById(`st-${k}`).innerHTML="📝 评论"; document.getElementById(`reset-${k}`).style.display='none'; }
+        function updateProfileUI() { document.getElementById('u-name').innerHTML = currentUser ? `👋 ${currentUser.username}` + (currentUser.is_admin?' <span style="color:#ef4444">(Admin)</span>':'') : '未登录'; document.getElementById('btn-logout').style.display = currentUser ? 'block' : 'none'; }
+        async function doLogout() { await auth.signOut(); location.reload(); }
+        function nav(id) { document.querySelectorAll('.page').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); if(id==='admin') loadPending(); toggleSidebar(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-
-        // ================= ⚔️ 对战 (省略，功能不变) =================
-        // 为了节省篇幅，这里假设 duel 功能代码与 v55 相同...
-        async function findMatch() { alert("对战功能代码见v55，为了简洁此处省略"); } 
     </script>
 </body>
 </html>
