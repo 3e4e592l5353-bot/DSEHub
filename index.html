@@ -117,8 +117,19 @@
 
         .menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 100; background: #fff; border-radius: 8px; padding: 5px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         @media (max-width: 768px) { .sidebar { position: fixed; transform: translateX(-100%); width: 240px; } .sidebar.active { transform: translateX(0); } .menu-btn { display: block; } .page { padding: 80px 15px 20px 15px; } .card { padding: 20px; } }
-    </style>
-</head>
+        
+        /* 👇👇👇 在这里插入动画代码 👇👇👇 */
+        body, .sidebar, .card, .nav-item, .item, button, input, textarea, select, .g-card, .tag, .status-badge {
+            transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.5s ease,
+                        box-shadow 0.5s ease !important;
+        }
+        body { min-height: 100vh; width: 100%; }
+        .sidebar { transition: transform 0.3s ease, background 0.6s ease, border-color 0.6s ease !important; }
+        /* 👆👆👆 插入结束 👆👆👆 */
+
+    </style> </head>
 <body>
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     
@@ -439,3 +450,4 @@
     </script>
 </body>
 </html>
+
