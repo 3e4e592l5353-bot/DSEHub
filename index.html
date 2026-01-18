@@ -2008,43 +2008,36 @@
         // ================= 用户资料管理 =================
         async function loadProfile() {
             try {
-                console.log('加载用户资料');
+                if (!user) {
+                    // 匿名用户
+                    profile = { username: '訪客', score: 0 };
+                    updateUserUI();
+                    return;
+                }
                 
-                // 简单查询，不尝试创建
-                let { data, error } = await sb
+                // 尝试获取用户资料
+                const { data, error } = await sb
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
-                    .maybeSingle();  // 使用maybeSingle而不是single
+                    .maybeSingle();
                 
-                if (data) {
-                    profile = data;
-                } else {
-                    // 如果不存在，使用默认资料
+                if (error || !data) {
+                    // 资料不存在，创建默认
                     profile = {
                         id: user.id,
-                        username: user.email ? user.email.split('@')[0] : '用戶',
+                        username: user.email.split('@')[0],
                         score: 0,
                         is_admin: false
                     };
+                } else {
+                    profile = data;
                 }
                 
                 updateUserUI();
-                document.getElementById('auth-modal').style.display = 'none';
-                nav('home');
-                fetchHome();
                 
             } catch (error) {
-                console.error('加载用户资料错误:', error);
-                // 出错时也继续
-                profile = {
-                    id: user.id,
-                    username: '用戶',
-                    score: 0,
-                    is_admin: false
-                };
-                updateUserUI();
-                document.getElementById('auth-modal').style.display = 'none';
+                console.error('加载用户资料出错:', error);
             }
         }
         
@@ -4755,6 +4748,7 @@
     </script>
 </body>
 </html>
+
 
 
 
