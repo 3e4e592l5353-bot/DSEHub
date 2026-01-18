@@ -2008,55 +2008,41 @@
         // ================= 用户资料管理 =================
         async function loadProfile() {
             try {
-                console.log('正在加载用户资料，用户ID:', user.id);
+                console.log('加载用户资料');
                 
-                // 尝试获取用户资料
+                // 简单查询，不尝试创建
                 let { data, error } = await sb
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();  // 使用maybeSingle而不是single
                 
-                console.log('查询结果:', { data, error });
-                
-                if (error) {
-                    console.log('用户资料不存在，跳过创建');
-                    
-                    // 不尝试创建，直接使用默认访客资料
+                if (data) {
+                    profile = data;
+                } else {
+                    // 如果不存在，使用默认资料
                     profile = {
                         id: user.id,
                         username: user.email ? user.email.split('@')[0] : '用戶',
-                        email: user.email,
                         score: 0,
                         is_admin: false
                     };
-                    
-                    console.log('使用默认资料:', profile);
-                } else {
-                    console.log('找到用户资料:', data);
-                    profile = data;
                 }
                 
-                // 更新UI
                 updateUserUI();
-                
-                // 隐藏登录弹窗
                 document.getElementById('auth-modal').style.display = 'none';
-                
-                // 导航到首页
                 nav('home');
+                fetchHome();
                 
             } catch (error) {
-                console.error('加载用户资料时发生错误:', error);
-                
-                // 发生错误时也设置默认资料
+                console.error('加载用户资料错误:', error);
+                // 出错时也继续
                 profile = {
                     id: user.id,
                     username: '用戶',
                     score: 0,
                     is_admin: false
                 };
-                
                 updateUserUI();
                 document.getElementById('auth-modal').style.display = 'none';
             }
@@ -2295,11 +2281,6 @@
         }
 
         async function sendChat() {
-            if (!profile) {
-                showNotification('請先登入', 'warning');
-                return;
-            }
-            
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
             
@@ -2314,33 +2295,34 @@
             }
             
             try {
-                // 使用你提供的feedbacks表结构
+                const messageData = {
+                    author_name: profile?.username || '匿名用戶',
+                    content: content,
+                    status: 'normal'
+                };
+                
+                // 只添加user_id如果用户已登录
+                if (user?.id) {
+                    messageData.user_id = user.id;
+                }
+                
                 const { error } = await sb
                     .from('feedbacks')
-                    .insert({
-                        author_name: profile.username,
-                        content: content,
-                        status: 'normal',
-                        user_id: user.id,
-                        created_at: new Date().toISOString()
-                    });
+                    .insert(messageData);
                 
                 if (error) {
+                    console.error('发送错误:', error);
                     showNotification('發送失敗: ' + error.message, 'error');
                     return;
                 }
                 
-                // 清空输入框并刷新列表
                 input.value = '';
                 fetchChat();
-                
-                // 更新用户积分
-                updateUserScore(2);
-                
                 showNotification('留言發送成功！', 'success');
+                
             } catch (error) {
                 console.error('發送留言失敗:', error);
-                showNotification('發送失敗，請稍後重試', 'error');
+                showNotification('發送失敗', 'error');
             }
         }
 
@@ -4006,21 +3988,9 @@
 
         // ================= 模块D: 投稿中心 =================
         async function submitKnowledge() {
-            if (!profile) {
-                showNotification('請先登入', 'warning');
-                return;
-            }
-            
-            // 獲取選中的科目
+            // 获取数据...
             const selectedCapsule = document.querySelector('#submit-capsules .capsule.active');
-            if (!selectedCapsule) {
-                showNotification('請選擇科目', 'warning');
-                return;
-            }
-            
-            const subjectName = selectedCapsule.textContent;
-            const subjectKey = SUBJECTS.find(s => s.name === subjectName)?.key || subjectName;
-            
+            const subjectKey = SUBJECTS.find(s => s.name === selectedCapsule?.textContent)?.key || 'o';
             const title = document.getElementById('sub-title').value.trim();
             const content = document.getElementById('sub-content').value.trim();
             const example = document.getElementById('sub-example').value.trim();
@@ -4030,95 +4000,49 @@
                 return;
             }
             
-            if (title.length > 100) {
-                showNotification('標題不能超過100字', 'warning');
-                return;
-            }
-            
-            if (content.length > 700) {
-                showNotification('內容不能超過700字', 'warning');
-                return;
-            }
-            
             try {
-                // 🔧 修复Bug：数据库字段名不匹配
+                const submissionData = {
+                    category: subjectKey,
+                    title: title,
+                    content: content,
+                    example: example || '',
+                    author_name: profile?.username || '匿名用戶',
+                    status: 'pending'
+                };
+                
+                // 只添加user_id如果用户已登录
+                if (user?.id) {
+                    submissionData.user_id = user.id;
+                }
+                
                 const { error } = await sb
                     .from('submissions')
-                    .insert({
-                        category: subjectKey, // 🔧 修复：使用category而不是cat
-                        title: title,
-                        description: content.substring(0, 100), // 🔧 修复：使用description字段
-                        content: content,
-                        example: example,
-                        author_name: profile.username,
-                        user_id: user.id,
-                        status: 'pending', // 添加状态字段
-                        created_at: new Date().toISOString()
-                    });
+                    .insert(submissionData);
                 
                 if (error) {
-                    showNotification('提交失敗: ' + error.message, 'error');
+                    console.error('提交错误:', error);
+                    showNotification('提交失败: ' + error.message, 'error');
                     return;
                 }
                 
-                showNotification('知識點提交成功！', 'success');
+                showNotification('提交成功！', 'success');
                 
-                // 清空表單
+                // 清空表单
                 document.getElementById('sub-title').value = '';
                 document.getElementById('sub-content').value = '';
                 document.getElementById('sub-example').value = '';
                 
-                // 更新用戶積分
-                updateUserScore(10);
-            } catch (error) {
-                console.error('提交知識點失敗:', error);
-                showNotification('提交失敗，請稍後重試', 'error');
-            }
-        }
-
-        async function submitMessage() {
-            const content = document.getElementById('sub-msg').value.trim();
-            
-            if (!content) {
-                showNotification('請輸入留言內容', 'warning');
-                return;
-            }
-            
-            if (content.length > 500) {
-                showNotification('留言內容不能超過500字', 'warning');
-                return;
-            }
-            
-            if (!profile) {
-                showNotification('請先登入', 'warning');
-                return;
-            }
-            
-            try {
-                const { error } = await sb
-                    .from('feedbacks')
-                    .insert({
-                        author_name: profile.username,
-                        content: content,
-                        status: 'normal',
-                        user_id: user.id,
-                        created_at: new Date().toISOString()
-                    });
-                
-                if (error) {
-                    showNotification('提交失敗: ' + error.message, 'error');
-                    return;
+                // 更新积分
+                if (profile) {
+                    profile.score += 10;
+                    updateUserUI();
                 }
                 
-                showNotification('留言提交成功！', 'success');
-                document.getElementById('sub-msg').value = '';
-                nav('chat');
             } catch (error) {
-                console.error('提交留言失敗:', error);
-                showNotification('提交失敗，請稍後重試', 'error');
+                console.error('提交异常:', error);
+                showNotification('提交失败', 'error');
             }
         }
-
         // ================= 模块E: 设定 =================
         function changeTheme(theme) {
             // 移除所有主题类
@@ -4841,6 +4765,7 @@
     </script>
 </body>
 </html>
+
 
 
 
