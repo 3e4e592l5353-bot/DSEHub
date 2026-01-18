@@ -1590,16 +1590,13 @@
         <div id="view-submit" class="page">
             <h1 style="margin-bottom: 25px; color: var(--text);">✏️ 投稿中心</h1>
             <div class="game-container">
-                <!-- 投稿類型選擇 -->
-                <div style="display: flex; gap: 12px; margin-bottom: 25px;">
-                    <button class="ghost" id="btn-know" onclick="setSubmitType('know')" style="flex: 1; padding: 16px;">
-                        <i class="fas fa-book"></i> 知識點投稿
-                    </button>
-                    <button class="ghost" id="btn-chat" onclick="setSubmitType('chat')" style="flex: 1; padding: 16px;">
-                        <i class="fas fa-comment"></i> 留言投稿
-                    </button>
-                </div>
-
+        <!-- 投稿類型選擇 -->
+        <div style="display: flex; gap: 12px; margin-bottom: 25px;">
+            <button style="background: var(--accent); color: white; flex: 1; padding: 16px;">
+                <i class="fas fa-book"></i> 知識點投稿
+            </button>
+        </div>
+        
                 <!-- 知識點投稿表單 -->
                 <div id="form-know">
                     <div style="margin-bottom: 20px;">
@@ -1618,17 +1615,8 @@
                         <i class="fas fa-paper-plane"></i> 提交知識點
                     </button>
                 </div>
-
-                <!-- 留言投稿表單 -->
-                <div id="form-chat" style="display: none;">
-                    <textarea id="sub-msg" rows="4" placeholder="輸入你想分享的留言內容..." style="color: var(--text); margin-bottom: 20px;"></textarea>
-                    <button onclick="submitMessage()" style="padding: 16px;">
-                        <i class="fas fa-paper-plane"></i> 提交留言
-                    </button>
-                </div>
             </div>
         </div>
-
         <!-- 設定頁面 -->
         <div id="view-settings" class="page">
             <h1 style="margin-bottom: 25px; color: var(--text);">⚙️ 設定</h1>
@@ -1903,16 +1891,21 @@
                 document.getElementById('auth-modal').style.display = 'flex';
             }
             
-            // 载入保存的主题
-            const savedTheme = localStorage.getItem('dsehub-theme');
-            if (savedTheme) {
-                changeTheme(savedTheme);
+            // 载入保存的主题（修复：使用try-catch避免错误）
+            try {
+                const savedTheme = localStorage.getItem('dsehub-theme');
+                if (savedTheme) {
+                    // 直接调用changeTheme，不依赖event
+                    changeTheme(savedTheme);
+                }
+            } catch (error) {
+                console.error('加载主题失败:', error);
             }
             
             // 载入游戏记录
             loadGameRecords();
         };
-
+        
         function initUI() {
             renderSubjectCapsules('subject-capsules', 'all');
             renderSubjectCapsules('submit-capsules', 'chi');
@@ -2107,15 +2100,14 @@
             document.getElementById('home-list').innerHTML = '';
             
             try {
-                // 构建查询（使用你提供的submissions表结构）
+                // 构建查询
                 let query = sb
                     .from('submissions')
                     .select('*');
                 
-                // 🔧 修复Bug：数据库字段是category，不是cat
-                // 科目筛选（使用category字段）
+                // 科目筛选
                 if (currentSubject !== 'all') {
-                    query = query.eq('category', currentSubject); // 修复：使用category而不是cat
+                    query = query.eq('category', currentSubject);
                 }
                 
                 // 搜索筛选
@@ -2128,21 +2120,40 @@
                 
                 if (error) {
                     console.error('獲取知識庫失敗:', error);
-                    showNotification('加載知識庫失敗', 'error');
+                    
+                    // 显示友好的错误信息
+                    document.getElementById('home-list').innerHTML = `
+                        <div class="glass" style="text-align: center; padding: 60px 20px; color: var(--text-sub);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 50px; margin-bottom: 20px; color: #FF9500;"></i>
+                            <h3 style="margin: 0 0 15px 0; color: var(--text);">無法加載知識庫</h3>
+                            <p style="margin: 0; color: var(--text-sub);">權限問題，請檢查數據庫設置</p>
+                            <p style="margin: 10px 0; color: var(--text-light); font-size: 14px;">${error.message}</p>
+                            <button onclick="fetchHome()" class="ghost small" style="margin-top: 20px;">
+                                <i class="fas fa-sync-alt"></i> 重新嘗試
+                            </button>
+                        </div>
+                    `;
                     return;
                 }
                 
                 // 渲染结果
                 renderKnowledgeList(data);
+                
             } catch (error) {
                 console.error('知識庫查詢錯誤:', error);
-                showNotification('網絡錯誤，請稍後重試', 'error');
+                document.getElementById('home-list').innerHTML = `
+                    <div class="glass" style="text-align: center; padding: 60px 20px; color: var(--text-sub);">
+                        <i class="fas fa-network-wired" style="font-size: 50px; margin-bottom: 20px; color: var(--text-light);"></i>
+                        <h3 style="margin: 0 0 15px 0; color: var(--text);">網絡錯誤</h3>
+                        <p style="margin: 0; color: var(--text-sub);">請稍後重試</p>
+                    </div>
+                `;
             } finally {
-                // 隐藏加载动画
+                // 隱藏加載動畫
                 document.getElementById('home-loading').style.display = 'none';
             }
         }
-
+        
         function renderKnowledgeList(items) {
             const container = document.getElementById('home-list');
             
@@ -2297,8 +2308,8 @@
                 return;
             }
             
-            if (content.length > 500) {
-                showNotification('留言內容不能超過500字', 'warning');
+            if (content.length > 300) {
+                showNotification('留言內容不能超過300字', 'warning');
                 return;
             }
             
@@ -3994,33 +4005,6 @@
         }
 
         // ================= 模块D: 投稿中心 =================
-        function setSubmitType(type) {
-            const knowBtn = document.getElementById('btn-know');
-            const chatBtn = document.getElementById('btn-chat');
-            const knowForm = document.getElementById('form-know');
-            const chatForm = document.getElementById('form-chat');
-            
-            if (type === 'know') {
-                knowBtn.classList.remove('ghost');
-                knowBtn.style.background = 'var(--accent)';
-                knowBtn.style.color = 'white';
-                chatBtn.classList.add('ghost');
-                chatBtn.style.background = 'transparent';
-                chatBtn.style.color = 'var(--text-sub)';
-                knowForm.style.display = 'block';
-                chatForm.style.display = 'none';
-            } else {
-                chatBtn.classList.remove('ghost');
-                chatBtn.style.background = 'var(--accent)';
-                chatBtn.style.color = 'white';
-                knowBtn.classList.add('ghost');
-                knowBtn.style.background = 'transparent';
-                knowBtn.style.color = 'var(--text-sub)';
-                knowForm.style.display = 'none';
-                chatForm.style.display = 'block';
-            }
-        }
-
         async function submitKnowledge() {
             if (!profile) {
                 showNotification('請先登入', 'warning');
@@ -4051,8 +4035,8 @@
                 return;
             }
             
-            if (content.length > 2000) {
-                showNotification('內容不能超過2000字', 'warning');
+            if (content.length > 700) {
+                showNotification('內容不能超過700字', 'warning');
                 return;
             }
             
@@ -4145,12 +4129,13 @@
                 document.body.classList.add('theme-' + theme);
             }
             
-            // 更新主题按钮状态
+            // 更新主题按钮状态（修复：使用参数而不是event）
             document.querySelectorAll('.theme-color').forEach(btn => {
                 btn.classList.remove('active');
+                if (btn.classList.contains('theme-' + theme)) {
+                    btn.classList.add('active');
+                }
             });
-            
-            event.target.classList.add('active');
             
             // 根据主题更新CSS变量
             const accentColors = {
@@ -4168,7 +4153,7 @@
             // 保存主题偏好
             localStorage.setItem('dsehub-theme', theme);
             
-            showNotification(`已切換到${event.target.title}`, 'success');
+            showNotification(`已切換到${theme}主題`, 'success');
         }
 
         async function toggleAdmin() {
@@ -4856,5 +4841,6 @@
     </script>
 </body>
 </html>
+
 
 
