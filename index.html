@@ -1142,6 +1142,46 @@
         .mb-30 { margin-bottom: 30px; }
         .p-20 { padding: 20px; }
         .p-30 { padding: 30px; }
+        
+        /* ================= 私密留言標記 ================= */
+        .private-message {
+            position: relative;
+            border-left: 4px solid #AF52DE !important;
+            background: rgba(175, 82, 222, 0.05) !important;
+        }
+        
+        .private-message::before {
+            content: "🔒 私密留言";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #AF52DE;
+            background: rgba(175, 82, 222, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        /* ================= 管理員操作按鈕 ================= */
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-item {
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .admin-item:hover {
+            background: var(--glass-bg);
+        }
     </style>
 </head>
 <body class="theme-default">
@@ -1193,17 +1233,17 @@
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
                 <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); 
                     display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">
-                    <span id="user-avatar">訪</span>
+                    <span id="user-avatar">用</span>
                 </div>
                 <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: bold; color: var(--menu-text); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="u-nm">訪客</div>
-                    <div style="font-size: 13px; color: var(--text-sub);" id="u-sc">0 分</div>
+                    <div style="font-weight: bold; color: var(--menu-text); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="u-nm">請登入</div>
+                    <div style="font-size: 13px; color: var(--text-sub);" id="u-sc">- 分</div>
                 </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <button class="small ghost" onclick="showAccountSwitcher()">
-                    <i class="fas fa-exchange-alt"></i> 切換
+                <button class="small ghost" onclick="switchToLogin()">
+                    <i class="fas fa-sign-in-alt"></i> 登入
                 </button>
                 <button class="small ghost" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> 登出
@@ -1261,6 +1301,24 @@
                 <button onclick="sendChat()" style="width: auto; padding: 12px 25px;">
                     <i class="fas fa-paper-plane"></i> 發送
                 </button>
+            </div>
+            <!-- 私密留言設置 -->
+            <div class="glass" style="padding: 20px; margin-top: 15px;">
+                <div style="font-size: 14px; color: var(--text-sub); margin-bottom: 10px; font-weight: 500;">留言隱私設置：</div>
+                <div style="display: flex; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="visibility" value="public" checked>
+                        <span style="color: var(--text);">公開留言</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="visibility" value="private">
+                        <span style="color: var(--text);">私密留言</span>
+                    </label>
+                </div>
+                <div id="private-settings" style="margin-top: 15px; display: none;">
+                    <div style="font-size: 14px; color: var(--text-sub); margin-bottom: 8px;">指定接收用戶（用戶名）：</div>
+                    <input id="target-user" placeholder="輸入用戶名，留空則為僅自己可見" style="margin: 0; color: var(--text);">
+                </div>
             </div>
         </div>
 
@@ -1633,11 +1691,11 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                     <div class="glass" style="padding: 20px; border: none; background: var(--card-bg);">
                         <div style="font-size: 14px; color: var(--text-light); margin-bottom: 8px;">用戶名</div>
-                        <div style="font-size: 18px; font-weight: bold; color: var(--text);" id="set-u-nm">訪客</div>
+                        <div style="font-size: 18px; font-weight: bold; color: var(--text);" id="set-u-nm">請登入</div>
                     </div>
                     <div class="glass" style="padding: 20px; border: none; background: var(--card-bg);">
                         <div style="font-size: 14px; color: var(--text-light); margin-bottom: 8px;">積分</div>
-                        <div style="font-size: 18px; font-weight: bold; color: var(--accent);" id="set-u-sc">0</div>
+                        <div style="font-size: 18px; font-weight: bold; color: var(--accent);" id="set-u-sc">-</div>
                     </div>
                 </div>
 
@@ -1720,11 +1778,6 @@
                 <button class="ghost" style="width: 100%; margin-bottom: 10px;" onclick="auth('up')">
                     <i class="fas fa-user-plus"></i> 註冊新帳號
                 </button>
-                
-                <!-- 添加访客按钮 -->
-                <button class="ghost" style="width: 100%; background: rgba(0,0,0,0.05);" onclick="enterAsGuest()">
-                    <i class="fas fa-user-clock"></i> 以訪客身份進入
-                </button>
             </div>
             
             <p id="auth-err" style="color: #FF3B30; font-size: 13px; margin-top: 15px; text-align: center;"></p>
@@ -1778,6 +1831,7 @@
         let currentQuestionIndex = 0;
         let duelTimer = null;
         let timeLeft = 30;
+        let allUsers = []; // 存储所有用户用于私密留言
 
         // 香港DSE科目分类
         const SUBJECTS = [
@@ -1940,11 +1994,54 @@
             
             // 载入游戏记录
             loadGameRecords();
+            
+            // 设置留言可见性切换事件
+            setupVisibilityToggle();
         };
         
         function initUI() {
             renderSubjectCapsules('subject-capsules', 'all');
             renderSubjectCapsules('submit-capsules', 'chi');
+        }
+
+        // ================= 私密留言设置 =================
+        function setupVisibilityToggle() {
+            const radios = document.querySelectorAll('input[name="visibility"]');
+            const privateSettings = document.getElementById('private-settings');
+            
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'private') {
+                        privateSettings.style.display = 'block';
+                        // 加载用户列表用于选择
+                        loadUsersForPrivateMessage();
+                    } else {
+                        privateSettings.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        async function loadUsersForPrivateMessage() {
+            if (!user) return;
+            
+            try {
+                const { data, error } = await sb
+                    .from('profiles')
+                    .select('id, username')
+                    .neq('id', user.id)
+                    .limit(50);
+                
+                if (!error && data) {
+                    allUsers = data;
+                    
+                    // 可以在这里添加自动完成功能
+                    const targetInput = document.getElementById('target-user');
+                    // 简化处理：用户手动输入用户名
+                }
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+            }
         }
 
         // ================= UI渲染函数 =================
@@ -2004,17 +2101,13 @@
                     <div style="margin-bottom: 20px;">
                         <div style="background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 10px;">
                             <div style="font-weight: bold; color: var(--text); margin-bottom: 5px;">當前帳號</div>
-                            <div style="color: var(--text-sub); font-size: 14px;">${profile?.username || '訪客'}</div>
+                            <div style="color: var(--text-sub); font-size: 14px;">${profile?.username || '未登入'}</div>
                         </div>
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button onclick="enterAsGuest()" class="ghost">
-                            <i class="fas fa-user-clock"></i> 切換到訪客模式
-                        </button>
-                        
                         <button onclick="switchToLogin()">
-                            <i class="fas fa-sign-in-alt"></i> 使用其他帳號登入
+                            <i class="fas fa-sign-in-alt"></i> 登入帳號
                         </button>
                         
                         <button onclick="createNewAccount()" class="ghost">
@@ -2051,46 +2144,6 @@
             document.getElementById('lg-p').value = '';
             document.querySelectorAll('.modal-mask').forEach(m => m.remove());
             document.getElementById('auth-modal').style.display = 'flex';
-        }
-
-        // ================= 访客模式 =================
-        async function enterAsGuest() {
-            try {
-                // 1. 确保退出当前登录
-                await sb.auth.signOut();
-                
-                // 2. 设置访客资料
-                user = null;
-                profile = {
-                    id: null,
-                    username: '訪客',
-                    score: 0,
-                    is_admin: false
-                };
-                
-                // 3. 更新UI
-                updateUserUI();
-                
-                // 4. 隐藏登录弹窗
-                document.getElementById('auth-modal').style.display = 'none';
-                
-                // 5. 关闭其他弹窗
-                document.querySelectorAll('.modal-mask').forEach(m => m.remove());
-                
-                // 6. 导航到首页
-                nav('home');
-                
-                // 7. 显示通知
-                showNotification('歡迎，訪客！部分功能可能受限。', 'info');
-                
-            } catch (error) {
-                console.error('进入访客模式失败:', error);
-                // 即使失败也继续
-                user = null;
-                profile = { username: '訪客', score: 0 };
-                updateUserUI();
-                document.getElementById('auth-modal').style.display = 'none';
-            }
         }
 
         // ================= 认证相关 =================
@@ -2138,11 +2191,11 @@
                 profile = null;
                 
                 // 2. 更新UI
-                document.getElementById('u-nm').innerText = '訪客';
-                document.getElementById('user-avatar').innerText = '訪';
-                document.getElementById('u-sc').innerText = '0 分';
-                document.getElementById('set-u-nm').innerText = '訪客';
-                document.getElementById('set-u-sc').innerText = '0';
+                document.getElementById('u-nm').innerText = '請登入';
+                document.getElementById('user-avatar').innerText = '請';
+                document.getElementById('u-sc').innerText = '- 分';
+                document.getElementById('set-u-nm').innerText = '請登入';
+                document.getElementById('set-u-sc').innerText = '-';
                 
                 // 3. 调用Supabase登出
                 const { error } = await sb.auth.signOut();
@@ -2153,15 +2206,13 @@
                 } else {
                     showNotification('已成功登出', 'success');
                     
-                    // 4. 刷新页面（最可靠的方法）
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    // 4. 显示登录弹窗
+                    document.getElementById('auth-modal').style.display = 'flex';
                 }
             } catch (error) {
                 console.error('登出异常:', error);
-                // 强制刷新
-                window.location.reload();
+                // 显示登录弹窗
+                document.getElementById('auth-modal').style.display = 'flex';
             }
         }
         
@@ -2180,14 +2231,25 @@
                 if (data) {
                     profile = data;
                 } else {
-                    // 如果不存在，使用默认资料
-                    profile = {
-                        id: user.id,
-                        username: user.email ? user.email.split('@')[0] : '用戶',
-                        email: user.email,
-                        score: 0,
-                        is_admin: false
-                    };
+                    // 如果不存在，创建新的用户资料
+                    const { data: newProfile, error } = await sb
+                        .from('profiles')
+                        .insert({
+                            id: user.id,
+                            username: user.email ? user.email.split('@')[0] : '用戶',
+                            email: user.email,
+                            score: 0,
+                            is_admin: false
+                        })
+                        .select()
+                        .single();
+                    
+                    if (error) {
+                        console.error('创建用户资料失败:', error);
+                        throw error;
+                    }
+                    
+                    profile = newProfile;
                 }
                 
                 updateUserUI();
@@ -2199,24 +2261,22 @@
                 
             } catch (error) {
                 console.error('加载用户资料错误:', error);
-                // 出错时也继续
-                profile = {
-                    id: user.id,
-                    username: '用戶',
-                    score: 0,
-                    is_admin: false
-                };
-                updateUserUI();
-                document.getElementById('auth-modal').style.display = 'none';
+                showNotification('加载用户资料失败，请重新登录', 'error');
+                document.getElementById('auth-modal').style.display = 'flex';
             }
         }
         
         function updateUserUI() {
             if (!profile) {
-                profile = { username: '訪客', score: 0 };
+                document.getElementById('u-nm').innerText = '請登入';
+                document.getElementById('user-avatar').innerText = '請';
+                document.getElementById('u-sc').innerText = '- 分';
+                document.getElementById('set-u-nm').innerText = '請登入';
+                document.getElementById('set-u-sc').innerText = '-';
+                return;
             }
             
-            const username = profile.username || '訪客';
+            const username = profile.username || '用戶';
             document.getElementById('u-nm').innerText = username;
             document.getElementById('set-u-nm').innerText = username;
             document.getElementById('user-avatar').innerText = username.charAt(0);
@@ -2369,21 +2429,46 @@
         // ================= 模块B: 留言板 =================
         async function fetchChat() {
             try {
-                const { data, error } = await sb
+                // 获取所有公开留言
+                let query = sb
                     .from('feedbacks')
                     .select('*')
+                    .eq('visibility', 'public')
                     .neq('status', 'deleted')
                     .order('created_at', { ascending: false })
-                    .limit(50);
+                    .limit(30);
                 
-                if (error) {
-                    console.error('獲取留言失敗:', error);
-                    return;
+                // 如果用户已登录，同时获取私密留言
+                if (user) {
+                    // 获取当前用户发送或接收的私密留言
+                    const privateQuery = sb
+                        .from('feedbacks')
+                        .select('*')
+                        .eq('visibility', 'private')
+                        .neq('status', 'deleted')
+                        .or(`user_id.eq.${user.id},target_user_id.eq.${user.id}`)
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+                    
+                    const [publicData, privateData] = await Promise.all([
+                        query,
+                        privateQuery
+                    ]);
+                    
+                    const allMessages = [...(privateData.data || []), ...(publicData.data || [])];
+                    // 按时间排序
+                    allMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    
+                    renderChatList(allMessages);
+                } else {
+                    // 未登录用户只看到公开留言
+                    const { data } = await query;
+                    renderChatList(data);
                 }
                 
-                renderChatList(data);
             } catch (error) {
-                console.error('留言板錯誤:', error);
+                console.error('獲取留言失敗:', error);
+                showNotification('獲取留言失敗', 'error');
             }
         }
 
@@ -2400,48 +2485,78 @@
                 return;
             }
             
-            container.innerHTML = messages.map((msg, index) => `
-                <div class="glass" style="padding: 20px; background: ${msg.status === 'reported' ? 'rgba(255,59,48,0.08)' : 'var(--card-bg)'}; 
-                    animation: slideIn 0.3s ease-out; animation-delay: ${index * 0.05}s; animation-fill-mode: both;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div style="font-weight: bold; color: var(--accent); display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-user-circle"></i>
-                            ${msg.author_name || '匿名'}
+            container.innerHTML = messages.map((msg, index) => {
+                // 检查是否为私密留言
+                const isPrivate = msg.visibility === 'private';
+                const isRecipient = user && msg.target_user_id === user.id;
+                const isSender = user && msg.user_id === user.id;
+                const isAdmin = profile && profile.is_admin;
+                
+                // 决定是否显示私密留言
+                let shouldDisplay = true;
+                if (isPrivate) {
+                    shouldDisplay = isRecipient || isSender || isAdmin;
+                }
+                
+                if (!shouldDisplay) return '';
+                
+                const isPrivateForRecipient = isPrivate && isRecipient;
+                const isPrivateFromSender = isPrivate && isSender;
+                
+                return `
+                    <div class="glass ${isPrivate ? 'private-message' : ''}" 
+                         style="padding: 20px; background: ${msg.status === 'reported' ? 'rgba(255,59,48,0.08)' : 'var(--card-bg)'}; 
+                         animation: slideIn 0.3s ease-out; animation-delay: ${index * 0.05}s; animation-fill-mode: both;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="font-weight: bold; color: ${isPrivate ? '#AF52DE' : 'var(--accent)'}; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-${isPrivate ? 'lock' : 'user-circle'}"></i>
+                                ${msg.author_name}
+                                ${isPrivateFromSender ? '→ ' + (allUsers.find(u => u.id === msg.target_user_id)?.username || '特定用戶') : ''}
+                                ${isPrivateForRecipient ? '🔒' : ''}
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-sub);">
+                                ${new Date(msg.created_at).toLocaleString('zh-HK', { 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                                ${msg.status === 'reported' ? ' ⚠️' : ''}
+                            </div>
                         </div>
-                        <div style="font-size: 12px; color: var(--text-sub);">
-                            ${new Date(msg.created_at).toLocaleString('zh-HK', { 
-                                month: 'short', 
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                            ${msg.status === 'reported' ? ' ⚠️' : ''}
+                        <div style="color: var(--text); white-space: pre-wrap; line-height: 1.6; font-size: 15px;">
+                            ${msg.content}
+                            ${isPrivate ? '<div style="font-size: 12px; color: #AF52DE; margin-top: 8px;"><i class="fas fa-info-circle"></i> 此留言僅特定用戶可見</div>' : ''}
                         </div>
+                        ${profile && profile.is_admin ? `
+                            <div class="admin-actions" style="margin-top: 12px;">
+                                <button class="small danger" onclick="deleteFeedback('${msg.id}')">
+                                    <i class="fas fa-trash"></i> 刪除
+                                </button>
+                                ${msg.status === 'reported' ? 
+                                    '<button class="small success" onclick="restoreFeedback(\'' + msg.id + '\')"><i class="fas fa-undo"></i> 恢復</button>' : 
+                                    '<button class="small warning" onclick="reportFeedback(\'' + msg.id + '\')"><i class="fas fa-flag"></i> 舉報</button>'
+                                }
+                            </div>
+                        ` : ''}
                     </div>
-                    <div style="color: var(--text); white-space: pre-wrap; line-height: 1.6; font-size: 15px;">
-                        ${msg.content}
-                    </div>
-                    ${profile && profile.is_admin ? `
-                        <div class="admin-actions" style="margin-top: 12px;">
-                            <button class="small danger" onclick="deleteFeedback('${msg.id}')">
-                                <i class="fas fa-trash"></i> 刪除
-                            </button>
-                            ${msg.status === 'reported' ? 
-                                '<button class="small success" onclick="restoreFeedback(\'' + msg.id + '\')"><i class="fas fa-undo"></i> 恢復</button>' : 
-                                '<button class="small warning" onclick="reportFeedback(\'' + msg.id + '\')"><i class="fas fa-flag"></i> 舉報</button>'
-                            }
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             // 滚动到顶部
             container.scrollTop = 0;
         }
 
         async function sendChat() {
+            if (!user) {
+                showNotification('請先登入才能發送留言', 'warning');
+                return;
+            }
+            
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+            const targetUsername = document.getElementById('target-user').value.trim();
             
             if (!content) {
                 showNotification('請輸入留言內容', 'warning');
@@ -2455,14 +2570,28 @@
             
             try {
                 const messageData = {
-                    author_name: profile?.username || '匿名用戶',
+                    author_name: profile.username,
                     content: content,
-                    status: 'normal'
+                    status: 'normal',
+                    user_id: user.id,
+                    visibility: visibility
                 };
                 
-                // 只添加user_id如果用户已登录
-                if (user?.id) {
-                    messageData.user_id = user.id;
+                // 如果是私密留言，需要找到目标用户ID
+                if (visibility === 'private' && targetUsername) {
+                    // 查找目标用户
+                    const { data: targetUser, error: userError } = await sb
+                        .from('profiles')
+                        .select('id')
+                        .eq('username', targetUsername)
+                        .single();
+                    
+                    if (userError || !targetUser) {
+                        showNotification('找不到指定的用戶，請檢查用戶名是否正確', 'error');
+                        return;
+                    }
+                    
+                    messageData.target_user_id = targetUser.id;
                 }
                 
                 const { error } = await sb
@@ -2476,8 +2605,9 @@
                 }
                 
                 input.value = '';
+                document.getElementById('target-user').value = '';
                 fetchChat();
-                showNotification('留言發送成功！', 'success');
+                showNotification(visibility === 'private' ? '私密留言發送成功！' : '留言發送成功！', 'success');
                 
             } catch (error) {
                 console.error('發送留言失敗:', error);
@@ -2488,6 +2618,11 @@
         // ================= 游戏模块 =================
         // 1. 连连看游戏
         async function startLinkGame() {
+            if (!user) {
+                showNotification('請先登入才能玩遊戲', 'warning');
+                return;
+            }
+            
             try {
                 // 从数据库获取知识点
                 const { data, error } = await sb
@@ -2836,6 +2971,11 @@
 
         // 2. 記憶遊戲
         async function startMemoryGame() {
+            if (!user) {
+                showNotification('請先登入才能玩遊戲', 'warning');
+                return;
+            }
+            
             try {
                 const { data, error } = await sb
                     .from('submissions')
@@ -3046,6 +3186,11 @@
 
         // 3. 配對遊戲
         async function startMatchGame() {
+            if (!user) {
+                showNotification('請先登入才能玩遊戲', 'warning');
+                return;
+            }
+            
             try {
                 const { data, error } = await sb
                     .from('submissions')
@@ -3262,6 +3407,11 @@
 
         // 4. 打字遊戲
         async function startTypingGame() {
+            if (!user) {
+                showNotification('請先登入才能玩遊戲', 'warning');
+                return;
+            }
+            
             try {
                 const { data, error } = await sb
                     .from('submissions')
@@ -3462,6 +3612,11 @@
 
         // 5. 問答遊戲
         async function startQuizGame() {
+            if (!user) {
+                showNotification('請先登入才能玩遊戲', 'warning');
+                return;
+            }
+            
             try {
                 const { data, error } = await sb
                     .from('submissions')
@@ -3688,6 +3843,11 @@
 
         // 排行榜
         function showLeaderboard() {
+            if (!user) {
+                showNotification('請先登入才能查看排行榜', 'warning');
+                return;
+            }
+            
             document.getElementById('game-selector').style.display = 'none';
             document.getElementById('leaderboard-container').style.display = 'block';
             document.getElementById('link-game-container').style.display = 'none';
@@ -3798,8 +3958,8 @@
 
         // ================= 模块C: 线上对决 =================
         async function createDuel() {
-            if (!profile) {
-                showNotification('請先登入', 'warning');
+            if (!user) {
+                showNotification('請先登入才能進行對戰', 'warning');
                 return;
             }
             
@@ -3859,7 +4019,7 @@
         }
 
         async function loadDuelHistory() {
-            if (!profile) return;
+            if (!user) return;
             
             try {
                 const { data, error } = await sb
@@ -4147,6 +4307,11 @@
 
         // ================= 模块D: 投稿中心 =================
         async function submitKnowledge() {
+            if (!user) {
+                showNotification('請先登入才能投稿', 'warning');
+                return;
+            }
+            
             // 获取数据...
             const selectedCapsule = document.querySelector('#submit-capsules .capsule.active');
             const subjectKey = SUBJECTS.find(s => s.name === selectedCapsule?.textContent)?.key || 'o';
@@ -4165,14 +4330,10 @@
                     title: title,
                     content: content,
                     example: example || '',
-                    author_name: profile?.username || '匿名用戶',
-                    status: 'pending'
+                    author_name: profile.username,
+                    status: 'pending',
+                    user_id: user.id
                 };
-                
-                // 只添加user_id如果用户已登录
-                if (user?.id) {
-                    submissionData.user_id = user.id;
-                }
                 
                 const { error } = await sb
                     .from('submissions')
@@ -4334,7 +4495,8 @@
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                     <div>
                                         <div style="font-weight: bold; color: var(--text); margin-bottom: 4px;">
-                                            <i class="fas fa-user-circle"></i> ${msg.author_name || '匿名'}
+                                            <i class="fas fa-user-circle"></i> ${msg.author_name}
+                                            ${msg.visibility === 'private' ? '<span style="color: #AF52DE; font-size: 12px;"> (私密)</span>' : ''}
                                         </div>
                                         <div style="font-size: 12px; color: var(--text-sub);">
                                             ${new Date(msg.created_at).toLocaleString('zh-HK')}
@@ -4348,6 +4510,7 @@
                                 </div>
                                 <div style="color: var(--text); white-space: pre-wrap; line-height: 1.5; padding: 12px; background: var(--card-bg); border-radius: 8px; margin-bottom: 12px;">
                                     ${msg.content}
+                                    ${msg.visibility === 'private' ? '<div style="font-size: 12px; color: #AF52DE; margin-top: 8px;"><i class="fas fa-lock"></i> 私密留言' + (msg.target_user_id ? '，目標用戶ID: ' + msg.target_user_id : '') + '</div>' : ''}
                                 </div>
                                 <div class="admin-actions">
                                     <button class="small danger" onclick="deleteFeedback('${msg.id}')">
@@ -4407,7 +4570,7 @@
                                             [${getSubjectName(item.category)}] ${item.title}
                                         </div>
                                         <div style="font-size: 12px; color: var(--text-sub);">
-                                            作者: ${item.author_name || '匿名'} | 
+                                            作者: ${item.author_name} | 
                                             時間: ${new Date(item.created_at).toLocaleDateString('zh-HK')}
                                         </div>
                                     </div>
@@ -4719,7 +4882,8 @@
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                 <div>
                                     <div style="font-weight: bold; color: var(--text); margin-bottom: 4px;">
-                                        <i class="fas fa-user-circle"></i> ${msg.author_name || '匿名'}
+                                        <i class="fas fa-user-circle"></i> ${msg.author_name}
+                                        ${msg.visibility === 'private' ? '<span style="color: #AF52DE; font-size: 12px;"> (私密)</span>' : ''}
                                     </div>
                                     <div style="font-size: 12px; color: var(--text-sub);">
                                         ${new Date(msg.created_at).toLocaleString('zh-HK')}
@@ -4733,6 +4897,7 @@
                             </div>
                             <div style="color: var(--text); white-space: pre-wrap; line-height: 1.5; padding: 12px; background: var(--card-bg); border-radius: 8px; margin-bottom: 12px;">
                                 ${msg.content}
+                                ${msg.visibility === 'private' ? '<div style="font-size: 12px; color: #AF52DE; margin-top: 8px;"><i class="fas fa-lock"></i> 私密留言' + (msg.target_user_id ? '，目標用戶ID: ' + msg.target_user_id : '') + '</div>' : ''}
                             </div>
                             <div class="admin-actions">
                                 <button class="small danger" onclick="deleteFeedback('${msg.id}')">
@@ -4770,7 +4935,7 @@
                                         [${getSubjectName(item.category)}] ${item.title}
                                     </div>
                                     <div style="font-size: 12px; color: var(--text-sub);">
-                                        作者: ${item.author_name || '匿名'} | 
+                                        作者: ${item.author_name} | 
                                         時間: ${new Date(item.created_at).toLocaleDateString('zh-HK')}
                                     </div>
                                 </div>
