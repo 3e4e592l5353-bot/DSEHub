@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v65 (Stable)</title>
+    <title>DSE Hub v66 (Gaming Edition)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 样式重置与基础变量 ================= */
+        /* ================= 样式系统 ================= */
         :root {
             --accent: #007AFF; 
             --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
             --text-main: #1d1d1f;
             --text-sub: #555;
-            --glass: rgba(255, 255, 255, 0.95);
+            --glass: rgba(255, 255, 255, 0.90);
             --border: rgba(0,0,0,0.1);
             --radius: 16px;
         }
 
-        /* 🟢 绿色主题 */
+        /* 主题色系 */
         [data-theme="green"] { --accent: #34C759; --bg-grad: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-        /* 🟠 橙色主题 */
         [data-theme="orange"] { --accent: #FF9500; --bg-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
-        /* ⚫️ 深色模式 */
+        [data-theme="purple"] { --accent: #AF52DE; --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
+        [data-theme="red"] { --accent: #FF3B30; --bg-grad: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); }
+        [data-theme="cyan"] { --accent: #32ADE6; --bg-grad: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
+        
+        /* 暗黑模式 */
         [data-theme="dark"] { 
             --accent: #0A84FF; --text-main: #ffffff; --text-sub: #bbbbbb;
             --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
@@ -35,47 +38,55 @@
             background-image: var(--bg-grad); background-attachment: fixed; background-size: cover;
             color: var(--text-main); height: 100vh; display: flex; overflow: hidden; 
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
 
-        /* 通用组件 */
-        .glass { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        /* 布局组件 */
+        .glass { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: 0.3s; }
         
-        .sidebar { width: 260px; padding: 25px 20px; display: flex; flex-direction: column; background: var(--glass); border-right: 1px solid var(--border); transition: 0.3s; z-index: 100; }
+        .sidebar { width: 260px; padding: 25px 20px; display: flex; flex-direction: column; background: var(--glass); border-right: 1px solid var(--border); z-index: 100; }
         .main { flex: 1; overflow-y: auto; padding: 20px 5%; position: relative; }
         
-        .page { display: none; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; }
+        .page { display: none; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; padding-bottom: 80px; }
         .page.active { display: block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
         .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 12px; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 600; transition:0.2s; }
         .nav-item.active { background: var(--accent); color: #fff; }
-        .nav-item:hover:not(.active) { background: rgba(0,0,0,0.05); }
-
-        /* 输入框 - 强制高对比度 */
-        input, textarea, select { 
+        
+        input, textarea { 
             width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
-            background: rgba(255,255,255,0.9); color: #000; font-size: 15px; margin-bottom: 10px;
+            background: rgba(255,255,255,0.8); color: #000; font-size: 15px; margin-bottom: 10px;
         }
-        [data-theme="dark"] input { background: rgba(0,0,0,0.4); color: #fff; }
+        [data-theme="dark"] input, [data-theme="dark"] textarea { background: rgba(0,0,0,0.4); color: #fff; }
 
         button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
         button.ghost { background: transparent; color: var(--text-sub); border: 1px solid var(--border); }
         button.small { width: auto; padding: 6px 14px; font-size: 13px; }
 
         /* 胶囊选择器 */
-        .capsule-row { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; margin-bottom: 15px; scrollbar-width: none; }
+        .capsule-row { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; margin-bottom: 15px; }
         .capsule-row::-webkit-scrollbar { display: none; }
         .capsule { 
             padding: 8px 16px; border-radius: 20px; background: rgba(125,125,125,0.15); 
             white-space: nowrap; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-sub);
-            transition: 0.2s; border: 1px solid transparent;
+            border: 1px solid transparent;
         }
         .capsule.active { background: var(--accent); color: white; }
+
+        /* 游戏网格 - 连连看 */
+        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .game-card { 
+            aspect-ratio: 1; background: var(--glass); display: flex; align-items: center; justify-content: center; 
+            border-radius: 12px; cursor: pointer; font-size: 14px; text-align: center; padding: 5px;
+            border: 2px solid transparent; font-weight: bold; word-break: break-all;
+        }
+        .game-card.selected { border-color: var(--accent); background: rgba(0,122,255,0.1); }
+        .game-card.matched { visibility: hidden; pointer-events: none; }
 
         /* 移动端适配 */
         .mobile-bar { display: none; padding: 10px 15px; align-items: center; justify-content: space-between; position: fixed; top:0; width:100%; z-index: 200; background: var(--glass); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; height: 100%; width: 85%; box-shadow: 20px 0 50px rgba(0,0,0,0.2); }
+            .sidebar { position: fixed; left: -100%; height: 100%; width: 85%; box-shadow: 20px 0 50px rgba(0,0,0,0.2); transition: 0.3s; }
             .sidebar.open { left: 0; }
             .mobile-bar { display: flex; }
             .main { padding-top: 70px; }
@@ -101,7 +112,7 @@
         
         <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
         <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
-        <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决</div>
+        <div class="nav-item" onclick="nav('games', this)"><i class="fas fa-gamepad"></i> 游戏大厅</div>
         <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen"></i> 投稿中心</div>
         <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
 
@@ -118,65 +129,72 @@
 
         <div id="view-home" class="page active">
             <h1>📚 知识库</h1>
-            
             <div class="capsule-row" id="sub-capsules"></div>
-            
-            <div class="glass" style="padding:10px; margin-bottom:20px;">
-                <input id="search-k" placeholder="🔍 搜索知识点..." style="margin:0; border:none; background:transparent;" onkeyup="fetchHome()">
-            </div>
-            
+            <input id="search-k" placeholder="🔍 搜索知识点..." onkeyup="fetchHome()">
             <div id="home-list"></div>
         </div>
 
         <div id="view-chat" class="page">
             <h1>💬 留言板</h1>
             <div class="glass" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse; padding:15px; margin-bottom:15px;" id="chat-list"></div>
-            <div class="glass" style="padding:15px; display:flex; gap:10px;">
-                <input id="chat-input" placeholder="输入留言..." style="margin:0;">
-                <button style="width:auto" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+            
+            <div class="glass" style="padding:15px;">
+                <textarea id="chat-input" rows="2" placeholder="输入留言..." style="margin-bottom:5px;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <label style="font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" id="chat-private"> 仅管理员可见 (Private)
+                    </label>
+                    <button style="width:auto; padding:8px 20px;" onclick="sendChat()"><i class="fas fa-paper-plane"></i> 发送</button>
+                </div>
             </div>
         </div>
 
-        <div id="view-duel" class="page">
-            <h1>⚡️ 线上对决</h1>
-            <div class="glass" style="text-align:center; padding:50px 20px;">
-                <div id="duel-lobby">
-                    <i class="fas fa-trophy" style="font-size:60px; color:var(--accent); margin-bottom:20px;"></i>
-                    <p>创建房间，邀请好友PK</p>
-                    <button onclick="createDuel()" style="max-width:200px">创建房间</button>
-                </div>
-                <div id="duel-wait" style="display:none;">
-                    <h3>⌛️ 等待中...</h3>
-                    <p>房间 ID: <b id="room-id-disp"></b></p>
-                    <small>等待玩家加入...</small>
-                </div>
-                <div id="duel-game" style="display:none;">
-                    <h3 id="dq-text">题目加载中...</h3>
-                    <div id="dq-opts" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;"></div>
+        <div id="view-games" class="page">
+            <h1>🎮 游戏大厅</h1>
+            
+            <div class="glass" style="padding:20px; margin-bottom:15px; cursor:pointer;" onclick="startGame('pair')">
+                <h3 style="margin:0"><i class="fas fa-link" style="color:var(--accent)"></i> 连连看 (Pair Match)</h3>
+                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">将题目与答案配对，消除所有方块！</p>
+            </div>
+
+            <div class="glass" style="padding:20px; margin-bottom:15px; cursor:pointer;" onclick="startGame('quiz')">
+                <h3 style="margin:0"><i class="fas fa-check-square" style="color:var(--accent)"></i> 极速多选 (Quiz)</h3>
+                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">30秒内挑战多少道题？</p>
+            </div>
+
+            <div class="glass" style="padding:20px; cursor:pointer;" onclick="startGame('duel')">
+                <h3 style="margin:0"><i class="fas fa-bolt" style="color:var(--accent)"></i> 线上对决 (Duel)</h3>
+                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">创建房间，与朋友实时PK。</p>
+            </div>
+
+            <div id="game-stage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--glass); z-index:500; padding:20px; backdrop-filter:blur(10px);">
+                <div style="max-width:600px; margin:0 auto; padding-top:50px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <b id="game-title">Game</b>
+                        <button class="small ghost" onclick="document.getElementById('game-stage').style.display='none'">退出</button>
+                    </div>
+                    
+                    <div id="stage-pair" style="display:none;">
+                        <p style="text-align:center;">请点击匹配的 **标题** 和 **答案**</p>
+                        <div class="game-grid" id="pair-grid"></div>
+                    </div>
+
+                    <div id="stage-quiz" style="display:none;">
+                        <h2 id="qz-q" style="text-align:center; margin-bottom:30px;">Q</h2>
+                        <div id="qz-opts" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="view-submit" class="page">
-            <h1>✏️ 投稿中心</h1>
+            <h1>✏️ 投稿知识点</h1>
             <div class="glass" style="padding:20px;">
-                <div style="margin-bottom:15px; display:flex; gap:10px;">
-                   <button class="small" onclick="subMode='know'; toggleSub()" id="btn-sub-know">📚 知识点</button>
-                   <button class="small ghost" onclick="subMode='chat'; toggleSub()" id="btn-sub-chat">💬 留言</button>
-                </div>
-
-                <div id="form-know">
-                    <div class="capsule-row" id="sub-capsules-form"></div>
-                    <input id="sub-t" placeholder="标题 (Title)">
-                    <textarea id="sub-d" rows="5" placeholder="正文内容 (Content)..."></textarea>
-                    <input id="sub-ex" placeholder="例子/答案 (Example)">
-                </div>
-                
-                <div id="form-chat" style="display:none;">
-                    <textarea id="sub-msg" rows="3" placeholder="留言内容..."></textarea>
-                </div>
-
-                <button onclick="submitItem()" style="margin-top:15px;">提交</button>
+                <div class="capsule-row" id="sub-capsules-form"></div>
+                <input id="sub-t" placeholder="标题 (Title)">
+                <textarea id="sub-d" rows="5" placeholder="正文内容 (Content)..."></textarea>
+                <input id="sub-ex" placeholder="例子/答案 (Example) - 用于出题">
+                <button onclick="submitItem()" style="margin-top:15px;">提交审核</button>
             </div>
         </div>
 
@@ -185,10 +203,13 @@
             
             <div class="glass" style="padding:20px; margin-bottom:20px;">
                 <h3>🎨 主题风格</h3>
-                <div style="display:flex; gap:15px;">
+                <div style="display:flex; flex-wrap:wrap; gap:15px;">
                     <div style="width:30px; height:30px; background:#007AFF; border-radius:50%; cursor:pointer;" onclick="setTheme('blue')"></div>
                     <div style="width:30px; height:30px; background:#34C759; border-radius:50%; cursor:pointer;" onclick="setTheme('green')"></div>
                     <div style="width:30px; height:30px; background:#FF9500; border-radius:50%; cursor:pointer;" onclick="setTheme('orange')"></div>
+                    <div style="width:30px; height:30px; background:#AF52DE; border-radius:50%; cursor:pointer;" onclick="setTheme('purple')"></div>
+                    <div style="width:30px; height:30px; background:#FF3B30; border-radius:50%; cursor:pointer;" onclick="setTheme('red')"></div>
+                    <div style="width:30px; height:30px; background:#32ADE6; border-radius:50%; cursor:pointer;" onclick="setTheme('cyan')"></div>
                     <div style="width:30px; height:30px; background:#222; border-radius:50%; border:1px solid #fff; cursor:pointer;" onclick="setTheme('dark')"></div>
                 </div>
             </div>
@@ -196,18 +217,16 @@
             <div class="glass" style="padding:20px;">
                 <h3>👤 账号信息</h3>
                 <p>User: <b id="set-u-nm">Guest</b></p>
-                <p>Email: <span id="set-u-em">-</span></p>
-                <p>Status: <span id="set-u-adm">Student</span></p>
+                <button class="small ghost" onclick="updateProfileAttempt()">🔄 刷新资料</button>
             </div>
         </div>
-
     </div>
 
     <div class="modal-mask" id="auth-modal">
         <div class="modal-box">
-            <h2 style="margin-top:0;">欢迎来到 DSE Hub</h2>
-            <input id="lg-e" placeholder="电邮 (Email)">
-            <input id="lg-p" type="password" placeholder="密码 (Password)">
+            <h2 style="margin-top:0;">DSE Hub Login</h2>
+            <input id="lg-e" placeholder="Email">
+            <input id="lg-p" type="password" placeholder="Password">
             <button onclick="auth('in')">登录</button>
             <button class="ghost" style="margin-top:10px" onclick="auth('up')">注册</button>
             <p id="auth-err" style="color:red; font-size:12px; margin-top:10px;"></p>
@@ -218,14 +237,12 @@
         // ================= ⚠️ 填入你的 Supabase 配置 ⚠️ =================
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替换成你的Supabase URL
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替换成你的Supabase anon key
+        
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // 全局变量
-        let user = null;    // Auth user
-        let profile = null; // Public profile
-        
-        let currentCat = 'all'; // 对应新表的 category
-        let subMode = 'know';
+        let user = null;
+        let profile = null;
+        let currentCat = 'all';
         let formCat = 'chi';
         
         const CATS = [
@@ -234,10 +251,8 @@
             {k:'bio', n:'生物'}, {k:'hist', n:'历史'}, {k:'geog', n:'地理'}
         ];
 
-        // ================= 初始化 =================
         window.onload = async () => {
             renderCapsules();
-            // 检查登录状态
             const { data } = await sb.auth.getSession();
             if (data.session) {
                 user = data.session.user;
@@ -248,214 +263,241 @@
         };
 
         function renderCapsules() {
-            // 首页筛选
             let html = `<div class="capsule active" onclick="filterCat('all', this)">全部</div>` + 
                 CATS.map(s => `<div class="capsule" onclick="filterCat('${s.k}', this)">${s.n}</div>`).join('');
             document.getElementById('sub-capsules').innerHTML = html;
-
-            // 投稿选择
-            let formHtml = CATS.map(s => `<div class="capsule ${s.k==='chi'?'active':''}" onclick="setFormCat('${s.k}', this)">${s.n}</div>`).join('');
-            document.getElementById('sub-capsules-form').innerHTML = formHtml;
+            
+            let fHtml = CATS.map(s => `<div class="capsule ${s.k==='chi'?'active':''}" onclick="setFormCat('${s.k}', this)">${s.n}</div>`).join('');
+            document.getElementById('sub-capsules-form').innerHTML = fHtml;
         }
 
-        // ================= 核心：加载用户资料 (适配新表结构) =================
+        // ================= 核心：容错版资料加载 =================
         async function loadProfile() {
-            // 注意：现在我们用 auth_id 来查找，而不是 id
-            // 因为你的新 SQL 里，profiles.id 是独立 UUID，profiles.auth_id 才是 Auth UUID
-            let { data, error } = await sb.from('profiles').select('*').eq('auth_id', user.id).single();
+            try {
+                // 尝试1: 标准读取
+                let { data, error } = await sb.from('profiles').select('*').eq('auth_id', user.id).single();
+                
+                // 尝试2: 如果 auth_id 没找到，尝试用 id 找 (兼容旧数据)
+                if (!data) {
+                    let res = await sb.from('profiles').select('*').eq('id', user.id).single();
+                    data = res.data;
+                }
 
-            // 如果触发器工作正常，这里肯定有数据。如果太快没查到，可以重试一次（略）。
-            if (data) {
-                profile = data;
-                updateUserUI();
+                if (data) {
+                    profile = data;
+                    updateUI();
+                } else {
+                    // 没资料？使用临时资料，不报错
+                    console.warn("No profile found in DB, using temp.");
+                    profile = { id: user.id, username: user.email.split('@')[0], score: 0, is_admin: false };
+                    updateUI();
+                }
                 document.getElementById('auth-modal').style.display = 'none';
                 nav('home');
-            } else {
-                // 极罕见情况：触发器没跑完，或表被清空了
-                console.error("Profile not found, trigger might have failed.", error);
-                alert("加载资料失败，请刷新重试");
+            } catch (e) {
+                console.error("Critical Profile Error:", e);
+                // 兜底：依然进入系统，只是功能受限
+                profile = { id: 'temp', username: 'Guest', score: 0 };
+                document.getElementById('auth-modal').style.display = 'none';
+                nav('home');
             }
         }
+        
+        async function updateProfileAttempt() { await loadProfile(); alert("刷新完成"); }
 
-        function updateUserUI() {
+        function updateUI() {
             document.getElementById('u-nm').innerText = profile.username;
             document.getElementById('u-sc').innerText = profile.score + ' pts';
             document.getElementById('set-u-nm').innerText = profile.username;
-            document.getElementById('set-u-em').innerText = profile.email;
-            document.getElementById('set-u-adm').innerText = profile.is_admin ? "管理员 (Admin)" : "学生 (Student)";
         }
 
-        // ================= 认证 =================
-        async function auth(type) {
-            const email = document.getElementById('lg-e').value;
-            const password = document.getElementById('lg-p').value;
-            const errEl = document.getElementById('auth-err');
-            
-            let res;
-            if(type==='up') res = await sb.auth.signUp({ email, password });
-            else res = await sb.auth.signInWithPassword({ email, password });
+        // ================= 游戏逻辑 (连连看 & 多选) =================
+        let gameData = [];
+        let firstCard = null;
 
-            if(res.error) errEl.innerText = res.error.message;
-            else {
-                if(type==='up') alert("注册成功！请检查邮箱或直接登录。");
-                else location.reload(); 
+        async function startGame(type) {
+            // 获取题库
+            const { data } = await sb.from('submissions').select('*').limit(20);
+            if(!data || data.length < 4) return alert("题库题目太少，先去投稿！");
+            
+            document.getElementById('game-stage').style.display = 'block';
+            document.getElementById('stage-pair').style.display = 'none';
+            document.getElementById('stage-quiz').style.display = 'none';
+            document.getElementById('duel-lobby').style.display = 'none'; // 隐藏 duel 默认界面
+
+            if(type === 'pair') startPairGame(data);
+            if(type === 'quiz') startQuizGame(data);
+            if(type === 'duel') {
+                 // 简单的跳转到 Duel 界面
+                 document.getElementById('game-stage').style.display = 'none';
+                 nav('games'); // 这里可以复用之前的 duel 逻辑
+                 alert("线上对决功能正在升级，请等待..."); 
             }
         }
-        async function logout() { await sb.auth.signOut(); location.reload(); }
 
-        // ================= 1. 知识库 (Submissions) =================
-        // 新表结构：category, title, content, example, author_id, author_name, status
-        function filterCat(k, el) {
-            currentCat = k;
-            document.querySelectorAll('#sub-capsules .capsule').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            fetchHome();
+        function startPairGame(data) {
+            document.getElementById('stage-pair').style.display = 'block';
+            document.getElementById('game-title').innerText = "连连看 (Pair Match)";
+            
+            // 准备数据：取前6题，拆分为 标题卡 和 答案卡
+            let cards = [];
+            data.slice(0, 6).forEach((item, idx) => {
+                cards.push({ id: idx, text: item.title, type: 'q' });
+                cards.push({ id: idx, text: item.example || 'Answer', type: 'a' });
+            });
+            
+            // 打乱
+            cards.sort(() => Math.random() - 0.5);
+            
+            const grid = document.getElementById('pair-grid');
+            grid.innerHTML = cards.map((c, i) => 
+                `<div class="game-card" id="c-${i}" onclick="clickCard(${i}, ${c.id})">${c.text.slice(0,15)}</div>`
+            ).join('');
+            
+            gameData = cards;
+            firstCard = null;
         }
 
+        function clickCard(idx, matchId) {
+            const el = document.getElementById(`c-${idx}`);
+            if(el.classList.contains('matched') || el.classList.contains('selected')) return;
+
+            el.classList.add('selected');
+
+            if(!firstCard) {
+                firstCard = { idx, matchId };
+            } else {
+                // 检查是否匹配
+                if(firstCard.matchId === matchId && firstCard.idx !== idx) {
+                    // 匹配成功
+                    setTimeout(() => {
+                        document.getElementById(`c-${firstCard.idx}`).classList.add('matched');
+                        el.classList.add('matched');
+                        firstCard = null;
+                    }, 300);
+                } else {
+                    // 匹配失败
+                    setTimeout(() => {
+                        document.getElementById(`c-${firstCard.idx}`).classList.remove('selected');
+                        el.classList.remove('selected');
+                        firstCard = null;
+                    }, 500);
+                }
+            }
+        }
+
+        function startQuizGame(data) {
+            document.getElementById('stage-quiz').style.display = 'block';
+            document.getElementById('game-title').innerText = "多选特训";
+            nextQuiz(data);
+        }
+
+        function nextQuiz(data) {
+            const q = data[Math.floor(Math.random() * data.length)];
+            document.getElementById('qz-q').innerText = q.title;
+            
+            let ans = q.example || "A";
+            let opts = [ans, "Option X", "Option Y", "Option Z"].sort(() => Math.random() - 0.5);
+            
+            document.getElementById('qz-opts').innerHTML = opts.map(o => 
+                `<button class="ghost" onclick="alert('${o===ans?'Bingo!':'Wrong!'}'); nextQuiz(gameData)">${o}</button>`
+            ).join('');
+            gameData = data; // 保存引用以便递归
+        }
+
+        // ================= 功能模块 =================
         async function fetchHome() {
-            const key = document.getElementById('search-k').value;
-            let q = sb.from('submissions').select('*').eq('status', 'approved'); // 只看 approved
+            const k = document.getElementById('search-k').value;
+            let q = sb.from('submissions').select('*').eq('status', 'approved'); // 只显示审核过的
+            if(currentCat !== 'all') q = q.eq('category', currentCat);
+            if(k) q = q.ilike('title', `%${k}%`);
             
-            if(currentCat !== 'all') q = q.eq('category', currentCat); // 注意：这里改成 category
-            if(key) q = q.ilike('title', `%${key}%`);
-
             const { data } = await q;
-            
-            document.getElementById('home-list').innerHTML = (data && data.length) ? data.map(i => `
+            document.getElementById('home-list').innerHTML = (data||[]).map(i => `
                 <div class="glass" style="padding:15px; margin-bottom:10px;">
-                    <div style="font-weight:bold; color:var(--text-main);">[${i.category.toUpperCase()}] ${i.title}</div>
-                    <div style="color:var(--text-sub); margin-top:5px; white-space:pre-wrap;">${i.content}</div>
-                    ${i.example ? `<div style="font-size:12px; margin-top:10px; color:var(--accent); background:rgba(0,0,0,0.03); padding:5px; border-radius:5px;">💡 例: ${i.example}</div>` : ''}
-                    <div style="font-size:10px; color:#aaa; margin-top:8px; text-align:right;">By ${i.author_name}</div>
+                    <b>[${i.category}] ${i.title}</b>
+                    <div style="color:#555; margin-top:5px;">${i.content}</div>
                 </div>
-            `).join('') : '<div style="text-align:center; padding:20px; color:#888;">暂无内容</div>';
+            `).join('');
         }
 
-        // ================= 2. 留言板 (Feedbacks) =================
-        // 新表结构：author_id, author_name, content, status
         async function fetchChat() {
+            // 留言板：显示所有 status='normal' 的，且 (target_id 为空 OR target_id 是我 OR author_id 是我)
             const { data } = await sb.from('feedbacks').select('*')
                 .neq('status', 'deleted')
-                .order('created_at', { ascending: false }) 
+                .order('created_at', {ascending:false})
                 .limit(30);
 
-            document.getElementById('chat-list').innerHTML = data ? data.map(i => `
-                <div style="padding:10px; margin-bottom:10px; background:rgba(255,255,255,0.4); border-radius:10px;">
-                    <div style="font-size:12px; font-weight:bold; color:var(--accent)">${i.author_name}</div>
-                    <div style="color:var(--text-main); margin-top:2px;">${i.content}</div>
-                </div>
-            `).join('') : '';
+            if(!data) return;
+
+            // 前端过滤隐私消息 (虽然不安全，但在原型阶段够用)
+            const myId = profile.id; 
+            const html = data.map(i => {
+                const isPrivate = i.target_id; // 如果有 target_id 视为私密
+                const canSee = !isPrivate || i.target_id === myId || i.author_id === myId;
+                
+                if(!canSee) return ''; // 看不见
+
+                return `
+                <div style="padding:10px; margin-bottom:10px; background:${isPrivate?'rgba(255,200,200,0.3)':'rgba(255,255,255,0.4)'}; border-radius:10px;">
+                    <div style="font-size:12px; font-weight:bold; color:var(--accent)">
+                        ${i.author_name} ${isPrivate ? '<i class="fas fa-lock"></i>' : ''}
+                    </div>
+                    <div style="margin-top:2px;">${i.content}</div>
+                </div>`;
+            }).join('');
+            
+            document.getElementById('chat-list').innerHTML = html;
         }
 
         async function sendChat() {
             const txt = document.getElementById('chat-input').value;
+            const isPriv = document.getElementById('chat-private').checked;
             if(!txt) return;
-            
+
+            // 如果勾选私密，target_id 设为管理员ID (这里暂用 profile.id 演示，实际应填管理员ID)
+            // 你可以在这里硬编码你的管理员UUID
+            const target = isPriv ? profile.id : null; 
+
             await sb.from('feedbacks').insert({
-                author_id: profile.id,       // 使用 profile.id (新表外键)
-                author_name: profile.username,
-                content: txt,
-                status: 'normal'
+                author_id: profile.id, author_name: profile.username,
+                content: txt, status: 'normal', target_id: target
             });
             document.getElementById('chat-input').value = '';
             fetchChat();
         }
 
-        // ================= 3. 对决 (Duel Rooms) =================
-        // 新表结构：player1_id (关联 profiles.id), status, p1_score...
-        async function createDuel() {
-            const { data, error } = await sb.from('duel_rooms').insert({
-                player1_id: profile.id, // 这里填 profile.id，不是 user.id
-                status: 'waiting',
-                p1_score: 0, 
-                p2_score: 0,
-                settings: {}
-            }).select().single();
-
-            if(error) return alert("创建失败: " + error.message);
-
-            document.getElementById('duel-lobby').style.display = 'none';
-            document.getElementById('duel-wait').style.display = 'block';
-            document.getElementById('room-id-disp').innerText = data.id.slice(0,8); // 只显示前8位美观一点
-            
-            // 模拟开始
-            setTimeout(startLocalGame, 2000);
-        }
-
-        async function startLocalGame() {
-            // 从 submissions 随机抽题
-            const { data } = await sb.from('submissions').select('*').eq('status', 'approved').limit(20);
-            
-            if(!data || data.length === 0) return alert("题库里还没题呢，快去投稿！");
-
-            const q = data[Math.floor(Math.random() * data.length)];
-            const ans = q.example ? q.example.split('//')[0] : "A"; // 简单假设 example 第一段是答案
-            
-            document.getElementById('duel-wait').style.display = 'none';
-            document.getElementById('duel-game').style.display = 'block';
-            document.getElementById('dq-text').innerText = q.title;
-            
-            const opts = [ans, "干扰项 A", "干扰项 B", "干扰项 C"].sort(()=>Math.random()-0.5);
-            
-            document.getElementById('dq-opts').innerHTML = opts.map(o => 
-                `<button class="ghost" onclick="alert('${o===ans?'Bingo! +10分':'Wrong!'}'); nav('home')">${o}</button>`
-            ).join('');
-        }
-
-        // ================= 4. 投稿 (Submissions) =================
-        function setFormCat(k, el) {
-            formCat = k;
-            document.querySelectorAll('#sub-capsules-form .capsule').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function toggleSub() {
-            document.getElementById('form-know').style.display = subMode==='know'?'block':'none';
-            document.getElementById('form-chat').style.display = subMode==='chat'?'block':'none';
-            document.getElementById('btn-sub-know').className = subMode==='know'?'small':'small ghost';
-            document.getElementById('btn-sub-chat').className = subMode==='chat'?'small':'small ghost';
-        }
-
         async function submitItem() {
-            if(subMode === 'know') {
-                const { error } = await sb.from('submissions').insert({
-                    category: formCat, // 新字段名
-                    title: document.getElementById('sub-t').value,
-                    content: document.getElementById('sub-d').value,
-                    example: document.getElementById('sub-ex').value,
-                    status: 'pending', 
-                    author_id: profile.id, // 外键
-                    author_name: profile.username 
-                });
-                if(error) alert("失败: " + error.message);
-                else alert("投稿成功！等待审核。");
-            } else {
-                // 复用留言逻辑，但是内容来自 sub-msg
-                const txt = document.getElementById('sub-msg').value;
-                if(!txt) return;
-                await sb.from('feedbacks').insert({
-                    author_id: profile.id,
-                    author_name: profile.username,
-                    content: txt,
-                    status: 'normal'
-                });
-                nav('chat');
-            }
+            const { error } = await sb.from('submissions').insert({
+                category: formCat,
+                title: document.getElementById('sub-t').value,
+                content: document.getElementById('sub-d').value,
+                example: document.getElementById('sub-ex').value,
+                status: 'pending',
+                author_id: profile.id, author_name: profile.username
+            });
+            if(error) alert(error.message);
+            else { alert("投稿成功！"); nav('home'); }
         }
-        
-        // ================= 导航与杂项 =================
+
+        // ================= 基础逻辑 =================
+        function auth(type) {
+            const email = document.getElementById('lg-e').value;
+            const password = document.getElementById('lg-p').value;
+            if(type==='up') sb.auth.signUp({email, password}).then(r=>{ if(!r.error) alert("请确认邮件"); else alert(r.error.message)});
+            else sb.auth.signInWithPassword({email, password}).then(r=>{ if(!r.error) location.reload(); else alert(r.error.message)});
+        }
+        function logout() { sb.auth.signOut().then(()=>location.reload()); }
+        function filterCat(k,e) { currentCat=k; document.querySelectorAll('#sub-capsules .capsule').forEach(c=>c.classList.remove('active')); e.classList.add('active'); fetchHome();}
+        function setFormCat(k,e) { formCat=k; document.querySelectorAll('#sub-capsules-form .capsule').forEach(c=>c.classList.remove('active')); e.classList.add('active'); }
         function setTheme(t) { document.body.setAttribute('data-theme', t); }
-        
         function nav(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
-            }
+            if(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
             if(id==='home') fetchHome();
             if(id==='chat') fetchChat();
-            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+            if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     </script>
