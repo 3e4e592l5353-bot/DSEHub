@@ -90,6 +90,38 @@
         
         /* 颜色球 */
         .color-dot { width:32px; height:32px; border-radius:50%; cursor:pointer; border:2px solid rgba(255,255,255,0.5); box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+
+        /* 新增加样式 */
+        .reported-post { 
+            background: rgba(255, 193, 7, 0.1) !important;
+            border-left: 4px solid #ff9800 !important;
+            opacity: 0.8;
+        }
+        .reported-warning {
+            color: #ff9800;
+            font-size: 12px;
+            padding: 4px 8px;
+            background: rgba(255, 193, 7, 0.2);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .game-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        .answer-format {
+            background: #f8f9fa;
+            border-left: 4px solid #007AFF;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body data-theme="blue">
@@ -179,7 +211,24 @@
         <div id="view-duel" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h1>⚡️ 对决大厅</h1>
-                <button class="small" style="width:auto" onclick="createRoom()">➕ 创建房间</button>
+                <button class="small" style="width:auto" onclick="showGameSelect()">➕ 创建房间</button>
+            </div>
+            <div class="glass">
+                <h3>🎮 选择小游戏</h3>
+                <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+                    <div class="game-card glass" onclick="createRoom('quiz')" style="text-align:center; min-width:120px;">
+                        <i class="fas fa-question-circle" style="font-size:24px; color:#007AFF;"></i>
+                        <div>知识问答</div>
+                    </div>
+                    <div class="game-card glass" onclick="createRoom('memory')" style="text-align:center; min-width:120px;">
+                        <i class="fas fa-brain" style="font-size:24px; color:#34C759;"></i>
+                        <div>记忆挑战</div>
+                    </div>
+                    <div class="game-card glass" onclick="createRoom('typing')" style="text-align:center; min-width:120px;">
+                        <i class="fas fa-keyboard" style="font-size:24px; color:#AF52DE;"></i>
+                        <div>打字竞赛</div>
+                    </div>
+                </div>
             </div>
             <button class="ghost" onclick="fetchDuels()" style="margin-bottom:15px;">🔄 刷新列表</button>
             <div id="duel-list"></div>
@@ -196,6 +245,15 @@
                 <div class="capsule-row" id="sub-cats"></div>
                 <input id="sub-t" placeholder="标题">
                 <textarea id="sub-c" rows="5" placeholder="正文内容..."></textarea>
+                
+                <div class="answer-format">
+                    <strong>💡 如何创建答案格式：</strong><br>
+                    1. 使用 <code>//</code> 作为分隔符<br>
+                    2. 格式：问题//选项1//选项2//正确选项<br>
+                    示例：香港首都在哪？//香港岛//九龙//新界//香港岛
+                </div>
+                
+                <textarea id="sub-example" rows="3" placeholder="示例题目（可选）"></textarea>
                 <p style="font-size:12px; opacity:0.7;">* 提交后需管理员审核通过才显示。</p>
                 <button onclick="submitPost()">提交审核</button>
             </div>
@@ -246,12 +304,13 @@
             {k:'cs', n:'公社科'}, {k:'bio', n:'生物'}
         ];
 
-        // 1. 初始化
+        // 1. 初始化 - 仅检查Session，不自动跳转
         window.onload = async () => {
             initCats();
             const { data } = await sb.auth.getSession();
             if(data.session) {
                 document.getElementById('resume-btn').style.display = 'block';
+                // 不自动登录，只显示恢复按钮
             }
         };
 
@@ -261,7 +320,7 @@
             document.getElementById('sub-cats').innerHTML = html;
         }
 
-        // 2. 认证
+        // 2. 认证 - 手动登录/注册
         async function auth(type) {
             const email = document.getElementById('lg-e').value;
             const pwd = document.getElementById('lg-p').value;
@@ -286,8 +345,18 @@
             // 获取资料 (含 is_admin)
             let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
             if(!data) {
-                // 兜底创建
-                data = { id: user.id, username: user.email.split('@')[0], score: 0, is_admin: false };
+                // 创建用户档案
+                data = { 
+                    id: user.id, 
+                    username: user.email.split('@')[0], 
+                    score: 0, 
+                    is_admin: false,
+                    games_played: 0,
+                    high_score: 0,
+                    duel_wins: 0,
+                    duel_losses: 0,
+                    auth_id: user.id
+                };
                 await sb.from('profiles').insert(data);
             }
             profile = data;
@@ -305,7 +374,16 @@
             nav('home');
         }
 
-        function logout() { sb.auth.signOut().then(() => location.reload()); }
+        // 登出功能需彻底清除 Session
+        function logout() { 
+            sb.auth.signOut().then(() => {
+                // 清除本地存储
+                localStorage.clear();
+                sessionStorage.clear();
+                // 完全重新加载
+                location.reload();
+            }); 
+        }
 
         // ================= 功能模块 =================
 
@@ -320,12 +398,13 @@
                 <div class="glass">
                     <h3>${i.title}</h3>
                     <p>${i.content}</p>
-                    <div style="font-size:12px; opacity:0.6;">By ${i.author_name}</div>
+                    ${i.example ? `<div class="answer-format"><strong>示例题目：</strong><br>${i.example.replace(/\/\//g, '<br>')}</div>` : ''}
+                    <div style="font-size:12px; opacity:0.6;">By ${i.author_name} | 类别: ${cats.find(c=>c.k===i.category)?.n || i.category}</div>
                 </div>
             `).join('');
         }
 
-        // 2. 留言板 (修复 400 核心：严格检查字段)
+        // 2. 留言板 (黑名单举报流)
         async function loadUsers() {
             const { data } = await sb.from('profiles').select('id, username').limit(50);
             const sel = document.getElementById('chat-target');
@@ -340,7 +419,12 @@
         }
 
         async function loadChat() {
-            const { data } = await sb.from('feedbacks').select('*').neq('status','deleted').order('created_at',{ascending:false}).limit(30);
+            const { data } = await sb.from('feedbacks')
+                .select('*')
+                .in('status', ['normal', 'reported'])
+                .order('created_at', {ascending:false})
+                .limit(30);
+            
             const el = document.getElementById('chat-list');
             el.innerHTML = (data||[]).map(m => {
                 const isPriv = m.target_id != null;
@@ -348,11 +432,18 @@
                 if(!canSee) return '';
                 
                 const isRep = m.status === 'reported';
-                let body = isRep ? `<span style="color:red; font-style:italic;">⚠️ 被举报，审核中...</span>` : m.content;
-                if(isRep && profile.is_admin) body += ` <br><small>(原文: ${m.content})</small>`;
+                let body = m.content;
+                if(isRep) {
+                    body = `<div class="reported-warning">⚠️ 此留言已被举报，正在审核中</div>
+                           <div style="opacity:0.6; font-style:italic;">${m.content}</div>`;
+                }
+
+                // 盖楼回复缩进
+                const indent = m.parent_id ? 'margin-left:30px; border-left:3px solid var(--accent);' : '';
+                const reportedClass = isRep ? 'reported-post' : '';
 
                 return `
-                <div class="glass" style="padding:12px; margin-bottom:10px; ${m.parent_id?'margin-left:30px; border-left:3px solid var(--accent);':''} ${isPriv?'background:rgba(255,0,0,0.05)':''}">
+                <div class="glass ${reportedClass}" style="padding:12px; margin-bottom:10px; ${indent} ${isPriv?'background:rgba(255,0,0,0.05)':''}">
                     <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:var(--accent);">
                         <span>${m.author_name} ${isPriv?'🔒':''}</span>
                         <div>
@@ -361,6 +452,9 @@
                         </div>
                     </div>
                     <div style="margin-top:5px;">${body}</div>
+                    <div style="font-size:10px; opacity:0.5; margin-top:5px;">
+                        ${new Date(m.created_at).toLocaleString('zh-HK')}
+                    </div>
                 </div>`;
             }).join('');
         }
@@ -370,19 +464,21 @@
             const target = document.getElementById('chat-target').value;
             if(!txt) return;
 
-            // ⚠️ 关键修复：空值必须显式设为 null
             const payload = {
-                author_id: user.id,
+                user_id: user.id,
                 author_name: profile.username,
                 content: txt,
                 target_id: target === 'public' ? null : target,
                 parent_id: replyingTo || null,
-                status: 'normal'
+                status: 'normal',
+                created_at: new Date().toISOString()
             };
 
             const { error } = await sb.from('feedbacks').insert(payload);
-            if(error) alert("Error: "+error.message);
-            else {
+            if(error) {
+                console.error("Send error:", error);
+                alert("发送失败: " + error.message);
+            } else {
                 document.getElementById('chat-in').value = '';
                 cancelReply();
                 loadChat();
@@ -390,109 +486,322 @@
         }
 
         async function report(id) {
-            if(confirm("举报此留言？")) {
+            if(confirm("举报此留言？管理员将会审查。")) {
                 await sb.from('feedbacks').update({status:'reported'}).eq('id',id);
+                alert("已举报，感谢您的反馈！");
                 loadChat();
             }
         }
 
-        // 3. 线上对决
+        // 3. 线上对决 (多游戏支持)
         async function fetchDuels() {
-            const { data } = await sb.from('duel_rooms').select('*').is('winner_id', null).order('created_at',{ascending:false});
+            const { data } = await sb.from('duel_rooms')
+                .select('*')
+                .is('winner_id', null)
+                .order('created_at', {ascending:false});
+            
             document.getElementById('duel-list').innerHTML = (data||[]).map(r => {
                 const amIn = r.player1_id===user.id || r.player2_id===user.id;
                 const isFull = r.player2_id != null;
-                let btn = `<button class="small" onclick="joinDuel(${r.id})">加入</button>`;
-                if(amIn) btn = `<button class="small success" onclick="winDuel(${r.id})">我赢了</button>`;
-                else if(isFull) btn = `<button class="small ghost" disabled>进行中</button>`;
+                const canJoin = !amIn && !isFull;
+                
+                let btn = '';
+                if(amIn) {
+                    btn = `<button class="small success" onclick="claimWin('${r.id}')">我赢了</button>`;
+                } else if(canJoin) {
+                    btn = `<button class="small" onclick="joinDuel('${r.id}')">加入</button>`;
+                } else {
+                    btn = `<button class="small ghost" disabled>进行中</button>`;
+                }
+                
+                const gameTypes = {
+                    'quiz': '知识问答',
+                    'memory': '记忆挑战',
+                    'typing': '打字竞赛'
+                };
                 
                 return `
                 <div class="glass" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>Room #${r.id}</b><div style="font-size:12px;">P1:${r.player1_name} vs P2:${r.player2_name||'?'}</div></div>
+                    <div>
+                        <b>${gameTypes[r.game_type] || '小游戏'}</b>
+                        <div style="font-size:12px;">
+                            P1: ${r.player1_name} vs ${r.player2_id ? `P2: ${r.player2_name}` : '等待中...'}
+                        </div>
+                        <div style="font-size:10px; opacity:0.6;">房间ID: ${r.id.slice(0,8)}...</div>
+                    </div>
                     ${btn}
                 </div>`;
             }).join('');
         }
-        async function createRoom() { await sb.from('duel_rooms').insert({player1_id:user.id, player1_name:profile.username}); fetchDuels(); }
-        async function joinDuel(id) { await sb.from('duel_rooms').update({player2_id:user.id, player2_name:profile.username}).eq('id',id); fetchDuels(); }
-        async function winDuel(id) {
-            if(confirm("确认获胜？")) {
-                await sb.from('duel_rooms').update({winner_id:user.id}).eq('id',id);
-                await sb.from('profiles').update({score: profile.score+10}).eq('id',user.id);
-                alert("积分+10");
-                nav('home'); // 刷新积分
+
+        async function showGameSelect() {
+            // 显示游戏选择（已在HTML中实现）
+        }
+
+        async function createRoom(gameType) {
+            const room = {
+                player1_id: user.id,
+                player1_name: profile.username,
+                game_type: gameType,
+                status: 'waiting',
+                p1_score: 0,
+                p2_score: 0,
+                settings: {},
+                created_at: new Date().toISOString()
+            };
+            
+            await sb.from('duel_rooms').insert(room);
+            alert(`已创建 ${gameType} 房间！`);
+            fetchDuels();
+        }
+
+        async function joinDuel(roomId) {
+            await sb.from('duel_rooms').update({
+                player2_id: user.id,
+                player2_name: profile.username,
+                status: 'playing'
+            }).eq('id', roomId);
+            
+            fetchDuels();
+            alert("已加入房间！");
+        }
+
+        async function claimWin(roomId) {
+            if(!confirm("确认获胜？系统将自动加分。")) return;
+            
+            // 获取房间信息
+            const { data: room } = await sb.from('duel_rooms')
+                .select('*')
+                .eq('id', roomId)
+                .single();
+            
+            if(room.winner_id) {
+                alert("此房间已结束！");
+                return;
             }
+            
+            // 更新房间状态
+            await sb.from('duel_rooms')
+                .update({ 
+                    winner_id: user.id,
+                    status: 'completed'
+                })
+                .eq('id', roomId);
+            
+            // 赢家加10分
+            await sb.from('profiles')
+                .update({ 
+                    score: profile.score + 10,
+                    duel_wins: (profile.duel_wins || 0) + 1
+                })
+                .eq('id', user.id);
+            
+            // 输家更新记录
+            const loserId = user.id === room.player1_id ? room.player2_id : room.player1_id;
+            if(loserId) {
+                await sb.from('profiles')
+                    .update({ 
+                        duel_losses: (profile.duel_losses || 0) + 1
+                    })
+                    .eq('id', loserId);
+            }
+            
+            // 创建游戏记录
+            await sb.from('game_records').insert({
+                user_id: user.id,
+                username: profile.username,
+                game_type: room.game_type,
+                score: 10,
+                game_data: { room_id: roomId, opponent: loserId },
+                created_at: new Date().toISOString()
+            });
+            
+            alert("获胜！积分+10");
+            profile.score += 10;
+            document.getElementById('u-score').innerText = profile.score;
+            fetchDuels();
         }
 
         // 4. 排行榜
         async function fetchRank() {
-            const { data } = await sb.from('profiles').select('*').order('score',{ascending:false}).limit(20);
-            document.getElementById('rank-list').innerHTML = data.map((p,i)=>`
-                <div class="glass" style="display:flex; justify-content:space-between;">
-                    <span>#${i+1} <b>${p.username}</b></span>
-                    <span style="color:var(--accent); font-weight:bold;">${p.score} pts</span>
+            const { data } = await sb.from('profiles')
+                .select('*')
+                .order('score', {ascending:false})
+                .limit(20);
+            
+            document.getElementById('rank-list').innerHTML = data.map((p,i) => `
+                <div class="glass" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-weight:bold; width:30px;">#${i+1}</span>
+                        <div>
+                            <b>${p.username}</b>
+                            <div style="font-size:11px; opacity:0.6;">
+                                胜: ${p.duel_wins || 0} | 负: ${p.duel_losses || 0}
+                            </div>
+                        </div>
+                    </div>
+                    <span style="color:var(--accent); font-weight:bold; font-size:18px;">${p.score} pts</span>
                 </div>
             `).join('');
         }
 
         // 5. 投稿 & 管理
         function submitPost() {
-            const t = document.getElementById('sub-t').value;
-            const c = document.getElementById('sub-c').value;
-            sb.from('submissions').insert({
-                category:curCat, title:t, content:c, 
-                author_id:user.id, author_name:profile.username, status:'pending'
-            }).then(()=>{ alert("已提交审核"); nav('home'); });
+            const title = document.getElementById('sub-t').value;
+            const content = document.getElementById('sub-c').value;
+            const example = document.getElementById('sub-example').value;
+            
+            if(!title || !content) {
+                alert("请填写标题和内容！");
+                return;
+            }
+            
+            const submission = {
+                category: curCat,
+                title: title,
+                content: content,
+                example: example,
+                user_id: user.id,
+                author_name: profile.username,
+                status: 'pending',
+                like_count: 0,
+                view_count: 0,
+                created_at: new Date().toISOString()
+            };
+            
+            sb.from('submissions').insert(submission).then(() => {
+                alert("已提交审核，等待管理员通过！");
+                // 清空表单
+                document.getElementById('sub-t').value = '';
+                document.getElementById('sub-c').value = '';
+                document.getElementById('sub-example').value = '';
+                nav('home');
+            }).catch(error => {
+                alert("提交失败: " + error.message);
+            });
         }
 
+        // 6. 后台管理
         async function loadAdmin(tab, el) {
-            if(!profile.is_admin) return;
-            if(el) { document.querySelectorAll('.capsule').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+            if(!profile.is_admin) {
+                alert("无权访问！");
+                nav('home');
+                return;
+            }
+            
+            if(el) { 
+                document.querySelectorAll('.capsule').forEach(c => c.classList.remove('active')); 
+                el.classList.add('active'); 
+            }
             
             const list = document.getElementById('admin-list');
+            
             if(tab === 'kb') {
+                // 待审知识
                 const { data } = await sb.from('submissions').select('*').eq('status','pending');
                 list.innerHTML = (data||[]).map(i => `
                     <div class="glass">
-                        <b>${i.title}</b><p>${i.content}</p>
-                        <button class="small success" onclick="admAct('submissions',${i.id},'approved')">通过</button>
-                        <button class="small danger" onclick="admAct('submissions',${i.id},'rejected')">拒绝</button>
-                    </div>`).join('');
+                        <b>${i.title}</b>
+                        <div style="font-size:12px; color:var(--accent); margin:5px 0;">
+                            类别: ${cats.find(c=>c.k===i.category)?.n || i.category} | 作者: ${i.author_name}
+                        </div>
+                        <p>${i.content}</p>
+                        ${i.example ? `<div class="answer-format">示例: ${i.example}</div>` : ''}
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button class="small success" onclick="admAct('submissions','${i.id}','approved')">✅ 通过</button>
+                            <button class="small danger" onclick="admAct('submissions','${i.id}','rejected')">❌ 拒绝</button>
+                        </div>
+                    </div>
+                `).join('');
             } else {
+                // 举报处理
                 const { data } = await sb.from('feedbacks').select('*').eq('status','reported');
                 list.innerHTML = (data||[]).map(i => `
-                    <div class="glass">
-                        <p style="color:red">举报: ${i.content}</p>
-                        <button class="small success" onclick="admAct('feedbacks',${i.id},'normal')">恢复</button>
-                        <button class="small danger" onclick="admAct('feedbacks',${i.id},'deleted')">删除</button>
-                    </div>`).join('');
+                    <div class="glass reported-post">
+                        <div style="color:red; font-weight:bold;">⚠️ 被举报留言</div>
+                        <div style="font-size:12px; margin:5px 0;">
+                            作者: ${i.author_name} | 时间: ${new Date(i.created_at).toLocaleString('zh-HK')}
+                        </div>
+                        <p style="padding:10px; background:rgba(255,0,0,0.05); border-radius:8px;">
+                            ${i.content}
+                        </p>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button class="small success" onclick="admAct('feedbacks','${i.id}','normal')">✅ 恢复</button>
+                            <button class="small danger" onclick="admAct('feedbacks','${i.id}','deleted')">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
+
         async function admAct(table, id, status) {
+            const action = status === 'approved' ? '通过' : 
+                          status === 'rejected' ? '拒绝' :
+                          status === 'normal' ? '恢复' : '删除';
+            
+            if(!confirm(`确定要${action}此内容吗？`)) return;
+            
             await sb.from(table).update({status}).eq('id',id);
-            alert("操作成功");
-            nav('admin'); // 刷新
+            alert(`已${action}`);
+            loadAdmin(document.querySelector('.capsule.active').innerText.includes('知识') ? 'kb' : 'chat');
         }
 
         // ================= 基础交互 =================
         function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('view-'+id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
+            
+            if(el) { 
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); 
+                el.classList.add('active'); 
+            }
+            
             if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
+            
             // 刷新逻辑
             if(id==='home') fetchHome();
             if(id==='chat') loadChat();
             if(id==='duel') fetchDuels();
             if(id==='rank') fetchRank();
-            if(id==='admin') loadAdmin('kb');
+            if(id==='admin' && profile?.is_admin) loadAdmin('kb');
         }
-        function setTheme(t) { document.body.setAttribute('data-theme', t); }
-        function setCat(c, el) { curCat=c; initCats(); el.classList.add('active'); fetchHome(); } // 修复样式
-        function addTag(t) { document.getElementById('chat-in').value += t+" "; }
-        function setReply(id,n) { replyingTo=id; document.getElementById('reply-bar').style.display='flex'; document.getElementById('reply-user').innerText=n; }
-        function cancelReply() { replyingTo=null; document.getElementById('reply-bar').style.display='none'; }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        
+        function setTheme(t) { 
+            document.body.setAttribute('data-theme', t); 
+            localStorage.setItem('theme', t);
+        }
+        
+        function setCat(c, el) { 
+            curCat = c; 
+            document.querySelectorAll('.capsule').forEach(cap => cap.classList.remove('active'));
+            el.classList.add('active'); 
+            fetchHome(); 
+        }
+        
+        function addTag(t) { 
+            const textarea = document.getElementById('chat-in');
+            textarea.value += t + " ";
+            textarea.focus();
+        }
+        
+        function setReply(id, name) { 
+            replyingTo = id; 
+            document.getElementById('reply-bar').style.display = 'flex'; 
+            document.getElementById('reply-user').innerText = name; 
+        }
+        
+        function cancelReply() { 
+            replyingTo = null; 
+            document.getElementById('reply-bar').style.display = 'none'; 
+        }
+        
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('open'); 
+        }
+
+        // 加载保存的主题
+        const savedTheme = localStorage.getItem('theme');
+        if(savedTheme) setTheme(savedTheme);
     </script>
 </body>
 </html>
