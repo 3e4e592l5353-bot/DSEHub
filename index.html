@@ -2081,61 +2081,51 @@
         async function fetchHome() {
             const searchKey = document.getElementById('search-k').value.trim();
             
-            // 显示加载动画
             document.getElementById('home-loading').style.display = 'block';
             document.getElementById('home-list').innerHTML = '';
             
             try {
-                // 构建查询
+                // 确保查询所有需要的字段
                 let query = sb
                     .from('submissions')
-                    .select('*');
+                    .select('id, category, title, description, content, example, author_name, created_at, status');
                 
-                // 科目筛选
                 if (currentSubject !== 'all') {
                     query = query.eq('category', currentSubject);
                 }
                 
-                // 搜索筛选
                 if (searchKey) {
                     query = query.or(`title.ilike.%${searchKey}%,content.ilike.%${searchKey}%`);
                 }
                 
-                // 执行查询
                 const { data, error } = await query;
                 
                 if (error) {
                     console.error('獲取知識庫失敗:', error);
-                    
-                    // 显示友好的错误信息
                     document.getElementById('home-list').innerHTML = `
                         <div class="glass" style="text-align: center; padding: 60px 20px; color: var(--text-sub);">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 50px; margin-bottom: 20px; color: #FF9500;"></i>
-                            <h3 style="margin: 0 0 15px 0; color: var(--text);">無法加載知識庫</h3>
-                            <p style="margin: 0; color: var(--text-sub);">權限問題，請檢查數據庫設置</p>
-                            <p style="margin: 10px 0; color: var(--text-light); font-size: 14px;">${error.message}</p>
-                            <button onclick="fetchHome()" class="ghost small" style="margin-top: 20px;">
-                                <i class="fas fa-sync-alt"></i> 重新嘗試
+                            <i class="fas fa-exclamation-triangle" style="color: #FF9500; font-size: 50px; margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--text);">數據庫連接問題</h3>
+                            <p>錯誤: ${error.message}</p>
+                            <button onclick="fetchHome()" class="ghost small mt-20">
+                                <i class="fas fa-redo"></i> 重試
                             </button>
                         </div>
                     `;
-                    return;
+                } else {
+                    renderKnowledgeList(data || []);
                 }
-                
-                // 渲染结果
-                renderKnowledgeList(data);
                 
             } catch (error) {
                 console.error('知識庫查詢錯誤:', error);
                 document.getElementById('home-list').innerHTML = `
                     <div class="glass" style="text-align: center; padding: 60px 20px; color: var(--text-sub);">
-                        <i class="fas fa-network-wired" style="font-size: 50px; margin-bottom: 20px; color: var(--text-light);"></i>
-                        <h3 style="margin: 0 0 15px 0; color: var(--text);">網絡錯誤</h3>
-                        <p style="margin: 0; color: var(--text-sub);">請稍後重試</p>
+                        <i class="fas fa-wifi" style="color: var(--text-light); font-size: 50px; margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--text);">網絡錯誤</h3>
+                        <p>請檢查網絡連接後重試</p>
                     </div>
                 `;
             } finally {
-                // 隱藏加載動畫
                 document.getElementById('home-loading').style.display = 'none';
             }
         }
@@ -3988,7 +3978,6 @@
 
         // ================= 模块D: 投稿中心 =================
         async function submitKnowledge() {
-            // 获取数据...
             const selectedCapsule = document.querySelector('#submit-capsules .capsule.active');
             const subjectKey = SUBJECTS.find(s => s.name === selectedCapsule?.textContent)?.key || 'o';
             const title = document.getElementById('sub-title').value.trim();
@@ -4004,8 +3993,9 @@
                 const submissionData = {
                     category: subjectKey,
                     title: title,
+                    description: content.substring(0, 100), // 添加description
                     content: content,
-                    example: example || '',
+                    example: example || null, // 可以是null
                     author_name: profile?.username || '匿名用戶',
                     status: 'pending'
                 };
@@ -4765,6 +4755,7 @@
     </script>
 </body>
 </html>
+
 
 
 
