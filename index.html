@@ -3,90 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v68 (Real Duel)</title>
+    <title>DSE Hub v69 (Ultimate)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 样式系统 ================= */
+        /* ================= 全局样式系统 ================= */
         :root {
             --accent: #007AFF; 
-            --bg-grad: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            --text-main: #1d1d1f;
-            --text-sub: #555;
-            --glass: rgba(255, 255, 255, 0.95);
+            --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --text-main: #333;
+            --text-sub: #666;
+            --glass: rgba(255, 255, 255, 0.9);
             --border: rgba(0,0,0,0.1);
             --radius: 16px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        /* 主题定义 */
-        [data-theme="green"] { --accent: #34C759; --bg-grad: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-        [data-theme="orange"] { --accent: #FF9500; --bg-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
-        [data-theme="purple"] { --accent: #AF52DE; --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); }
-        [data-theme="red"] { --accent: #FF3B30; --bg-grad: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
-        [data-theme="cyan"] { --accent: #32ADE6; --bg-grad: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); }
-        [data-theme="dark"] { 
-            --accent: #0A84FF; --text-main: #ffffff; --text-sub: #bbbbbb;
-            --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            --glass: rgba(30, 30, 40, 0.95); --border: rgba(255,255,255,0.2);
+        /* 动态主题 */
+        [data-theme="dark"] {
+            --accent: #0A84FF; --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --text-main: #fff; --text-sub: #ccc; --glass: rgba(30, 35, 45, 0.95); --border: rgba(255,255,255,0.1);
         }
+        [data-theme="green"] { --accent: #34C759; }
+        [data-theme="purple"] { --accent: #AF52DE; }
 
-        body { 
-            margin: 0; font-family: -apple-system, system-ui, sans-serif; 
-            background-image: var(--bg-grad); background-attachment: fixed; background-size: cover;
-            color: var(--text-main); height: 100vh; display: flex; overflow: hidden; 
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+        body { margin:0; font-family:-apple-system, system-ui, sans-serif; background:var(--bg-grad); color:var(--text-main); height:100vh; display:flex; overflow:hidden; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; outline:none; user-select:none; }
 
-        .glass { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: 0.3s; }
+        /* 组件样式 */
+        .glass { background:var(--glass); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); transition:0.3s; }
+        button { background:var(--accent); color:#fff; border:none; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; width:100%; transition:0.2s; }
+        button:active { transform:scale(0.98); opacity:0.9; }
+        button.ghost { background:transparent; color:var(--text-sub); border:1px solid var(--border); }
+        button.small { width:auto; padding:6px 12px; font-size:13px; }
         
-        .sidebar { width: 260px; padding: 25px 20px; display: flex; flex-direction: column; background: var(--glass); border-right: 1px solid var(--border); z-index: 100; }
-        .main { flex: 1; overflow-y: auto; padding: 20px 5%; position: relative; }
-        .page { display: none; animation: fadeIn 0.3s; max-width: 800px; margin: 0 auto; padding-bottom: 80px; }
-        .page.active { display: block; }
+        input, textarea { width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.5); color:var(--text-main); margin-bottom:10px; font-size:15px; }
+        [data-theme="dark"] input { background:rgba(0,0,0,0.3); }
+
+        /* 布局 */
+        .sidebar { width:260px; padding:25px 20px; display:flex; flex-direction:column; background:var(--glass); border-right:1px solid var(--border); z-index:100; }
+        .main { flex:1; overflow-y:auto; padding:20px 5%; position:relative; scroll-behavior:smooth; }
+        .page { display:none; max-width:800px; margin:0 auto; padding-bottom:100px; animation:fadeIn 0.3s; }
+        .page.active { display:block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        .nav-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 12px; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; gap: 12px; font-weight: 600; transition:0.2s; }
-        .nav-item.active { background: var(--accent); color: #fff; }
-        
-        input, textarea { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.8); color: #000; font-size: 15px; margin-bottom: 10px; }
-        [data-theme="dark"] input, [data-theme="dark"] textarea { background: rgba(0,0,0,0.4); color: #fff; }
+        /* 导航 */
+        .nav-item { padding:12px 15px; margin-bottom:8px; border-radius:12px; cursor:pointer; color:var(--text-sub); display:flex; align-items:center; gap:12px; font-weight:600; }
+        .nav-item.active { background:var(--accent); color:#fff; box-shadow:0 4px 15px var(--accent); }
+        .nav-item:hover:not(.active) { background:rgba(125,125,125,0.1); }
 
-        button { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; }
-        button.ghost { background: transparent; color: var(--text-sub); border: 1px solid var(--border); }
-        button.small { width: auto; padding: 6px 14px; font-size: 13px; }
+        /* 胶囊过滤器 */
+        .capsule-row { display:flex; overflow-x:auto; gap:8px; padding-bottom:5px; margin-bottom:15px; }
+        .capsule { padding:6px 16px; border-radius:20px; background:rgba(125,125,125,0.1); white-space:nowrap; cursor:pointer; font-size:13px; font-weight:600; color:var(--text-sub); }
+        .capsule.active { background:var(--accent); color:#fff; }
 
-        .capsule-row { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; margin-bottom: 15px; }
-        .capsule { padding: 8px 16px; border-radius: 20px; background: rgba(125,125,125,0.15); white-space: nowrap; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-sub); border: 1px solid transparent; }
-        .capsule.active { background: var(--accent); color: white; }
-
-        /* 游戏样式 */
-        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .game-card { aspect-ratio: 1; background: var(--glass); display: flex; align-items: center; justify-content: center; border-radius: 12px; cursor: pointer; font-size: 14px; text-align: center; padding: 5px; border: 2px solid transparent; font-weight: bold; word-break: break-all; color: var(--text-main); }
-        .game-card.selected { border-color: var(--accent); background: rgba(0,122,255,0.1); }
-        .game-card.matched { visibility: hidden; pointer-events: none; }
-
-        .mobile-bar { display: none; padding: 10px 15px; align-items: center; justify-content: space-between; position: fixed; top:0; width:100%; z-index: 200; background: var(--glass); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
+        /* 移动端适配 */
+        .mobile-bar { display:none; padding:10px 15px; align-items:center; justify-content:space-between; position:fixed; top:0; width:100%; z-index:200; background:var(--glass); border-bottom:1px solid var(--border); }
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; height: 100%; width: 85%; box-shadow: 20px 0 50px rgba(0,0,0,0.2); transition: 0.3s; }
-            .sidebar.open { left: 0; }
-            .mobile-bar { display: flex; }
-            .main { padding-top: 70px; }
+            .sidebar { position:fixed; left:-100%; height:100%; width:80%; transition:0.3s; box-shadow:50px 0 100px rgba(0,0,0,0.5); }
+            .sidebar.open { left:0; }
+            .mobile-bar { display:flex; }
+            .main { padding-top:70px; }
         }
 
-        .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-box { width: 320px; padding: 30px; background: #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); color:#000; }
-        
-        /* 房间列表样式 */
-        .room-item { padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
-        .status-badge { font-size:12px; padding:2px 8px; border-radius:4px; margin-left:5px; }
+        /* 弹窗 */
+        .modal-mask { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
+        .modal-box { width:320px; padding:30px; background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center; color:#333; }
+
+        /* 游戏网格 */
+        .game-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+        .card { aspect-ratio:1; background:var(--glass); display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12px; border:2px solid transparent; text-align:center; padding:4px; }
+        .card.selected { border-color:var(--accent); background:rgba(0,122,255,0.1); }
+        .card.matched { opacity:0; pointer-events:none; }
     </style>
 </head>
 <body data-theme="blue">
 
     <div class="mobile-bar">
         <button class="ghost" style="border:none; width:auto;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <b>DSE Hub</b>
+        <b>DSE Hub v69</b>
         <div style="width:30px"></div>
     </div>
 
@@ -97,6 +93,7 @@
         <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
         <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
         <div class="nav-item" onclick="nav('games', this)"><i class="fas fa-gamepad"></i> 游戏大厅</div>
+        <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决 (Real)</div>
         <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen"></i> 投稿中心</div>
         <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
         <div style="flex:1"></div>
@@ -111,54 +108,62 @@
 
         <div id="view-home" class="page active">
             <h1>📚 知识库</h1>
-            <div class="capsule-row" id="sub-capsules"></div>
-            <input id="search-k" placeholder="🔍 搜索知识点..." onkeyup="fetchHome()">
+            <div class="capsule-row" id="filter-capsules"></div>
+            <input id="search-input" placeholder="🔍 搜索知识点..." onkeyup="fetchHome()">
             <div id="home-list"></div>
         </div>
 
         <div id="view-chat" class="page">
             <h1>💬 留言板</h1>
-            <div class="glass" style="height:60vh; overflow-y:auto; display:flex; flex-direction:column-reverse; padding:15px; margin-bottom:15px;" id="chat-list"></div>
+            <div class="glass" style="height:55vh; overflow-y:auto; display:flex; flex-direction:column-reverse; padding:15px; margin-bottom:15px;" id="chat-list"></div>
             <div class="glass" style="padding:15px;">
-                <textarea id="chat-input" rows="2" placeholder="输入留言..." style="margin-bottom:5px;"></textarea>
+                <textarea id="chat-txt" rows="2" placeholder="输入留言..." style="margin-bottom:5px;"></textarea>
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                     <label style="font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                        <input type="checkbox" id="chat-private"> 仅管理员可见
+                        <input type="checkbox" id="chat-priv"> 私密留言 (Private)
                     </label>
-                    <button style="width:auto; padding:8px 20px;" onclick="sendChat()"><i class="fas fa-paper-plane"></i> 发送</button>
+                    <button style="width:auto; padding:8px 20px;" onclick="postChat()"><i class="fas fa-paper-plane"></i> 发送</button>
                 </div>
             </div>
         </div>
 
         <div id="view-games" class="page">
             <h1>🎮 游戏大厅</h1>
-            
-            <div class="glass" style="padding:20px; margin-bottom:15px; cursor:pointer;" onclick="startGame('pair')">
-                <h3 style="margin:0"><i class="fas fa-link" style="color:var(--accent)"></i> 连连看 (Pair Match)</h3>
-                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">单人练习：匹配题目与答案</p>
+            <div style="display:grid; gap:15px;">
+                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="startGame('pair')">
+                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-link"></i></div>
+                    <div>
+                        <h3 style="margin:0">连连看 (Pair Match)</h3>
+                        <div style="font-size:12px; opacity:0.7;">单人 • 匹配知识点</div>
+                    </div>
+                </div>
+                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="startGame('quiz')">
+                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-check-square"></i></div>
+                    <div>
+                        <h3 style="margin:0">多选特训 (Quiz)</h3>
+                        <div style="font-size:12px; opacity:0.7;">单人 • 快速刷题</div>
+                    </div>
+                </div>
+                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="nav('duel')">
+                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-users"></i></div>
+                    <div>
+                        <h3 style="margin:0">线上对决大厅 (PVP Lobby)</h3>
+                        <div style="font-size:12px; opacity:0.7;">多人 • 实时数据库匹配</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="glass" style="padding:20px; margin-bottom:15px; cursor:pointer;" onclick="startGame('quiz')">
-                <h3 style="margin:0"><i class="fas fa-check-square" style="color:var(--accent)"></i> 多选特训 (Quiz)</h3>
-                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">单人练习：快速答题</p>
-            </div>
-
-            <div class="glass" style="padding:20px; cursor:pointer;" onclick="nav('duel')">
-                <h3 style="margin:0"><i class="fas fa-bolt" style="color:var(--accent)"></i> 线上对决 (Real PVP)</h3>
-                <p style="font-size:13px; opacity:0.7; margin:5px 0 0;">多人联机：创建房间或加入好友</p>
-            </div>
-
-            <div id="game-stage" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--glass); z-index:500; padding:20px; backdrop-filter:blur(10px);">
-                <div style="max-width:600px; margin:0 auto; padding-top:50px;">
+            <div id="game-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--glass); z-index:500; padding:20px; backdrop-filter:blur(15px);">
+                <div style="max-width:600px; margin:0 auto; padding-top:40px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <b id="game-title">Game</b>
-                        <button class="small ghost" onclick="document.getElementById('game-stage').style.display='none'">退出</button>
+                        <b id="game-name">Game</b>
+                        <button class="small ghost" onclick="document.getElementById('game-overlay').style.display='none'">退出</button>
                     </div>
-                    <div id="stage-pair" style="display:none;">
-                        <div class="game-grid" id="pair-grid"></div>
+                    <div id="g-pair" style="display:none;">
+                        <div class="game-grid" id="pair-board"></div>
                     </div>
-                    <div id="stage-quiz" style="display:none;">
-                        <h2 id="qz-q" style="text-align:center; margin-bottom:30px;">Q</h2>
+                    <div id="g-quiz" style="display:none; text-align:center;">
+                        <h2 id="qz-q" style="margin-bottom:30px;">Q</h2>
                         <div id="qz-opts" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
                 </div>
@@ -167,358 +172,354 @@
 
         <div id="view-duel" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1>⚡️ 对决大厅</h1>
-                <button class="small" style="width:auto" onclick="createDuelRoom()">➕ 创建房间</button>
+                <h1>⚡️ 线上对决</h1>
+                <button class="small" style="width:auto;" onclick="createRoom()">➕ 创建房间</button>
             </div>
             
             <div class="glass" style="padding:15px; margin-bottom:20px;">
-                <p style="margin:0; font-size:13px;">这里列出的是数据库中的真实房间。</p>
+                <p style="margin:0; font-size:13px; color:var(--text-sub);">
+                    <i class="fas fa-database"></i> 数据实时同步至 Supabase 数据库
+                </p>
             </div>
-
-            <button class="small ghost" onclick="fetchDuelRooms()" style="margin-bottom:10px;">🔄 刷新列表</button>
-            <div id="duel-list-container">
-                <div style="text-align:center; padding:20px; opacity:0.5;">正在加载房间...</div>
-            </div>
+            
+            <button class="ghost small" onclick="loadRooms()" style="margin-bottom:10px; width:100%;">🔄 刷新房间列表</button>
+            <div id="room-list">加载中...</div>
         </div>
 
         <div id="view-submit" class="page">
             <h1>✏️ 投稿中心</h1>
             <div class="glass" style="padding:20px;">
-                <div class="capsule-row" id="sub-capsules-form"></div>
-                <input id="sub-t" placeholder="标题 (Title)">
-                <textarea id="sub-d" rows="5" placeholder="正文内容 (Content)..."></textarea>
-                <input id="sub-ex" placeholder="例子/答案 (用于游戏出题)">
-                <button onclick="submitItem()" style="margin-top:15px;">提交审核</button>
+                <div class="capsule-row" id="sub-capsules"></div>
+                <input id="sub-title" placeholder="标题 / 题目 (Title)">
+                <textarea id="sub-content" rows="4" placeholder="正文内容 / 解释..."></textarea>
+                <input id="sub-ex" placeholder="例子 / 答案 (Answer)">
+                <button onclick="submitData()" style="margin-top:10px;">提交至数据库</button>
             </div>
         </div>
 
         <div id="view-settings" class="page">
             <h1>⚙️ 设置</h1>
             <div class="glass" style="padding:20px; margin-bottom:20px;">
-                <h3>🎨 主题风格</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:15px;">
-                    <div style="width:30px; height:30px; background:#007AFF; border-radius:50%; cursor:pointer;" onclick="setTheme('blue')"></div>
-                    <div style="width:30px; height:30px; background:#34C759; border-radius:50%; cursor:pointer;" onclick="setTheme('green')"></div>
-                    <div style="width:30px; height:30px; background:#FF9500; border-radius:50%; cursor:pointer;" onclick="setTheme('orange')"></div>
-                    <div style="width:30px; height:30px; background:#AF52DE; border-radius:50%; cursor:pointer;" onclick="setTheme('purple')"></div>
-                    <div style="width:30px; height:30px; background:#FF3B30; border-radius:50%; cursor:pointer;" onclick="setTheme('red')"></div>
-                    <div style="width:30px; height:30px; background:#32ADE6; border-radius:50%; cursor:pointer;" onclick="setTheme('cyan')"></div>
-                    <div style="width:30px; height:30px; background:#222; border-radius:50%; border:1px solid #fff; cursor:pointer;" onclick="setTheme('dark')"></div>
+                <h3>主题颜色</h3>
+                <div style="display:flex; gap:10px;">
+                    <div style="width:30px; height:30px; border-radius:50%; background:#007AFF; cursor:pointer;" onclick="setTheme('blue')"></div>
+                    <div style="width:30px; height:30px; border-radius:50%; background:#34C759; cursor:pointer;" onclick="setTheme('green')"></div>
+                    <div style="width:30px; height:30px; border-radius:50%; background:#AF52DE; cursor:pointer;" onclick="setTheme('purple')"></div>
+                    <div style="width:30px; height:30px; border-radius:50%; background:#222; border:1px solid #fff; cursor:pointer;" onclick="setTheme('dark')"></div>
                 </div>
             </div>
             <div class="glass" style="padding:20px;">
-                <h3>👤 账号</h3>
-                <p>User: <b id="set-u-nm">Guest</b></p>
+                <h3>当前账号</h3>
+                <p>Email: <span id="set-email">...</span></p>
+                <p>ID: <span id="set-id" style="font-size:12px; color:#999;">...</span></p>
             </div>
         </div>
+
     </div>
 
-    <div class="modal-mask" id="auth-modal">
+    <div class="modal-mask" id="login-modal">
         <div class="modal-box">
-            <h2 style="margin-top:0;">DSE Hub Login</h2>
-            <input id="lg-e" placeholder="Email">
-            <input id="lg-p" type="password" placeholder="Password">
-            <button onclick="auth('in')">登录</button>
-            <button class="ghost" style="margin-top:10px" onclick="auth('up')">注册</button>
-            <p id="auth-err" style="color:red; font-size:12px; margin-top:10px;"></p>
+            <h2>DSE Hub</h2>
+            <input id="lg-email" placeholder="Email">
+            <input id="lg-pwd" type="password" placeholder="Password">
+            <button onclick="doAuth('in')" style="margin-bottom:10px;">登录</button>
+            <button class="ghost" onclick="doAuth('up')">注册</button>
+            <p id="lg-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
         </div>
     </div>
 
     <script>
-        // ================= ⚠️ 填入你的 Supabase 配置 ⚠️ =================
+        // =========================================================
+        // ⚠️ 配置区域：请填入你的 Project URL 和 Anon Key
+        // =========================================================
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替换成你的Supabase URL
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替换成你的Supabase anon key
         
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
+
+        // 全局变量
         let user = null;
         let profile = null;
-        let currentCat = 'all';
+        let curCat = 'all';
         let formCat = 'chi';
-        
-        const CATS = [
-            {k:'chi', n:'中文'}, {k:'eng', n:'英文'}, {k:'math', n:'数学'}, 
-            {k:'cs', n:'公社科'}, {k:'phy', n:'物理'}, {k:'chem', n:'化学'}, 
-            {k:'bio', n:'生物'}, {k:'hist', n:'历史'}, {k:'geog', n:'地理'}
+        const cats = [
+            {k:'chi',n:'中文'}, {k:'eng',n:'英文'}, {k:'math',n:'数学'}, 
+            {k:'cs',n:'公社科'}, {k:'phy',n:'物理'}, {k:'chem',n:'化学'}
         ];
 
+        // 初始化
         window.onload = async () => {
-            renderCapsules();
+            initCapsules();
             const { data } = await sb.auth.getSession();
-            if (data.session) {
+            if(data.session) {
                 user = data.session.user;
                 await loadProfile();
             } else {
-                document.getElementById('auth-modal').style.display = 'flex';
+                document.getElementById('login-modal').style.display = 'flex';
             }
         };
 
-        function renderCapsules() {
-            let html = `<div class="capsule active" onclick="filterCat('all', this)">全部</div>` + 
-                CATS.map(s => `<div class="capsule" onclick="filterCat('${s.k}', this)">${s.n}</div>`).join('');
-            document.getElementById('sub-capsules').innerHTML = html;
+        function initCapsules() {
+            // 知识库筛选
+            document.getElementById('filter-capsules').innerHTML = 
+                `<div class="capsule active" onclick="setCat('all',this)">全部</div>` +
+                cats.map(c => `<div class="capsule" onclick="setCat('${c.k}',this)">${c.n}</div>`).join('');
             
-            let fHtml = CATS.map(s => `<div class="capsule ${s.k==='chi'?'active':''}" onclick="setFormCat('${s.k}', this)">${s.n}</div>`).join('');
-            document.getElementById('sub-capsules-form').innerHTML = fHtml;
+            // 投稿分类
+            document.getElementById('sub-capsules').innerHTML = 
+                cats.map(c => `<div class="capsule ${c.k==='chi'?'active':''}" onclick="setFormCat('${c.k}',this)">${c.n}</div>`).join('');
         }
 
         async function loadProfile() {
-            try {
-                // 简化查询：直接读 id (因为我们刚才的 SQL 修复了 id 和 auth_id 一致的问题)
-                let { data, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-                if (data) {
-                    profile = data;
-                } else {
-                    // 兜底：如果数据库真的没有，用临时数据
-                    profile = { id: user.id, username: user.email.split('@')[0], score: 0 };
-                }
-                updateUI();
-                document.getElementById('auth-modal').style.display = 'none';
-                nav('home');
-            } catch (e) {
-                console.warn("Profile load fail, using temp", e);
-                profile = { id: 'temp', username: 'Guest', score: 0 };
-                document.getElementById('auth-modal').style.display = 'none';
-                nav('home');
-            }
-        }
-        
-        function updateUI() {
+            // 尝试读取 Profile，如果失败(比如新用户)则用临时数据，防止白屏
+            let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+            profile = data || { id: user.id, username: user.email.split('@')[0], score: 0 };
+            
+            // 更新 UI
             document.getElementById('u-nm').innerText = profile.username;
             document.getElementById('u-sc').innerText = profile.score + ' pts';
-            document.getElementById('set-u-nm').innerText = profile.username;
+            document.getElementById('set-email').innerText = user.email;
+            document.getElementById('set-id').innerText = user.id;
+            document.getElementById('login-modal').style.display = 'none';
+            nav('home');
         }
 
-        // ================= 真实线上对决逻辑 (重点) =================
-        async function fetchDuelRooms() {
-            // 读取数据库中的所有房间，按时间倒序
+        // ================= 核心功能：线上对决 (Real PVP) =================
+        async function loadRooms() {
+            // 读取数据库真实房间
             const { data, error } = await sb.from('duel_rooms')
                 .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
+                .neq('status', 'finished') // 只显示没结束的
+                .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error(error);
-                return alert("无法读取房间列表: " + error.message);
-            }
+            if(error) return alert("读取失败: " + error.message);
 
-            const listEl = document.getElementById('duel-list-container');
-            if (!data || data.length === 0) {
-                listEl.innerHTML = '<div style="text-align:center; padding:20px;">暂无房间，快去创建一个！</div>';
+            const listEl = document.getElementById('room-list');
+            if(!data || data.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6;">暂无房间，请创建一个</div>';
                 return;
             }
 
             listEl.innerHTML = data.map(r => {
                 const isFull = r.player2_id != null;
-                const isMyRoom = r.player1_id === profile.id;
+                const isMine = r.player1_id === user.id;
+                let statusBadge = isFull ? `<span style="color:red">● 激战中</span>` : `<span style="color:#34C759">● 等待中</span>`;
                 
-                let btnHtml = '';
-                if (isFull) {
-                    btnHtml = `<button class="small ghost" disabled>进行中</button>`;
-                } else if (isMyRoom) {
-                    btnHtml = `<button class="small ghost" disabled>等待加入...</button>`;
-                } else {
-                    btnHtml = `<button class="small" onclick="joinDuelRoom(${r.id})">加入对战</button>`;
-                }
+                let actionBtn = '';
+                if(isMine) actionBtn = `<button class="small ghost" disabled>我的房间</button>`;
+                else if(isFull) actionBtn = `<button class="small ghost" disabled>已满</button>`;
+                else actionBtn = `<button class="small" onclick="joinRoom(${r.id})">加入</button>`;
 
                 return `
-                <div class="glass room-item">
+                <div class="glass" style="padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-weight:bold; color:var(--accent)">
-                            <i class="fas fa-gamepad"></i> 房间 #${r.id}
-                        </div>
-                        <div style="font-size:12px; color:var(--text-sub); margin-top:4px;">
-                            房主: ${r.player1_name || 'Player'} 
-                            <span class="status-badge" style="background:${isFull?'#eee':'#e8f5e9'}; color:${isFull?'#999':'#2e7d32'}">
-                                ${isFull ? '已满员' : '等待中'}
-                            </span>
-                        </div>
+                        <div style="font-weight:bold;">Room #${r.id} ${statusBadge}</div>
+                        <div style="font-size:12px; color:#777;">Host: ${r.player1_name || 'Player'}</div>
                     </div>
-                    ${btnHtml}
+                    ${actionBtn}
                 </div>`;
             }).join('');
         }
 
-        async function createDuelRoom() {
-            if(!profile || !profile.id) return alert("请先登录");
-            
+        async function createRoom() {
             const { error } = await sb.from('duel_rooms').insert({
-                player1_id: profile.id,
+                player1_id: user.id,
                 player1_name: profile.username,
                 status: 'waiting'
             });
-
-            if (error) {
-                alert("创建失败: " + error.message);
-            } else {
-                alert("✅ 房间已创建！等待对手加入...");
-                fetchDuelRooms();
-            }
+            if(error) alert(error.message);
+            else { alert("✅ 房间已创建！"); loadRooms(); }
         }
 
-        async function joinDuelRoom(roomId) {
-            // 真实的加入逻辑：更新 player2_id
+        async function joinRoom(rid) {
+            // 真实写入数据库：把我的ID填入 player2_id
             const { error } = await sb.from('duel_rooms').update({
-                player2_id: profile.id,
+                player2_id: user.id,
                 player2_name: profile.username,
                 status: 'playing'
-            }).eq('id', roomId);
+            }).eq('id', rid);
 
-            if (error) {
-                alert("加入失败: " + error.message);
-            } else {
-                alert("✅ 加入成功！游戏开始！(此处跳转游戏界面)");
-                // 实际项目中这里应该跳转到对战页，这里为了演示直接开一局多选
-                startGame('quiz');
+            if(error) alert(error.message);
+            else { 
+                alert("⚔️ 加入成功！游戏开始！"); 
+                // 进入游戏逻辑 (复用 Quiz 界面)
+                startGame('quiz'); 
             }
         }
 
-        // ================= 单机游戏逻辑 =================
-        let gameData = [];
-        async function startGame(type) {
-            const { data } = await sb.from('submissions').select('*').limit(20);
-            if(!data || data.length < 4) return alert("题库题目不足，请先去投稿！");
-            
-            document.getElementById('game-stage').style.display = 'block';
-            document.getElementById('stage-pair').style.display = 'none';
-            document.getElementById('stage-quiz').style.display = 'none';
-
-            if(type === 'pair') startPairGame(data);
-            if(type === 'quiz') startQuizGame(data);
-        }
-
-        function startPairGame(data) {
-            document.getElementById('stage-pair').style.display = 'block';
-            document.getElementById('game-title').innerText = "连连看";
-            let cards = [];
-            data.slice(0, 6).forEach((item, idx) => {
-                cards.push({ id: idx, text: item.title, type: 'q' });
-                cards.push({ id: idx, text: item.example || 'Answer', type: 'a' });
-            });
-            cards.sort(() => Math.random() - 0.5);
-            document.getElementById('pair-grid').innerHTML = cards.map((c, i) => 
-                `<div class="game-card" id="c-${i}" onclick="clickCard(${i}, ${c.id})">${c.text.slice(0,10)}</div>`
-            ).join('');
-            gameData = cards; firstCard = null;
-        }
-
-        let firstCard = null;
-        function clickCard(idx, matchId) {
-            const el = document.getElementById(`c-${idx}`);
-            if(el.classList.contains('matched') || el.classList.contains('selected')) return;
-            el.classList.add('selected');
-
-            if(!firstCard) firstCard = { idx, matchId };
-            else {
-                if(firstCard.matchId === matchId && firstCard.idx !== idx) {
-                    setTimeout(() => { document.getElementById(`c-${firstCard.idx}`).classList.add('matched'); el.classList.add('matched'); firstCard = null; }, 300);
-                } else {
-                    setTimeout(() => { document.getElementById(`c-${firstCard.idx}`).classList.remove('selected'); el.classList.remove('selected'); firstCard = null; }, 500);
-                }
-            }
-        }
-
-        function startQuizGame(data) {
-            document.getElementById('stage-quiz').style.display = 'block';
-            document.getElementById('game-title').innerText = "多选特训";
-            nextQuiz(data);
-        }
-        function nextQuiz(data) {
-            const q = data[Math.floor(Math.random() * data.length)];
-            document.getElementById('qz-q').innerText = q.title;
-            let ans = q.example || "A";
-            let opts = [ans, "错项 1", "错项 2", "错项 3"].sort(() => Math.random() - 0.5);
-            document.getElementById('qz-opts').innerHTML = opts.map(o => 
-                `<button class="ghost" onclick="alert('${o===ans?'正确!':'错误!'}'); nextQuiz(gameData)">${o}</button>`
-            ).join('');
-            gameData = data;
-        }
-
-        // ================= 常规功能 =================
+        // ================= 常规功能 (DB交互) =================
         async function fetchHome() {
-            const k = document.getElementById('search-k').value;
+            const k = document.getElementById('search-input').value;
             let q = sb.from('submissions').select('*');
-            if(currentCat !== 'all') q = q.eq('category', currentCat);
+            if(curCat !== 'all') q = q.eq('category', curCat);
             if(k) q = q.ilike('title', `%${k}%`);
             
             const { data } = await q;
             document.getElementById('home-list').innerHTML = (data||[]).map(i => `
                 <div class="glass" style="padding:15px; margin-bottom:10px;">
-                    <b>[${i.category}] ${i.title}</b>
-                    <div style="color:#555; margin-top:5px;">${i.content}</div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="font-size:12px; background:var(--accent); color:#fff; padding:2px 8px; border-radius:4px;">${i.category}</span>
+                    </div>
+                    <h3 style="margin:5px 0;">${i.title}</h3>
+                    <div style="color:var(--text-sub);">${i.content}</div>
                 </div>
             `).join('');
         }
 
         async function fetchChat() {
-            // 直接读取，不再加复杂的 neq deleted 筛选，防止字段不存在报错
+            // 读取最新的30条留言
             const { data } = await sb.from('feedbacks').select('*').order('created_at', {ascending:false}).limit(30);
+            const el = document.getElementById('chat-list');
             if(!data) return;
 
-            const myId = profile.id;
-            document.getElementById('chat-list').innerHTML = data.map(i => {
-                const isPriv = i.target_id;
-                const canSee = !isPriv || i.target_id === myId || i.author_id === myId;
-                if(!canSee) return '';
-
+            el.innerHTML = data.map(m => {
+                const isPriv = m.target_id != null;
+                // 权限过滤：如果是私信，只有作者和目标(这里简化为只有作者)能看
+                // 实际上 admin 功能需要后台，这里仅做展示逻辑
+                if(isPriv && m.author_id !== user.id && m.target_id !== user.id) return '';
+                
                 return `
-                <div style="padding:10px; margin-bottom:10px; background:${isPriv?'rgba(255,200,200,0.3)':'rgba(255,255,255,0.4)'}; border-radius:10px;">
-                    <div style="font-size:12px; font-weight:bold; color:var(--accent)">
-                        ${i.author_name || 'User'} ${isPriv ? '<i class="fas fa-lock"></i>' : ''}
+                <div style="margin-bottom:10px; padding:10px; background:${isPriv?'rgba(255,0,0,0.05)':'rgba(255,255,255,0.5)'}; border-radius:10px;">
+                    <div style="font-size:12px; font-weight:bold; color:var(--accent);">
+                        ${m.author_name || 'User'} ${isPriv ? '<i class="fas fa-lock"></i>' : ''}
                     </div>
-                    <div>${i.content}</div>
+                    <div>${m.content}</div>
                 </div>`;
             }).join('');
         }
 
-        async function sendChat() {
-            const txt = document.getElementById('chat-input').value;
-            const isPriv = document.getElementById('chat-private').checked;
+        async function postChat() {
+            const txt = document.getElementById('chat-txt').value;
+            const isPriv = document.getElementById('chat-priv').checked;
             if(!txt) return;
-            const target = isPriv ? profile.id : null; 
+            
             await sb.from('feedbacks').insert({
-                author_id: profile.id, author_name: profile.username,
-                content: txt, target_id: target
+                author_id: user.id,
+                author_name: profile.username,
+                content: txt,
+                target_id: isPriv ? user.id : null // 演示：私信发给自己
             });
-            document.getElementById('chat-input').value = '';
+            document.getElementById('chat-txt').value = '';
             fetchChat();
         }
 
-        async function submitItem() {
+        async function submitData() {
             const { error } = await sb.from('submissions').insert({
                 category: formCat,
-                title: document.getElementById('sub-t').value,
-                content: document.getElementById('sub-d').value,
+                title: document.getElementById('sub-title').value,
+                content: document.getElementById('sub-content').value,
                 example: document.getElementById('sub-ex').value,
-                author_id: profile.id, author_name: profile.username
+                author_id: user.id,
+                author_name: profile.username
             });
-            if(error) alert(error.message);
+            if(error) alert("失败: "+error.message);
             else { alert("投稿成功！"); nav('home'); }
         }
 
+        // ================= 游戏逻辑 (复用) =================
+        let gameData = [];
+        let firstPick = null;
+
+        async function startGame(type) {
+            // 从数据库拿题目
+            const { data } = await sb.from('submissions').select('*').limit(20);
+            if(!data || data.length < 4) return alert("题库题目不足，请先去投稿！");
+
+            document.getElementById('game-overlay').style.display = 'block';
+            document.getElementById('g-pair').style.display = 'none';
+            document.getElementById('g-quiz').style.display = 'none';
+
+            if(type === 'pair') {
+                document.getElementById('g-pair').style.display = 'block';
+                document.getElementById('game-name').innerText = '连连看';
+                setupPair(data);
+            } else {
+                document.getElementById('g-quiz').style.display = 'block';
+                document.getElementById('game-name').innerText = '多选特训';
+                setupQuiz(data);
+            }
+        }
+
+        function setupPair(data) {
+            let cards = [];
+            data.slice(0, 6).forEach((d, i) => {
+                cards.push({ id: i, txt: d.title, type: 'q' });
+                cards.push({ id: i, txt: d.example || 'Answer', type: 'a' });
+            });
+            cards.sort(()=>Math.random()-0.5);
+            document.getElementById('pair-board').innerHTML = cards.map((c, idx) => 
+                `<div class="card" id="c-${idx}" onclick="clkCard(${idx}, ${c.id})">${c.txt.slice(0,12)}</div>`
+            ).join('');
+            firstPick = null;
+        }
+
+        function clkCard(idx, matchId) {
+            const el = document.getElementById(`c-${idx}`);
+            if(el.classList.contains('matched') || el.classList.contains('selected')) return;
+            el.classList.add('selected');
+
+            if(!firstPick) firstPick = { idx, matchId };
+            else {
+                if(firstPick.matchId === matchId && firstPick.idx !== idx) {
+                    setTimeout(() => {
+                        document.getElementById(`c-${firstPick.idx}`).classList.add('matched');
+                        el.classList.add('matched');
+                        firstPick = null;
+                    }, 300);
+                } else {
+                    setTimeout(() => {
+                        document.getElementById(`c-${firstPick.idx}`).classList.remove('selected');
+                        el.classList.remove('selected');
+                        firstPick = null;
+                    }, 500);
+                }
+            }
+        }
+
+        function setupQuiz(data) {
+            gameData = data;
+            nextQ();
+        }
+
+        function nextQ() {
+            const q = gameData[Math.floor(Math.random()*gameData.length)];
+            document.getElementById('qz-q').innerText = q.title;
+            const ans = q.example || "A";
+            const opts = [ans, "Option 1", "Option 2", "Option 3"].sort(()=>Math.random()-0.5);
+            
+            document.getElementById('qz-opts').innerHTML = opts.map(o => 
+                `<button class="ghost" onclick="alert('${o===ans?'Bingo!':'Wrong!'}'); nextQ()">${o}</button>`
+            ).join('');
+        }
+
         // ================= 基础逻辑 =================
-        function auth(type) {
-            const email = document.getElementById('lg-e').value;
-            const password = document.getElementById('lg-p').value;
-            if(type==='up') sb.auth.signUp({email, password}).then(r=>{ if(!r.error) alert("请确认邮件"); else alert(r.error.message)});
-            else sb.auth.signInWithPassword({email, password}).then(r=>{ if(!r.error) location.reload(); else alert(r.error.message)});
+        function auth(act) {
+            const e = document.getElementById('lg-email').value;
+            const p = document.getElementById('lg-pwd').value;
+            if(act === 'up') sb.auth.signUp({email:e, password:p}).then(r => r.error ? alert(r.error.message) : alert('请查收邮件确认'));
+            else sb.auth.signInWithPassword({email:e, password:p}).then(r => r.error ? alert(r.error.message) : location.reload());
         }
-        function logout() { sb.auth.signOut().then(()=>location.reload()); }
-        function filterCat(k,e) { currentCat=k; document.querySelectorAll('#sub-capsules .capsule').forEach(c=>c.classList.remove('active')); e.classList.add('active'); fetchHome();}
-        function setFormCat(k,e) { formCat=k; document.querySelectorAll('#sub-capsules-form .capsule').forEach(c=>c.classList.remove('active')); e.classList.add('active'); }
+        window.doAuth = auth; // 暴露给 HTML
+
+        function logout() { sb.auth.signOut().then(() => location.reload()); }
+
+        function nav(page, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-'+page).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+            // 切换页面时自动刷新数据
+            if(page === 'home') fetchHome();
+            if(page === 'chat') fetchChat();
+            if(page === 'duel') loadRooms();
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+        }
+
+        function setCat(c, el) { curCat=c; initCapsules(); el.classList.add('active'); fetchHome(); }
+        function setFormCat(c, el) { formCat=c; initCapsules(); el.classList.add('active'); } // 修正胶囊样式
         function setTheme(t) { document.body.setAttribute('data-theme', t); }
-        function nav(id, el) {
-            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-            document.getElementById('view-'+id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
-            
-            // 每次切换Tab都刷新数据，保证数据最新
-            if(id==='home') fetchHome();
-            if(id==='chat') fetchChat();
-            if(id==='duel') fetchDuelRooms(); 
-            
-            if(window.innerWidth<768) document.getElementById('sidebar').classList.remove('open');
-        }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     </script>
 </body>
