@@ -1962,6 +1962,7 @@
         }
 
         // ================= 认证相关 =================
+        // ================= 认证相关 =================
         async function auth(type) {
             const email = document.getElementById('lg-e').value.trim();
             const password = document.getElementById('lg-p').value.trim();
@@ -1971,7 +1972,7 @@
                 errEl.innerText = '請填寫電郵和密碼';
                 return;
             }
-            
+    
             try {
                 let res;
                 if (type === 'up') {
@@ -1979,7 +1980,7 @@
                 } else {
                     res = await sb.auth.signInWithPassword({ email, password });
                 }
-
+        
                 if (res.error) {
                     errEl.innerText = res.error.message;
                 } else {
@@ -1998,7 +1999,7 @@
                 console.error('認證錯誤:', error);
             }
         }
-        
+
         async function logout() {
             try {
                 await sb.auth.signOut();
@@ -2010,64 +2011,70 @@
                 console.error('登出錯誤:', error);
             }
         }
-
-        // ================= 用户资料管理 =================
+        
         // ================= 用户资料管理 =================
         async function loadProfile() {
             try {
-                // 获取用户资料（使用你提供的profiles表结构）
+                console.log('正在加载用户资料，用户ID:', user.id);
+                
+                // 尝试获取用户资料
                 let { data, error } = await sb
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
                     .single();
                 
+                console.log('查询结果:', { data, error });
+                
                 if (error) {
-                    // 如果没有资料，创建新资料
-                    const newProfile = {
+                    console.log('用户资料不存在，跳过创建');
+                    
+                    // 不尝试创建，直接使用默认访客资料
+                    profile = {
                         id: user.id,
-                        username: user.email.split('@')[0],
-                        is_admin: false,
+                        username: user.email ? user.email.split('@')[0] : '用戶',
+                        email: user.email,
                         score: 0,
-                        updated_at: new Date().toISOString()
+                        is_admin: false
                     };
-            
-                    const { error: insertError } = await sb
-                        .from('profiles')
-                        .insert(newProfile);
-            
-                    if (insertError) {
-                        console.error('創建用戶資料失敗:', insertError);
-                        showNotification('創建用戶資料失敗', 'error');
-                        return;
-                    }
-            
-                    data = newProfile;
+                    
+                    console.log('使用默认资料:', profile);
+                } else {
+                    console.log('找到用户资料:', data);
+                    profile = data;
                 }
-        
-                profile = data;
-        
-                // 🔧 修复：确保UI更新被调用
+                
+                // 更新UI
                 updateUserUI();
-        
+                
+                // 隐藏登录弹窗
+                document.getElementById('auth-modal').style.display = 'none';
+                
                 // 导航到首页
                 nav('home');
-        
-                // 🔧 修复：刷新知识库内容
-                fetchHome();
-        
+                
             } catch (error) {
-                console.error('加載用戶資料失敗:', error);
-                showNotification('加載用戶資料失敗', 'error');
+                console.error('加载用户资料时发生错误:', error);
+                
+                // 发生错误时也设置默认资料
+                profile = {
+                    id: user.id,
+                    username: '用戶',
+                    score: 0,
+                    is_admin: false
+                };
+                
+                updateUserUI();
+                document.getElementById('auth-modal').style.display = 'none';
             }
         }
-
+        
         function updateUserUI() {
             if (!profile) {
                 console.error('用户资料不存在');
                 return;
             }
-    
+            
             const username = profile.username || '用戶';
             document.getElementById('u-nm').innerText = username;
             document.getElementById('set-u-nm').innerText = username;
@@ -2076,7 +2083,7 @@
             const score = profile.score || 0;
             document.getElementById('u-sc').innerText = score + ' 分';
             document.getElementById('set-u-sc').innerText = score;
-    
+            
             // 管理员权限显示
             if (profile.is_admin) {
                 document.getElementById('nav-admin').style.display = 'flex';
@@ -2087,33 +2094,10 @@
                 document.getElementById('btn-adm').innerText = '開啟權限';
                 document.getElementById('btn-adm').classList.remove('danger');
             }
-    
+            
             // 🔧 修复：隐藏登录弹窗
             document.getElementById('auth-modal').style.display = 'none';
         }
-
-        function updateUserUI() {
-            const username = profile.username || '用戶';
-            document.getElementById('u-nm').innerText = username;
-            document.getElementById('set-u-nm').innerText = username;
-            document.getElementById('user-avatar').innerText = username.charAt(0).toUpperCase();
-            
-            const score = profile.score || 0;
-            document.getElementById('u-sc').innerText = score + ' 分';
-            document.getElementById('set-u-sc').innerText = score;
-            
-            // 管理员权限显示
-            if (profile.is_admin) {
-                document.getElementById('nav-admin').style.display = 'flex';
-                document.getElementById('btn-adm').innerText = '關閉權限';
-                document.getElementById('btn-adm').classList.add('danger');
-            } else {
-                document.getElementById('nav-admin').style.display = 'none';
-                document.getElementById('btn-adm').innerText = '開啟權限';
-                document.getElementById('btn-adm').classList.remove('danger');
-            }
-        }
-
         // ================= 模块A: 知识库 =================
         async function fetchHome() {
             const searchKey = document.getElementById('search-k').value.trim();
@@ -4872,4 +4856,5 @@
     </script>
 </body>
 </html>
+
 
