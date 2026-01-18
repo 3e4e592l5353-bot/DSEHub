@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v78 (完整功能版)</title>
+    <title>DSE Hub v77 (完整功能版)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,34 +18,51 @@
         }
 
         :root {
-            --primary: #3B82F6;
-            --primary-light: #60A5FA;
-            --primary-dark: #2563EB;
+            --primary: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
             --success: #10B981;
             --warning: #F59E0B;
             --danger: #EF4444;
-            --bg-gradient: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            --glass-bg: rgba(255, 255, 255, 0.98);
+            --info: #3B82F6;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
             --glass-border: 1px solid rgba(255, 255, 255, 0.4);
             --text-primary: #1F2937;
-            --text-secondary: #4B5563;
-            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --text-secondary: #6B7280;
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --radius-xl: 20px;
             --radius-lg: 16px;
             --radius-md: 12px;
             --radius-sm: 8px;
-            --transition: all 0.2s ease;
+            --radius-xs: 6px;
+            --transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        [data-theme="emerald"] {
+            --primary: #10B981;
+            --primary-light: #34D399;
+            --primary-dark: #059669;
+            --bg-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        }
+
+        [data-theme="amber"] {
+            --primary: #F59E0B;
+            --primary-light: #FBBF24;
+            --primary-dark: #D97706;
+            --bg-gradient: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
         }
 
         [data-theme="dark"] {
             --primary: #60A5FA;
             --primary-light: #93C5FD;
             --primary-dark: #3B82F6;
-            --bg-gradient: linear-gradient(135deg, #1E3A8A 0%, #4C1D95 100%);
+            --bg-gradient: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
             --glass-bg: rgba(30, 41, 59, 0.95);
             --glass-border: 1px solid rgba(255, 255, 255, 0.15);
-            --text-primary: #F3F4F6;
-            --text-secondary: #9CA3AF;
+            --text-primary: #F1F5F9;
+            --text-secondary: #CBD5E1;
         }
 
         body {
@@ -55,10 +72,9 @@
             color: var(--text-primary);
             min-height: 100vh;
             line-height: 1.6;
-            font-size: 15px;
         }
 
-        /* ================= 登录页面 ================= */
+        /* ================= 认证模态框 ================= */
         .auth-modal {
             position: fixed;
             top: 0;
@@ -76,29 +92,13 @@
 
         .auth-card {
             background: var(--glass-bg);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
             padding: 40px;
             width: 100%;
             max-width: 400px;
             box-shadow: var(--shadow-lg);
             border: var(--glass-border);
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .auth-logo {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .auth-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
+            backdrop-filter: blur(20px);
         }
 
         .form-group {
@@ -107,118 +107,38 @@
 
         .form-input {
             width: 100%;
-            padding: 14px 16px;
-            border-radius: var(--radius-sm);
-            border: 2px solid #E5E7EB;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(99, 102, 241, 0.2);
             background: white;
             font-family: 'Inter', sans-serif;
             font-size: 15px;
-            color: var(--text-primary);
             transition: var(--transition);
+            color: var(--text-primary);
         }
 
         [data-theme="dark"] .form-input {
-            background: #374151;
-            border-color: #4B5563;
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
             color: white;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
         }
 
-        .form-input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 1000px white inset !important;
-        }
-
-        [data-theme="dark"] .form-input:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
-            -webkit-text-fill-color: white;
-        }
-
-        .auth-button {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .auth-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .auth-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .auth-action-button {
-            flex: 1;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            border: 2px solid #E5E7EB;
-            background: #F9FAFB;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .auth-action-button:hover {
-            background: #F3F4F6;
-            border-color: #D1D5DB;
-        }
-
-        .auth-message {
-            text-align: center;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            display: none;
-        }
-
-        .auth-message.success {
-            background: #D1FAE5;
-            color: #065F46;
-            border: 1px solid #A7F3D0;
-            display: block;
-        }
-
-        .auth-message.error {
-            background: #FEE2E2;
-            color: #991B1B;
-            border: 1px solid #FECACA;
-            display: block;
-        }
-
-        /* ================= 主应用布局 ================= */
+        /* ================= 主布局 ================= */
         .app-container {
             display: flex;
             min-height: 100vh;
-            opacity: 0;
-            animation: fadeIn 0.3s ease 0.1s forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
         }
 
         .sidebar {
-            width: 260px;
+            width: 280px;
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px);
             border-right: var(--glass-border);
             padding: 30px 20px;
             display: flex;
@@ -231,7 +151,7 @@
 
         .main-content {
             flex: 1;
-            margin-left: 260px;
+            margin-left: 280px;
             padding: 30px;
             max-width: 1200px;
             min-height: 100vh;
@@ -241,7 +161,7 @@
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
-                width: 280px;
+                width: 300px;
             }
             .sidebar.open {
                 transform: translateX(0);
@@ -255,25 +175,25 @@
         /* ================= 导航 ================= */
         .nav-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] .nav-header {
-            border-bottom-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
 
         .tagline {
             font-size: 13px;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .nav-menu {
@@ -286,24 +206,48 @@
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: var(--radius-sm);
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
             color: var(--text-secondary);
             font-weight: 500;
             transition: var(--transition);
             cursor: pointer;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
         }
 
         .nav-item:hover {
-            background: rgba(59, 130, 246, 0.08);
+            background: rgba(99, 102, 241, 0.08);
             color: var(--primary);
+            transform: translateX(5px);
         }
 
         .nav-item.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+        }
+
+        .nav-item.active::before {
+            opacity: 1;
         }
 
         .nav-item i {
@@ -314,17 +258,18 @@
 
         /* ================= 用户卡片 ================= */
         .user-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border-radius: var(--radius-lg);
             padding: 20px;
             margin-top: auto;
             border: var(--glass-border);
+            backdrop-filter: blur(10px);
         }
 
         .username {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: var(--text-primary);
         }
 
@@ -338,94 +283,182 @@
 
         /* ================= 页面标题 ================= */
         .page-header {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
         }
 
         .page-subtitle {
             color: var(--text-secondary);
-            font-size: 15px;
-        }
-
-        /* ================= 知识库页面 ================= */
-        .category-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .category-tab {
-            padding: 10px 20px;
-            border-radius: 20px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
+            font-size: 16px;
             font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
         }
 
-        .category-tab:hover {
-            background: rgba(59, 130, 246, 0.15);
-        }
-
-        .category-tab.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .search-box {
+        /* ================= 玻璃卡片 ================= */
+        .glass-card {
             background: var(--glass-bg);
-            border-radius: var(--radius-sm);
-            padding: 15px 20px;
-            margin-bottom: 25px;
+            backdrop-filter: blur(30px);
             border: var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
             box-shadow: var(--shadow-md);
+            transition: var(--transition);
         }
 
-        .search-input {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            font-size: 15px;
+        .glass-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-3px);
+        }
+
+        /* ================= 投稿页面样式 ================= */
+        .submit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-section {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            border: var(--glass-border);
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
-        .search-input:focus {
-            outline: none;
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            background: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text-primary);
+            cursor: pointer;
         }
 
-        .knowledge-list {
+        [data-theme="dark"] .form-select {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            background: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: var(--transition);
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.6;
+        }
+
+        [data-theme="dark"] .form-textarea {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .format-guide {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .format-guide h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .format-guide ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .format-guide li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .format-guide li i {
+            color: var(--primary);
+            margin-top: 2px;
+        }
+
+        /* ================= 知识库页面样式 ================= */
+        .knowledge-grid {
             display: grid;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
         }
 
         .knowledge-card {
             background: var(--glass-bg);
-            border-radius: var(--radius-md);
-            padding: 25px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
             border: var(--glass-border);
-            box-shadow: var(--shadow-md);
             transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .knowledge-card:hover {
+            transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+            border-color: var(--primary-light);
+        }
+
+        .knowledge-category {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
 
         .knowledge-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 12px;
             color: var(--text-primary);
             line-height: 1.4;
@@ -433,156 +466,582 @@
 
         .knowledge-content {
             color: var(--text-secondary);
-            margin-bottom: 15px;
+            font-size: 14px;
             line-height: 1.6;
+            flex: 1;
+            margin-bottom: 20px;
         }
 
-        .knowledge-meta {
+        .knowledge-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 15px;
+            margin-top: auto;
+            padding-top: 20px;
             border-top: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 13px;
-            color: var(--text-secondary);
         }
 
-        [data-theme="dark"] .knowledge-meta {
+        [data-theme="dark"] .knowledge-footer {
             border-top-color: rgba(255, 255, 255, 0.05);
         }
 
         .knowledge-author {
-            color: var(--primary);
-            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .knowledge-category {
-            padding: 4px 10px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
+        .knowledge-stats {
+            display: flex;
+            gap: 16px;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
 
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* ================= 留言板页面 ================= */
+        /* ================= 留言板优化样式 ================= */
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 200px);
-            max-height: 700px;
+            height: calc(100vh - 180px);
+            max-height: 800px;
+            gap: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-1px);
         }
 
         .messages-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: var(--radius-md);
-            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-lg);
             border: var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         [data-theme="dark"] .messages-container {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
         }
 
         .message {
-            padding: 16px;
-            margin-bottom: 15px;
+            padding: 20px;
             background: var(--glass-bg);
-            border-radius: var(--radius-sm);
-            border-left: 3px solid var(--primary);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--primary);
+            animation: slideIn 0.3s ease;
+            position: relative;
+            transition: var(--transition);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .message:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(2px);
+        }
+
+        .message.reported {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), transparent);
+        }
+
+        .message.private {
+            border-left-color: var(--warning);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+
+        .message.reply {
+            margin-left: 40px;
+            border-left-width: 3px;
+            border-left-color: rgba(99, 102, 241, 0.5);
+            position: relative;
+        }
+
+        .message.reply::before {
+            content: '↳';
+            position: absolute;
+            left: -30px;
+            top: 20px;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         .message-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .message-author-info {
+            display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .message-author {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
+            font-size: 15px;
+        }
+
+        .message-badges {
+            display: flex;
+            gap: 6px;
+        }
+
+        .message-badge {
+            padding: 4px 8px;
+            border-radius: var(--radius-xs);
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-private {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-reported {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-admin {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
         }
 
         .message-time {
             font-size: 12px;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .message-content {
-            line-height: 1.5;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            font-size: 15px;
             color: var(--text-primary);
         }
 
-        .quick-tags {
+        .message-actions {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
 
-        .quick-tag {
-            padding: 8px 16px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-            border-radius: 20px;
+        [data-theme="dark"] .message-actions {
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .message-action {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
-            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .message-action:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .message-action.report:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* ================= 快速标签 ================= */
+        .quick-tags {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .quick-tag {
+            padding: 10px 18px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .quick-tag:hover {
-            background: rgba(59, 130, 246, 0.2);
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
         }
 
+        /* ================= 回复指示器 ================= */
+        .reply-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { border-color: rgba(99, 102, 241, 0.2); }
+            50% { border-color: rgba(99, 102, 241, 0.4); }
+            100% { border-color: rgba(99, 102, 241, 0.2); }
+        }
+
+        .reply-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .reply-user {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 4px 12px;
+            border-radius: var(--radius-md);
+        }
+
+        /* ================= 聊天输入区域 ================= */
         .chat-input-area {
             background: var(--glass-bg);
-            border-radius: var(--radius-md);
-            padding: 20px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
             border: var(--glass-border);
             box-shadow: var(--shadow-md);
         }
 
+        .input-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .input-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
         .chat-textarea {
             width: 100%;
-            padding: 15px;
-            border-radius: var(--radius-sm);
-            border: 2px solid #E5E7EB;
-            background: white;
+            padding: 18px;
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            background: rgba(255, 255, 255, 0.9);
             font-family: 'Inter', sans-serif;
             font-size: 15px;
+            transition: var(--transition);
             color: var(--text-primary);
             resize: vertical;
-            min-height: 100px;
-            margin-bottom: 15px;
+            min-height: 120px;
+            line-height: 1.6;
         }
 
         [data-theme="dark"] .chat-textarea {
-            background: #374151;
-            border-color: #4B5563;
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .chat-textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            background: white;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .char-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .char-count.warning {
+            color: var(--warning);
+        }
+
+        .char-count.danger {
+            color: var(--danger);
+        }
+
+        /* ================= 线上对决样式 ================= */
+        .duel-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .duel-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .duel-room {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            border: var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .duel-room:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .duel-room.waiting {
+            border: 2px solid var(--warning);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);
+        }
+
+        .duel-room.playing {
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), transparent);
+        }
+
+        .duel-room.finished {
+            border: 2px solid var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent);
+        }
+
+        .duel-room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .duel-room-status {
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .status-waiting {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-playing {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .status-finished {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .duel-players {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .duel-player {
+            text-align: center;
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0 auto 10px;
+        }
+
+        .vs-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-secondary);
+        }
+
+        /* ================= 排行榜样式 ================= */
+        .rankings-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .ranking-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ranking-item.top-3 {
+            border-left: 6px solid var(--primary);
+        }
+
+        .ranking-pos {
+            width: 50px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .ranking-pos.pos-1 {
+            color: #FFD700;
+        }
+
+        .ranking-pos.pos-2 {
+            color: #C0C0C0;
+        }
+
+        .ranking-pos.pos-3 {
+            color: #CD7F32;
+        }
+
+        .ranking-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ranking-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .ranking-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .ranking-score {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
         }
 
         /* ================= 按钮 ================= */
@@ -590,24 +1049,42 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: var(--radius-sm);
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             border: none;
             cursor: pointer;
             transition: var(--transition);
             font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3);
         }
 
         .btn-block {
@@ -619,6 +1096,27 @@
             font-size: 13px;
         }
 
+        .btn-icon {
+            padding: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #D97706);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+        }
+
         /* ================= 移动端菜单按钮 ================= */
         .mobile-menu-btn {
             position: fixed;
@@ -626,16 +1124,23 @@
             left: 20px;
             z-index: 101;
             display: none;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: var(--glass-bg);
             border: var(--glass-border);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 22px;
             color: var(--text-primary);
             cursor: pointer;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            transform: scale(1.05);
         }
 
         @media (max-width: 1024px) {
@@ -644,9 +1149,145 @@
             }
         }
 
+        /* ================= 管理员标签页样式 ================= */
+        .admin-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 12px 24px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .admin-tab:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+        }
+
+        .admin-content {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            border: var(--glass-border);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .admin-item {
+            padding: 24px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .admin-item {
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .admin-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* ================= 游戏中心样式 ================= */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .game-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            border: var(--glass-border);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .game-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* ================= 状态标签 ================= */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .status-reported {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
         /* ================= 滚动条样式 ================= */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -655,73 +1296,77 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
+            background: rgba(99, 102, 241, 0.3);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(59, 130, 246, 0.5);
+            background: rgba(99, 102, 241, 0.5);
+        }
+
+        /* ================= 动画 ================= */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body data-theme="default">
-    <!-- 登录页面 -->
+    <!-- 认证模态框 -->
     <div class="auth-modal" id="auth-modal">
         <div class="auth-card">
-            <div class="auth-header">
-                <div class="auth-logo">DSE HUB</div>
-                <p class="auth-subtitle">香港中学文凭考试学习平台</p>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="logo">DSE HUB</div>
+                <p class="tagline">香港中学文凭考试学习平台</p>
             </div>
             
-            <form id="login-form">
-                <div class="form-group">
-                    <input type="email" 
-                           class="form-input" 
-                           id="login-email" 
-                           placeholder="电子邮箱"
-                           required
-                           autocomplete="off">
-                </div>
-                
-                <div class="form-group">
-                    <input type="password" 
-                           class="form-input" 
-                           id="login-password" 
-                           placeholder="密码"
-                           required
-                           autocomplete="new-password">
-                </div>
-                
-                <button type="button" class="auth-button" onclick="handleLogin()" id="login-button">
-                    <i class="fas fa-sign-in-alt"></i> 登录
-                </button>
-            </form>
+            <div class="form-group">
+                <input type="email" class="form-input" id="login-email" placeholder="电子邮箱" required>
+            </div>
             
-            <div class="auth-actions">
-                <button type="button" class="auth-action-button" onclick="handleRegister()" id="register-button">
-                    <i class="fas fa-user-plus"></i> 注册
+            <div class="form-group">
+                <input type="password" class="form-input" id="login-password" placeholder="密码" required>
+            </div>
+            
+            <button class="btn btn-primary btn-block" onclick="handleLogin()">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-block" onclick="handleRegister()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                    注册新账号
                 </button>
-                <button type="button" class="auth-action-button" onclick="handleResumeLogin()" id="resume-button" style="display: none;">
-                    <i class="fas fa-redo"></i> 恢复登录
+                <button class="btn btn-block" id="resume-btn" onclick="handleResumeLogin()" style="display: none; background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                    恢复登录
                 </button>
             </div>
             
-            <div class="auth-message" id="auth-message"></div>
+            <p id="login-message" style="color: var(--danger); font-size: 13px; margin-top: 15px; text-align: center;"></p>
         </div>
     </div>
 
     <!-- 移动端菜单按钮 -->
-    <button class="mobile-menu-btn" onclick="toggleSidebar()" id="mobile-menu-btn" style="display: none;">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
 
     <!-- 主应用容器 -->
-    <div class="app-container" id="app-container" style="display: none;">
+    <div class="app-container" style="display: none;">
         <!-- 侧边栏 -->
         <div class="sidebar" id="sidebar">
             <div class="nav-header">
                 <div class="logo">DSE HUB</div>
-                <p class="tagline">版本 78 • 完整功能</p>
+                <p class="tagline">版本 77 • 完整功能版</p>
             </div>
             
             <div class="nav-menu">
@@ -732,6 +1377,10 @@
                 <a class="nav-item" onclick="switchPage('chat')">
                     <i class="fas fa-comments"></i>
                     <span>留言板</span>
+                </a>
+                <a class="nav-item" onclick="switchPage('duel')">
+                    <i class="fas fa-crosshairs"></i>
+                    <span>线上对决</span>
                 </a>
                 <a class="nav-item" onclick="switchPage('games')">
                     <i class="fas fa-gamepad"></i>
@@ -750,7 +1399,7 @@
                     <span>设置</span>
                 </a>
                 
-                <div id="admin-nav" class="nav-item" onclick="switchPage('admin')" style="display: none;">
+                <div id="admin-nav" class="nav-item" onclick="switchPage('admin')" style="display: none; background: linear-gradient(135deg, #F59E0B, #D97706); color: white; margin-top: 20px;">
                     <i class="fas fa-shield-alt"></i>
                     <span>管理后台</span>
                 </div>
@@ -769,29 +1418,26 @@
         </div>
 
         <!-- 主内容区 -->
-        <div class="main-content" id="main-content">
+        <div class="main-content">
             <!-- 知识库页面 -->
-            <div id="page-home" class="page" style="display: none;">
+            <div id="page-home" class="page" style="display: block;">
                 <div class="page-header">
-                    <h1 class="page-title">📚 知识库</h1>
-                    <p class="page-subtitle">浏览已审核的学习资料和知识点</p>
-                </div>
-                
-                <div class="category-tabs" id="knowledge-categories"></div>
-                
-                <div class="search-box">
-                    <input type="text" 
-                           class="search-input" 
-                           id="knowledge-search" 
-                           placeholder="🔍 搜索知识点、关键词..."
-                           onkeyup="handleSearchKnowledge()">
-                </div>
-                
-                <div class="knowledge-list" id="knowledge-list">
-                    <div class="empty-state">
-                        <i class="fas fa-book"></i>
-                        <p>正在加载知识库内容...</p>
+                    <h1 class="page-title">📚 知识宝库</h1>
+                    <p class="page-subtitle">掌握 DSE 核心知识点，高效备考</p>
+                    <div class="category-tabs" style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button class="btn btn-small active" onclick="changeKnowledgeCategory('chi')">中文</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('eng')">英文</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('math')">数学</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('ls')">通识</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('phy')">物理</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('chem')">化学</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('bio')">生物</button>
+                        <button class="btn btn-small" onclick="changeKnowledgeCategory('econ')">经济</button>
                     </div>
+                </div>
+                
+                <div class="knowledge-grid" id="knowledge-grid">
+                    <!-- 知识卡片会动态加载到这里 -->
                 </div>
             </div>
 
@@ -803,44 +1449,101 @@
                 </div>
                 
                 <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-controls">
+                            <button class="refresh-btn" onclick="loadChatMessages()">
+                                <i class="fas fa-sync-alt"></i> 刷新留言
+                            </button>
+                            <div style="font-size: 13px; color: var(--text-secondary);">
+                                共 <span id="message-count">0</span> 条留言
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 回复指示器 -->
+                    <div id="reply-indicator" class="reply-indicator" style="display: none;">
+                        <div class="reply-info">
+                            <i class="fas fa-reply"></i>
+                            <span>正在回复</span>
+                            <span class="reply-user" id="reply-to-user">用户名</span>
+                        </div>
+                        <button class="message-action" onclick="handleCancelReply()">
+                            <i class="fas fa-times"></i> 取消回复
+                        </button>
+                    </div>
+                    
+                    <!-- 留言列表 -->
                     <div class="messages-container" id="chat-messages">
-                        <div class="empty-state">
-                            <i class="fas fa-comments"></i>
-                            <p>正在加载留言...</p>
+                        <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                            <i class="fas fa-comments" style="font-size: 56px; opacity: 0.2; margin-bottom: 20px;"></i>
+                            <h3 style="margin-bottom: 10px; color: var(--text-secondary);">欢迎来到留言板</h3>
+                            <p>分享你的学习心得，或向同学提问...</p>
                         </div>
                     </div>
                     
+                    <!-- 快速标签 -->
                     <div class="quick-tags">
-                        <button class="quick-tag" onclick="addQuickTag('谢谢分享！')">👍 谢谢分享</button>
-                        <button class="quick-tag" onclick="addQuickTag('求解答！')">❓ 求解答</button>
-                        <button class="quick-tag" onclick="addQuickTag('一起学习吗？')">👥 组队学习</button>
-                        <button class="quick-tag" onclick="addQuickTag('好难啊！')">😅 好难啊</button>
+                        <button class="quick-tag" onclick="addQuickTag('这道题怎么解？')">
+                            <i class="fas fa-question-circle"></i> 求助题目
+                        </button>
+                        <button class="quick-tag" onclick="addQuickTag('笔记分享：')">
+                            <i class="fas fa-book"></i> 分享笔记
+                        </button>
+                        <button class="quick-tag" onclick="addQuickTag('有人一起复习吗？')">
+                            <i class="fas fa-users"></i> 组队学习
+                        </button>
+                        <button class="quick-tag" onclick="addQuickTag('考试加油！')">
+                            <i class="fas fa-heart"></i> 加油打气
+                        </button>
                     </div>
                     
-                    <div id="reply-indicator" class="search-box" style="display: none; margin-bottom: 15px; background: rgba(59, 130, 246, 0.1);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>正在回复 <strong id="reply-to-user"></strong></span>
-                            <button onclick="handleCancelReply()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
+                    <!-- 输入区域 -->
                     <div class="chat-input-area">
-                        <textarea class="chat-textarea" 
-                                  id="chat-input" 
-                                  placeholder="输入你的留言... (按Ctrl+Enter发送)"
-                                  rows="3"></textarea>
+                        <div class="input-header">
+                            <div class="user-avatar" id="user-avatar">U</div>
+                            <div class="input-info">
+                                正在以 <span id="current-username" style="color: var(--primary); font-weight: 600;">访客</span> 身份发言
+                            </div>
+                        </div>
                         
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <select class="form-input" id="chat-type" style="flex: 1;">
-                                <option value="public">🌍 公开留言</option>
-                            </select>
-                            <button class="btn btn-primary" onclick="sendChatMessage()">
-                                <i class="fas fa-paper-plane"></i> 发送
-                            </button>
+                        <textarea class="chat-textarea" id="chat-input" 
+                                  placeholder="输入你的留言... (支持Markdown格式，按Ctrl+Enter发送)" 
+                                  rows="4"
+                                  oninput="updateCharCount()"></textarea>
+                        
+                        <div class="input-footer">
+                            <div class="char-count" id="char-count">0/1000</div>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <select class="form-select" id="chat-type" style="width: 200px;">
+                                    <option value="public">🌍 公开留言</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="sendChatMessage()">
+                                    <i class="fas fa-paper-plane"></i> 发送留言
+                                </button>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- 线上对决页面 -->
+            <div id="page-duel" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1 class="page-title">⚔️ 线上对决</h1>
+                    <p class="page-subtitle">挑战其他玩家，赢取积分</p>
+                </div>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+                    <button class="btn btn-primary" onclick="handleCreateDuelRoom()">
+                        <i class="fas fa-plus"></i> 创建房间
+                    </button>
+                    <button class="btn btn-success" onclick="handleJoinRandomDuel()">
+                        <i class="fas fa-random"></i> 随机加入
+                    </button>
+                </div>
+                
+                <div id="duel-container" class="duel-container">
+                    <!-- 对决房间会动态加载到这里 -->
                 </div>
             </div>
 
@@ -848,47 +1551,41 @@
             <div id="page-games" class="page" style="display: none;">
                 <div class="page-header">
                     <h1 class="page-title">🎮 游戏中心</h1>
-                    <p class="page-subtitle">从知识点生成游戏，边玩边学</p>
+                    <p class="page-subtitle">在游戏中学习，寓教于乐</p>
                 </div>
                 
-                <div class="knowledge-card">
-                    <h3 style="margin-bottom: 15px;">💪 单人练习</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                        <div class="category-tab" onclick="startSoloGame('quick_quiz')" style="text-align: center; padding: 20px; cursor: pointer;">
-                            <i class="fas fa-bolt" style="font-size: 24px; margin-bottom: 10px; color: var(--primary);"></i>
-                            <div>快速问答</div>
-                            <small style="color: var(--text-secondary);">60秒答题挑战</small>
+                <div class="games-grid">
+                    <div class="game-card" onclick="startGame('quiz')">
+                        <div class="game-icon">
+                            <i class="fas fa-brain"></i>
                         </div>
-                        <div class="category-tab" onclick="startSoloGame('memory')" style="text-align: center; padding: 20px; cursor: pointer;">
-                            <i class="fas fa-brain" style="font-size: 24px; margin-bottom: 10px; color: var(--primary);"></i>
-                            <div>记忆配对</div>
-                            <small style="color: var(--text-secondary);">记忆训练游戏</small>
+                        <div class="game-title">知识问答</div>
+                        <div class="game-description">
+                            随机抽取知识宝库中的题目，测试你的掌握程度
                         </div>
-                        <div class="category-tab" onclick="startSoloGame('typing')" style="text-align: center; padding: 20px; cursor: pointer;">
-                            <i class="fas fa-keyboard" style="font-size: 24px; margin-bottom: 10px; color: var(--primary);"></i>
-                            <div>打字竞赛</div>
-                            <small style="color: var(--text-secondary);">速度比拼</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="knowledge-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="margin: 0;">⚔️ 多人对战</h3>
-                        <button class="btn btn-small" onclick="showCreateRoom()">
-                            <i class="fas fa-plus-circle"></i> 创建房间
-                        </button>
+                        <button class="btn btn-primary">开始游戏</button>
                     </div>
                     
-                    <button class="btn" onclick="refreshRooms()" style="width: 100%; margin-bottom: 20px; background: rgba(59, 130, 246, 0.1); color: var(--primary);">
-                        <i class="fas fa-sync-alt"></i> 刷新房间列表
-                    </button>
-                    
-                    <div id="rooms-list">
-                        <div class="empty-state" style="padding: 40px 20px;">
-                            <i class="fas fa-door-open"></i>
-                            <p>还没有游戏房间</p>
+                    <div class="game-card" onclick="startGame('matching')">
+                        <div class="game-icon">
+                            <i class="fas fa-puzzle-piece"></i>
                         </div>
+                        <div class="game-title">配对游戏</div>
+                        <div class="game-description">
+                            匹配知识点和解释，锻炼记忆能力
+                        </div>
+                        <button class="btn btn-primary">开始游戏</button>
+                    </div>
+                    
+                    <div class="game-card" onclick="startGame('timed')">
+                        <div class="game-icon">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                        <div class="game-title">限时挑战</div>
+                        <div class="game-description">
+                            在规定时间内回答尽可能多的问题
+                        </div>
+                        <button class="btn btn-primary">开始游戏</button>
                     </div>
                 </div>
             </div>
@@ -897,133 +1594,165 @@
             <div id="page-rank" class="page" style="display: none;">
                 <div class="page-header">
                     <h1 class="page-title">🏆 排行榜</h1>
-                    <p class="page-subtitle">查看学习积分排名，激励进步</p>
+                    <p class="page-subtitle">查看平台最活跃的学霸们</p>
                 </div>
                 
-                <div class="knowledge-card">
-                    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-                        <div style="flex: 1; text-align: center; padding: 20px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 5px;">你的排名</div>
-                            <div style="font-size: 32px; font-weight: 700; color: var(--warning);" id="my-rank">#-</div>
-                        </div>
-                        <div style="flex: 1; text-align: center; padding: 20px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-sm);">
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 5px;">你的积分</div>
-                            <div style="font-size: 32px; font-weight: 700; color: var(--primary);" id="my-score">0</div>
-                        </div>
-                    </div>
-                    
-                    <div id="rankings-list">
-                        <div class="empty-state" style="padding: 40px 20px;">
-                            <i class="fas fa-trophy"></i>
-                            <p>正在加载排行榜...</p>
-                        </div>
-                    </div>
+                <div class="rankings-container" id="rankings-container">
+                    <!-- 排行榜会动态加载到这里 -->
                 </div>
             </div>
 
             <!-- 投稿中心页面 -->
             <div id="page-submit" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1 class="page-title">✏️ 投稿中心</h1>
-                    <p class="page-subtitle">分享你的知识，帮助其他同学</p>
+                    <h1 class="page-title">📝 投稿中心</h1>
+                    <p class="page-subtitle">分享你的知识，帮助其他考生</p>
                 </div>
                 
-                <div class="knowledge-card">
-                    <h3 style="margin-bottom: 20px;">选择科目分类</h3>
-                    <div class="category-tabs" id="submit-categories"></div>
-                    
-                    <div style="margin: 25px 0;">
-                        <input type="text" 
-                               class="form-input" 
-                               id="submit-title" 
-                               placeholder="知识点标题 (例如：二次方程求根公式)"
-                               style="margin-bottom: 15px;">
+                <div class="submit-form">
+                    <div class="form-section">
+                        <h3>基本信息</h3>
+                        <div class="form-group">
+                            <label class="form-label">科目分类</label>
+                            <select class="form-select" id="submit-category">
+                                <option value="chi">中文</option>
+                                <option value="eng">英文</option>
+                                <option value="math">数学</option>
+                                <option value="ls">通识</option>
+                                <option value="phy">物理</option>
+                                <option value="chem">化学</option>
+                                <option value="bio">生物</option>
+                                <option value="econ">经济</option>
+                                <option value="cs">计算机</option>
+                            </select>
+                        </div>
                         
-                        <textarea class="chat-textarea" 
-                                  id="submit-content" 
-                                  placeholder="详细内容描述..."
-                                  rows="6"></textarea>
+                        <div class="form-group">
+                            <label class="form-label">知识标题</label>
+                            <input type="text" class="form-input" id="submit-title" placeholder="请输入知识点标题" maxlength="100">
+                        </div>
                     </div>
                     
-                    <div class="search-box" style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid var(--primary);">
-                        <h4 style="margin-bottom: 10px; color: var(--primary);">
-                            <i class="fas fa-lightbulb"></i> 如何创建游戏题目格式（可选）
-                        </h4>
-                        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">
-                            使用 <code style="background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px;">//</code> 作为分隔符：
-                        </p>
-                        <pre style="background: rgba(0, 0, 0, 0.05); padding: 15px; border-radius: var(--radius-sm); font-size: 13px; margin: 0; overflow-x: auto;">
-问题//选项A//选项B//选项C//选项D//正确答案
-
-示例：
-香港的首府是？//香港岛//九龙//新界//澳门//香港岛</pre>
+                    <div class="form-section">
+                        <h3>知识内容</h3>
+                        <div class="form-group">
+                            <label class="form-label">详细解释</label>
+                            <textarea class="form-textarea" id="submit-content" 
+                                      placeholder="详细解释这个知识点..." 
+                                      rows="8"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">示例题目 (可选)</label>
+                            <textarea class="form-textarea" id="submit-example" 
+                                      placeholder="提供一个示例题目，帮助理解..." 
+                                      rows="6"></textarea>
+                        </div>
+                        
+                        <div class="format-guide">
+                            <h4>📋 投稿格式指南</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> 知识点标题要简洁明确</li>
+                                <li><i class="fas fa-check-circle"></i> 详细解释要清晰易懂</li>
+                                <li><i class="fas fa-check-circle"></i> 示例题目可帮助他人理解</li>
+                                <li><i class="fas fa-check-circle"></i> 如需创建题目答案，使用"//"分隔：题目//答案</li>
+                                <li><i class="fas fa-check-circle"></i> 管理员审核通过后，内容将在知识库显示</li>
+                            </ul>
+                        </div>
                     </div>
                     
-                    <div style="margin: 25px 0;">
-                        <textarea class="chat-textarea" 
-                                  id="submit-example" 
-                                  placeholder="题目示例（使用上述格式，可选）"
-                                  rows="3"></textarea>
+                    <div class="form-section">
+                        <button class="btn btn-primary btn-block" onclick="handleSubmitKnowledge()">
+                            <i class="fas fa-paper-plane"></i> 提交审核
+                        </button>
+                        <p id="submit-message" style="text-align: center; margin-top: 15px; font-size: 14px;"></p>
                     </div>
-                    
-                    <button class="btn btn-primary btn-block" onclick="handleSubmitKnowledge()">
-                        <i class="fas fa-paper-plane"></i> 提交审核
-                    </button>
-                    
-                    <p style="text-align: center; color: var(--text-secondary); font-size: 13px; margin-top: 15px;">
-                        * 提交后需管理员审核通过才会显示
-                    </p>
                 </div>
             </div>
 
             <!-- 设置页面 -->
             <div id="page-settings" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1 class="page-title">⚙️ 设置</h1>
+                    <h1 class="page-title">⚙️ 个人设置</h1>
                     <p class="page-subtitle">个性化你的学习体验</p>
                 </div>
                 
-                <div class="knowledge-card">
-                    <h3 style="margin-bottom: 15px;">🎨 主题设置</h3>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px;">
-                        <button class="category-tab active" onclick="setTheme('default')">默认蓝</button>
-                        <button class="category-tab" onclick="setTheme('dark')">深色模式</button>
+                <div class="form-section">
+                    <h3>主题设置</h3>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="btn" onclick="changeTheme('default')" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            默认主题
+                        </button>
+                        <button class="btn" onclick="changeTheme('emerald')" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                            翡翠绿
+                        </button>
+                        <button class="btn" onclick="changeTheme('amber')" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                            琥珀黄
+                        </button>
+                        <button class="btn" onclick="changeTheme('dark')" style="background: rgba(30, 41, 59, 0.1); color: var(--text-primary);">
+                            深色模式
+                        </button>
                     </div>
-                    
-                    <h3 style="margin-bottom: 15px;">👤 账户信息</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                        <div>
-                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;">用户名</div>
-                            <div style="font-weight: 500;" id="settings-username">-</div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>账户信息</h3>
+                    <div class="user-info" style="margin-top: 20px;">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                            <div class="user-avatar" id="settings-avatar">U</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 18px;" id="settings-username">用户名</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;" id="settings-email">邮箱</div>
+                            </div>
                         </div>
-                        <div>
-                            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;">电子邮箱</div>
-                            <div style="font-weight: 500;" id="settings-email">-</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 800; color: var(--primary);" id="settings-score">0</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;">当前积分</div>
+                            </div>
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: 800; color: var(--success);" id="settings-games">0</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;">游戏次数</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 管理后台 -->
+            <!-- 管理后台页面 -->
             <div id="page-admin" class="page" style="display: none;">
                 <div class="page-header">
-                    <h1 class="page-title">🛡 管理后台</h1>
-                    <p class="page-subtitle">审核内容，管理社区</p>
-                </div>
-                
-                <div class="knowledge-card">
-                    <div class="category-tabs">
-                        <button class="category-tab active" onclick="handleLoadAdminTab('knowledge')">知识审核</button>
-                        <button class="category-tab" onclick="handleLoadAdminTab('reports')">举报处理</button>
-                        <button class="category-tab" onclick="handleLoadAdminTab('users')">用户管理</button>
-                    </div>
-                    
-                    <div id="admin-content" style="margin-top: 25px;">
-                        <div class="empty-state" style="padding: 40px 20px;">
-                            <i class="fas fa-shield-alt"></i>
-                            <p>请选择管理类别</p>
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-shield-alt" style="color: white; font-size: 28px;"></i>
+                        </div>
+                        <div>
+                            <h1 class="page-title" style="color: #F59E0B;">🛡 管理后台</h1>
+                            <p class="page-subtitle">全面管理平台内容，维护社区秩序</p>
                         </div>
                     </div>
+                </div>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="handleLoadAdminTab('knowledge')">
+                        <i class="fas fa-book"></i> 知识管理
+                    </button>
+                    <button class="admin-tab" onclick="handleLoadAdminTab('reports')">
+                        <i class="fas fa-flag"></i> 举报处理
+                    </button>
+                    <button class="admin-tab" onclick="handleLoadAdminTab('messages')">
+                        <i class="fas fa-comments"></i> 留言管理
+                    </button>
+                    <button class="admin-tab" onclick="handleLoadAdminTab('users')">
+                        <i class="fas fa-users"></i> 用户管理
+                    </button>
+                    <button class="admin-tab" onclick="handleLoadAdminTab('duels')">
+                        <i class="fas fa-crosshairs"></i> 对决管理
+                    </button>
+                </div>
+                
+                <div id="admin-content" class="admin-content">
+                    <!-- 管理员内容会动态加载到这里 -->
                 </div>
             </div>
         </div>
@@ -1041,616 +1770,632 @@
         let currentCategory = 'chi';
         let replyingToMessage = null;
 
-        // 香港中学科目
-        const subjectCategories = [
-            { id: 'chi', name: '中國語文' },
-            { id: 'eng', name: '英國語文' },
-            { id: 'math', name: '數學' },
-            { id: 'ls', name: '通識教育' },
-            { id: 'phy', name: '物理' },
-            { id: 'chem', name: '化學' },
-            { id: 'bio', name: '生物' },
-            { id: 'ict', name: '資訊及通訊科技' },
-            { id: 'hist', name: '歷史' },
-            { id: 'geo', name: '地理' },
-            { id: 'econ', name: '經濟' },
-            { id: 'bafs', name: '企業、會計與財務概論' },
-            { id: 'other', name: '其他科目' }
-        ];
-
         // ================= 初始化 =================
         document.addEventListener('DOMContentLoaded', async () => {
-            // 检查现有会话
+            // 检查现有会话（但不自动登录）
             const { data: session } = await supabaseClient.auth.getSession();
             if (session.session) {
-                document.getElementById('resume-button').style.display = 'block';
+                document.getElementById('resume-btn').style.display = 'inline-block';
             }
             
             // 加载保存的主题
             const savedTheme = localStorage.getItem('dse-theme') || 'default';
             document.body.setAttribute('data-theme', savedTheme);
             
-            // 初始化移动端检测
-            initMobileDetection();
-            
-            // 设置聊天快捷键
+            // 设置聊天输入框的键盘快捷键
             setupChatShortcuts();
         });
 
-        function initMobileDetection() {
-            const updateMobileUI = () => {
-                const isMobile = window.innerWidth <= 1024;
-                document.getElementById('mobile-menu-btn').style.display = isMobile ? 'block' : 'none';
-                if (!isMobile) {
-                    document.getElementById('sidebar').classList.remove('open');
-                }
-            };
-            
-            updateMobileUI();
-            window.addEventListener('resize', updateMobileUI);
-        }
-
-        function setupChatShortcuts() {
-            const chatInput = document.getElementById('chat-input');
-            if (chatInput) {
-                chatInput.addEventListener('keydown', function(e) {
-                    if (e.ctrlKey && e.key === 'Enter') {
-                        e.preventDefault();
-                        sendChatMessage();
-                    }
-                });
-            }
-        }
-
-        // ================= 登录功能 =================
+        // ================= 身份验证系统 =================
         async function handleLogin() {
             const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const loginButton = document.getElementById('login-button');
+            const password = document.getElementById('login-password').value.trim();
+            const messageEl = document.getElementById('login-message');
             
             if (!email || !password) {
-                showAuthMessage('请输入邮箱和密码', 'error');
+                messageEl.textContent = '请输入邮箱和密码';
                 return;
             }
             
-            if (!validateEmail(email)) {
-                showAuthMessage('请输入有效的电子邮箱', 'error');
-                return;
-            }
-            
-            // 设置加载状态
-            const originalText = loginButton.innerHTML;
-            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登录中...';
-            loginButton.disabled = true;
+            messageEl.textContent = '登录中...';
+            messageEl.style.color = 'var(--info)';
             
             try {
+                // 登录 Supabase Auth
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email,
                     password
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    messageEl.textContent = '登录失败: ' + error.message;
+                    messageEl.style.color = 'var(--danger)';
+                    return;
+                }
                 
-                await initializeUser(data.user);
+                // 获取用户资料
+                await loadUserProfile(data.user.id);
+                
+                // 隐藏登录界面
+                document.getElementById('auth-modal').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'flex';
+                
+                // 初始化用户界面
+                initializeUserInterface();
+                
+                showMessage('登录成功！', 'success');
                 
             } catch (error) {
-                console.error('登录失败:', error);
-                showAuthMessage(error.message.includes('Invalid') ? '邮箱或密码错误' : error.message, 'error');
-            } finally {
-                loginButton.innerHTML = originalText;
-                loginButton.disabled = false;
+                console.error('登录异常:', error);
+                messageEl.textContent = '系统异常，请重试';
+                messageEl.style.color = 'var(--danger)';
             }
         }
 
         async function handleRegister() {
             const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const registerButton = document.getElementById('register-button');
+            const password = document.getElementById('login-password').value.trim();
+            const messageEl = document.getElementById('login-message');
             
             if (!email || !password) {
-                showAuthMessage('请输入邮箱和密码', 'error');
-                return;
-            }
-            
-            if (!validateEmail(email)) {
-                showAuthMessage('请输入有效的电子邮箱', 'error');
+                messageEl.textContent = '请输入邮箱和密码';
                 return;
             }
             
             if (password.length < 6) {
-                showAuthMessage('密码至少需要6个字符', 'error');
+                messageEl.textContent = '密码至少需要6位';
                 return;
             }
             
-            const originalText = registerButton.innerHTML;
-            registerButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 注册中...';
-            registerButton.disabled = true;
+            messageEl.textContent = '注册中...';
+            messageEl.style.color = 'var(--info)';
             
             try {
+                // 注册 Supabase Auth
                 const { data, error } = await supabaseClient.auth.signUp({
                     email,
                     password
                 });
                 
-                if (error) throw error;
-                
-                if (data.user?.identities?.length === 0) {
-                    showAuthMessage('该邮箱已被注册', 'error');
+                if (error) {
+                    messageEl.textContent = '注册失败: ' + error.message;
+                    messageEl.style.color = 'var(--danger)';
                     return;
                 }
                 
-                showAuthMessage('注册成功！请检查邮箱验证账户，然后登录。', 'success');
+                // 创建用户资料
+                const username = email.split('@')[0];
+                
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert({
+                        auth_id: data.user.id,
+                        email: email,
+                        username: username,
+                        score: 0,
+                        is_admin: false,
+                        games_played: 0,
+                        high_score: 0,
+                        duel_wins: 0,
+                        duel_losses: 0
+                    });
+                
+                if (profileError) {
+                    messageEl.textContent = '创建资料失败: ' + profileError.message;
+                    messageEl.style.color = 'var(--danger)';
+                    return;
+                }
+                
+                messageEl.textContent = '注册成功！请登录';
+                messageEl.style.color = 'var(--success)';
+                
+                // 清空密码框
+                document.getElementById('login-password').value = '';
                 
             } catch (error) {
-                console.error('注册失败:', error);
-                showAuthMessage(error.message, 'error');
-            } finally {
-                registerButton.innerHTML = originalText;
-                registerButton.disabled = false;
+                console.error('注册异常:', error);
+                messageEl.textContent = '系统异常，请重试';
+                messageEl.style.color = 'var(--danger)';
             }
         }
 
         async function handleResumeLogin() {
-            const resumeButton = document.getElementById('resume-button');
-            const originalText = resumeButton.innerHTML;
-            
-            resumeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 恢复中...';
-            resumeButton.disabled = true;
-            
             try {
                 const { data, error } = await supabaseClient.auth.getSession();
                 
                 if (error || !data.session) {
-                    throw new Error('无法恢复登录');
+                    showMessage('恢复登录失败', 'error');
+                    return;
                 }
                 
-                await initializeUser(data.session.user);
+                // 获取用户资料
+                await loadUserProfile(data.session.user.id);
+                
+                // 隐藏登录界面
+                document.getElementById('auth-modal').style.display = 'none';
+                document.querySelector('.app-container').style.display = 'flex';
+                
+                // 初始化用户界面
+                initializeUserInterface();
+                
+                showMessage('欢迎回来！', 'success');
                 
             } catch (error) {
-                console.error('恢复登录失败:', error);
-                showAuthMessage(error.message, 'error');
-            } finally {
-                resumeButton.innerHTML = originalText;
-                resumeButton.disabled = false;
+                console.error('恢复登录异常:', error);
+                showMessage('恢复登录失败', 'error');
             }
         }
 
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-
-        function showAuthMessage(text, type) {
-            const messageEl = document.getElementById('auth-message');
-            messageEl.textContent = text;
-            messageEl.className = `auth-message ${type}`;
-            
-            setTimeout(() => {
-                messageEl.className = 'auth-message';
-                messageEl.textContent = '';
-            }, 5000);
-        }
-
-        // ================= 用户初始化 =================
-        async function initializeUser(user) {
-            currentUser = user;
-            
+        async function handleLogout() {
             try {
-                // 获取或创建用户资料
-                let { data: profile } = await supabaseClient
+                await supabaseClient.auth.signOut();
+                
+                // 彻底清除会话
+                currentUser = null;
+                userProfile = null;
+                
+                // 显示登录界面
+                document.getElementById('auth-modal').style.display = 'flex';
+                document.querySelector('.app-container').style.display = 'none';
+                
+                // 清空表单
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                document.getElementById('login-message').textContent = '';
+                document.getElementById('resume-btn').style.display = 'none';
+                
+                showMessage('已登出', 'info');
+                
+            } catch (error) {
+                console.error('登出异常:', error);
+                showMessage('登出失败', 'error');
+            }
+        }
+
+        // ================= 用户资料管理 =================
+        async function loadUserProfile(userId) {
+            try {
+                currentUser = { id: userId };
+                
+                // 从 profiles 表获取用户资料
+                const { data, error } = await supabaseClient
                     .from('profiles')
                     .select('*')
-                    .eq('id', user.id)
+                    .eq('auth_id', userId)
                     .single();
                 
-                if (!profile) {
-                    const newProfile = {
-                        id: user.id,
-                        username: user.email.split('@')[0],
-                        email: user.email,
-                        score: 0,
-                        is_admin: false,
-                        auth_id: user.id,
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    const { data, error } = await supabaseClient
-                        .from('profiles')
-                        .insert(newProfile)
-                        .select()
-                        .single();
-                    
-                    if (error) throw error;
-                    profile = data;
+                if (error) {
+                    console.error('加载用户资料失败:', error);
+                    return;
                 }
                 
-                userProfile = profile;
-                updateUIAfterLogin();
+                userProfile = data;
+                
+                // 更新界面显示
+                document.getElementById('username').textContent = userProfile.username;
+                document.getElementById('user-score').textContent = userProfile.score;
+                document.getElementById('current-username').textContent = userProfile.username;
+                
+                // 更新用户头像
+                updateUserAvatar();
+                
+                // 检查是否是管理员
+                if (userProfile.is_admin) {
+                    document.getElementById('admin-nav').style.display = 'flex';
+                }
+                
+                // 更新排名
+                updateUserRank();
                 
             } catch (error) {
-                console.error('初始化用户失败:', error);
-                showAuthMessage('初始化失败: ' + error.message, 'error');
+                console.error('加载用户资料异常:', error);
             }
         }
 
-        function updateUIAfterLogin() {
-            // 隐藏登录界面
-            document.getElementById('auth-modal').style.display = 'none';
-            
-            // 显示主应用
-            document.getElementById('app-container').style.display = 'flex';
-            
-            // 更新用户信息
-            updateUserInfo();
-            
-            // 切换到知识库页面
-            switchPage('home');
-        }
-
-        function updateUserInfo() {
-            if (!userProfile) return;
-            
-            document.getElementById('username').textContent = userProfile.username;
-            document.getElementById('user-score').textContent = userProfile.score || 0;
-            document.getElementById('settings-username').textContent = userProfile.username;
-            document.getElementById('settings-email').textContent = userProfile.email;
-            
-            if (userProfile.is_admin) {
-                document.getElementById('admin-nav').style.display = 'flex';
-            }
-        }
-
-        // ================= 页面功能 =================
-        function switchPage(pageId) {
-            // 隐藏所有页面
-            document.querySelectorAll('.page').forEach(page => {
-                page.style.display = 'none';
-            });
-            
-            // 移除所有导航激活状态
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // 显示目标页面
-            document.getElementById(`page-${pageId}`).style.display = 'block';
-            
-            // 激活对应导航项
-            const navItem = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
-            if (navItem) navItem.classList.add('active');
-            
-            // 移动端关闭侧边栏
-            if (window.innerWidth <= 1024) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
-            
-            // 加载页面数据
-            switch (pageId) {
-                case 'home':
-                    initKnowledgeCategories();
-                    loadKnowledgeBase();
-                    break;
-                case 'chat':
-                    loadChatUsers();
-                    loadChatMessages();
-                    break;
-                case 'games':
-                    loadGameRooms();
-                    break;
-                case 'rank':
-                    loadRankings();
-                    break;
-                case 'submit':
-                    initSubmitCategories();
-                    break;
-                case 'admin':
-                    if (userProfile?.is_admin) handleLoadAdminTab('knowledge');
-                    break;
-            }
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        // ================= 知识库功能 =================
-        function initKnowledgeCategories() {
-            const container = document.getElementById('knowledge-categories');
-            container.innerHTML = subjectCategories.map(cat => `
-                <button class="category-tab ${cat.id === 'chi' ? 'active' : ''}" 
-                        onclick="handleSelectCategory('${cat.id}', this)">
-                    ${cat.name}
-                </button>
-            `).join('');
-        }
-
-        function initSubmitCategories() {
-            const container = document.getElementById('submit-categories');
-            container.innerHTML = subjectCategories.map(cat => `
-                <button class="category-tab ${cat.id === 'chi' ? 'active' : ''}" 
-                        onclick="handleSelectCategory('${cat.id}', this)">
-                    ${cat.name}
-                </button>
-            `).join('');
-        }
-
-        function handleSelectCategory(categoryId, element) {
-            currentCategory = categoryId;
-            
-            // 更新激活状态
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            if (element) element.classList.add('active');
-            
-            // 重新加载知识库
-            if (document.getElementById('page-home').style.display !== 'none') {
-                loadKnowledgeBase();
-            }
-        }
-
-        async function loadKnowledgeBase() {
-            const searchTerm = document.getElementById('knowledge-search')?.value || '';
-            const container = document.getElementById('knowledge-list');
-            
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>正在加载知识库...</p>
-                </div>
-            `;
-            
+        async function updateUserRank() {
             try {
-                let query = supabaseClient
+                // 获取所有用户按积分排序
+                const { data: users, error } = await supabaseClient
+                    .from('profiles')
+                    .select('id, score')
+                    .order('score', { ascending: false });
+                
+                if (error || !users) return;
+                
+                // 查找当前用户的排名
+                const rankIndex = users.findIndex(user => user.id === userProfile.id);
+                if (rankIndex !== -1) {
+                    document.getElementById('user-rank').textContent = '#' + (rankIndex + 1);
+                }
+                
+            } catch (error) {
+                console.error('更新排名失败:', error);
+            }
+        }
+
+        // ================= 知识库系统 =================
+        async function changeKnowledgeCategory(category) {
+            currentCategory = category;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.category-tabs .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 加载该分类的知识
+            await loadKnowledgeByCategory(category);
+        }
+
+        async function loadKnowledgeByCategory(category) {
+            try {
+                // 只加载已通过审核的知识
+                const { data: submissions, error } = await supabaseClient
                     .from('submissions')
                     .select('*')
+                    .eq('category', category)
                     .eq('status', 'approved')
-                    .eq('category', currentCategory)
                     .order('created_at', { ascending: false });
                 
-                if (searchTerm) {
-                    query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
-                }
+                const grid = document.getElementById('knowledge-grid');
                 
-                const { data, error } = await query;
-                
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-book"></i>
-                            <p>当前分类下还没有通过审核的知识点</p>
-                            <button class="btn btn-primary mt-2" onclick="switchPage('submit')">
-                                <i class="fas fa-pen-nib"></i> 去投稿
-                            </button>
+                if (error || !submissions || submissions.length === 0) {
+                    grid.innerHTML = `
+                        <div class="glass-card" style="text-align: center; padding: 60px; grid-column: 1 / -1;">
+                            <i class="fas fa-book" style="font-size: 56px; opacity: 0.2; margin-bottom: 20px;"></i>
+                            <h3 style="margin-bottom: 10px; color: var(--text-secondary);">暂无内容</h3>
+                            <p>这个分类还没有知识内容，快来投稿吧！</p>
                         </div>
                     `;
                     return;
                 }
                 
-                container.innerHTML = data.map(item => {
-                    const category = subjectCategories.find(c => c.id === item.category)?.name || item.category;
-                    
-                    return `
-                        <div class="knowledge-card">
-                            <h3 class="knowledge-title">${item.title}</h3>
-                            <div class="knowledge-content">${item.content}</div>
-                            ${item.example && item.example.includes('//') ? `
-                                <div style="padding: 15px; background: rgba(59, 130, 246, 0.05); border-radius: var(--radius-sm); margin: 15px 0;">
-                                    <div style="font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 10px;">
-                                        <i class="fas fa-gamepad"></i> 题目示例
-                                    </div>
-                                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
-                                        ${item.example.replace(/\/\//g, ' | ')}
-                                    </div>
+                // 渲染知识卡片
+                grid.innerHTML = submissions.map(submission => `
+                    <div class="knowledge-card">
+                        <div class="knowledge-category">${getCategoryName(submission.category)}</div>
+                        <div class="knowledge-title">${submission.title}</div>
+                        <div class="knowledge-content">${submission.content.substring(0, 150)}...</div>
+                        <div class="knowledge-footer">
+                            <div class="knowledge-author">
+                                <i class="fas fa-user"></i>
+                                ${submission.author_name}
+                            </div>
+                            <div class="knowledge-stats">
+                                <div class="stat-item">
+                                    <i class="fas fa-eye"></i>
+                                    ${submission.view_count || 0}
                                 </div>
-                            ` : ''}
-                            <div class="knowledge-meta">
-                                <div>
-                                    <span class="knowledge-author">${item.author_name}</span>
-                                    <span style="margin: 0 10px;">•</span>
-                                    <span class="knowledge-category">${category}</span>
+                                <div class="stat-item">
+                                    <i class="fas fa-heart"></i>
+                                    ${submission.like_count || 0}
                                 </div>
-                                <div>${new Date(item.created_at).toLocaleDateString('zh-HK')}</div>
                             </div>
                         </div>
-                    `;
-                }).join('');
+                    </div>
+                `).join('');
                 
             } catch (error) {
-                console.error('加载知识库失败:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>加载失败，请刷新重试</p>
-                    </div>
-                `;
+                console.error('加载知识失败:', error);
             }
         }
 
-        function handleSearchKnowledge() {
-            clearTimeout(window.searchTimeout);
-            window.searchTimeout = setTimeout(() => {
-                loadKnowledgeBase();
-            }, 300);
+        function getCategoryName(category) {
+            const categories = {
+                'chi': '中文',
+                'eng': '英文',
+                'math': '数学',
+                'ls': '通识',
+                'phy': '物理',
+                'chem': '化学',
+                'bio': '生物',
+                'econ': '经济',
+                'cs': '计算机'
+            };
+            return categories[category] || category;
         }
 
-        // ================= 留言板功能 =================
-        async function loadChatUsers() {
-            if (!currentUser) return;
-            
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .select('id, username')
-                .neq('id', currentUser.id)
-                .limit(50);
-            
-            if (error || !data) return;
-            
-            const select = document.getElementById('chat-type');
-            while (select.options.length > 1) {
-                select.remove(1);
+        // ================= 投稿系统 =================
+        async function handleSubmitKnowledge() {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
             }
             
-            data.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.id;
-                option.textContent = `🔒 私信: ${user.username}`;
-                select.appendChild(option);
-            });
-        }
-
-        async function loadChatMessages() {
-            const container = document.getElementById('chat-messages');
+            const category = document.getElementById('submit-category').value;
+            const title = document.getElementById('submit-title').value.trim();
+            const content = document.getElementById('submit-content').value.trim();
+            const example = document.getElementById('submit-example').value.trim();
+            const messageEl = document.getElementById('submit-message');
+            
+            if (!title || !content) {
+                messageEl.textContent = '请填写标题和内容';
+                messageEl.style.color = 'var(--danger)';
+                return;
+            }
             
             try {
-                const { data, error } = await supabaseClient
-                    .from('feedbacks')
-                    .select('*')
-                    .in('status', ['normal', 'reported'])
-                    .order('created_at', { ascending: true })
-                    .limit(50);
+                // 创建投稿
+                const { error } = await supabaseClient
+                    .from('submissions')
+                    .insert({
+                        category: category,
+                        title: title,
+                        content: content,
+                        example: example,
+                        status: 'pending', // 初始状态为待审
+                        user_id: userProfile.id,
+                        author_name: userProfile.username,
+                        like_count: 0,
+                        view_count: 0
+                    });
                 
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-comment-slash"></i>
-                            <p>还没有留言，快来第一个发言吧！</p>
-                        </div>
-                    `;
+                if (error) {
+                    messageEl.textContent = '提交失败: ' + error.message;
+                    messageEl.style.color = 'var(--danger)';
                     return;
                 }
                 
-                // 构建消息树
-                const messageMap = new Map();
-                const rootMessages = [];
+                // 清空表单
+                document.getElementById('submit-title').value = '';
+                document.getElementById('submit-content').value = '';
+                document.getElementById('submit-example').value = '';
                 
-                data.forEach(msg => {
-                    messageMap.set(msg.id, { ...msg, replies: [] });
-                });
+                messageEl.textContent = '提交成功！等待管理员审核';
+                messageEl.style.color = 'var(--success)';
                 
-                data.forEach(msg => {
-                    const node = messageMap.get(msg.id);
-                    if (msg.parent_id) {
-                        const parent = messageMap.get(msg.parent_id);
-                        if (parent) parent.replies.push(node);
-                        else rootMessages.push(node);
-                    } else {
-                        rootMessages.push(node);
+                showMessage('投稿已提交，等待审核', 'success');
+                
+            } catch (error) {
+                console.error('投稿异常:', error);
+                messageEl.textContent = '提交失败，请重试';
+                messageEl.style.color = 'var(--danger)';
+            }
+        }
+
+        // ================= 留言板系统 =================
+        function setupChatShortcuts() {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keydown', function(e) {
+                    // Ctrl+Enter 发送
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        sendChatMessage();
+                    }
+                    // Escape 取消回复
+                    if (e.key === 'Escape' && replyingToMessage) {
+                        handleCancelReply();
                     }
                 });
                 
-                // 渲染消息
-                container.innerHTML = rootMessages.map(msg => renderMessageNode(msg)).join('');
-                
-                // 滚动到底部
-                setTimeout(() => {
-                    container.scrollTop = container.scrollHeight;
-                }, 100);
-                
-            } catch (error) {
-                console.error('加载留言失败:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>加载失败，请刷新重试</p>
-                    </div>
-                `;
+                // 实时字符计数
+                chatInput.addEventListener('input', updateCharCount);
             }
         }
 
-        function renderMessageNode(message, depth = 0) {
-            const isReported = message.status === 'reported';
-            const isPrivate = message.target_id && message.target_id !== 'public';
-            const isCurrentUser = message.user_id === currentUser?.id;
+        function updateCharCount() {
+            const input = document.getElementById('chat-input');
+            const count = input.value.length;
+            const countEl = document.getElementById('char-count');
             
-            let indentStyle = '';
-            if (depth > 0) {
-                indentStyle = `margin-left: ${depth * 20}px; border-left: 3px solid rgba(59, 130, 246, 0.3); padding-left: 15px;`;
+            countEl.textContent = `${count}/1000`;
+            
+            if (count > 800) {
+                countEl.classList.add('warning');
+                countEl.classList.remove('danger');
+            } else if (count > 950) {
+                countEl.classList.remove('warning');
+                countEl.classList.add('danger');
+            } else {
+                countEl.classList.remove('warning', 'danger');
+            }
+        }
+
+        async function loadChatMessages() {
+            if (!currentUser) {
+                showMessage('请先登录查看留言', 'error');
+                return;
+            }
+            
+            try {
+                // 获取所有留言（包括回复关系）
+                const { data: messages, error } = await supabaseClient
+                    .from('feedbacks')
+                    .select('*')
+                    .order('created_at', { ascending: true })
+                    .limit(100);
+                
+                if (error) {
+                    console.error('加载留言失败:', error);
+                    showMessage('加载留言失败', 'error');
+                    return;
+                }
+                
+                // 构建留言树
+                const messageTree = buildMessageTree(messages || []);
+                renderChatMessages(messageTree);
+                
+                // 更新留言数量
+                document.getElementById('message-count').textContent = messages?.length || 0;
+                
+            } catch (error) {
+                console.error('留言加载异常:', error);
+                showMessage('系统异常，请重试', 'error');
+            }
+        }
+
+        function buildMessageTree(messages) {
+            const messageMap = new Map();
+            const rootMessages = [];
+            
+            messages.forEach(msg => {
+                messageMap.set(msg.id, { ...msg, replies: [] });
+            });
+            
+            messages.forEach(msg => {
+                const messageNode = messageMap.get(msg.id);
+                if (msg.parent_id) {
+                    const parentNode = messageMap.get(msg.parent_id);
+                    if (parentNode) {
+                        parentNode.replies.push(messageNode);
+                    } else {
+                        rootMessages.push(messageNode);
+                    }
+                } else {
+                    rootMessages.push(messageNode);
+                }
+            });
+            
+            return rootMessages;
+        }
+
+        function renderChatMessages(messageTree) {
+            const container = document.getElementById('chat-messages');
+            if (!container) return;
+            
+            if (!messageTree || messageTree.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-comment-slash" style="font-size: 56px; opacity: 0.2; margin-bottom: 20px;"></i>
+                        <h3 style="margin-bottom: 10px; color: var(--text-secondary);">还没有留言</h3>
+                        <p>快来发布第一条留言吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = messageTree.map(message => renderMessageNode(message)).join('');
+            
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function renderMessageNode(message, depth = 0) {
+            const isPrivate = message.target_id && message.target_id !== 'public';
+            const isReported = message.status === 'reported';
+            const isCurrentUser = message.user_id === currentUser?.id;
+            const isAdmin = userProfile?.is_admin;
+            
+            const indent = depth * 40;
+            const isReply = depth > 0;
+            
+            let messageClass = 'message';
+            if (isReply) messageClass += ' reply';
+            if (isReported) messageClass += ' reported';
+            if (isPrivate) messageClass += ' private';
+            
+            const badges = [];
+            if (isPrivate) badges.push('<span class="message-badge badge-private"><i class="fas fa-lock"></i> 私信</span>');
+            if (isReported) badges.push('<span class="message-badge badge-reported"><i class="fas fa-flag"></i> 已举报</span>');
+            if (message.is_admin) badges.push('<span class="message-badge badge-admin"><i class="fas fa-shield-alt"></i> 管理员</span>');
+            
+            const timeString = formatMessageTime(message.created_at);
+            
+            const actionButtons = [];
+            
+            actionButtons.push(`
+                <button class="message-action" onclick="handleReplyToMessage('${message.id}', '${message.author_name}')">
+                    <i class="fas fa-reply"></i> 回复
+                </button>
+            `);
+            
+            if (!isCurrentUser && !isReported) {
+                actionButtons.push(`
+                    <button class="message-action report" onclick="handleReportMessage('${message.id}')">
+                        <i class="fas fa-flag"></i> 举报
+                    </button>
+                `);
+            }
+            
+            if (isAdmin) {
+                if (isReported) {
+                    actionButtons.push(`
+                        <button class="message-action" onclick="handleAdminRestoreMessage('${message.id}')" style="color: var(--success);">
+                            <i class="fas fa-check"></i> 恢复
+                        </button>
+                    `);
+                }
+                actionButtons.push(`
+                    <button class="message-action report" onclick="handleAdminDeleteMessage('${message.id}')">
+                        <i class="fas fa-trash"></i> 删除
+                    </button>
+                `);
+            }
+            
+            let messageContent = message.content;
+            if (isReported) {
+                messageContent = `<span style="color: var(--danger); font-style: italic;">⚠️ 此留言已被举报，正在审核中</span><br>${message.content}`;
             }
             
             return `
-                <div class="message" style="${indentStyle}">
+                <div class="${messageClass}" style="margin-left: ${indent}px;">
                     <div class="message-header">
-                        <div>
+                        <div class="message-author-info">
                             <span class="message-author">${message.author_name}</span>
-                            ${isPrivate ? ' <i class="fas fa-lock" style="font-size: 12px; color: var(--text-secondary);"></i>' : ''}
-                            ${isReported ? ' <span style="color: var(--danger); font-size: 12px;">⚠️ 已举报</span>' : ''}
+                            <div class="message-badges">
+                                ${badges.join('')}
+                            </div>
                         </div>
-                        <div class="message-time">${formatTime(message.created_at)}</div>
+                        <div class="message-time">${timeString}</div>
                     </div>
+                    
                     <div class="message-content">
-                        ${isReported ? `<span style="color: var(--danger); font-style: italic;">此留言已被举报，正在审核中...</span><br>` : ''}
-                        ${message.content}
+                        ${messageContent}
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 12px;">
-                        <button onclick="handleReplyToMessage('${message.id}', '${message.author_name}')" 
-                                style="background: none; border: none; color: var(--primary); cursor: pointer;">
-                            <i class="fas fa-reply"></i> 回复
-                        </button>
-                        ${!isReported && !isCurrentUser ? `
-                            <button onclick="handleReportMessage('${message.id}')" 
-                                    style="background: none; border: none; color: var(--danger); cursor: pointer;">
-                                <i class="fas fa-flag"></i> 举报
-                            </button>
-                        ` : ''}
+                    
+                    <div class="message-actions">
+                        ${actionButtons.join('')}
                     </div>
+                    
                     ${message.replies && message.replies.length > 0 ? 
                         message.replies.map(reply => renderMessageNode(reply, depth + 1)).join('') : ''}
                 </div>
             `;
         }
 
-        function formatTime(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            
-            if (diffMins < 1) return '刚刚';
-            if (diffMins < 60) return `${diffMins}分钟前`;
-            if (diffMins < 1440) return `${Math.floor(diffMins / 60)}小时前`;
-            
-            return date.toLocaleDateString('zh-HK');
-        }
-
         async function handleReplyToMessage(messageId, authorName) {
-            const { data: message } = await supabaseClient
+            const { data: message, error } = await supabaseClient
                 .from('feedbacks')
                 .select('*')
                 .eq('id', messageId)
                 .single();
             
-            if (!message) return;
+            if (error) {
+                showMessage('无法找到该消息', 'error');
+                return;
+            }
             
             replyingToMessage = {
                 id: messageId,
                 author_name: authorName,
-                user_id: message.user_id
+                user_id: message.user_id,
+                content: message.content.substring(0, 50) + (message.content.length > 50 ? '...' : '')
             };
             
             const indicator = document.getElementById('reply-indicator');
             const userSpan = document.getElementById('reply-to-user');
             
-            indicator.style.display = 'block';
+            indicator.style.display = 'flex';
             userSpan.textContent = authorName;
             
-            document.getElementById('chat-input').focus();
+            const chatInput = document.getElementById('chat-input');
+            chatInput.focus();
+            chatInput.placeholder = `回复 ${authorName}: ${replyingToMessage.content}`;
+            
+            showMessage(`正在回复 ${authorName} 的留言`, 'success');
         }
 
         function handleCancelReply() {
             replyingToMessage = null;
-            document.getElementById('reply-indicator').style.display = 'none';
-        }
-
-        function addQuickTag(tag) {
-            const input = document.getElementById('chat-input');
-            input.value += tag + ' ';
-            input.focus();
+            const indicator = document.getElementById('reply-indicator');
+            indicator.style.display = 'none';
+            
+            const chatInput = document.getElementById('chat-input');
+            chatInput.placeholder = '输入你的留言... (支持Markdown格式，按Ctrl+Enter发送)';
+            
+            showMessage('已取消回复', 'info');
         }
 
         async function sendChatMessage() {
@@ -1658,7 +2403,20 @@
             const content = input.value.trim();
             const chatType = document.getElementById('chat-type').value;
             
-            if (!content) return;
+            if (!content) {
+                showMessage('请输入留言内容', 'error');
+                return;
+            }
+            
+            if (content.length > 1000) {
+                showMessage('留言内容不能超过1000字', 'error');
+                return;
+            }
+            
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
             
             try {
                 const messageData = {
@@ -1671,243 +2429,905 @@
                 
                 if (chatType !== 'public') {
                     messageData.target_id = chatType;
+                    messageData.visibility = 'private';
                 }
                 
                 if (replyingToMessage) {
                     messageData.parent_id = replyingToMessage.id;
                     messageData.target_id = replyingToMessage.user_id;
+                    messageData.visibility = 'private';
                 }
                 
                 const { error } = await supabaseClient
                     .from('feedbacks')
                     .insert(messageData);
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('发送留言失败:', error);
+                    showMessage('发送失败: ' + error.message, 'error');
+                    return;
+                }
                 
                 input.value = '';
+                updateCharCount();
                 handleCancelReply();
+                
                 await loadChatMessages();
                 
+                showMessage('留言发送成功', 'success');
+                
             } catch (error) {
-                console.error('发送留言失败:', error);
-                alert('发送失败: ' + error.message);
+                console.error('发送留言异常:', error);
+                showMessage('发送失败，请重试', 'error');
             }
+        }
+
+        function addQuickTag(tag) {
+            const input = document.getElementById('chat-input');
+            const currentText = input.value;
+            
+            if (currentText && !currentText.endsWith(' ') && !currentText.endsWith('\n')) {
+                input.value = currentText + ' ' + tag + ' ';
+            } else {
+                input.value = currentText + tag + ' ';
+            }
+            
+            input.focus();
+            updateCharCount();
         }
 
         async function handleReportMessage(messageId) {
-            if (!confirm('确定要举报这条留言吗？')) return;
-            
-            try {
-                await supabaseClient
-                    .from('feedbacks')
-                    .update({ status: 'reported' })
-                    .eq('id', messageId);
-                
-                alert('已举报，感谢反馈！');
-                await loadChatMessages();
-                
-            } catch (error) {
-                console.error('举报失败:', error);
-                alert('举报失败: ' + error.message);
-            }
-        }
-
-        // ================= 游戏功能 =================
-        function startSoloGame(gameType) {
-            const gameNames = {
-                'quick_quiz': '快速问答',
-                'memory': '记忆配对',
-                'typing': '打字竞赛'
-            };
-            
-            alert(`开始 ${gameNames[gameType] || '小游戏'}！\n\n从「${subjectCategories.find(c => c.id === currentCategory)?.name}」分类中抽取题目。`);
-        }
-
-        async function loadGameRooms() {
-            const container = document.getElementById('rooms-list');
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('duel_rooms')
-                    .select('*')
-                    .is('winner_id', null)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-door-open"></i>
-                            <p>还没有游戏房间</p>
-                            <button class="btn btn-primary mt-2" onclick="showCreateRoom()">
-                                <i class="fas fa-plus-circle"></i> 创建房间
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = data.map(room => {
-                    const isPlayer = room.player1_id === currentUser.id || room.player2_id === currentUser.id;
-                    const isFull = room.player2_id != null;
-                    
-                    let button = '';
-                    if (isPlayer) {
-                        button = '<button class="btn btn-small" style="background: var(--success);">已加入</button>';
-                    } else if (!isFull) {
-                        button = `<button class="btn btn-small" onclick="joinGameRoom('${room.id}')">加入</button>`;
-                    } else {
-                        button = '<button class="btn btn-small" disabled>进行中</button>';
-                    }
-                    
-                    return `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.03); border-radius: var(--radius-sm); margin-bottom: 10px;">
-                            <div>
-                                <div style="font-weight: 600;">房间 #${room.id.slice(0,8)}</div>
-                                <div style="font-size: 13px; color: var(--text-secondary);">
-                                    玩家: ${room.player1_name} ${room.player2_name ? `vs ${room.player2_name}` : '(等待中)'}
-                                </div>
-                            </div>
-                            ${button}
-                        </div>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('加载房间失败:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>加载失败，请刷新重试</p>
-                    </div>
-                `;
-            }
-        }
-
-        function showCreateRoom() {
-            alert('创建房间功能需要连接游戏服务器...');
-        }
-
-        function refreshRooms() {
-            loadGameRooms();
-        }
-
-        // ================= 排行榜功能 =================
-        async function loadRankings() {
-            const container = document.getElementById('rankings-list');
-            
-            try {
-                const { data, error } = await supabaseClient
-                    .from('profiles')
-                    .select('username, score')
-                    .order('score', { ascending: false })
-                    .limit(20);
-                
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><p>暂无数据</p></div>';
-                    return;
-                }
-                
-                // 更新用户排名
-                const userIndex = data.findIndex(p => p.username === userProfile?.username);
-                if (userIndex !== -1) {
-                    document.getElementById('my-rank').textContent = `#${userIndex + 1}`;
-                    document.getElementById('my-score').textContent = data[userIndex].score;
-                    document.getElementById('user-rank').textContent = `#${userIndex + 1}`;
-                }
-                
-                container.innerHTML = data.map((player, index) => {
-                    const isCurrentUser = player.username === userProfile?.username;
-                    
-                    return `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: ${isCurrentUser ? 'rgba(59, 130, 246, 0.1)' : 'rgba(0,0,0,0.03)'}; border-radius: var(--radius-sm); margin-bottom: 8px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 30px; height: 30px; background: ${index < 3 ? 'var(--primary)' : '#6B7280'}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
-                                    ${index + 1}
-                                </div>
-                                <div>
-                                    <div style="font-weight: 600;">${player.username} ${isCurrentUser ? '👤' : ''}</div>
-                                </div>
-                            </div>
-                            <div style="font-weight: 700; color: var(--primary);">${player.score} 分</div>
-                        </div>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('加载排行榜失败:', error);
-                container.innerHTML = '<div class="empty-state"><p>加载失败</p></div>';
-            }
-        }
-
-        // ================= 投稿功能 =================
-        async function handleSubmitKnowledge() {
-            const title = document.getElementById('submit-title').value.trim();
-            const content = document.getElementById('submit-content').value.trim();
-            const example = document.getElementById('submit-example')?.value.trim() || '';
-            
-            if (!title || !content) {
-                alert('请填写标题和内容');
+            if (!confirm('确定要举报这条留言吗？管理员会进行审核。')) {
                 return;
             }
             
             try {
-                const submission = {
-                    category: currentCategory,
-                    title: title,
-                    content: content,
-                    example: example,
-                    user_id: currentUser.id,
-                    author_name: userProfile.username,
-                    status: 'pending',
-                    like_count: 0,
-                    view_count: 0,
-                    created_at: new Date().toISOString()
-                };
-                
                 const { error } = await supabaseClient
-                    .from('submissions')
-                    .insert(submission);
+                    .from('feedbacks')
+                    .update({ status: 'reported' })
+                    .eq('id', messageId);
                 
-                if (error) throw error;
+                if (error) {
+                    showMessage('举报失败: ' + error.message, 'error');
+                    return;
+                }
                 
-                alert('投稿成功！等待管理员审核。');
-                
-                // 清空表单
-                document.getElementById('submit-title').value = '';
-                document.getElementById('submit-content').value = '';
-                document.getElementById('submit-example').value = '';
-                
-                // 切换到知识库页面
-                switchPage('home');
+                showMessage('已举报，感谢您的反馈！', 'success');
+                await loadChatMessages();
                 
             } catch (error) {
-                console.error('投稿失败:', error);
-                alert('投稿失败: ' + error.message);
+                console.error('举报异常:', error);
+                showMessage('举报失败，请重试', 'error');
             }
         }
 
-        // ================= 设置功能 =================
-        function setTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('dse-theme', theme);
+        // ================= 线上对决系统 =================
+        async function handleCreateDuelRoom() {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
             
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            event.target.classList.add('active');
+            try {
+                // 创建对决房间
+                const { data, error } = await supabaseClient
+                    .from('duel_rooms')
+                    .insert({
+                        player1_id: userProfile.id,
+                        player1_name: userProfile.username,
+                        status: 'waiting',
+                        settings: {
+                            category: currentCategory,
+                            question_count: 5,
+                            time_limit: 60
+                        }
+                    })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    showMessage('创建房间失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('房间创建成功！等待其他玩家加入', 'success');
+                await loadDuelRooms();
+                
+            } catch (error) {
+                console.error('创建房间异常:', error);
+                showMessage('创建失败，请重试', 'error');
+            }
         }
 
-        async function handleLogout() {
-            if (!confirm('确定要登出吗？')) return;
-            
-            await supabaseClient.auth.signOut();
-            location.reload();
+        async function loadDuelRooms() {
+            try {
+                const { data: rooms, error } = await supabaseClient
+                    .from('duel_rooms')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                const container = document.getElementById('duel-container');
+                
+                if (error || !rooms || rooms.length === 0) {
+                    container.innerHTML = `
+                        <div class="glass-card" style="text-align: center; padding: 60px; grid-column: 1 / -1;">
+                            <i class="fas fa-crosshairs" style="font-size: 56px; opacity: 0.2; margin-bottom: 20px;"></i>
+                            <h3 style="margin-bottom: 10px; color: var(--text-secondary);">暂无对决房间</h3>
+                            <p>点击"创建房间"按钮开始一场对决！</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = rooms.map(room => `
+                    <div class="duel-room ${room.status}">
+                        <div class="duel-room-header">
+                            <div>
+                                <h3 style="margin: 0; color: var(--text-primary);">房间 #${room.id.substring(0, 8)}</h3>
+                                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 5px;">
+                                    科目: ${getCategoryName(room.settings?.category || 'chi')}
+                                </div>
+                            </div>
+                            <div class="duel-room-status status-${room.status}">
+                                ${room.status === 'waiting' ? '等待中' : 
+                                  room.status === 'playing' ? '进行中' : '已完成'}
+                            </div>
+                        </div>
+                        
+                        <div class="duel-players">
+                            <div class="duel-player">
+                                <div class="player-avatar">${room.player1_name?.charAt(0) || 'A'}</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">
+                                    ${room.player1_name || '玩家1'}
+                                </div>
+                                <div style="font-size: 24px; font-weight: 800; color: var(--primary);">
+                                    ${room.p1_score || 0}
+                                </div>
+                            </div>
+                            
+                            <div class="vs-text">VS</div>
+                            
+                            <div class="duel-player">
+                                ${room.player2_id ? `
+                                    <div class="player-avatar">${room.player2_name?.charAt(0) || 'B'}</div>
+                                    <div style="font-weight: 600; color: var(--text-primary);">
+                                        ${room.player2_name || '玩家2'}
+                                    </div>
+                                    <div style="font-size: 24px; font-weight: 800; color: var(--primary);">
+                                        ${room.p2_score || 0}
+                                    </div>
+                                ` : `
+                                    <div class="player-avatar" style="background: rgba(0,0,0,0.1); color: var(--text-secondary);">?</div>
+                                    <div style="font-weight: 600; color: var(--text-secondary);">
+                                        等待玩家
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            ${room.status === 'waiting' && room.player1_id !== userProfile.id ? `
+                                <button class="btn btn-primary" onclick="handleJoinDuelRoom('${room.id}')">
+                                    加入房间
+                                </button>
+                            ` : ''}
+                            
+                            ${room.status === 'playing' && 
+                              (room.player1_id === userProfile.id || room.player2_id === userProfile.id) ? `
+                                <button class="btn btn-success" onclick="handleClaimWin('${room.id}')">
+                                    我赢了
+                                </button>
+                            ` : ''}
+                            
+                            ${room.player1_id === userProfile.id && room.status === 'waiting' ? `
+                                <button class="btn btn-danger" onclick="handleCancelDuelRoom('${room.id}')">
+                                    取消房间
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('加载对决房间失败:', error);
+            }
         }
+
+        async function handleJoinDuelRoom(roomId) {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('duel_rooms')
+                    .update({
+                        player2_id: userProfile.id,
+                        player2_name: userProfile.username,
+                        status: 'playing'
+                    })
+                    .eq('id', roomId)
+                    .eq('status', 'waiting');
+                
+                if (error) {
+                    showMessage('加入房间失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('成功加入对决房间！', 'success');
+                await loadDuelRooms();
+                
+            } catch (error) {
+                console.error('加入房间异常:', error);
+                showMessage('加入失败，请重试', 'error');
+            }
+        }
+
+        async function handleClaimWin(roomId) {
+            if (!confirm('确认你赢得了这场对决？')) return;
+            
+            try {
+                // 获取房间信息
+                const { data: room, error: roomError } = await supabaseClient
+                    .from('duel_rooms')
+                    .select('*')
+                    .eq('id', roomId)
+                    .single();
+                
+                if (roomError) {
+                    showMessage('获取房间信息失败', 'error');
+                    return;
+                }
+                
+                // 判断谁是赢家
+                const isPlayer1 = room.player1_id === userProfile.id;
+                const winnerId = isPlayer1 ? room.player1_id : room.player2_id;
+                const loserId = isPlayer1 ? room.player2_id : room.player1_id;
+                
+                // 更新房间状态
+                const { error: updateError } = await supabaseClient
+                    .from('duel_rooms')
+                    .update({
+                        winner_id: winnerId,
+                        status: 'finished'
+                    })
+                    .eq('id', roomId);
+                
+                if (updateError) {
+                    showMessage('更新房间失败', 'error');
+                    return;
+                }
+                
+                // 更新玩家积分
+                await updatePlayerScores(winnerId, loserId);
+                
+                showMessage('对决结果已记录！赢家获得10积分', 'success');
+                await loadDuelRooms();
+                
+            } catch (error) {
+                console.error('确认胜利异常:', error);
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        async function updatePlayerScores(winnerId, loserId) {
+            try {
+                // 赢家+10分，增加胜场
+                await supabaseClient
+                    .from('profiles')
+                    .update({
+                        score: supabaseClient.sql`score + 10`,
+                        duel_wins: supabaseClient.sql`duel_wins + 1`
+                    })
+                    .eq('id', winnerId);
+                
+                // 输家增加败场
+                await supabaseClient
+                    .from('profiles')
+                    .update({
+                        duel_losses: supabaseClient.sql`duel_losses + 1`
+                    })
+                    .eq('id', loserId);
+                
+                // 更新当前用户的排名显示
+                if (userProfile.id === winnerId || userProfile.id === loserId) {
+                    await loadUserProfile(currentUser.id);
+                }
+                
+            } catch (error) {
+                console.error('更新积分失败:', error);
+            }
+        }
+
+        // ================= 排行榜系统 =================
+        async function loadRankings() {
+            try {
+                const { data: users, error } = await supabaseClient
+                    .from('profiles')
+                    .select('username, score, games_played, duel_wins')
+                    .order('score', { ascending: false })
+                    .limit(20);
+                
+                const container = document.getElementById('rankings-container');
+                
+                if (error || !users) {
+                    container.innerHTML = '<div class="glass-card">加载排行榜失败</div>';
+                    return;
+                }
+                
+                container.innerHTML = users.map((user, index) => `
+                    <div class="ranking-item ${index < 3 ? 'top-3' : ''}">
+                        <div class="ranking-pos pos-${index + 1}">
+                            ${index + 1}
+                        </div>
+                        <div class="ranking-info">
+                            <div class="ranking-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                            <div style="flex: 1;">
+                                <div class="ranking-name">${user.username}</div>
+                                <div style="display: flex; gap: 20px; margin-top: 8px;">
+                                    <div style="font-size: 13px; color: var(--text-secondary);">
+                                        游戏: ${user.games_played || 0}
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--text-secondary);">
+                                        胜场: ${user.duel_wins || 0}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ranking-score">${user.score}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+            }
+        }
+
+        // ================= 管理员系统 =================
+        async function handleLoadAdminTab(tab) {
+            if (!userProfile?.is_admin) {
+                showMessage('无权访问管理后台', 'error');
+                switchPage('home');
+                return;
+            }
+            
+            const container = document.getElementById('admin-content');
+            const tabs = document.querySelectorAll('.admin-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>';
+            
+            switch (tab) {
+                case 'knowledge':
+                    await loadAdminKnowledge();
+                    break;
+                case 'reports':
+                    await loadAdminReports();
+                    break;
+                case 'messages':
+                    await loadAdminMessages();
+                    break;
+                case 'users':
+                    await loadAdminUsers();
+                    break;
+                case 'duels':
+                    await loadAdminDuels();
+                    break;
+            }
+        }
+
+        async function loadAdminKnowledge() {
+            try {
+                // 获取所有待审的知识投稿
+                const { data: submissions, error } = await supabaseClient
+                    .from('submissions')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+                
+                const container = document.getElementById('admin-content');
+                
+                if (error || !submissions) {
+                    container.innerHTML = '<div class="glass-card">加载失败</div>';
+                    return;
+                }
+                
+                if (submissions.length === 0) {
+                    container.innerHTML = '<div class="glass-card">暂无待审内容</div>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <h3 style="margin-bottom: 20px; color: var(--primary);">待审知识 (${submissions.length})</h3>
+                    ${submissions.map(submission => `
+                        <div class="admin-item">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">
+                                        ${submission.title}
+                                        <span class="status-badge status-pending">待审</span>
+                                    </h4>
+                                    <div style="display: flex; gap: 15px; color: var(--text-secondary); font-size: 13px;">
+                                        <span>分类: ${getCategoryName(submission.category)}</span>
+                                        <span>作者: ${submission.author_name}</span>
+                                        <span>时间: ${new Date(submission.created_at).toLocaleString('zh-HK')}</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-small" onclick="handleApproveSubmission('${submission.id}')" 
+                                            style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                        <i class="fas fa-check"></i> 通过
+                                    </button>
+                                    <button class="btn btn-small" onclick="handleRejectSubmission('${submission.id}')" 
+                                            style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                        <i class="fas fa-times"></i> 拒绝
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">
+                                ${submission.content}
+                            </div>
+                            ${submission.example ? `
+                                <div style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: var(--radius-md);">
+                                    <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">示例题目:</div>
+                                    <div style="color: var(--text-secondary);">${submission.example}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                `;
+                
+            } catch (error) {
+                console.error('加载管理知识失败:', error);
+            }
+        }
+
+        async function handleApproveSubmission(submissionId) {
+            if (!confirm('确定要通过此投稿吗？')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('submissions')
+                    .update({ status: 'approved' })
+                    .eq('id', submissionId);
+                
+                if (error) {
+                    showMessage('操作失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('投稿已通过', 'success');
+                await handleLoadAdminTab('knowledge');
+                
+            } catch (error) {
+                console.error('审核通过异常:', error);
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        async function handleRejectSubmission(submissionId) {
+            if (!confirm('确定要拒绝此投稿吗？')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('submissions')
+                    .update({ status: 'rejected' })
+                    .eq('id', submissionId);
+                
+                if (error) {
+                    showMessage('操作失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('投稿已拒绝', 'success');
+                await handleLoadAdminTab('knowledge');
+                
+            } catch (error) {
+                console.error('审核拒绝异常:', error);
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        async function loadAdminMessages() {
+            try {
+                const { data: messages, error } = await supabaseClient
+                    .from('feedbacks')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                const container = document.getElementById('admin-content');
+                
+                if (error) {
+                    container.innerHTML = '<div class="glass-card">加载失败</div>';
+                    return;
+                }
+                
+                const pendingMessages = messages.filter(m => m.status === 'reported');
+                const normalMessages = messages.filter(m => m.status === 'normal');
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">📊 留言统计</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div class="glass-card" style="text-align: center;">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--primary);">${messages.length}</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;">总留言数</div>
+                            </div>
+                            <div class="glass-card" style="text-align: center; border-left: 4px solid var(--danger);">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--danger);">${pendingMessages.length}</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;">待处理举报</div>
+                            </div>
+                            <div class="glass-card" style="text-align: center; border-left: 4px solid var(--success);">
+                                <div style="font-size: 32px; font-weight: 800; color: var(--success);">${normalMessages.length}</div>
+                                <div style="color: var(--text-secondary); font-size: 14px;">正常留言</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: var(--danger);">⚠️ 待处理举报 (${pendingMessages.length})</h3>
+                        ${pendingMessages.length > 0 ? 
+                            pendingMessages.map(msg => renderAdminMessageItem(msg)).join('') :
+                            '<div class="glass-card" style="text-align: center; padding: 40px;"><p>暂无待处理的举报</p></div>'
+                        }
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: var(--success);">✅ 正常留言 (${normalMessages.length})</h3>
+                        ${normalMessages.length > 0 ? 
+                            normalMessages.slice(0, 10).map(msg => renderAdminMessageItem(msg)).join('') +
+                            (normalMessages.length > 10 ? 
+                                `<div class="glass-card" style="text-align: center; padding: 20px;">
+                                    <p>还有 ${normalMessages.length - 10} 条正常留言...</p>
+                                </div>` : '') :
+                            '<div class="glass-card" style="text-align: center; padding: 40px;"><p>暂无正常留言</p></div>'
+                        }
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('加载管理员留言失败:', error);
+                container.innerHTML = '<div class="glass-card">加载失败，请重试</div>';
+            }
+        }
+
+        function renderAdminMessageItem(message) {
+            const time = new Date(message.created_at).toLocaleString('zh-HK');
+            const statusClass = `status-${message.status}`;
+            
+            return `
+                <div class="admin-item">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <div>
+                            <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">
+                                ${message.author_name}
+                                <span class="status-badge ${statusClass}">${message.status}</span>
+                            </h4>
+                            <div style="color: var(--text-secondary); font-size: 13px;">${time}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-small" onclick="handleAdminRestoreMessage('${message.id}')" 
+                                    style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                <i class="fas fa-check"></i> 恢复
+                            </button>
+                            <button class="btn btn-small" onclick="handleAdminDeleteMessage('${message.id}')" 
+                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                    <div style="color: var(--text-secondary); line-height: 1.6; background: rgba(0,0,0,0.03); padding: 15px; border-radius: var(--radius-md);">
+                        ${message.content}
+                    </div>
+                    ${message.parent_id ? 
+                        `<div style="margin-top: 10px; font-size: 13px; color: var(--text-secondary);">
+                            <i class="fas fa-reply"></i> 回复 ID: ${message.parent_id}
+                        </div>` : ''
+                    }
+                </div>
+            `;
+        }
+
+        async function handleAdminRestoreMessage(messageId) {
+            if (!confirm('确定要恢复这条留言吗？')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('feedbacks')
+                    .update({ status: 'normal' })
+                    .eq('id', messageId);
+                
+                if (error) {
+                    showMessage('恢复失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('留言已恢复', 'success');
+                await handleLoadAdminTab('messages');
+                
+            } catch (error) {
+                console.error('恢复留言异常:', error);
+                showMessage('恢复失败，请重试', 'error');
+            }
+        }
+
+        async function handleAdminDeleteMessage(messageId) {
+            if (!confirm('确定要删除这条留言吗？此操作不可撤销。')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('feedbacks')
+                    .update({ status: 'deleted' })
+                    .eq('id', messageId);
+                
+                if (error) {
+                    showMessage('删除失败: ' + error.message, 'error');
+                    return;
+                }
+                
+                showMessage('留言已删除', 'success');
+                await handleLoadAdminTab('messages');
+                
+            } catch (error) {
+                console.error('删除留言异常:', error);
+                showMessage('删除失败，请重试', 'error');
+            }
+        }
+
+        // ================= 游戏系统 =================
+        async function startGame(gameType) {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            try {
+                // 从知识库获取题目
+                const { data: knowledge, error } = await supabaseClient
+                    .from('submissions')
+                    .select('title, content, example')
+                    .eq('status', 'approved')
+                    .limit(20);
+                
+                if (error || !knowledge) {
+                    showMessage('获取题目失败', 'error');
+                    return;
+                }
+                
+                // 准备游戏数据
+                const questions = knowledge.filter(k => k.example).map(k => {
+                    const [question, answer] = k.example.split('//');
+                    return {
+                        question: question || k.title,
+                        answer: answer || '',
+                        explanation: k.content
+                    };
+                });
+                
+                if (questions.length === 0) {
+                    showMessage('暂无题目可用', 'warning');
+                    return;
+                }
+                
+                // 根据游戏类型开始游戏
+                switch (gameType) {
+                    case 'quiz':
+                        startQuizGame(questions);
+                        break;
+                    case 'matching':
+                        startMatchingGame(questions);
+                        break;
+                    case 'timed':
+                        startTimedGame(questions);
+                        break;
+                }
+                
+                showMessage('游戏开始！', 'success');
+                
+            } catch (error) {
+                console.error('开始游戏异常:', error);
+                showMessage('游戏启动失败', 'error');
+            }
+        }
+
+        function startQuizGame(questions) {
+            // 这里可以扩展实现具体的问答游戏界面
+            alert(`开始知识问答游戏！共有 ${questions.length} 道题目。\n\n完整游戏功能将在下一版本实现。`);
+        }
+
+        // ================= 工具函数 =================
+        function formatMessageTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return '刚刚';
+            if (diffMins < 60) return `${diffMins}分钟前`;
+            if (diffHours < 24) return `${diffHours}小时前`;
+            if (diffDays < 7) return `${diffDays}天前`;
+            
+            return date.toLocaleDateString('zh-HK') + ' ' + date.toLocaleTimeString('zh-HK', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function showMessage(text, type) {
+            const colors = {
+                success: 'var(--success)',
+                error: 'var(--danger)',
+                warning: 'var(--warning)',
+                info: 'var(--primary)'
+            };
+            
+            const messageEl = document.createElement('div');
+            messageEl.textContent = text;
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 12px 24px;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                font-weight: 500;
+                max-width: 400px;
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            setTimeout(() => {
+                messageEl.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => messageEl.remove(), 300);
+            }, 3000);
+        }
+
+        function updateUserAvatar() {
+            if (userProfile) {
+                const avatarEl = document.getElementById('user-avatar');
+                const usernameEl = document.getElementById('current-username');
+                if (avatarEl) avatarEl.textContent = userProfile.username.charAt(0).toUpperCase();
+                if (usernameEl) usernameEl.textContent = userProfile.username;
+            }
+        }
+
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // 移除所有导航项的活动状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 显示目标页面
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                
+                // 设置导航项活动状态
+                const navItem = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+                    item.textContent.includes(getPageName(pageId))
+                );
+                if (navItem) navItem.classList.add('active');
+            }
+            
+            // 关闭移动端侧边栏
+            if (window.innerWidth <= 1024) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+            
+            // 根据页面加载内容
+            switch (pageId) {
+                case 'home':
+                    loadKnowledgeByCategory(currentCategory);
+                    break;
+                case 'chat':
+                    if (currentUser) {
+                        loadChatMessages();
+                        updateUserAvatar();
+                    }
+                    break;
+                case 'duel':
+                    if (currentUser) loadDuelRooms();
+                    break;
+                case 'rank':
+                    loadRankings();
+                    break;
+                case 'submit':
+                    // 投稿页面不需要特殊加载
+                    break;
+                case 'admin':
+                    if (userProfile?.is_admin) handleLoadAdminTab('knowledge');
+                    break;
+            }
+        }
+
+        function getPageName(pageId) {
+            const pages = {
+                'home': '知识库',
+                'chat': '留言板',
+                'duel': '线上对决',
+                'games': '游戏中心',
+                'rank': '排行榜',
+                'submit': '投稿中心',
+                'settings': '设置',
+                'admin': '管理后台'
+            };
+            return pages[pageId] || '';
+        }
+
+        function initializeUserInterface() {
+            if (!userProfile) return;
+            
+            // 更新用户信息
+            document.getElementById('username').textContent = userProfile.username;
+            document.getElementById('user-score').textContent = userProfile.score;
+            document.getElementById('current-username').textContent = userProfile.username;
+            document.getElementById('settings-username').textContent = userProfile.username;
+            document.getElementById('settings-email').textContent = userProfile.email;
+            document.getElementById('settings-score').textContent = userProfile.score;
+            document.getElementById('settings-games').textContent = userProfile.games_played || 0;
+            
+            // 更新头像
+            updateUserAvatar();
+            
+            // 检查管理员权限
+            if (userProfile.is_admin) {
+                document.getElementById('admin-nav').style.display = 'flex';
+            }
+            
+            // 加载知识库
+            loadKnowledgeByCategory(currentCategory);
+            
+            // 更新排名
+            updateUserRank();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function changeTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('dse-theme', theme);
+            showMessage(`已切换到${theme}主题`, 'success');
+        }
+
+        // 初始加载
+        document.addEventListener('DOMContentLoaded', () => {
+            // 默认显示登录界面
+            document.getElementById('auth-modal').style.display = 'flex';
+            
+            // 添加样式动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
     </script>
 </body>
 </html>
