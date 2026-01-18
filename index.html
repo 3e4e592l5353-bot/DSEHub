@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v74 (UI优化版)</title>
+    <title>DSE Hub v75 (修复版)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -265,7 +265,7 @@
             transform: translateY(-2px);
         }
 
-        /* ================= 投稿页面修复 ================= */
+        /* ================= 投稿页面 ================= */
         .submit-container {
             max-width: 800px;
             margin: 0 auto;
@@ -282,7 +282,6 @@
             color: var(--text-primary);
         }
 
-        /* 科目分类胶囊 - 修复对齐问题 */
         .category-capsules {
             display: flex;
             flex-wrap: wrap;
@@ -314,7 +313,6 @@
             box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
         }
 
-        /* 表单控件 - 修复对齐 */
         .form-group {
             margin-bottom: 20px;
         }
@@ -362,7 +360,6 @@
             line-height: 1.5;
         }
 
-        /* 格式说明卡片 - 提高可读性 */
         .format-guide {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
             border-left: 4px solid var(--primary);
@@ -396,7 +393,7 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* 按钮 ================= */
+        /* ================= 按钮 ================= */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -627,15 +624,15 @@
                 <input type="password" class="form-input" id="login-password" placeholder="密码" required>
             </div>
             
-            <button class="btn btn-primary btn-block" onclick="login()">
+            <button class="btn btn-primary btn-block" onclick="handleLogin()">
                 <i class="fas fa-sign-in-alt"></i> 登录
             </button>
             
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-block" onclick="showRegister()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                <button class="btn btn-block" onclick="handleRegister()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
                     注册新账号
                 </button>
-                <button class="btn btn-block" id="resume-btn" onclick="resumeLogin()" style="display: none; background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                <button class="btn btn-block" id="resume-btn" onclick="handleResumeLogin()" style="display: none; background: rgba(99, 102, 241, 0.1); color: var(--primary);">
                     恢复登录
                 </button>
             </div>
@@ -655,7 +652,7 @@
         <div class="sidebar" id="sidebar">
             <div class="nav-header">
                 <div class="logo">DSE HUB</div>
-                <p class="tagline">版本 74 • 智能学习平台</p>
+                <p class="tagline">版本 75 • 智能学习平台</p>
             </div>
             
             <div class="nav-menu">
@@ -696,7 +693,7 @@
                     <span>积分: <strong id="user-score">0</strong></span>
                     <span>排名: <strong id="user-rank">#-</strong></span>
                 </div>
-                <button class="btn btn-block" onclick="logout()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                <button class="btn btn-block" onclick="handleLogout()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
                     <i class="fas fa-sign-out-alt"></i> 登出
                 </button>
             </div>
@@ -715,7 +712,7 @@
                     <div class="category-capsules" id="knowledge-categories"></div>
                     
                     <div class="form-group">
-                        <input type="text" class="form-input" id="knowledge-search" placeholder="搜索知识点、关键词..." onkeyup="searchKnowledge()">
+                        <input type="text" class="form-input" id="knowledge-search" placeholder="搜索知识点、关键词..." onkeyup="handleSearchKnowledge()">
                     </div>
                 </div>
                 
@@ -746,7 +743,7 @@
                     
                     <div id="reply-indicator" class="reply-indicator" style="display: none;">
                         <span>正在回复 <strong id="reply-to-user"></strong></span>
-                        <button onclick="cancelReply()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                        <button onclick="handleCancelReply()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -872,7 +869,7 @@
                         </div>
                         
                         <div class="submit-section">
-                            <button class="btn btn-primary btn-block" onclick="submitKnowledge()">
+                            <button class="btn btn-primary btn-block" onclick="handleSubmitKnowledge()">
                                 <i class="fas fa-paper-plane"></i> 提交审核
                             </button>
                             <p style="text-align: center; color: var(--text-secondary); font-size: 13px; margin-top: 15px;">
@@ -895,10 +892,10 @@
                     <p style="color: var(--text-secondary); margin-bottom: 20px;">选择你喜欢的界面主题</p>
                     
                     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <button class="category-capsule active" onclick="setTheme('default')">默认蓝</button>
-                        <button class="category-capsule" onclick="setTheme('emerald')">翡翠绿</button>
-                        <button class="category-capsule" onclick="setTheme('amber')">琥珀黄</button>
-                        <button class="category-capsule" onclick="setTheme('dark')">深色模式</button>
+                        <button class="category-capsule active" onclick="handleSetTheme('default')">默认蓝</button>
+                        <button class="category-capsule" onclick="handleSetTheme('emerald')">翡翠绿</button>
+                        <button class="category-capsule" onclick="handleSetTheme('amber')">琥珀黄</button>
+                        <button class="category-capsule" onclick="handleSetTheme('dark')">深色模式</button>
                     </div>
                 </div>
                 
@@ -934,9 +931,9 @@
                 
                 <div class="glass-card">
                     <div style="display: flex; gap: 10px; margin-bottom: 30px;">
-                        <button class="category-capsule active" onclick="loadAdminTab('knowledge')">知识审核</button>
-                        <button class="category-capsule" onclick="loadAdminTab('reports')">举报处理</button>
-                        <button class="category-capsule" onclick="loadAdminTab('users')">用户管理</button>
+                        <button class="category-capsule active" onclick="handleLoadAdminTab('knowledge')">知识审核</button>
+                        <button class="category-capsule" onclick="handleLoadAdminTab('reports')">举报处理</button>
+                        <button class="category-capsule" onclick="handleLoadAdminTab('users')">用户管理</button>
                     </div>
                     
                     <div id="admin-content"></div>
@@ -947,9 +944,10 @@
 
     <script>
         // ================= 配置与初始化 =================
-        const SB_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
-        const SB_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-        const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+        // 🟢 修复：重新命名变量，避免重复声明
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // 全局变量
         let currentUser = null;
@@ -959,22 +957,18 @@
 
         // 香港中学科目（包含"其他"）
         const subjectCategories = [
-            // 核心科目
             { id: 'chi', name: '中國語文' },
             { id: 'eng', name: '英國語文' },
             { id: 'math', name: '數學' },
             { id: 'ls', name: '通識教育' },
-            // 理科
             { id: 'phy', name: '物理' },
             { id: 'chem', name: '化學' },
             { id: 'bio', name: '生物' },
             { id: 'ict', name: '資訊及通訊科技' },
-            // 文科
             { id: 'hist', name: '歷史' },
             { id: 'geo', name: '地理' },
             { id: 'econ', name: '經濟' },
             { id: 'bafs', name: '企業、會計與財務概論' },
-            // 其他
             { id: 'other', name: '其他科目' }
         ];
 
@@ -992,7 +986,7 @@
             initGames();
             
             // 检查现有会话
-            const { data: session } = await supabase.auth.getSession();
+            const { data: session } = await supabaseClient.auth.getSession();
             if (session.session) {
                 document.getElementById('resume-btn').style.display = 'inline-block';
             }
@@ -1012,7 +1006,7 @@
                 
                 container.innerHTML = subjectCategories.map(cat => `
                     <button class="category-capsule ${cat.id === 'chi' ? 'active' : ''}" 
-                            onclick="selectCategory('${cat.id}', this)">
+                            onclick="handleSelectCategory('${cat.id}', this)">
                         ${cat.name}
                     </button>
                 `).join('');
@@ -1050,7 +1044,8 @@
         }
 
         // ================= 认证功能 =================
-        async function login() {
+        // 🟢 修复：重命名函数避免冲突
+        async function handleLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
@@ -1059,7 +1054,7 @@
                 return;
             }
             
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
@@ -1071,7 +1066,7 @@
             }
         }
 
-        async function showRegister() {
+        async function handleRegister() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
@@ -1085,7 +1080,7 @@
                 return;
             }
             
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password
             });
@@ -1094,12 +1089,12 @@
                 showMessage(error.message, 'error');
             } else {
                 showMessage('注册成功！请查收验证邮件', 'success');
-                setTimeout(() => login(), 2000);
+                setTimeout(() => handleLogin(), 2000);
             }
         }
 
-        async function resumeLogin() {
-            const { data, error } = await supabase.auth.getSession();
+        async function handleResumeLogin() {
+            const { data, error } = await supabaseClient.auth.getSession();
             if (error || !data.session) {
                 showMessage('无法恢复登录', 'error');
             } else {
@@ -1111,7 +1106,7 @@
             currentUser = user;
             
             // 获取或创建用户资料
-            let { data: profile } = await supabase
+            let { data: profile } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
@@ -1133,7 +1128,7 @@
                     created_at: new Date().toISOString()
                 };
                 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('profiles')
                     .insert(newProfile)
                     .select()
@@ -1175,9 +1170,9 @@
             loadRankings();
         }
 
-        function logout() {
+        function handleLogout() {
             if (confirm('确定要登出吗？')) {
-                supabase.auth.signOut();
+                supabaseClient.auth.signOut();
                 localStorage.clear();
                 location.reload();
             }
@@ -1209,7 +1204,10 @@
             document.getElementById(`page-${pageId}`).style.display = 'block';
             
             // 激活对应导航项
-            document.querySelector(`.nav-item[onclick*="${pageId}"]`).classList.add('active');
+            const navItem = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
             
             // 移动端关闭侧边栏
             if (window.innerWidth <= 1024) {
@@ -1234,7 +1232,7 @@
                     // 初始化投稿页面
                     break;
                 case 'admin':
-                    if (userProfile?.is_admin) loadAdminTab('knowledge');
+                    if (userProfile?.is_admin) handleLoadAdminTab('knowledge');
                     break;
             }
         }
@@ -1244,7 +1242,7 @@
         }
 
         // ================= 知识库功能 =================
-        function selectCategory(categoryId, element) {
+        function handleSelectCategory(categoryId, element) {
             currentCategory = categoryId;
             
             // 更新激活状态
@@ -1263,7 +1261,7 @@
         async function loadKnowledgeBase() {
             const searchTerm = document.getElementById('knowledge-search')?.value || '';
             
-            let query = supabase
+            let query = supabaseClient
                 .from('submissions')
                 .select('*')
                 .eq('status', 'approved')
@@ -1351,8 +1349,7 @@
             }).join('');
         }
 
-        function searchKnowledge() {
-            // 防抖处理
+        function handleSearchKnowledge() {
             clearTimeout(window.searchTimeout);
             window.searchTimeout = setTimeout(() => {
                 loadKnowledgeBase();
@@ -1361,7 +1358,7 @@
 
         // ================= 留言板功能 =================
         async function loadChatUsers() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('id, username')
                 .neq('id', currentUser.id)
@@ -1372,7 +1369,6 @@
             const select = document.getElementById('chat-type');
             if (!select) return;
             
-            // 清空现有选项（保留公开留言）
             while (select.options.length > 1) {
                 select.remove(1);
             }
@@ -1386,7 +1382,7 @@
         }
 
         async function loadChatMessages() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('feedbacks')
                 .select('*')
                 .in('status', ['normal', 'reported'])
@@ -1417,16 +1413,14 @@
                 const isAuthor = message.user_id === currentUser.id;
                 const isRecipient = message.target_id === currentUser.id;
                 
-                // 私信只能由发送者和接收者查看
                 if (isPrivate && !isAuthor && !isRecipient) {
                     return '';
                 }
                 
-                const messageClass = isReported ? 'reported-message' : '';
                 const indentStyle = message.parent_id ? 'margin-left: 20px; border-left: 3px solid rgba(99, 102, 241, 0.3);' : '';
                 
                 return `
-                    <div class="message ${messageClass}" style="${indentStyle}">
+                    <div class="message" style="${indentStyle}">
                         <div class="message-header">
                             <div>
                                 <span class="message-author">${message.author_name}</span>
@@ -1440,12 +1434,12 @@
                             ${message.content}
                         </div>
                         <div style="display: flex; gap: 10px; margin-top: 10px; font-size: 12px;">
-                            <button onclick="replyToMessage('${message.id}', '${message.author_name}')" 
+                            <button onclick="handleReplyToMessage('${message.id}', '${message.author_name}')" 
                                     style="background: none; border: none; color: var(--primary); cursor: pointer;">
                                 <i class="fas fa-reply"></i> 回复
                             </button>
                             ${!isReported && !isAuthor ? `
-                                <button onclick="reportMessage('${message.id}')" 
+                                <button onclick="handleReportMessage('${message.id}')" 
                                         style="background: none; border: none; color: var(--danger); cursor: pointer;">
                                     <i class="fas fa-flag"></i> 举报
                                 </button>
@@ -1455,11 +1449,9 @@
                 `;
             }).join('');
             
-            // 滚动到底部
             container.scrollTop = 0;
         }
 
-        // 🟢 修复：添加 sendChatMessage 函数（之前未定义）
         async function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const content = input.value.trim();
@@ -1483,19 +1475,17 @@
                 created_at: new Date().toISOString()
             };
             
-            // 设置消息目标
             if (chatType !== 'public') {
                 messageData.target_id = chatType;
                 messageData.visibility = 'private';
             }
             
-            // 设置回复关系
             if (replyingToMessage) {
                 messageData.parent_id = replyingToMessage.id;
                 messageData.target_id = replyingToMessage.user_id;
             }
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('feedbacks')
                 .insert(messageData);
             
@@ -1503,18 +1493,13 @@
                 console.error('发送留言失败:', error);
                 alert('发送失败: ' + error.message);
             } else {
-                // 清空输入框
                 input.value = '';
-                
-                // 取消回复状态
-                cancelReply();
-                
-                // 重新加载留言
+                handleCancelReply();
                 loadChatMessages();
             }
         }
 
-        function replyToMessage(messageId, authorName) {
+        function handleReplyToMessage(messageId, authorName) {
             replyingToMessage = { id: messageId };
             
             const indicator = document.getElementById('reply-indicator');
@@ -1523,11 +1508,10 @@
             indicator.style.display = 'flex';
             userSpan.textContent = authorName;
             
-            // 滚动到输入框
             document.getElementById('chat-input').focus();
         }
 
-        function cancelReply() {
+        function handleCancelReply() {
             replyingToMessage = null;
             document.getElementById('reply-indicator').style.display = 'none';
         }
@@ -1538,12 +1522,12 @@
             input.focus();
         }
 
-        async function reportMessage(messageId) {
+        async function handleReportMessage(messageId) {
             if (!confirm('确定要举报这条留言吗？管理员将会审核。')) {
                 return;
             }
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('feedbacks')
                 .update({ status: 'reported' })
                 .eq('id', messageId);
@@ -1573,7 +1557,7 @@
         }
 
         // ================= 投稿功能 =================
-        async function submitKnowledge() {
+        async function handleSubmitKnowledge() {
             const title = document.getElementById('submit-title').value.trim();
             const content = document.getElementById('submit-content').value.trim();
             const example = document.getElementById('submit-example')?.value.trim() || '';
@@ -1602,7 +1586,7 @@
                 updated_at: new Date().toISOString()
             };
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('submissions')
                 .insert(submission);
             
@@ -1611,14 +1595,12 @@
             } else {
                 alert('投稿成功！等待管理员审核。');
                 
-                // 清空表单
                 document.getElementById('submit-title').value = '';
                 document.getElementById('submit-content').value = '';
                 if (document.getElementById('submit-example')) {
                     document.getElementById('submit-example').value = '';
                 }
                 
-                // 切换到知识库页面
                 switchPage('home');
             }
         }
@@ -1629,13 +1611,10 @@
             if (!game) return;
             
             alert(`开始 ${game.name} 游戏！\n\n将从「${subjectCategories.find(c => c.id === currentCategory)?.name}」分类中随机抽取题目。`);
-            
-            // 这里可以添加实际的游戏逻辑
-            // 例如：fetchQuestionsForGame(currentCategory).then(questions => startGameSession(gameId, questions, true));
         }
 
         async function loadGameRooms() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('duel_rooms')
                 .select('*')
                 .is('winner_id', null)
@@ -1706,7 +1685,7 @@
 
         // ================= 排行榜功能 =================
         async function loadRankings() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('profiles')
                 .select('username, score, games_played, duel_wins, duel_losses')
                 .order('score', { ascending: false })
@@ -1720,7 +1699,6 @@
             const container = document.getElementById('rankings-list');
             if (!container) return;
             
-            // 更新我的排名和积分
             if (userProfile) {
                 const myRank = data.findIndex(p => p.username === userProfile.username) + 1;
                 document.getElementById('my-rank').textContent = myRank > 0 ? `#${myRank}` : '#-';
@@ -1761,11 +1739,10 @@
         }
 
         // ================= 设置功能 =================
-        function setTheme(theme) {
+        function handleSetTheme(theme) {
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('dse-theme', theme);
             
-            // 更新按钮状态
             document.querySelectorAll('.category-capsule').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -1774,13 +1751,13 @@
         }
 
         // ================= 管理员功能 =================
-        async function loadAdminTab(tab) {
+        async function handleLoadAdminTab(tab) {
             if (!userProfile?.is_admin) return;
             
             const container = document.getElementById('admin-content');
             
             if (tab === 'knowledge') {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('submissions')
                     .select('*')
                     .eq('status', 'pending')
@@ -1815,10 +1792,10 @@
                                 </div>
                             ` : ''}
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary btn-small" onclick="approveSubmission('${item.id}')">
+                                <button class="btn btn-primary btn-small" onclick="handleApproveSubmission('${item.id}')">
                                     <i class="fas fa-check"></i> 通过
                                 </button>
-                                <button class="btn btn-small" onclick="rejectSubmission('${item.id}')" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                <button class="btn btn-small" onclick="handleRejectSubmission('${item.id}')" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
                                     <i class="fas fa-times"></i> 拒绝
                                 </button>
                             </div>
@@ -1828,10 +1805,10 @@
             }
         }
 
-        async function approveSubmission(submissionId) {
+        async function handleApproveSubmission(submissionId) {
             if (!confirm('确定要通过此投稿吗？')) return;
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('submissions')
                 .update({ status: 'approved' })
                 .eq('id', submissionId);
@@ -1840,14 +1817,14 @@
                 alert('操作失败: ' + error.message);
             } else {
                 alert('已通过审核');
-                loadAdminTab('knowledge');
+                handleLoadAdminTab('knowledge');
             }
         }
 
-        async function rejectSubmission(submissionId) {
+        async function handleRejectSubmission(submissionId) {
             if (!confirm('确定要拒绝此投稿吗？')) return;
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('submissions')
                 .update({ status: 'rejected' })
                 .eq('id', submissionId);
@@ -1856,7 +1833,7 @@
                 alert('操作失败: ' + error.message);
             } else {
                 alert('已拒绝投稿');
-                loadAdminTab('knowledge');
+                handleLoadAdminTab('knowledge');
             }
         }
     </script>
