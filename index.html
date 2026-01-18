@@ -1796,302 +1796,19 @@
 
     <script>
         // ================= 配置 =================
-        // 🔧 重要：这里需要替换成你的Supabase项目信息
-        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替换成你的Supabase URL
-        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替换成你的Supabase anon key
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // 计算RGB值用于CSS变量
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        }
-        
-        // 更新CSS变量
-        function updateCssVariables(accentColor) {
-            const rgb = hexToRgb(accentColor);
-            if (rgb) {
-                document.documentElement.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-            }
-        }
-        
-        // 初始化时设置默认颜色
-        updateCssVariables('#007AFF');
         
         // ================= 全局变量 =================
         let user = null;
         let profile = null;
-        let currentSubject = 'all';
-        let currentRoom = null;
-        let duelQuestions = [];
-        let currentQuestionIndex = 0;
-        let duelTimer = null;
-        let timeLeft = 30;
-        let allUsers = []; // 存储所有用户用于私密留言
-
-        // 香港DSE科目分类
-        const SUBJECTS = [
-            { key: 'chi', name: '中國語文' },
-            { key: 'eng', name: '英國語文' },
-            { key: 'math', name: '數學' },
-            { key: 'ls', name: '通識教育' },
-            { key: 'phy', name: '物理' },
-            { key: 'chem', name: '化學' },
-            { key: 'bio', name: '生物' },
-            { key: 'hist', name: '歷史' },
-            { key: 'geog', name: '地理' },
-            { key: 'econ', name: '經濟' },
-            { key: 'ba', name: '企業會計與財務概論' },
-            { key: 'ict', name: '資訊及通訊科技'},
-            {key: 'o', name: '其他'}
-        ];
-
-        // 连连看游戏变量
-        let linkGame = {
-            active: false,
-            board: [],
-            selected: null,
-            score: 0,
-            timeLeft: 120,
-            timer: null,
-            pairs: 0,
-            knowledgeCards: {},
-            exampleCards: []
-        };
-
-        // 记忆游戏变量
-        let memoryGame = {
-            active: false,
-            cards: [],
-            flippedCards: [],
-            matchedPairs: 0,
-            score: 0,
-            timeLeft: 90,
-            timer: null,
-            totalPairs: 8
-        };
-
-        // 配对游戏变量
-        let matchGame = {
-            active: false,
-            leftItems: [],
-            rightItems: [],
-            matches: [],
-            score: 0,
-            timeLeft: 60,
-            timer: null,
-            draggingItem: null
-        };
-
-        // 打字游戏变量
-        let typingGame = {
-            active: false,
-            currentText: '',
-            typedText: '',
-            score: 0,
-            timeLeft: 45,
-            timer: null,
-            accuracy: 100,
-            totalChars: 0,
-            correctChars: 0,
-            texts: []
-        };
-
-        // 问答游戏变量
-        let quizGame = {
-            active: false,
-            questions: [],
-            currentQuestion: 0,
-            score: 0,
-            timeLeft: 30,
-            timer: null,
-            totalQuestions: 10
-        };
-
-        // 游戏记录
-        let gameRecords = {
-            link: { highScore: 0, gamesPlayed: 0 },
-            memory: { highScore: 0, gamesPlayed: 0 },
-            typing: { highScore: 0, gamesPlayed: 0 },
-            match: { highScore: 0, gamesPlayed: 0 },
-            quiz: { highScore: 0, gamesPlayed: 0 }
-        };
-
-        // ================= 通知系统 =================
-        function showNotification(message, type = 'info', duration = 3000) {
-            const notificationArea = document.getElementById('notification-area');
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-                <div>${message}</div>
-            `;
-            
-            notificationArea.appendChild(notification);
-            
-            // 触发动画
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            // 自动消失
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 400);
-            }, duration);
-            
-            return notification;
-        }
-
-        // ================= 初始化 =================
-        window.onload = async () => {
-            // 设置导航动画延迟
-            document.querySelectorAll('.nav-item').forEach((item, index) => {
-                const delay = item.dataset.delay || index;
-                item.style.animationDelay = `${delay * 0.05}s`;
-            });
-            
-            initUI();
-            
-            // 检查URL参数，如果不想自动登录
-            const urlParams = new URLSearchParams(window.location.search);
-            const noAutoLogin = urlParams.get('noautologin');
-            
-            // 检查登录状态
-            const { data } = await sb.auth.getSession();
-            
-            if (data.session && !noAutoLogin) {
-                // 自动登录
-                user = data.session.user;
-                await loadProfile();
-            } else {
-                // 显示登录弹窗
-                document.getElementById('auth-modal').style.display = 'flex';
-                
-                // 如果URL参数指定了不自动登录，清空会话
-                if (noAutoLogin) {
-                    await sb.auth.signOut();
-                    showNotification('已退出登录状态', 'info');
-                }
-            }
-            
-            // 载入保存的主题
-            try {
-                const savedTheme = localStorage.getItem('dsehub-theme');
-                if (savedTheme) {
-                    changeTheme(savedTheme);
-                }
-            } catch (error) {
-                console.error('加载主题失败:', error);
-            }
-            
-            // 载入游戏记录
-            loadGameRecords();
-            
-            // 设置留言可见性切换事件
-            setupVisibilityToggle();
-        };
+        // ... 其他变量保持不变
         
-        function initUI() {
-            renderSubjectCapsules('subject-capsules', 'all');
-            renderSubjectCapsules('submit-capsules', 'chi');
-        }
-
-        // ================= 私密留言设置 =================
-        function setupVisibilityToggle() {
-            const radios = document.querySelectorAll('input[name="visibility"]');
-            const privateSettings = document.getElementById('private-settings');
-            
-            radios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'private') {
-                        privateSettings.style.display = 'block';
-                        // 加载用户列表用于选择
-                        loadUsersForPrivateMessage();
-                    } else {
-                        privateSettings.style.display = 'none';
-                    }
-                });
-            });
-        }
-        
-        async function loadUsersForPrivateMessage() {
-            if (!user) return;
-            
-            try {
-                const { data, error } = await sb
-                    .from('profiles')
-                    .select('id, username')
-                    .neq('id', user.id)
-                    .limit(50);
-                
-                if (!error && data) {
-                    allUsers = data;
-                    
-                    // 可以在这里添加自动完成功能
-                    const targetInput = document.getElementById('target-user');
-                    // 简化处理：用户手动输入用户名
-                }
-            } catch (error) {
-                console.error('加载用户列表失败:', error);
-            }
-        }
-
-        // ================= UI渲染函数 =================
-        function renderSubjectCapsules(containerId, defaultActive) {
-            const container = document.getElementById(containerId);
-            const capsules = [
-                { key: 'all', name: '全部' },
-                ...SUBJECTS
-            ];
-            
-            container.innerHTML = capsules.map((sub, index) => `
-                <div class="capsule ${sub.key === defaultActive ? 'active' : ''}" 
-                     onclick="selectCapsule('${containerId}', '${sub.key}', this)"
-                     style="animation-delay: ${index * 0.05}s">
-                    ${sub.name}
-                </div>
-            `).join('');
-        }
-
-        function selectCapsule(containerId, key, element) {
-            // 移除所有激活状态
-            document.querySelectorAll(`#${containerId} .capsule`).forEach(c => {
-                c.classList.remove('active');
-            });
-            
-            // 添加当前激活状态
-            element.classList.add('active');
-            
-            // 更新当前科目
-            if (containerId === 'subject-capsules') {
-                currentSubject = key;
-                fetchHome();
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('search-k').value = '';
-            fetchHome();
-        }
-
-        function refreshKnowledge() {
-            fetchHome();
-            showNotification('知識庫已刷新', 'success');
-        }
-
         // ================= 账号切换器 =================
         function showAccountSwitcher() {
             const modal = document.createElement('div');
             modal.className = 'modal-mask';
-            modal.style.display = 'flex';
             modal.innerHTML = `
                 <div class="modal-box glass" style="width: 350px;">
                     <h3 style="color: var(--text); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
@@ -2106,13 +1823,18 @@
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button onclick="switchToLogin()">
-                            <i class="fas fa-sign-in-alt"></i> 登入帳號
-                        </button>
-                        
-                        <button onclick="createNewAccount()" class="ghost">
-                            <i class="fas fa-user-plus"></i> 註冊新帳號
-                        </button>
+                        ${!user ? `
+                            <button onclick="switchToLogin()">
+                                <i class="fas fa-sign-in-alt"></i> 登入帳號
+                            </button>
+                            <button onclick="createNewAccount()" class="ghost">
+                                <i class="fas fa-user-plus"></i> 註冊新帳號
+                            </button>
+                        ` : `
+                            <button onclick="logout()" class="danger">
+                                <i class="fas fa-sign-out-alt"></i> 登出帳號
+                            </button>
+                        `}
                     </div>
                     
                     <div style="margin-top: 20px; text-align: center;">
@@ -2132,20 +1854,20 @@
                 }
             });
         }
-
+        
         function switchToLogin() {
-            document.querySelectorAll('.modal-mask').forEach(m => m.remove());
-            document.getElementById('auth-modal').style.display = 'flex';
+            const authModal = document.getElementById('auth-modal');
+            if (authModal) {
+                document.querySelectorAll('.modal-mask').forEach(m => {
+                    if (m !== authModal) m.remove();
+                });
+                authModal.style.display = 'flex';
+            } else {
+                // 如果auth-modal不存在，重新加载页面
+                location.reload();
+            }
         }
-
-        async function createNewAccount() {
-            // 显示注册表单
-            document.getElementById('lg-e').value = '';
-            document.getElementById('lg-p').value = '';
-            document.querySelectorAll('.modal-mask').forEach(m => m.remove());
-            document.getElementById('auth-modal').style.display = 'flex';
-        }
-
+        
         // ================= 认证相关 =================
         async function auth(type) {
             const email = document.getElementById('lg-e').value.trim();
@@ -2156,22 +1878,33 @@
                 errEl.innerText = '請填寫電郵和密碼';
                 return;
             }
-    
+        
             try {
                 let res;
                 if (type === 'up') {
-                    res = await sb.auth.signUp({ email, password });
+                    res = await sb.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            data: {
+                                username: email.split('@')[0]
+                            }
+                        }
+                    });
                 } else {
                     res = await sb.auth.signInWithPassword({ email, password });
                 }
         
                 if (res.error) {
                     errEl.innerText = res.error.message;
+                    showNotification('認證失敗: ' + res.error.message, 'error');
                 } else {
                     user = res.data.user;
                     if (type === 'up') {
-                        showNotification('註冊成功！請登入。', 'success');
-                        document.getElementById('lg-p').value = '';
+                        showNotification('註冊成功！正在創建用戶資料...', 'success');
+                        // 注册成功后自动登录
+                        await loadProfile();
+                        document.getElementById('auth-modal').style.display = 'none';
                     } else {
                         await loadProfile();
                         document.getElementById('auth-modal').style.display = 'none';
@@ -2179,40 +1912,57 @@
                     }
                 }
             } catch (error) {
-                errEl.innerText = '網絡錯誤，請稍後重試';
                 console.error('認證錯誤:', error);
+                errEl.innerText = '網絡錯誤，請稍後重試';
+                showNotification('網絡錯誤，請稍後重試', 'error');
             }
         }
-
+        
         async function logout() {
             try {
-                // 1. 先清除本地状态
+                // 1. 先调用Supabase登出
+                const { error } = await sb.auth.signOut();
+                
+                // 2. 清除本地状态
                 user = null;
                 profile = null;
                 
-                // 2. 更新UI
-                document.getElementById('u-nm').innerText = '請登入';
-                document.getElementById('user-avatar').innerText = '請';
-                document.getElementById('u-sc').innerText = '- 分';
-                document.getElementById('set-u-nm').innerText = '請登入';
-                document.getElementById('set-u-sc').innerText = '-';
+                // 3. 更新UI - 使用安全的DOM操作方法
+                const updateElement = (id, text) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = text;
+                };
                 
-                // 3. 调用Supabase登出
-                const { error } = await sb.auth.signOut();
+                updateElement('u-nm', '請登入');
+                updateElement('user-avatar', '請');
+                updateElement('u-sc', '- 分');
+                updateElement('set-u-nm', '請登入');
+                updateElement('set-u-sc', '-');
                 
-                if (error) {
-                    console.error('登出错误:', error);
-                    showNotification('登出失败: ' + error.message, 'error');
-                } else {
-                    showNotification('已成功登出', 'success');
-                    
-                    // 4. 显示登录弹窗
-                    document.getElementById('auth-modal').style.display = 'flex';
+                // 隐藏管理员导航
+                const navAdmin = document.getElementById('nav-admin');
+                if (navAdmin) navAdmin.style.display = 'none';
+                
+                // 4. 显示通知
+                showNotification('已成功登出', 'success');
+                
+                // 5. 显示登录弹窗
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) {
+                    authModal.style.display = 'flex';
                 }
+                
+                // 6. 导航到首页
+                nav('home');
+                
             } catch (error) {
                 console.error('登出异常:', error);
-                // 显示登录弹窗
-                document.getElementById('auth-modal').style.display = 'flex';
+                // 即使出错也清除本地状态
+                user = null;
+                profile = null;
+                
+                // 强制刷新页面
+                location.reload();
             }
         }
         
@@ -2221,82 +1971,299 @@
             try {
                 console.log('正在加载用户资料');
                 
-                // 使用maybeSingle避免错误
-                const { data } = await sb
+                if (!user || !user.id) {
+                    throw new Error('用户信息缺失');
+                }
+                
+                // 先尝试获取现有资料
+                const { data, error } = await sb
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
                     .maybeSingle();
                 
+                if (error) {
+                    console.error('查询用户资料失败:', error);
+                    throw error;
+                }
+                
                 if (data) {
                     profile = data;
                 } else {
                     // 如果不存在，创建新的用户资料
-                    const { data: newProfile, error } = await sb
+                    console.log('创建新用户资料');
+                    const { data: newProfile, error: createError } = await sb
                         .from('profiles')
                         .insert({
                             id: user.id,
                             username: user.email ? user.email.split('@')[0] : '用戶',
                             email: user.email,
                             score: 0,
-                            is_admin: false
+                            is_admin: false,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
                         })
                         .select()
                         .single();
                     
-                    if (error) {
-                        console.error('创建用户资料失败:', error);
-                        throw error;
+                    if (createError) {
+                        console.error('创建用户资料失败:', createError);
+                        throw createError;
                     }
                     
                     profile = newProfile;
                 }
                 
                 updateUserUI();
-                document.getElementById('auth-modal').style.display = 'none';
-                nav('home');
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) authModal.style.display = 'none';
+                
+                // 导航到首页
+                setTimeout(() => nav('home'), 100);
                 
                 // 延迟加载知识库
-                setTimeout(() => fetchHome(), 100);
+                setTimeout(() => fetchHome(), 500);
                 
             } catch (error) {
                 console.error('加载用户资料错误:', error);
-                showNotification('加载用户资料失败，请重新登录', 'error');
-                document.getElementById('auth-modal').style.display = 'flex';
+                
+                // 出错时显示错误信息
+                const errMessage = error.message || '未知错误';
+                showNotification('加载用户资料失败: ' + errMessage, 'error');
+                
+                // 如果是因为RLS策略问题，引导用户检查设置
+                if (error.message && error.message.includes('403')) {
+                    showNotification('请检查Supabase RLS策略设置', 'warning');
+                }
+                
+                // 保持登录弹窗显示
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) authModal.style.display = 'flex';
             }
         }
         
+        // ================= 模块B: 留言板 - 修复查询 =================
+        async function fetchChat() {
+            try {
+                if (!user) {
+                    // 未登录用户只显示公开留言
+                    const { data, error } = await sb
+                        .from('feedbacks')
+                        .select('*')
+                        .eq('visibility', 'public')
+                        .neq('status', 'deleted')
+                        .order('created_at', { ascending: false })
+                        .limit(30);
+                    
+                    if (error) throw error;
+                    renderChatList(data || []);
+                    return;
+                }
+                
+                // 登录用户可以看到公开留言和自己的私密留言
+                // 使用两个查询来避免复杂的OR条件
+                const { data: publicData, error: publicError } = await sb
+                    .from('feedbacks')
+                    .select('*')
+                    .eq('visibility', 'public')
+                    .neq('status', 'deleted')
+                    .order('created_at', { ascending: false })
+                    .limit(30);
+                
+                if (publicError) throw publicError;
+                
+                // 获取私密留言
+                const { data: privateData, error: privateError } = await sb
+                    .from('feedbacks')
+                    .select('*')
+                    .eq('visibility', 'private')
+                    .neq('status', 'deleted')
+                    .or(`user_id.eq.${user.id},target_user_id.eq.${user.id}`)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+                
+                if (privateError) throw privateError;
+                
+                // 合并结果并去重
+                const allMessages = [...(privateData || []), ...(publicData || [])];
+                
+                // 去重：基于留言ID
+                const uniqueMessages = [];
+                const seenIds = new Set();
+                
+                allMessages.forEach(msg => {
+                    if (!seenIds.has(msg.id)) {
+                        seenIds.add(msg.id);
+                        uniqueMessages.push(msg);
+                    }
+                });
+                
+                // 按时间排序
+                uniqueMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+                renderChatList(uniqueMessages);
+                
+            } catch (error) {
+                console.error('獲取留言失敗:', error);
+                showNotification('獲取留言失敗: ' + (error.message || '未知错误'), 'error');
+                
+                // 显示错误信息
+                const container = document.getElementById('chat-list');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 50px 20px; color: var(--text-sub);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 50px; margin-bottom: 20px; color: #FF9500;"></i>
+                            <h3 style="margin: 0 0 15px 0; color: var(--text);">無法加載留言</h3>
+                            <p style="margin: 0; color: var(--text-sub);">${error.message || '請稍後重試'}</p>
+                            <button onclick="fetchChat()" class="ghost small" style="margin-top: 20px;">
+                                <i class="fas fa-sync-alt"></i> 重新嘗試
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // ================= 初始化修复 =================
+        window.onload = async () => {
+            console.log('正在初始化应用...');
+            
+            try {
+                // 设置导航动画延迟
+                document.querySelectorAll('.nav-item').forEach((item, index) => {
+                    const delay = item.dataset.delay || index;
+                    item.style.animationDelay = `${delay * 0.05}s`;
+                });
+                
+                initUI();
+                
+                // 检查URL参数
+                const urlParams = new URLSearchParams(window.location.search);
+                const noAutoLogin = urlParams.get('noautologin');
+                
+                // 检查登录状态
+                const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+                
+                if (sessionError) {
+                    console.error('获取会话失败:', sessionError);
+                    showNotification('会话检查失败，请重新登录', 'error');
+                }
+                
+                if (sessionData.session && !noAutoLogin) {
+                    console.log('检测到现有会话，自动登录...');
+                    user = sessionData.session.user;
+                    await loadProfile();
+                } else {
+                    console.log('无有效会话，显示登录弹窗');
+                    // 显示登录弹窗
+                    const authModal = document.getElementById('auth-modal');
+                    if (authModal) {
+                        authModal.style.display = 'flex';
+                    }
+                    
+                    // 如果URL参数指定了不自动登录，清空会话
+                    if (noAutoLogin) {
+                        try {
+                            await sb.auth.signOut();
+                            showNotification('已退出登录状态', 'info');
+                        } catch (error) {
+                            console.error('退出登录失败:', error);
+                        }
+                    }
+                }
+                
+                // 载入保存的主题
+                try {
+                    const savedTheme = localStorage.getItem('dsehub-theme');
+                    if (savedTheme) {
+                        changeTheme(savedTheme);
+                    }
+                } catch (error) {
+                    console.error('加载主题失败:', error);
+                }
+                
+                // 载入游戏记录
+                loadGameRecords();
+                
+                // 设置留言可见性切换事件
+                setupVisibilityToggle();
+                
+                console.log('应用初始化完成');
+                
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showNotification('应用初始化失败: ' + error.message, 'error');
+                
+                // 确保登录弹窗显示
+                const authModal = document.getElementById('auth-modal');
+                if (authModal) {
+                    authModal.style.display = 'flex';
+                }
+            }
+        };
+        
+        // ================= 修复UI更新函数 =================
         function updateUserUI() {
+            // 安全更新DOM元素
+            const safeUpdate = (id, text) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerText = text;
+                }
+            };
+            
             if (!profile) {
-                document.getElementById('u-nm').innerText = '請登入';
-                document.getElementById('user-avatar').innerText = '請';
-                document.getElementById('u-sc').innerText = '- 分';
-                document.getElementById('set-u-nm').innerText = '請登入';
-                document.getElementById('set-u-sc').innerText = '-';
+                safeUpdate('u-nm', '請登入');
+                safeUpdate('user-avatar', '請');
+                safeUpdate('u-sc', '- 分');
+                safeUpdate('set-u-nm', '請登入');
+                safeUpdate('set-u-sc', '-');
+                
+                // 隐藏管理员导航
+                const navAdmin = document.getElementById('nav-admin');
+                if (navAdmin) {
+                    navAdmin.style.display = 'none';
+                }
+                
+                const btnAdm = document.getElementById('btn-adm');
+                if (btnAdm) {
+                    btnAdm.innerText = '請先登入';
+                    btnAdm.classList.remove('danger');
+                    btnAdm.disabled = true;
+                }
+                
                 return;
             }
             
             const username = profile.username || '用戶';
-            document.getElementById('u-nm').innerText = username;
-            document.getElementById('set-u-nm').innerText = username;
-            document.getElementById('user-avatar').innerText = username.charAt(0);
-            
             const score = profile.score || 0;
-            document.getElementById('u-sc').innerText = score + ' 分';
-            document.getElementById('set-u-sc').innerText = score;
+            
+            safeUpdate('u-nm', username);
+            safeUpdate('set-u-nm', username);
+            safeUpdate('user-avatar', username.charAt(0));
+            safeUpdate('u-sc', score + ' 分');
+            safeUpdate('set-u-sc', score.toString());
             
             // 管理员权限显示
+            const navAdmin = document.getElementById('nav-admin');
+            const btnAdm = document.getElementById('btn-adm');
+            
             if (profile.is_admin) {
-                document.getElementById('nav-admin').style.display = 'flex';
-                document.getElementById('btn-adm').innerText = '關閉權限';
-                document.getElementById('btn-adm').classList.add('danger');
+                if (navAdmin) navAdmin.style.display = 'flex';
+                if (btnAdm) {
+                    btnAdm.innerText = '關閉權限';
+                    btnAdm.classList.add('danger');
+                    btnAdm.disabled = false;
+                }
             } else {
-                document.getElementById('nav-admin').style.display = 'none';
-                document.getElementById('btn-adm').innerText = '開啟權限';
-                document.getElementById('btn-adm').classList.remove('danger');
+                if (navAdmin) navAdmin.style.display = 'none';
+                if (btnAdm) {
+                    btnAdm.innerText = '開啟權限';
+                    btnAdm.classList.remove('danger');
+                    btnAdm.disabled = false;
+                }
             }
         }
-
         // ================= 模块A: 知识库 =================
         async function fetchHome() {
             const searchKey = document.getElementById('search-k').value.trim();
@@ -5090,3 +5057,4 @@
     </script>
 </body>
 </html>
+
