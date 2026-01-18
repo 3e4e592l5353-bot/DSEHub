@@ -3,104 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v69 (Ultimate)</title>
+    <title>DSE Hub v71 Ultimate</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ================= 全局样式系统 ================= */
+        /* ================= 视觉系统 (Glassmorphism) ================= */
         :root {
-            --accent: #007AFF; 
-            --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --text-main: #333;
-            --text-sub: #666;
-            --glass: rgba(255, 255, 255, 0.9);
-            --border: rgba(0,0,0,0.1);
-            --radius: 16px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --primary: #2563eb; --accent: #0ea5e9; --danger: #ef4444; --success: #22c55e;
+            --bg: #f8fafc; --text: #0f172a; --text-light: #64748b;
+            --glass: rgba(255, 255, 255, 0.95);
+            --border: 1px solid rgba(226, 232, 240, 0.8);
+            --radius: 12px;
         }
+        body { margin:0; font-family:-apple-system, sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; overflow:hidden; }
+        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; outline:none; }
 
-        /* 动态主题 */
-        [data-theme="dark"] {
-            --accent: #0A84FF; --bg-grad: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            --text-main: #fff; --text-sub: #ccc; --glass: rgba(30, 35, 45, 0.95); --border: rgba(255,255,255,0.1);
-        }
-        [data-theme="green"] { --accent: #34C759; }
-        [data-theme="purple"] { --accent: #AF52DE; }
+        /* 组件库 */
+        .btn { padding:10px 16px; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:14px; transition:0.2s; background:var(--primary); color:#fff; width:100%; }
+        .btn:active { transform:scale(0.98); }
+        .btn.ghost { background:transparent; color:var(--text); border:var(--border); }
+        .btn.danger { background:var(--danger); }
+        .btn.success { background:var(--success); }
+        .btn.small { padding:4px 10px; font-size:12px; width:auto; }
 
-        body { margin:0; font-family:-apple-system, system-ui, sans-serif; background:var(--bg-grad); color:var(--text-main); height:100vh; display:flex; overflow:hidden; }
-        * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; outline:none; user-select:none; }
-
-        /* 组件样式 */
-        .glass { background:var(--glass); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); transition:0.3s; }
-        button { background:var(--accent); color:#fff; border:none; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; width:100%; transition:0.2s; }
-        button:active { transform:scale(0.98); opacity:0.9; }
-        button.ghost { background:transparent; color:var(--text-sub); border:1px solid var(--border); }
-        button.small { width:auto; padding:6px 12px; font-size:13px; }
+        input, textarea, select { width:100%; padding:12px; border-radius:8px; border:var(--border); background:#fff; margin-bottom:10px; font-size:14px; }
         
-        input, textarea { width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.5); color:var(--text-main); margin-bottom:10px; font-size:15px; }
-        [data-theme="dark"] input { background:rgba(0,0,0,0.3); }
-
+        .card { background:var(--glass); border:var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; box-shadow:0 2px 4px rgba(0,0,0,0.02); }
+        
         /* 布局 */
-        .sidebar { width:260px; padding:25px 20px; display:flex; flex-direction:column; background:var(--glass); border-right:1px solid var(--border); z-index:100; }
-        .main { flex:1; overflow-y:auto; padding:20px 5%; position:relative; scroll-behavior:smooth; }
+        .sidebar { width:260px; background:#fff; border-right:var(--border); display:flex; flex-direction:column; padding:20px; z-index:100; transition:0.3s; }
+        .main { flex:1; padding:20px; overflow-y:auto; position:relative; }
         .page { display:none; max-width:800px; margin:0 auto; padding-bottom:100px; animation:fadeIn 0.3s; }
         .page.active { display:block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* 导航 */
-        .nav-item { padding:12px 15px; margin-bottom:8px; border-radius:12px; cursor:pointer; color:var(--text-sub); display:flex; align-items:center; gap:12px; font-weight:600; }
-        .nav-item.active { background:var(--accent); color:#fff; box-shadow:0 4px 15px var(--accent); }
-        .nav-item:hover:not(.active) { background:rgba(125,125,125,0.1); }
+        /* 导航项 */
+        .nav-item { padding:12px; margin-bottom:5px; border-radius:8px; cursor:pointer; color:var(--text-light); display:flex; align-items:center; gap:10px; font-weight:500; }
+        .nav-item:hover { background:#f1f5f9; }
+        .nav-item.active { background:var(--primary); color:#fff; }
+        
+        /* 胶囊标签 */
+        .capsule-row { display:flex; overflow-x:auto; gap:8px; margin-bottom:15px; padding-bottom:5px; }
+        .capsule { padding:6px 14px; border-radius:20px; background:#e2e8f0; font-size:13px; cursor:pointer; white-space:nowrap; }
+        .capsule.active { background:var(--primary); color:#fff; }
 
-        /* 胶囊过滤器 */
-        .capsule-row { display:flex; overflow-x:auto; gap:8px; padding-bottom:5px; margin-bottom:15px; }
-        .capsule { padding:6px 16px; border-radius:20px; background:rgba(125,125,125,0.1); white-space:nowrap; cursor:pointer; font-size:13px; font-weight:600; color:var(--text-sub); }
-        .capsule.active { background:var(--accent); color:#fff; }
+        /* 状态标签 */
+        .tag { padding:2px 6px; border-radius:4px; font-size:11px; font-weight:bold; }
+        .tag.admin { background:#f59e0b; color:#fff; }
+        .tag.mod { background:#ef4444; color:#fff; }
 
-        /* 移动端适配 */
-        .mobile-bar { display:none; padding:10px 15px; align-items:center; justify-content:space-between; position:fixed; top:0; width:100%; z-index:200; background:var(--glass); border-bottom:1px solid var(--border); }
-        @media (max-width: 768px) {
-            .sidebar { position:fixed; left:-100%; height:100%; width:80%; transition:0.3s; box-shadow:50px 0 100px rgba(0,0,0,0.5); }
+        /* 移动端 */
+        .mobile-header { display:none; padding:10px 15px; background:#fff; border-bottom:var(--border); justify-content:space-between; align-items:center; }
+        @media(max-width:768px) {
+            .sidebar { position:fixed; left:-100%; height:100%; box-shadow:10px 0 30px rgba(0,0,0,0.1); }
             .sidebar.open { left:0; }
-            .mobile-bar { display:flex; }
-            .main { padding-top:70px; }
+            .mobile-header { display:flex; }
+            .main { padding-top:60px; }
         }
 
-        /* 弹窗 */
-        .modal-mask { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
-        .modal-box { width:320px; padding:30px; background:#fff; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center; color:#333; }
-
-        /* 游戏网格 */
-        .game-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
-        .card { aspect-ratio:1; background:var(--glass); display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12px; border:2px solid transparent; text-align:center; padding:4px; }
-        .card.selected { border-color:var(--accent); background:rgba(0,122,255,0.1); }
-        .card.matched { opacity:0; pointer-events:none; }
+        /* 模态框 */
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+        .modal-box { background:#fff; width:320px; padding:24px; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body data-theme="blue">
+<body>
 
-    <div class="mobile-bar">
-        <button class="ghost" style="border:none; width:auto;" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <b>DSE Hub v69</b>
-        <div style="width:30px"></div>
+    <div class="modal" id="auth-layer">
+        <div class="modal-box" style="text-align:center;">
+            <h2 style="color:var(--primary); margin-top:0;">DSE HUB v71</h2>
+            <p style="color:#666; font-size:13px;">商业逻辑完整演示版</p>
+            <input id="lg-email" placeholder="Email">
+            <input id="lg-pwd" type="password" placeholder="Password">
+            <button class="btn" onclick="auth('in')">登录</button>
+            <div style="margin-top:10px; display:flex; gap:10px;">
+                <button class="btn ghost small" onclick="auth('up')" style="flex:1">注册</button>
+                <button class="btn ghost small" id="resume-btn" onclick="resume()" style="flex:1; display:none;">恢复登录</button>
+            </div>
+            <p id="lg-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <div class="mobile-header">
+        <button class="btn ghost small" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <b>DSE Hub</b>
+        <div style="width:20px"></div>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <h2 style="margin:0 0 30px 10px; color:var(--accent); display:flex; align-items:center; gap:10px;">
-            <i class="fas fa-cube"></i> DSE HUB
-        </h2>
+        <h2 style="margin:0 0 20px 10px; color:var(--primary);"><i class="fas fa-layer-group"></i> Hub v71</h2>
+        
         <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-book"></i> 知识库</div>
         <div class="nav-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i> 留言板</div>
-        <div class="nav-item" onclick="nav('games', this)"><i class="fas fa-gamepad"></i> 游戏大厅</div>
-        <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决 (Real)</div>
+        <div class="nav-item" onclick="nav('duel', this)"><i class="fas fa-bolt"></i> 线上对决</div>
+        <div class="nav-item" onclick="nav('rank', this)"><i class="fas fa-trophy"></i> 排行榜</div>
         <div class="nav-item" onclick="nav('submit', this)"><i class="fas fa-pen"></i> 投稿中心</div>
-        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> 设置</div>
+        
+        <div id="admin-link" class="nav-item" onclick="nav('admin', this)" style="display:none; color:#f59e0b;">
+            <i class="fas fa-shield-alt"></i> 管理后台
+        </div>
+
         <div style="flex:1"></div>
-        <div class="glass" style="padding:15px; border:none; background:rgba(125,125,125,0.1);">
-            <div style="font-weight:bold;" id="u-nm">Guest</div>
-            <div style="font-size:12px; opacity:0.7;" id="u-sc">0 pts</div>
-            <button class="small ghost" onclick="logout()" style="width:100%; margin-top:8px;">登出</button>
+        <div class="card" style="margin-bottom:0; background:#f8fafc; border:none;">
+            <div style="font-weight:bold;" id="u-name">Guest</div>
+            <div style="font-size:12px; color:#64748b; margin:5px 0;">积分: <span id="u-score">0</span></div>
+            <button class="btn small ghost danger" onclick="logout()">登出</button>
         </div>
     </div>
 
@@ -108,418 +115,411 @@
 
         <div id="view-home" class="page active">
             <h1>📚 知识库</h1>
-            <div class="capsule-row" id="filter-capsules"></div>
-            <input id="search-input" placeholder="🔍 搜索知识点..." onkeyup="fetchHome()">
-            <div id="home-list"></div>
+            <div class="capsule-row" id="kb-cats"></div> <input id="kb-search" placeholder="🔍 搜索已审核通过的知识点..." onkeyup="fetchHome()">
+            <div id="kb-list"></div>
         </div>
 
         <div id="view-chat" class="page">
-            <h1>💬 留言板</h1>
-            <div class="glass" style="height:55vh; overflow-y:auto; display:flex; flex-direction:column-reverse; padding:15px; margin-bottom:15px;" id="chat-list"></div>
-            <div class="glass" style="padding:15px;">
-                <textarea id="chat-txt" rows="2" placeholder="输入留言..." style="margin-bottom:5px;"></textarea>
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                    <label style="font-size:12px; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                        <input type="checkbox" id="chat-priv"> 私密留言 (Private)
-                    </label>
-                    <button style="width:auto; padding:8px 20px;" onclick="postChat()"><i class="fas fa-paper-plane"></i> 发送</button>
-                </div>
+            <h1>💬 交流区</h1>
+            <div class="card" style="height:50vh; overflow-y:auto; display:flex; flex-direction:column-reverse;" id="chat-list"></div>
+            
+            <div class="capsule-row" style="margin-bottom:10px;">
+                <div class="capsule" onclick="addTag('谢谢大佬！')">👍 谢谢</div>
+                <div class="capsule" onclick="addTag('求解答！')">❓ 求问</div>
+                <div class="capsule" onclick="addTag('约战吗？')">⚔️ 约战</div>
             </div>
-        </div>
-
-        <div id="view-games" class="page">
-            <h1>🎮 游戏大厅</h1>
-            <div style="display:grid; gap:15px;">
-                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="startGame('pair')">
-                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-link"></i></div>
-                    <div>
-                        <h3 style="margin:0">连连看 (Pair Match)</h3>
-                        <div style="font-size:12px; opacity:0.7;">单人 • 匹配知识点</div>
-                    </div>
-                </div>
-                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="startGame('quiz')">
-                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-check-square"></i></div>
-                    <div>
-                        <h3 style="margin:0">多选特训 (Quiz)</h3>
-                        <div style="font-size:12px; opacity:0.7;">单人 • 快速刷题</div>
-                    </div>
-                </div>
-                <div class="glass" style="padding:20px; cursor:pointer; display:flex; align-items:center; gap:15px;" onclick="nav('duel')">
-                    <div style="font-size:24px; color:var(--accent);"><i class="fas fa-users"></i></div>
-                    <div>
-                        <h3 style="margin:0">线上对决大厅 (PVP Lobby)</h3>
-                        <div style="font-size:12px; opacity:0.7;">多人 • 实时数据库匹配</div>
-                    </div>
-                </div>
+            
+            <div id="reply-bar" style="display:none; background:#e0f2fe; padding:8px; border-radius:8px; margin-bottom:8px; font-size:12px; justify-content:space-between; align-items:center;">
+                <span>↪️ 正在回复: <b id="reply-user">User</b></span>
+                <i class="fas fa-times" style="cursor:pointer;" onclick="cancelReply()"></i>
             </div>
 
-            <div id="game-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--glass); z-index:500; padding:20px; backdrop-filter:blur(15px);">
-                <div style="max-width:600px; margin:0 auto; padding-top:40px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                        <b id="game-name">Game</b>
-                        <button class="small ghost" onclick="document.getElementById('game-overlay').style.display='none'">退出</button>
-                    </div>
-                    <div id="g-pair" style="display:none;">
-                        <div class="game-grid" id="pair-board"></div>
-                    </div>
-                    <div id="g-quiz" style="display:none; text-align:center;">
-                        <h2 id="qz-q" style="margin-bottom:30px;">Q</h2>
-                        <div id="qz-opts" style="display:flex; flex-direction:column; gap:10px;"></div>
-                    </div>
+            <div class="card">
+                <textarea id="chat-in" rows="2" placeholder="输入内容..."></textarea>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="chat-target" style="flex:1;">
+                        <option value="public">🌍 公开留言</option>
+                        </select>
+                    <button class="btn small" onclick="sendChat()" style="width:auto">发送</button>
                 </div>
             </div>
         </div>
 
         <div id="view-duel" class="page">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h1>⚡️ 线上对决</h1>
-                <button class="small" style="width:auto;" onclick="createRoom()">➕ 创建房间</button>
+                <h1>⚡️ 对决大厅</h1>
+                <button class="btn small" style="width:auto" onclick="createRoom()">➕ 创建房间</button>
             </div>
-            
-            <div class="glass" style="padding:15px; margin-bottom:20px;">
-                <p style="margin:0; font-size:13px; color:var(--text-sub);">
-                    <i class="fas fa-database"></i> 数据实时同步至 Supabase 数据库
-                </p>
-            </div>
-            
-            <button class="ghost small" onclick="loadRooms()" style="margin-bottom:10px; width:100%;">🔄 刷新房间列表</button>
-            <div id="room-list">加载中...</div>
+            <button class="btn ghost" onclick="fetchDuels()" style="margin-bottom:10px;">🔄 刷新列表</button>
+            <div id="duel-list"></div>
+        </div>
+
+        <div id="view-rank" class="page">
+            <h1>🏆 积分排行</h1>
+            <div id="rank-list"></div>
         </div>
 
         <div id="view-submit" class="page">
             <h1>✏️ 投稿中心</h1>
-            <div class="glass" style="padding:20px;">
-                <div class="capsule-row" id="sub-capsules"></div>
-                <input id="sub-title" placeholder="标题 / 题目 (Title)">
-                <textarea id="sub-content" rows="4" placeholder="正文内容 / 解释..."></textarea>
-                <input id="sub-ex" placeholder="例子 / 答案 (Answer)">
-                <button onclick="submitData()" style="margin-top:10px;">提交至数据库</button>
+            <div class="card">
+                <div class="capsule-row" id="sub-cats"></div>
+                <input id="sub-t" placeholder="标题">
+                <textarea id="sub-c" rows="5" placeholder="正文内容"></textarea>
+                <p style="font-size:12px; color:#666;">* 提交后需管理员审核通过才会在知识库显示。</p>
+                <button class="btn" onclick="submitPost()">提交审核</button>
             </div>
         </div>
 
-        <div id="view-settings" class="page">
-            <h1>⚙️ 设置</h1>
-            <div class="glass" style="padding:20px; margin-bottom:20px;">
-                <h3>主题颜色</h3>
-                <div style="display:flex; gap:10px;">
-                    <div style="width:30px; height:30px; border-radius:50%; background:#007AFF; cursor:pointer;" onclick="setTheme('blue')"></div>
-                    <div style="width:30px; height:30px; border-radius:50%; background:#34C759; cursor:pointer;" onclick="setTheme('green')"></div>
-                    <div style="width:30px; height:30px; border-radius:50%; background:#AF52DE; cursor:pointer;" onclick="setTheme('purple')"></div>
-                    <div style="width:30px; height:30px; border-radius:50%; background:#222; border:1px solid #fff; cursor:pointer;" onclick="setTheme('dark')"></div>
-                </div>
+        <div id="view-admin" class="page">
+            <h1 style="color:#f59e0b">🛡 管理后台</h1>
+            <div class="capsule-row">
+                <div class="capsule active" onclick="switchAdminTab('kb')">待审知识 (<span id="cnt-kb">0</span>)</div>
+                <div class="capsule" onclick="switchAdminTab('chat')">举报处理 (<span id="cnt-chat">0</span>)</div>
             </div>
-            <div class="glass" style="padding:20px;">
-                <h3>当前账号</h3>
-                <p>Email: <span id="set-email">...</span></p>
-                <p>ID: <span id="set-id" style="font-size:12px; color:#999;">...</span></p>
-            </div>
+            
+            <div id="adm-kb-list"></div>
+            <div id="adm-chat-list" style="display:none;"></div>
         </div>
 
-    </div>
-
-    <div class="modal-mask" id="login-modal">
-        <div class="modal-box">
-            <h2>DSE Hub</h2>
-            <input id="lg-email" placeholder="Email">
-            <input id="lg-pwd" type="password" placeholder="Password">
-            <button onclick="doAuth('in')" style="margin-bottom:10px;">登录</button>
-            <button class="ghost" onclick="doAuth('up')">注册</button>
-            <p id="lg-msg" style="color:red; font-size:12px; margin-top:10px;"></p>
-        </div>
     </div>
 
     <script>
-        // =========================================================
-        // ⚠️ 配置区域：请填入你的 Project URL 和 Anon Key
-        // =========================================================
-        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替换成你的Supabase URL
-        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替换成你的Supabase anon key
-        
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ==========================================
+        // ⚠️ 必填：Supabase 配置
+        // ==========================================
+        const SB_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SB_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        const sb = supabase.createClient(SB_URL, SB_KEY);
 
-        // 全局变量
+        // 全局状态
         let user = null;
         let profile = null;
-        let curCat = 'all';
-        let formCat = 'chi';
+        let replyingTo = null; // 回复ID
+        let currentCat = 'chi';
         const cats = [
-            {k:'chi',n:'中文'}, {k:'eng',n:'英文'}, {k:'math',n:'数学'}, 
-            {k:'cs',n:'公社科'}, {k:'phy',n:'物理'}, {k:'chem',n:'化学'}
+            {k:'chi', n:'中文'}, {k:'eng', n:'英文'}, {k:'math', n:'数学'}, 
+            {k:'cs', n:'公社科'}, {k:'bio', n:'生物'}
         ];
 
-        // 初始化
+        // 1. 初始化 (检查Session但不自动进)
         window.onload = async () => {
-            initCapsules();
+            initCats();
             const { data } = await sb.auth.getSession();
             if(data.session) {
-                user = data.session.user;
-                await loadProfile();
-            } else {
-                document.getElementById('login-modal').style.display = 'flex';
+                document.getElementById('resume-btn').style.display = 'block';
+                document.getElementById('lg-msg').innerText = "检测到上次登录，可点击恢复";
+                document.getElementById('lg-msg').style.color = "blue";
             }
         };
 
-        function initCapsules() {
-            // 知识库筛选
-            document.getElementById('filter-capsules').innerHTML = 
-                `<div class="capsule active" onclick="setCat('all',this)">全部</div>` +
-                cats.map(c => `<div class="capsule" onclick="setCat('${c.k}',this)">${c.n}</div>`).join('');
-            
-            // 投稿分类
-            document.getElementById('sub-capsules').innerHTML = 
-                cats.map(c => `<div class="capsule ${c.k==='chi'?'active':''}" onclick="setFormCat('${c.k}',this)">${c.n}</div>`).join('');
+        function initCats() {
+            const html = cats.map(c => `<div class="capsule ${c.k==='chi'?'active':''}" onclick="setCat('${c.k}', this)">${c.n}</div>`).join('');
+            document.getElementById('kb-cats').innerHTML = html;
+            document.getElementById('sub-cats').innerHTML = html;
         }
 
-        async function loadProfile() {
-            // 尝试读取 Profile，如果失败(比如新用户)则用临时数据，防止白屏
-            let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
-            profile = data || { id: user.id, username: user.email.split('@')[0], score: 0 };
+        // ================= 身份认证 & 资料 =================
+        async function auth(type) {
+            const email = document.getElementById('lg-email').value;
+            const pwd = document.getElementById('lg-pwd').value;
+            let res;
+            if(type === 'up') res = await sb.auth.signUp({email, password:pwd});
+            else res = await sb.auth.signInWithPassword({email, password:pwd});
             
-            // 更新 UI
-            document.getElementById('u-nm').innerText = profile.username;
-            document.getElementById('u-sc').innerText = profile.score + ' pts';
-            document.getElementById('set-email').innerText = user.email;
-            document.getElementById('set-id').innerText = user.id;
-            document.getElementById('login-modal').style.display = 'none';
+            if(res.error) {
+                document.getElementById('lg-msg').innerText = res.error.message;
+                document.getElementById('lg-msg').style.color = "red";
+            } else {
+                enter(res.data.user);
+            }
+        }
+
+        async function resume() {
+            const { data } = await sb.auth.getSession();
+            enter(data.session.user);
+        }
+
+        async function enter(u) {
+            user = u;
+            // 获取详细 Profile (积分 + 权限)
+            let { data } = await sb.from('profiles').select('*').eq('id', user.id).single();
+            // 兜底：如果没有 profile，新建一个
+            if(!data) {
+                const newP = { id: user.id, username: user.email.split('@')[0], score: 0, is_admin: false };
+                await sb.from('profiles').insert(newP);
+                data = newP;
+            }
+            profile = data;
+
+            // UI 更新
+            document.getElementById('u-name').innerText = profile.username + (profile.is_admin ? ' (Admin)' : '');
+            document.getElementById('u-score').innerText = profile.score;
+            document.getElementById('auth-layer').style.display = 'none';
+
+            // 管理员入口控制
+            if(profile.is_admin) document.getElementById('admin-link').style.display = 'flex';
+
+            // 加载私信用户列表
+            loadUsers();
             nav('home');
         }
 
-        // ================= 核心功能：线上对决 (Real PVP) =================
-        async function loadRooms() {
-            // 读取数据库真实房间
-            const { data, error } = await sb.from('duel_rooms')
+        function logout() { sb.auth.signOut().then(() => location.reload()); }
+
+        // ================= 知识库 (View Logic) =================
+        async function fetchHome() {
+            const term = document.getElementById('kb-search').value;
+            // 关键逻辑：只查询 status = 'approved'
+            let q = sb.from('submissions').select('*').eq('status', 'approved').eq('category', currentCat);
+            if(term) q = q.ilike('title', `%${term}%`);
+            
+            const { data } = await q;
+            document.getElementById('kb-list').innerHTML = (data||[]).map(i => `
+                <div class="card">
+                    <h3>${i.title}</h3>
+                    <p style="white-space:pre-wrap;">${i.content}</p>
+                    <div style="font-size:12px; color:#999;">By ${i.author_name}</div>
+                </div>
+            `).join('');
+        }
+
+        // ================= 留言板 (Chat Logic) =================
+        async function loadUsers() {
+            const { data } = await sb.from('profiles').select('id, username').limit(50);
+            const sel = document.getElementById('chat-target');
+            (data||[]).forEach(u => {
+                if(u.id !== user.id) {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.text = `🔒 私信给: ${u.username}`;
+                    sel.appendChild(opt);
+                }
+            });
+        }
+
+        async function loadChat() {
+            // 只查询 status != 'deleted'
+            const { data } = await sb.from('feedbacks')
                 .select('*')
-                .neq('status', 'finished') // 只显示没结束的
-                .order('created_at', { ascending: false });
+                .neq('status', 'deleted')
+                .order('created_at', {ascending:false})
+                .limit(30);
 
-            if(error) return alert("读取失败: " + error.message);
+            const el = document.getElementById('chat-list');
+            el.innerHTML = '';
 
-            const listEl = document.getElementById('room-list');
-            if(!data || data.length === 0) {
-                listEl.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6;">暂无房间，请创建一个</div>';
-                return;
-            }
+            (data||[]).forEach(m => {
+                // 隐私逻辑
+                const isPriv = m.target_id != null;
+                const canSee = !isPriv || m.author_id === user.id || m.target_id === user.id;
+                if(!canSee) return;
 
-            listEl.innerHTML = data.map(r => {
-                const isFull = r.player2_id != null;
-                const isMine = r.player1_id === user.id;
-                let statusBadge = isFull ? `<span style="color:red">● 激战中</span>` : `<span style="color:#34C759">● 等待中</span>`;
+                // 举报逻辑：如果被举报且不是管理员，显示折叠
+                const isReported = m.status === 'reported';
                 
-                let actionBtn = '';
-                if(isMine) actionBtn = `<button class="small ghost" disabled>我的房间</button>`;
-                else if(isFull) actionBtn = `<button class="small ghost" disabled>已满</button>`;
-                else actionBtn = `<button class="small" onclick="joinRoom(${r.id})">加入</button>`;
+                let contentHtml = `<div style="margin-top:5px;">${m.content}</div>`;
+                if(isReported) {
+                    contentHtml = `<div style="margin-top:5px; color:red; font-style:italic;">⚠️ 此内容被举报，正在审核中...</div>`;
+                    if(profile.is_admin) contentHtml += `<div style="font-size:12px; color:#666;">(管理员可见原始内容: ${m.content})</div>`;
+                }
+
+                const div = document.createElement('div');
+                div.style = `padding:10px; border-bottom:1px solid #eee; ${m.parent_id?'margin-left:20px; border-left:2px solid #ddd; background:#f9f9f9;':''} ${isPriv?'background:#fff0f0;':''}`;
+                
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:#666;">
+                        <span>${m.author_name} ${isPriv?'🔒':''}</span>
+                        <div>
+                            <span style="cursor:pointer; color:var(--primary); margin-right:10px;" onclick="setReply('${m.id}', '${m.author_name}')">回复</span>
+                            ${!isReported ? `<span style="cursor:pointer; color:red;" onclick="reportMsg('${m.id}')">举报</span>` : ''}
+                        </div>
+                    </div>
+                    ${contentHtml}
+                `;
+                el.appendChild(div);
+            });
+        }
+
+        async function sendChat() {
+            const txt = document.getElementById('chat-in').value;
+            const target = document.getElementById('chat-target').value;
+            if(!txt) return;
+
+            await sb.from('feedbacks').insert({
+                author_id: user.id, author_name: profile.username,
+                content: txt,
+                target_id: target==='public'?null:target,
+                parent_id: replyingTo,
+                status: 'normal'
+            });
+            
+            document.getElementById('chat-in').value = '';
+            cancelReply();
+            loadChat();
+        }
+
+        async function reportMsg(id) {
+            if(!confirm("确定举报此内容？")) return;
+            await sb.from('feedbacks').update({ status: 'reported' }).eq('id', id);
+            alert("已提交举报，等待管理员处理");
+            loadChat();
+        }
+
+        // ================= 线上对决 & 结算 (Duel Logic) =================
+        async function fetchDuels() {
+            // 只显示未结束的
+            const { data } = await sb.from('duel_rooms').select('*').is('winner_id', null).order('created_at', {ascending:false});
+            const el = document.getElementById('duel-list');
+            
+            el.innerHTML = (data||[]).map(r => {
+                const isFull = r.player2_id != null;
+                const amIPlayer = r.player1_id === user.id || r.player2_id === user.id;
+                
+                let btn = '';
+                if(amIPlayer) {
+                    // 结算入口：只有参与者能看到结算按钮 (简单模拟)
+                    btn = `<button class="btn small success" onclick="endDuel(${r.id}, '${user.id}')">我赢了(+10分)</button>`;
+                } else if(!isFull) {
+                    btn = `<button class="btn small" onclick="joinDuel(${r.id})">加入</button>`;
+                } else {
+                    btn = `<button class="btn small ghost" disabled>进行中</button>`;
+                }
 
                 return `
-                <div class="glass" style="padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-weight:bold;">Room #${r.id} ${statusBadge}</div>
-                        <div style="font-size:12px; color:#777;">Host: ${r.player1_name || 'Player'}</div>
+                        <b>Room #${r.id}</b>
+                        <div style="font-size:12px; color:#666;">P1: ${r.player1_name} vs P2: ${r.player2_name||'?'}</div>
                     </div>
-                    ${actionBtn}
+                    ${btn}
                 </div>`;
             }).join('');
         }
 
         async function createRoom() {
-            const { error } = await sb.from('duel_rooms').insert({
-                player1_id: user.id,
-                player1_name: profile.username,
-                status: 'waiting'
-            });
-            if(error) alert(error.message);
-            else { alert("✅ 房间已创建！"); loadRooms(); }
+            await sb.from('duel_rooms').insert({ player1_id: user.id, player1_name: profile.username });
+            fetchDuels();
         }
 
-        async function joinRoom(rid) {
-            // 真实写入数据库：把我的ID填入 player2_id
-            const { error } = await sb.from('duel_rooms').update({
-                player2_id: user.id,
-                player2_name: profile.username,
-                status: 'playing'
-            }).eq('id', rid);
-
-            if(error) alert(error.message);
-            else { 
-                alert("⚔️ 加入成功！游戏开始！"); 
-                // 进入游戏逻辑 (复用 Quiz 界面)
-                startGame('quiz'); 
-            }
+        async function joinDuel(id) {
+            await sb.from('duel_rooms').update({ player2_id: user.id, player2_name: profile.username }).eq('id', id);
+            fetchDuels();
         }
 
-        // ================= 常规功能 (DB交互) =================
-        async function fetchHome() {
-            const k = document.getElementById('search-input').value;
-            let q = sb.from('submissions').select('*');
-            if(curCat !== 'all') q = q.eq('category', curCat);
-            if(k) q = q.ilike('title', `%${k}%`);
+        async function endDuel(roomId, winnerId) {
+            if(!confirm("确认你赢了吗？积分将计入排行榜。")) return;
             
-            const { data } = await q;
-            document.getElementById('home-list').innerHTML = (data||[]).map(i => `
-                <div class="glass" style="padding:15px; margin-bottom:10px;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-size:12px; background:var(--accent); color:#fff; padding:2px 8px; border-radius:4px;">${i.category}</span>
-                    </div>
-                    <h3 style="margin:5px 0;">${i.title}</h3>
-                    <div style="color:var(--text-sub);">${i.content}</div>
+            // 1. 结束房间
+            await sb.from('duel_rooms').update({ winner_id: winnerId }).eq('id', roomId);
+            
+            // 2. 增加积分 (简单实现：先读再写，生产环境应用 RPC 原子操作)
+            const { data: p } = await sb.from('profiles').select('score').eq('id', winnerId).single();
+            await sb.from('profiles').update({ score: (p.score||0) + 10 }).eq('id', winnerId);
+            
+            alert("恭喜！积分已到账。");
+            // 更新本地 UI
+            document.getElementById('u-score').innerText = (p.score||0) + 10;
+            fetchDuels();
+        }
+
+        // ================= 排行榜 (Leaderboard) =================
+        async function fetchRank() {
+            const { data } = await sb.from('profiles').select('username, score').order('score', {ascending:false}).limit(20);
+            document.getElementById('rank-list').innerHTML = (data||[]).map((p, i) => `
+                <div class="card" style="padding:10px; display:flex; justify-content:space-between;">
+                    <span>#${i+1} <b>${p.username}</b></span>
+                    <span style="color:var(--primary); font-weight:bold;">${p.score} pts</span>
                 </div>
             `).join('');
         }
 
-        async function fetchChat() {
-            // 读取最新的30条留言
-            const { data } = await sb.from('feedbacks').select('*').order('created_at', {ascending:false}).limit(30);
-            const el = document.getElementById('chat-list');
-            if(!data) return;
+        // ================= 管理后台 (Admin Logic) =================
+        let admTab = 'kb';
+        async function loadAdmin() {
+            if(!profile.is_admin) return;
+            
+            // 统计数量
+            const { count: c1 } = await sb.from('submissions').select('*', {count: 'exact', head: true}).eq('status', 'pending');
+            const { count: c2 } = await sb.from('feedbacks').select('*', {count: 'exact', head: true}).eq('status', 'reported');
+            document.getElementById('cnt-kb').innerText = c1 || 0;
+            document.getElementById('cnt-chat').innerText = c2 || 0;
 
-            el.innerHTML = data.map(m => {
-                const isPriv = m.target_id != null;
-                // 权限过滤：如果是私信，只有作者和目标(这里简化为只有作者)能看
-                // 实际上 admin 功能需要后台，这里仅做展示逻辑
-                if(isPriv && m.author_id !== user.id && m.target_id !== user.id) return '';
+            if(admTab === 'kb') {
+                document.getElementById('adm-kb-list').style.display = 'block';
+                document.getElementById('adm-chat-list').style.display = 'none';
                 
-                return `
-                <div style="margin-bottom:10px; padding:10px; background:${isPriv?'rgba(255,0,0,0.05)':'rgba(255,255,255,0.5)'}; border-radius:10px;">
-                    <div style="font-size:12px; font-weight:bold; color:var(--accent);">
-                        ${m.author_name || 'User'} ${isPriv ? '<i class="fas fa-lock"></i>' : ''}
+                const { data } = await sb.from('submissions').select('*').eq('status', 'pending');
+                document.getElementById('adm-kb-list').innerHTML = (data||[]).map(i => `
+                    <div class="card">
+                        <b>${i.title}</b>
+                        <p style="font-size:12px;">${i.content}</p>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn small success" onclick="auditKB(${i.id}, 'approved')">通过</button>
+                            <button class="btn small danger" onclick="auditKB(${i.id}, 'rejected')">拒绝</button>
+                        </div>
                     </div>
-                    <div>${m.content}</div>
-                </div>`;
-            }).join('');
-        }
-
-        async function postChat() {
-            const txt = document.getElementById('chat-txt').value;
-            const isPriv = document.getElementById('chat-priv').checked;
-            if(!txt) return;
-            
-            await sb.from('feedbacks').insert({
-                author_id: user.id,
-                author_name: profile.username,
-                content: txt,
-                target_id: isPriv ? user.id : null // 演示：私信发给自己
-            });
-            document.getElementById('chat-txt').value = '';
-            fetchChat();
-        }
-
-        async function submitData() {
-            const { error } = await sb.from('submissions').insert({
-                category: formCat,
-                title: document.getElementById('sub-title').value,
-                content: document.getElementById('sub-content').value,
-                example: document.getElementById('sub-ex').value,
-                author_id: user.id,
-                author_name: profile.username
-            });
-            if(error) alert("失败: "+error.message);
-            else { alert("投稿成功！"); nav('home'); }
-        }
-
-        // ================= 游戏逻辑 (复用) =================
-        let gameData = [];
-        let firstPick = null;
-
-        async function startGame(type) {
-            // 从数据库拿题目
-            const { data } = await sb.from('submissions').select('*').limit(20);
-            if(!data || data.length < 4) return alert("题库题目不足，请先去投稿！");
-
-            document.getElementById('game-overlay').style.display = 'block';
-            document.getElementById('g-pair').style.display = 'none';
-            document.getElementById('g-quiz').style.display = 'none';
-
-            if(type === 'pair') {
-                document.getElementById('g-pair').style.display = 'block';
-                document.getElementById('game-name').innerText = '连连看';
-                setupPair(data);
+                `).join('');
             } else {
-                document.getElementById('g-quiz').style.display = 'block';
-                document.getElementById('game-name').innerText = '多选特训';
-                setupQuiz(data);
+                document.getElementById('adm-kb-list').style.display = 'none';
+                document.getElementById('adm-chat-list').style.display = 'block';
+
+                const { data } = await sb.from('feedbacks').select('*').eq('status', 'reported');
+                document.getElementById('adm-chat-list').innerHTML = (data||[]).map(i => `
+                    <div class="card">
+                        <div style="font-size:12px; color:red;">举报对象: ${i.author_name}</div>
+                        <p>${i.content}</p>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn small success" onclick="auditMsg(${i.id}, 'normal')">无违规 (恢复)</button>
+                            <button class="btn small danger" onclick="auditMsg(${i.id}, 'deleted')">确认违规 (删除)</button>
+                        </div>
+                    </div>
+                `).join('');
             }
         }
 
-        function setupPair(data) {
-            let cards = [];
-            data.slice(0, 6).forEach((d, i) => {
-                cards.push({ id: i, txt: d.title, type: 'q' });
-                cards.push({ id: i, txt: d.example || 'Answer', type: 'a' });
-            });
-            cards.sort(()=>Math.random()-0.5);
-            document.getElementById('pair-board').innerHTML = cards.map((c, idx) => 
-                `<div class="card" id="c-${idx}" onclick="clkCard(${idx}, ${c.id})">${c.txt.slice(0,12)}</div>`
-            ).join('');
-            firstPick = null;
+        async function auditKB(id, status) {
+            await sb.from('submissions').update({ status }).eq('id', id);
+            loadAdmin();
+        }
+        async function auditMsg(id, status) {
+            await sb.from('feedbacks').update({ status }).eq('id', id);
+            loadAdmin();
+        }
+        function switchAdminTab(t) { admTab = t; loadAdmin(); }
+
+        // ================= 通用辅助 =================
+        function submitPost() {
+            const title = document.getElementById('sub-t').value;
+            const content = document.getElementById('sub-c').value;
+            sb.from('submissions').insert({
+                category: currentCat, title, content, 
+                author_id: user.id, author_name: profile.username, 
+                status: 'pending' // 关键：默认待审
+            }).then(() => { alert("提交成功，请等待管理员审核"); nav('home'); });
         }
 
-        function clkCard(idx, matchId) {
-            const el = document.getElementById(`c-${idx}`);
-            if(el.classList.contains('matched') || el.classList.contains('selected')) return;
-            el.classList.add('selected');
-
-            if(!firstPick) firstPick = { idx, matchId };
-            else {
-                if(firstPick.matchId === matchId && firstPick.idx !== idx) {
-                    setTimeout(() => {
-                        document.getElementById(`c-${firstPick.idx}`).classList.add('matched');
-                        el.classList.add('matched');
-                        firstPick = null;
-                    }, 300);
-                } else {
-                    setTimeout(() => {
-                        document.getElementById(`c-${firstPick.idx}`).classList.remove('selected');
-                        el.classList.remove('selected');
-                        firstPick = null;
-                    }, 500);
-                }
-            }
+        function setReply(id, name) {
+            replyingTo = id;
+            document.getElementById('reply-bar').style.display = 'flex';
+            document.getElementById('reply-user').innerText = name;
         }
-
-        function setupQuiz(data) {
-            gameData = data;
-            nextQ();
-        }
-
-        function nextQ() {
-            const q = gameData[Math.floor(Math.random()*gameData.length)];
-            document.getElementById('qz-q').innerText = q.title;
-            const ans = q.example || "A";
-            const opts = [ans, "Option 1", "Option 2", "Option 3"].sort(()=>Math.random()-0.5);
-            
-            document.getElementById('qz-opts').innerHTML = opts.map(o => 
-                `<button class="ghost" onclick="alert('${o===ans?'Bingo!':'Wrong!'}'); nextQ()">${o}</button>`
-            ).join('');
-        }
-
-        // ================= 基础逻辑 =================
-        function auth(act) {
-            const e = document.getElementById('lg-email').value;
-            const p = document.getElementById('lg-pwd').value;
-            if(act === 'up') sb.auth.signUp({email:e, password:p}).then(r => r.error ? alert(r.error.message) : alert('请查收邮件确认'));
-            else sb.auth.signInWithPassword({email:e, password:p}).then(r => r.error ? alert(r.error.message) : location.reload());
-        }
-        window.doAuth = auth; // 暴露给 HTML
-
-        function logout() { sb.auth.signOut().then(() => location.reload()); }
-
+        function cancelReply() { replyingTo = null; document.getElementById('reply-bar').style.display = 'none'; }
+        function addTag(txt) { document.getElementById('chat-in').value += txt + " "; }
+        
         function nav(page, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('view-'+page).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            // 切换页面时自动刷新数据
-            if(page === 'home') fetchHome();
-            if(page === 'chat') fetchChat();
-            if(page === 'duel') loadRooms();
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+            if(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
+            
+            // 刷新数据
+            if(page === 'home') fetchHome();
+            if(page === 'chat') loadChat();
+            if(page === 'duel') fetchDuels();
+            if(page === 'rank') fetchRank();
+            if(page === 'admin') loadAdmin();
         }
-
-        function setCat(c, el) { curCat=c; initCapsules(); el.classList.add('active'); fetchHome(); }
-        function setFormCat(c, el) { formCat=c; initCapsules(); el.classList.add('active'); } // 修正胶囊样式
-        function setTheme(t) { document.body.setAttribute('data-theme', t); }
+        function setCat(k, el) { currentCat = k; fetchHome(); document.querySelectorAll('.capsule').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     </script>
 </body>
