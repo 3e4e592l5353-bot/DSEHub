@@ -1208,7 +1208,7 @@
     </div>
 
     <!-- 主內容區 -->
-    <div class="main" onclick="if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open')">
+    <div class="main">
 
         <!-- 知識庫頁面 -->
         <div id="view-home" class="page active">
@@ -1731,11 +1731,12 @@
 
     <script>
         // ================= 配置 =================
-        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替換為你的Supabase URL
-        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替換為你的Supabase Key
+        // 🔧 重要：这里需要替换成你的Supabase项目信息
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co'; // 替换成你的Supabase URL
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'; // 替换成你的Supabase anon key
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // 計算RGB值用於CSS變量
+        // 计算RGB值用于CSS变量
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -1745,7 +1746,7 @@
             } : null;
         }
         
-        // 更新CSS變量
+        // 更新CSS变量
         function updateCssVariables(accentColor) {
             const rgb = hexToRgb(accentColor);
             if (rgb) {
@@ -1753,10 +1754,10 @@
             }
         }
         
-        // 初始化時設置默認顏色
+        // 初始化时设置默认颜色
         updateCssVariables('#007AFF');
         
-        // ================= 全局變量 =================
+        // ================= 全局变量 =================
         let user = null;
         let profile = null;
         let currentSubject = 'all';
@@ -1766,7 +1767,7 @@
         let duelTimer = null;
         let timeLeft = 30;
 
-        // 香港DSE科目分類
+        // 香港DSE科目分类
         const SUBJECTS = [
             { key: 'chi', name: '中國語文' },
             { key: 'eng', name: '英國語文' },
@@ -1779,10 +1780,11 @@
             { key: 'geog', name: '地理' },
             { key: 'econ', name: '經濟' },
             { key: 'ba', name: '企業會計與財務概論' },
-            { key: 'ict', name: '資訊及通訊科技' }
+            { key: 'ict', name: '資訊及通訊科技'},
+            {key: 'o', name: '其他'}
         ];
 
-        // 連連看遊戲變量
+        // 连连看游戏变量
         let linkGame = {
             active: false,
             board: [],
@@ -1795,7 +1797,7 @@
             exampleCards: []
         };
 
-        // 記憶遊戲變量
+        // 记忆游戏变量
         let memoryGame = {
             active: false,
             cards: [],
@@ -1807,7 +1809,7 @@
             totalPairs: 8
         };
 
-        // 配對遊戲變量
+        // 配对游戏变量
         let matchGame = {
             active: false,
             leftItems: [],
@@ -1819,7 +1821,7 @@
             draggingItem: null
         };
 
-        // 打字遊戲變量
+        // 打字游戏变量
         let typingGame = {
             active: false,
             currentText: '',
@@ -1833,7 +1835,7 @@
             texts: []
         };
 
-        // 問答遊戲變量
+        // 问答游戏变量
         let quizGame = {
             active: false,
             questions: [],
@@ -1844,7 +1846,7 @@
             totalQuestions: 10
         };
 
-        // 遊戲記錄
+        // 游戏记录
         let gameRecords = {
             link: { highScore: 0, gamesPlayed: 0 },
             memory: { highScore: 0, gamesPlayed: 0 },
@@ -1853,7 +1855,7 @@
             quiz: { highScore: 0, gamesPlayed: 0 }
         };
 
-        // ================= 通知系統 =================
+        // ================= 通知系统 =================
         function showNotification(message, type = 'info', duration = 3000) {
             const notificationArea = document.getElementById('notification-area');
             
@@ -1866,12 +1868,12 @@
             
             notificationArea.appendChild(notification);
             
-            // 觸發動畫
+            // 触发动画
             setTimeout(() => {
                 notification.classList.add('show');
             }, 10);
             
-            // 自動消失
+            // 自动消失
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
@@ -1884,7 +1886,7 @@
 
         // ================= 初始化 =================
         window.onload = async () => {
-            // 設置導航動畫延遲
+            // 设置导航动画延迟
             document.querySelectorAll('.nav-item').forEach((item, index) => {
                 const delay = item.dataset.delay || index;
                 item.style.animationDelay = `${delay * 0.05}s`;
@@ -1892,7 +1894,7 @@
             
             initUI();
             
-            // 檢查登入狀態
+            // 检查登录状态
             const { data } = await sb.auth.getSession();
             if (data.session) {
                 user = data.session.user;
@@ -1901,13 +1903,13 @@
                 document.getElementById('auth-modal').style.display = 'flex';
             }
             
-            // 載入保存的主題
+            // 载入保存的主题
             const savedTheme = localStorage.getItem('dsehub-theme');
             if (savedTheme) {
                 changeTheme(savedTheme);
             }
             
-            // 載入遊戲記錄
+            // 载入游戏记录
             loadGameRecords();
         };
 
@@ -1916,7 +1918,7 @@
             renderSubjectCapsules('submit-capsules', 'chi');
         }
 
-        // ================= UI渲染函數 =================
+        // ================= UI渲染函数 =================
         function renderSubjectCapsules(containerId, defaultActive) {
             const container = document.getElementById(containerId);
             const capsules = [
@@ -1934,15 +1936,15 @@
         }
 
         function selectCapsule(containerId, key, element) {
-            // 移除所有激活狀態
+            // 移除所有激活状态
             document.querySelectorAll(`#${containerId} .capsule`).forEach(c => {
                 c.classList.remove('active');
             });
             
-            // 添加當前激活狀態
+            // 添加当前激活状态
             element.classList.add('active');
             
-            // 更新當前科目
+            // 更新当前科目
             if (containerId === 'subject-capsules') {
                 currentSubject = key;
                 fetchHome();
@@ -1959,7 +1961,7 @@
             showNotification('知識庫已刷新', 'success');
         }
 
-        // ================= 認證相關 =================
+        // ================= 认证相关 =================
         async function auth(type) {
             const email = document.getElementById('lg-e').value.trim();
             const password = document.getElementById('lg-p').value.trim();
@@ -2009,10 +2011,10 @@
             }
         }
 
-        // ================= 用戶資料管理 =================
+        // ================= 用户资料管理 =================
         async function loadProfile() {
             try {
-                // 獲取用戶資料（使用你提供的profiles表結構）
+                // 获取用户资料（使用你提供的profiles表结构）
                 let { data, error } = await sb
                     .from('profiles')
                     .select('*')
@@ -2020,7 +2022,7 @@
                     .single();
                 
                 if (error) {
-                    // 如果沒有資料，創建新資料
+                    // 如果没有资料，创建新资料
                     const newProfile = {
                         id: user.id,
                         username: user.email.split('@')[0],
@@ -2047,7 +2049,7 @@
                 // 更新UI
                 updateUserUI();
                 
-                // 導航到首頁
+                // 导航到首页
                 nav('home');
             } catch (error) {
                 console.error('加載用戶資料失敗:', error);
@@ -2065,7 +2067,7 @@
             document.getElementById('u-sc').innerText = score + ' 分';
             document.getElementById('set-u-sc').innerText = score;
             
-            // 管理員權限顯示
+            // 管理员权限显示
             if (profile.is_admin) {
                 document.getElementById('nav-admin').style.display = 'flex';
                 document.getElementById('btn-adm').innerText = '關閉權限';
@@ -2077,31 +2079,32 @@
             }
         }
 
-        // ================= 模塊A: 知識庫 =================
+        // ================= 模块A: 知识库 =================
         async function fetchHome() {
             const searchKey = document.getElementById('search-k').value.trim();
             
-            // 顯示加載動畫
+            // 显示加载动画
             document.getElementById('home-loading').style.display = 'block';
             document.getElementById('home-list').innerHTML = '';
             
             try {
-                // 構建查詢（使用你提供的submissions表結構）
+                // 构建查询（使用你提供的submissions表结构）
                 let query = sb
                     .from('submissions')
                     .select('*');
                 
-                // 科目篩選（使用cat字段）
+                // 🔧 修复Bug：数据库字段是category，不是cat
+                // 科目筛选（使用category字段）
                 if (currentSubject !== 'all') {
-                    query = query.eq('cat', currentSubject);
+                    query = query.eq('category', currentSubject); // 修复：使用category而不是cat
                 }
                 
-                // 搜索篩選
+                // 搜索筛选
                 if (searchKey) {
                     query = query.or(`title.ilike.%${searchKey}%,content.ilike.%${searchKey}%`);
                 }
                 
-                // 執行查詢
+                // 执行查询
                 const { data, error } = await query;
                 
                 if (error) {
@@ -2110,13 +2113,13 @@
                     return;
                 }
                 
-                // 渲染結果
+                // 渲染结果
                 renderKnowledgeList(data);
             } catch (error) {
                 console.error('知識庫查詢錯誤:', error);
                 showNotification('網絡錯誤，請稍後重試', 'error');
             } finally {
-                // 隱藏加載動畫
+                // 隐藏加载动画
                 document.getElementById('home-loading').style.display = 'none';
             }
         }
@@ -2139,7 +2142,7 @@
                 <div class="k-item glass" onclick="toggleKnowledgeItem(this)" style="animation-delay: ${index * 0.05}s">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                         <div style="font-weight: bold; color: var(--text); font-size: 17px;">
-                            [${getSubjectName(item.cat)}] ${item.title}
+                            [${getSubjectName(item.category)}] ${item.title} <!-- 🔧 修复：使用item.category而不是item.cat -->
                         </div>
                         <div style="font-size: 12px; color: var(--text-light);">
                             ${new Date(item.created_at).toLocaleDateString('zh-HK')}
@@ -2188,7 +2191,7 @@
             `).join('');
         }
 
-        // ================= 模塊B: 留言板 =================
+        // ================= 模块B: 留言板 =================
         async function fetchChat() {
             try {
                 const { data, error } = await sb
@@ -2257,7 +2260,7 @@
                 </div>
             `).join('');
             
-            // 滾動到頂部
+            // 滚动到顶部
             container.scrollTop = 0;
         }
 
@@ -2281,15 +2284,14 @@
             }
             
             try {
-                // 使用你提供的feedbacks表結構
+                // 使用你提供的feedbacks表结构
                 const { error } = await sb
                     .from('feedbacks')
                     .insert({
                         author_name: profile.username,
                         content: content,
                         status: 'normal',
-                        depth: 0,
-                        user_name: profile.username,
+                        user_id: user.id,
                         created_at: new Date().toISOString()
                     });
                 
@@ -2298,11 +2300,11 @@
                     return;
                 }
                 
-                // 清空輸入框並刷新列表
+                // 清空输入框并刷新列表
                 input.value = '';
                 fetchChat();
                 
-                // 更新用戶積分
+                // 更新用户积分
                 updateUserScore(2);
                 
                 showNotification('留言發送成功！', 'success');
@@ -2312,11 +2314,11 @@
             }
         }
 
-        // ================= 遊戲模塊 =================
-        // 1. 連連看遊戲
+        // ================= 游戏模块 =================
+        // 1. 连连看游戏
         async function startLinkGame() {
             try {
-                // 從數據庫獲取知識點
+                // 从数据库获取知识点
                 const { data, error } = await sb
                     .from('submissions')
                     .select('*')
@@ -2327,12 +2329,12 @@
                     return;
                 }
                 
-                // 隱藏遊戲選擇器，顯示連連看界面
+                // 隐藏游戏选择器，显示连连看界面
                 document.getElementById('game-selector').style.display = 'none';
                 document.getElementById('leaderboard-container').style.display = 'none';
                 document.getElementById('link-game-container').style.display = 'block';
                 
-                // 初始化遊戲
+                // 初始化游戏
                 initLinkGame(data);
             } catch (error) {
                 console.error('開始連連看遊戲失敗:', error);
@@ -2349,14 +2351,14 @@
             linkGame.knowledgeCards = {};
             linkGame.exampleCards = [];
             
-            // 更新顯示
+            // 更新显示
             document.getElementById('link-score').textContent = '0';
             document.getElementById('link-time').textContent = '120';
             
-            // 創建遊戲板
+            // 创建游戏板
             createLinkBoard(knowledgeData);
             
-            // 開始計時
+            // 开始计时
             linkGame.timer = setInterval(() => {
                 linkGame.timeLeft--;
                 document.getElementById('link-time').textContent = linkGame.timeLeft;
@@ -2371,16 +2373,16 @@
             const board = document.getElementById('link-game-board');
             board.innerHTML = '';
             
-            // 隨機選擇6個知識點
+            // 随机选择6个知识点
             const selectedKnowledge = knowledgeData.sort(() => Math.random() - 0.5).slice(0, 6);
             linkGame.pairs = selectedKnowledge.length;
             document.getElementById('link-remaining').textContent = linkGame.pairs;
             
             let cards = [];
             
-            // 為每個知識點創建卡片
+            // 为每个知识点创建卡片
             selectedKnowledge.forEach((knowledge, knowledgeIndex) => {
-                // 知識點卡片
+                // 知识点卡片
                 const knowledgeCard = {
                     type: 'knowledge',
                     id: `knowledge-${knowledgeIndex}`,
@@ -2390,7 +2392,7 @@
                     matchedExamples: []
                 };
                 
-                // 創建知識點卡片元素
+                // 创建知识点卡片元素
                 const knowledgeElement = document.createElement('div');
                 knowledgeElement.className = 'link-card knowledge';
                 knowledgeElement.dataset.id = knowledgeCard.id;
@@ -2410,7 +2412,7 @@
                 
                 linkGame.knowledgeCards[knowledgeCard.id] = knowledgeCard;
                 
-                // 為每個例子創建卡片
+                // 为每个例子创建卡片
                 knowledgeCard.examples.forEach((example, exampleIndex) => {
                     const exampleCard = {
                         type: 'example',
@@ -2421,7 +2423,7 @@
                         index: exampleIndex
                     };
                     
-                    // 創建例子卡片元素
+                    // 创建例子卡片元素
                     const exampleElement = document.createElement('div');
                     exampleElement.className = 'link-card example';
                     exampleElement.dataset.id = exampleCard.id;
@@ -2443,10 +2445,10 @@
                 });
             });
             
-            // 隨機排列卡片
+            // 随机排列卡片
             cards = cards.sort(() => Math.random() - 0.5);
             
-            // 添加卡片到遊戲板
+            // 添加卡片到游戏板
             cards.forEach(card => {
                 board.appendChild(card.element);
                 linkGame.board.push(card);
@@ -2459,35 +2461,35 @@
             const card = linkGame.board.find(c => c.data.id === cardId);
             if (!card || card.element.classList.contains('removed')) return;
             
-            // 如果已經選中，取消選擇
+            // 如果已经选中，取消选择
             if (linkGame.selected === cardId) {
                 card.element.classList.remove('selected');
                 linkGame.selected = null;
                 return;
             }
             
-            // 選擇新卡片
+            // 选择新卡片
             card.element.classList.add('selected');
             
-            // 如果沒有已選中的卡片，保存當前選擇
+            // 如果没有已选中的卡片，保存当前选择
             if (linkGame.selected === null) {
                 linkGame.selected = cardId;
                 return;
             }
             
-            // 獲取之前選中的卡片
+            // 获取之前选中的卡片
             const prevCard = linkGame.board.find(c => c.data.id === linkGame.selected);
             
-            // 移除選擇狀態
+            // 移除选择状态
             card.element.classList.remove('selected');
             prevCard.element.classList.remove('selected');
             
-            // 檢查是否匹配
+            // 检查是否匹配
             if (checkLinkMatch(prevCard.data, card.data)) {
                 // 匹配成功
                 handleLinkMatch(prevCard, card);
             } else {
-                // 匹配失敗
+                // 匹配失败
                 card.element.classList.add('shake');
                 prevCard.element.classList.add('shake');
                 
@@ -2505,36 +2507,36 @@
         }
 
         function checkLinkMatch(card1, card2) {
-            // 一個必須是知識點，一個必須是例子
+            // 一个必须是知识点，一个必须是例子
             if ((card1.type === 'knowledge' && card2.type === 'example') ||
                 (card1.type === 'example' && card2.type === 'knowledge')) {
                 
                 const knowledgeCard = card1.type === 'knowledge' ? card1 : card2;
                 const exampleCard = card1.type === 'example' ? card1 : card2;
                 
-                // 檢查例子是否屬於該知識點
+                // 检查例子是否属于该知识点
                 return knowledgeCard.knowledgeId === exampleCard.knowledgeId;
             }
             return false;
         }
 
         function handleLinkMatch(knowledgeCard, exampleCard) {
-            // 確定哪個是知識點卡片
+            // 确定哪个是知识点卡片
             const isKnowledgeFirst = knowledgeCard.data.type === 'knowledge';
             const knowledgeCardData = isKnowledgeFirst ? knowledgeCard.data : exampleCard.data;
             const exampleCardData = isKnowledgeFirst ? exampleCard.data : knowledgeCard.data;
             const knowledgeCardElement = isKnowledgeFirst ? knowledgeCard.element : exampleCard.element;
             const exampleCardElement = isKnowledgeFirst ? exampleCard.element : knowledgeCard.element;
             
-            // 添加到知識點的已匹配例子列表
+            // 添加到知识点的已匹配例子列表
             const knowledgeData = linkGame.knowledgeCards[knowledgeCardData.id];
             if (knowledgeData && !knowledgeData.matchedExamples.includes(exampleCardData.id)) {
                 knowledgeData.matchedExamples.push(exampleCardData.id);
                 
-                // 標記為已匹配
+                // 标记为已匹配
                 exampleCardElement.classList.add('matched');
                 
-                // 延遲後移除例子卡片
+                // 延迟后移除例子卡片
                 setTimeout(() => {
                     exampleCardElement.classList.add('removed');
                 }, 500);
@@ -2543,23 +2545,23 @@
                 linkGame.score += 20;
                 document.getElementById('link-score').textContent = linkGame.score;
                 
-                // 創建分數彈出效果
+                // 创建分数弹出效果
                 createScorePopup(exampleCardElement, '+20');
                 
-                // 檢查知識點的所有例子是否都已匹配
+                // 检查知识点的所有例子是否都已匹配
                 if (knowledgeData.matchedExamples.length === knowledgeData.examples.length) {
-                    // 知識點消失
+                    // 知识点消失
                     setTimeout(() => {
                         knowledgeCardElement.classList.add('removed');
                         linkGame.pairs--;
                         document.getElementById('link-remaining').textContent = linkGame.pairs;
                         
-                        // 額外加分
+                        // 额外加分
                         linkGame.score += 50;
                         document.getElementById('link-score').textContent = linkGame.score;
                         createScorePopup(knowledgeCardElement, '+50');
                         
-                        // 檢查遊戲是否完成
+                        // 检查游戏是否完成
                         if (linkGame.pairs === 0) {
                             finishLinkGame(true);
                         }
@@ -2586,7 +2588,7 @@
         function showLinkHint() {
             if (!linkGame.active) return;
             
-            // 找到一個未匹配的例子和對應的知識點
+            // 找到一个未匹配的例子和对应的知识点
             for (const exampleCard of linkGame.exampleCards) {
                 const exampleElement = linkGame.board.find(c => c.data.id === exampleCard.id).element;
                 if (exampleElement.classList.contains('removed')) continue;
@@ -2594,7 +2596,7 @@
                 const knowledgeCard = linkGame.knowledgeCards[exampleCard.knowledgeCardId];
                 const knowledgeElement = linkGame.board.find(c => c.data.id === knowledgeCard.id).element;
                 
-                // 顯示提示
+                // 显示提示
                 exampleElement.style.boxShadow = '0 0 20px gold';
                 knowledgeElement.style.boxShadow = '0 0 20px gold';
                 
@@ -2729,7 +2731,7 @@
                         id: `memory-${index}-${i}`,
                         pairId: index,
                         content: knowledge.title.substring(0, 20),
-                        symbol: knowledge.cat ? knowledge.cat.substring(0, 1).toUpperCase() : '知'
+                        symbol: knowledge.category ? knowledge.category.substring(0, 1).toUpperCase() : '知'
                     };
                     
                     const cardElement = document.createElement('div');
@@ -3480,7 +3482,7 @@
             }, 3000);
         }
 
-        // 遊戲記錄管理
+        // 游戏记录管理
         function loadGameRecords() {
             const records = localStorage.getItem('dsehub-game-records');
             if (records) {
@@ -3623,7 +3625,7 @@
             return names[gameType] || gameType;
         }
 
-        // ================= 模塊C: 線上對決 =================
+        // ================= 模块C: 线上对决 =================
         async function createDuel() {
             if (!profile) {
                 showNotification('請先登入', 'warning');
@@ -3631,7 +3633,7 @@
             }
             
             try {
-                // 創建房間（使用你提供的duel_rooms表結構）
+                // 创建房间（使用你提供的duel_rooms表结构）
                 const { data, error } = await sb
                     .from('duel_rooms')
                     .insert({
@@ -3656,7 +3658,7 @@
                 document.getElementById('duel-wait').style.display = 'block';
                 document.getElementById('room-id-disp').textContent = data.id.substring(0, 8).toUpperCase();
                 
-                // 顯示房間信息
+                // 显示房间信息
                 document.getElementById('room-info').innerHTML = `
                     <div style="text-align: center;">
                         <div style="margin-bottom: 15px;">
@@ -3672,10 +3674,10 @@
                     </div>
                 `;
                 
-                // 監聽房間狀態變化
+                // 监听房间状态变化
                 listenToRoom(data.id);
                 
-                // 加載對戰歷史
+                // 加载对战历史
                 loadDuelHistory();
                 
                 showNotification('房間創建成功！', 'success');
@@ -3770,7 +3772,7 @@
 
         async function listenToRoom(roomId) {
             try {
-                // 使用Supabase的實時訂閱功能
+                // 使用Supabase的实时订阅功能
                 const channel = sb
                     .channel('duel-' + roomId)
                     .on(
@@ -3839,9 +3841,7 @@
             timeLeft = 30;
             
             // 更新題目
-            document.getElementById('dq-text').textContent = `[${getSubjectName(question.cat)}] ${question.title}`;
-            
-            // 生成選項
+            document.getElementById('dq-text').textContent = `[${getSubjectName(question.category)}] ${question.title}`; // 🔧 修复：使用question.category
             const options = generateDuelOptions(question.example);
             document.getElementById('dq-opts').innerHTML = options
                 .map((opt, index) => `
@@ -3974,7 +3974,7 @@
             loadDuelHistory();
         }
 
-        // ================= 模塊D: 投稿中心 =================
+        // ================= 模块D: 投稿中心 =================
         function setSubmitType(type) {
             const knowBtn = document.getElementById('btn-know');
             const chatBtn = document.getElementById('btn-chat');
@@ -4038,19 +4038,18 @@
             }
             
             try {
-                // 使用你提供的submissions表結構
+                // 🔧 修复Bug：数据库字段名不匹配
                 const { error } = await sb
                     .from('submissions')
                     .insert({
-                        cat: subjectKey,
+                        category: subjectKey, // 🔧 修复：使用category而不是cat
                         title: title,
+                        description: content.substring(0, 100), // 🔧 修复：使用description字段
                         content: content,
                         example: example,
                         author_name: profile.username,
                         user_id: user.id,
-                        t: 'knowledge', // 投稿類型
-                        d: content.substring(0, 100), // 描述
-                        subject: subjectKey,
+                        status: 'pending', // 添加状态字段
                         created_at: new Date().toISOString()
                     });
                 
@@ -4099,8 +4098,7 @@
                         author_name: profile.username,
                         content: content,
                         status: 'normal',
-                        depth: 0,
-                        user_name: profile.username,
+                        user_id: user.id,
                         created_at: new Date().toISOString()
                     });
                 
@@ -4118,24 +4116,24 @@
             }
         }
 
-        // ================= 模塊E: 設定 =================
+        // ================= 模块E: 设定 =================
         function changeTheme(theme) {
-            // 移除所有主題類
+            // 移除所有主题类
             document.body.classList.remove('theme-default', 'theme-white', 'theme-dark', 'theme-green', 'theme-orange', 'theme-purple', 'theme-pink');
             
-            // 添加新主題類
+            // 添加新主题类
             if (theme !== 'default') {
                 document.body.classList.add('theme-' + theme);
             }
             
-            // 更新主題按鈕狀態
+            // 更新主题按钮状态
             document.querySelectorAll('.theme-color').forEach(btn => {
                 btn.classList.remove('active');
             });
             
             event.target.classList.add('active');
             
-            // 根據主題更新CSS變量
+            // 根据主题更新CSS变量
             const accentColors = {
                 'default': '#007AFF',
                 'white': '#666666',
@@ -4148,7 +4146,7 @@
             
             updateCssVariables(accentColors[theme] || '#007AFF');
             
-            // 保存主題偏好
+            // 保存主题偏好
             localStorage.setItem('dsehub-theme', theme);
             
             showNotification(`已切換到${event.target.title}`, 'success');
@@ -4157,25 +4155,21 @@
         async function toggleAdmin() {
             if (!profile) return;
             
+            // 🔧 简化项目版本：直接允许用户成为管理员
             if (!profile.is_admin) {
-                const password = prompt('請輸入管理員密碼:');
-                if (password === 'admin123') { // 實際應用中應使用更安全的驗證方式
-                    try {
-                        const { error } = await sb
-                            .from('profiles')
-                            .update({ is_admin: true })
-                            .eq('id', user.id);
-                        
-                        if (!error) {
-                            await loadProfile();
-                            showNotification('管理員權限已開啟', 'success');
-                        }
-                    } catch (error) {
-                        console.error('開啟管理員權限失敗:', error);
-                        showNotification('開啟權限失敗', 'error');
+                try {
+                    const { error } = await sb
+                        .from('profiles')
+                        .update({ is_admin: true })
+                        .eq('id', user.id);
+                    
+                    if (!error) {
+                        await loadProfile();
+                        showNotification('管理員權限已開啟', 'success');
                     }
-                } else {
-                    showNotification('密碼錯誤', 'error');
+                } catch (error) {
+                    console.error('開啟管理員權限失敗:', error);
+                    showNotification('開啟權限失敗', 'error');
                 }
             } else {
                 try {
@@ -4195,7 +4189,7 @@
             }
         }
 
-        // ================= 模塊F: 管理後台 =================
+        // ================= 模块F: 管理后台 =================
         async function showAdminSection(section) {
             if (!profile || !profile.is_admin) {
                 showNotification('需要管理員權限', 'warning');
@@ -4319,7 +4313,7 @@
                                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                     <div>
                                         <div style="font-weight: bold; color: var(--text); font-size: 16px; margin-bottom: 4px;">
-                                            [${getSubjectName(item.cat)}] ${item.title}
+                                            [${getSubjectName(item.category)}] ${item.title} <!-- 🔧 修复：使用item.category -->
                                         </div>
                                         <div style="font-size: 12px; color: var(--text-sub);">
                                             作者: ${item.author_name || '匿名'} | 
@@ -4400,7 +4394,6 @@
                                             <div style="font-size: 12px; color: var(--text-sub);">
                                                 積分: ${user.score} | 最後更新: ${user.updated_at ? new Date(user.updated_at).toLocaleDateString('zh-HK') : '從未'}
                                             </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="admin-actions">
@@ -4683,7 +4676,7 @@
                             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                                 <div>
                                     <div style="font-weight: bold; color: var(--text); font-size: 16px; margin-bottom: 4px;">
-                                        [${getSubjectName(item.cat)}] ${item.title}
+                                        [${getSubjectName(item.category)}] ${item.title}
                                     </div>
                                     <div style="font-size: 12px; color: var(--text-sub);">
                                         作者: ${item.author_name || '匿名'} | 
@@ -4833,10 +4826,8 @@
                     break;
             }
             
-            // 移動端關閉側邊欄
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
+            // 🔧 移动端点击主区域时不自动关闭侧边栏
+            // 改为手动点击菜单按钮关闭
         }
 
         function toggleSidebar() {
