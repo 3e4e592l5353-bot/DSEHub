@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DSE Hub v84 (管理增强版)</title>
+    <title>DSE Hub v85 (完整游戏版)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -696,6 +696,93 @@
             font-weight: 600;
         }
 
+        /* ================= 配对游戏样式 ================= */
+        .matching-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .matching-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .matching-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .matching-card.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .matching-card.matched {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            cursor: default;
+        }
+
+        /* ================= 限时挑战样式 ================= */
+        .timer-display {
+            font-size: 72px;
+            font-weight: 900;
+            text-align: center;
+            color: var(--primary);
+            margin: 20px 0;
+            text-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .timed-question {
+            font-size: 24px;
+            text-align: center;
+            margin: 30px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timed-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .timed-option {
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .timed-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .timed-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
         /* ================= 按钮 ================= */
         .btn {
             display: inline-flex;
@@ -930,6 +1017,18 @@
             to { transform: translateX(100%); opacity: 0; }
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
         /* ================= 响应式 ================= */
         @media (max-width: 768px) {
             .text-title {
@@ -959,6 +1058,14 @@
             
             .category-selector {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .matching-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timed-options {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -1008,7 +1115,7 @@
         <div class="sidebar" id="sidebar">
             <div class="nav-header">
                 <div class="logo">DSE HUB</div>
-                <p class="tagline">版本 84 • 管理增强版</p>
+                <p class="tagline">版本 85 • 完整游戏版</p>
             </div>
             
             <div class="nav-menu">
@@ -1158,7 +1265,7 @@
                     </div>
                     <div style="margin-top: 20px;">
                         <button class="btn btn-primary" onclick="startQuizGame()">
-                            <i class="fas fa-play"></i> 开始知识问答
+                            <i class="fas fa-brain"></i> 开始知识问答
                         </button>
                         <button class="btn" onclick="saveGameSettings()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); margin-left: 10px;">
                             <i class="fas fa-save"></i> 保存设置
@@ -1392,6 +1499,16 @@
         let gameScore = 0;
         let selectedDifficulty = 'medium';
         let selectedGameCategories = []; // 🟢 存储用户选择的游戏科目
+        
+        // 🟢 游戏特定变量
+        let matchingPairs = [];
+        let selectedMatchingCards = [];
+        let matchedPairsCount = 0;
+        let timerInterval = null;
+        let timeLeft = 60;
+        let timedQuestions = [];
+        let currentTimedQuestionIndex = 0;
+        let timedCorrectAnswers = 0;
 
         // ================= DSE科目映射表 =================
         const DSE_CATEGORIES = {
@@ -1439,6 +1556,14 @@
                     example: '题目：《我的梦想》，如何审题立意？',
                     answer: '重点写个人梦想的内涵、实现路径和意义',
                     difficulty: 'medium'
+                },
+                {
+                    id: 'chi4',
+                    title: '修辞手法：排比',
+                    content: '排比是把三个或以上结构和长度类似、语气一致、意义相关的句子或句子成分排列起来。',
+                    example: '读书使人充实，讨论使人机智，笔记使人准确。',
+                    answer: '排比句',
+                    difficulty: 'easy'
                 }
             ],
             'eng': [
@@ -1456,6 +1581,22 @@
                     content: '条件句分为四种类型：零条件句（永恒真理）、第一条件句（真实可能）、第二条件句（假设现在）、第三条件句（假设过去）。例如："If it rains, we will cancel the picnic." 是第一条件句。',
                     example: 'If it rains, we will cancel the picnic.',
                     answer: 'First Conditional',
+                    difficulty: 'hard'
+                },
+                {
+                    id: 'eng3',
+                    title: 'Passive Voice',
+                    content: '被动语态表示主语是动作的承受者。结构：be动词 + 过去分词。',
+                    example: 'The book was written by him.',
+                    answer: '被动语态',
+                    difficulty: 'medium'
+                },
+                {
+                    id: 'eng4',
+                    title: 'Relative Clauses',
+                    content: '关系从句用来修饰名词，分为限定性和非限定性两种。',
+                    example: 'The man who is standing there is my teacher.',
+                    answer: '关系从句',
                     difficulty: 'hard'
                 }
             ],
@@ -1475,6 +1616,22 @@
                     example: 'sin30°的值是多少？',
                     answer: '1/2',
                     difficulty: 'easy'
+                },
+                {
+                    id: 'math3',
+                    title: '勾股定理',
+                    content: '直角三角形中，两直角边的平方和等于斜边的平方：a² + b² = c²。',
+                    example: '直角三角形两直角边为3和4，斜边是多少？',
+                    answer: '5',
+                    difficulty: 'easy'
+                },
+                {
+                    id: 'math4',
+                    title: '圆的面积公式',
+                    content: '圆的面积 = πr²，其中r是半径，π约等于3.14159。',
+                    example: '半径为5的圆的面积是多少？',
+                    answer: '25π',
+                    difficulty: 'medium'
                 }
             ],
             'ls': [
@@ -1485,6 +1642,30 @@
                     example: '香港在可持续发展方面面临的主要挑战是什么？',
                     answer: '土地资源紧张、人口密度高、空气污染等',
                     difficulty: 'medium'
+                },
+                {
+                    id: 'ls2',
+                    title: '全球化',
+                    content: '全球化是指全球联系不断增强，人类生活在全球规模的基础上发展，国与国之间在政治、经济贸易上互相依存。',
+                    example: '全球化的主要特征是什么？',
+                    answer: '国际贸易增加、文化传播、跨国公司扩张',
+                    difficulty: 'medium'
+                },
+                {
+                    id: 'ls3',
+                    title: '社会分层',
+                    content: '社会分层是根据财富、权力、声望等标准将社会成员分为不同等级的过程。',
+                    example: '社会分层的三个主要维度是什么？',
+                    answer: '财富、权力、声望',
+                    difficulty: 'easy'
+                },
+                {
+                    id: 'ls4',
+                    title: '文化认同',
+                    content: '文化认同是指个人对自己所属文化的认同感，包括语言、价值观、习俗等。',
+                    example: '香港的文化认同有什么特点？',
+                    answer: '中西文化交融、传统与现代并存',
+                    difficulty: 'hard'
                 }
             ],
             'phy': [
@@ -2136,9 +2317,14 @@
                     .from('game_settings')
                     .select('*')
                     .eq('user_id', userProfile.id)
-                    .single();
+                    .maybeSingle(); // 使用maybeSingle而不是single
                 
-                if (!error && data && data.selected_categories) {
+                if (error && error.code !== 'PGRST116') {
+                    console.error('加载游戏设置失败:', error);
+                    return;
+                }
+                
+                if (data && data.selected_categories) {
                     selectedGameCategories = data.selected_categories;
                     
                     // 更新UI显示
@@ -2152,7 +2338,7 @@
                     });
                 }
             } catch (error) {
-                console.error('加载游戏设置失败:', error);
+                console.error('加载游戏设置异常:', error);
             }
         }
 
@@ -2173,7 +2359,7 @@
                     .from('game_settings')
                     .select('id')
                     .eq('user_id', userProfile.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (checkError && checkError.code !== 'PGRST116') {
                     console.error('检查游戏设置失败:', checkError);
@@ -2215,7 +2401,7 @@
             }
         }
 
-        // 🟢 改进的游戏开始函数
+        // ================= 知识问答游戏 =================
         function startQuizGame() {
             if (!currentUser) {
                 showMessage('请先登录', 'error');
@@ -2439,7 +2625,7 @@
                         </div>
                         
                         <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
-                            <button class="btn btn-primary" onclick="saveGameResult()">
+                            <button class="btn btn-primary" onclick="saveGameResult('quiz')">
                                 <i class="fas fa-save"></i> 保存记录
                             </button>
                             <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
@@ -2454,33 +2640,621 @@
             `;
         }
 
-        async function saveGameResult() {
+        // ================= 配对游戏 =================
+        function startMatchingGame() {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            if (selectedGameCategories.length === 0) {
+                showMessage('请至少选择一个游戏科目', 'warning');
+                return;
+            }
+            
+            // 创建配对数据
+            matchingPairs = [];
+            selectedGameCategories.forEach(category => {
+                if (localDSEKnowledge[category]) {
+                    localDSEKnowledge[category].slice(0, 3).forEach(item => {
+                        matchingPairs.push({
+                            term: item.title,
+                            definition: item.content.substring(0, 80) + '...',
+                            id: item.id
+                        });
+                    });
+                }
+            });
+            
+            if (matchingPairs.length < 4) {
+                showMessage('题目数量不足，请选择更多科目', 'warning');
+                return;
+            }
+            
+            // 限制为6对（12张卡片）
+            if (matchingPairs.length > 6) {
+                matchingPairs = matchingPairs.slice(0, 6);
+            }
+            
+            // 重置游戏状态
+            selectedMatchingCards = [];
+            matchedPairsCount = 0;
+            
+            document.getElementById('page-games').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            
+            renderMatchingGame();
+        }
+
+        function renderMatchingGame() {
+            const container = document.getElementById('game-container');
+            
+            // 创建卡片数组：每个配对包括一个术语卡和一个定义卡
+            let cards = [];
+            matchingPairs.forEach((pair, index) => {
+                cards.push({
+                    id: index * 2,
+                    content: pair.term,
+                    type: 'term',
+                    pairId: index
+                });
+                cards.push({
+                    id: index * 2 + 1,
+                    content: pair.definition,
+                    type: 'definition',
+                    pairId: index
+                });
+            });
+            
+            // 洗牌
+            cards = shuffleArray(cards);
+            
+            container.innerHTML = `
+                <div class="game-container">
+                    <div class="game-header">
+                        <h2 class="game-title-large">🧩 配对游戏</h2>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="stat-value" id="matching-score">${matchedPairsCount * 5}</div>
+                                <div class="stat-label">得分</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">${matchedPairsCount}/${matchingPairs.length}</div>
+                                <div class="stat-label">已配对</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">${selectedGameCategories.length}</div>
+                                <div class="stat-label">科目数</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-content">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <p class="readable-text-secondary">点击术语和对应的解释进行配对</p>
+                        </div>
+                        
+                        <div class="matching-grid" id="matching-grid">
+                            ${cards.map(card => `
+                                <div class="matching-card" data-id="${card.id}" data-pair="${card.pairId}" data-type="${card.type}" onclick="selectMatchingCard(${card.id})">
+                                    ${card.content}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <div style="display: flex; gap: 15px; justify-content: center;">
+                                <button class="btn btn-primary" onclick="checkMatchingPair()">
+                                    <i class="fas fa-check"></i> 检查配对
+                                </button>
+                                <button class="btn" onclick="resetMatchingSelection()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                    <i class="fas fa-redo"></i> 重新选择
+                                </button>
+                                <button class="btn" onclick="exitGame()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    <i class="fas fa-times"></i> 退出
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="matching-result" style="margin-top: 30px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectMatchingCard(cardId) {
+            const card = document.querySelector(`.matching-card[data-id="${cardId}"]`);
+            if (!card || card.classList.contains('matched')) return;
+            
+            // 如果已经选中，取消选择
+            if (selectedMatchingCards.includes(cardId)) {
+                selectedMatchingCards = selectedMatchingCards.filter(id => id !== cardId);
+                card.classList.remove('selected');
+                return;
+            }
+            
+            // 最多只能选两张
+            if (selectedMatchingCards.length >= 2) {
+                showMessage('最多只能选择两张卡片', 'warning');
+                return;
+            }
+            
+            selectedMatchingCards.push(cardId);
+            card.classList.add('selected');
+            
+            // 如果选了两张，自动检查
+            if (selectedMatchingCards.length === 2) {
+                setTimeout(checkMatchingPair, 500);
+            }
+        }
+
+        function checkMatchingPair() {
+            if (selectedMatchingCards.length !== 2) {
+                showMessage('请选择两张卡片', 'warning');
+                return;
+            }
+            
+            const card1 = document.querySelector(`.matching-card[data-id="${selectedMatchingCards[0]}"]`);
+            const card2 = document.querySelector(`.matching-card[data-id="${selectedMatchingCards[1]}"]`);
+            
+            const pairId1 = card1.getAttribute('data-pair');
+            const pairId2 = card2.getAttribute('data-pair');
+            const type1 = card1.getAttribute('data-type');
+            const type2 = card2.getAttribute('data-type');
+            
+            const resultDiv = document.getElementById('matching-result');
+            
+            // 检查是否配对成功：同一对且一个是术语一个是定义
+            if (pairId1 === pairId2 && type1 !== type2) {
+                // 配对成功
+                card1.classList.remove('selected');
+                card2.classList.remove('selected');
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                
+                matchedPairsCount++;
+                
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: var(--radius-md); border-left: 4px solid var(--success);">
+                        <div style="color: var(--success); font-weight: 800; margin-bottom: 10px;">
+                            <i class="fas fa-check-circle"></i> 配对成功！
+                        </div>
+                        <div class="readable-text-secondary">
+                            成功匹配：${card1.textContent} ↔ ${card2.textContent}
+                        </div>
+                        <div style="margin-top: 20px; color: var(--success); font-weight: 800;">
+                            +5 积分
+                        </div>
+                    </div>
+                `;
+                
+                // 更新分数
+                document.getElementById('matching-score').textContent = matchedPairsCount * 5;
+                
+                // 检查游戏是否结束
+                if (matchedPairsCount === matchingPairs.length) {
+                    setTimeout(finishMatchingGame, 1000);
+                }
+            } else {
+                // 配对失败
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: var(--radius-md); border-left: 4px solid var(--danger);">
+                        <div style="color: var(--danger); font-weight: 800; margin-bottom: 10px;">
+                            <i class="fas fa-times-circle"></i> 配对失败
+                        </div>
+                        <div class="readable-text-secondary">
+                            这两个项目不匹配，请再试一次
+                        </div>
+                    </div>
+                `;
+                
+                // 1秒后取消选择
+                setTimeout(() => {
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+                    selectedMatchingCards = [];
+                }, 1000);
+            }
+        }
+
+        function resetMatchingSelection() {
+            selectedMatchingCards.forEach(cardId => {
+                const card = document.querySelector(`.matching-card[data-id="${cardId}"]`);
+                if (card) card.classList.remove('selected');
+            });
+            selectedMatchingCards = [];
+            document.getElementById('matching-result').innerHTML = '';
+        }
+
+        function finishMatchingGame() {
+            const totalScore = matchedPairsCount * 5;
+            const bonus = matchedPairsCount === matchingPairs.length ? 20 : 0;
+            const finalScore = totalScore + bonus;
+            
+            const container = document.getElementById('game-container');
+            
+            container.innerHTML = `
+                <div class="game-container">
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 72px; font-weight: 900; color: var(--primary); margin-bottom: 20px;">
+                            ${finalScore}
+                        </div>
+                        <div class="text-bold" style="font-size: 28px; margin-bottom: 10px; color: var(--text-primary);">
+                            🎉 恭喜完成配对游戏！
+                        </div>
+                        <div class="readable-text-secondary" style="font-size: 18px; margin-bottom: 30px;">
+                            你成功配对了 ${matchedPairsCount} 对，共 ${matchingPairs.length} 对<br>
+                            ${bonus > 0 ? '🎁 获得完美配对奖励！' : ''}
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px;">
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${matchedPairsCount}</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">配对成功数</div>
+                            </div>
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--success);">${totalScore}</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">基础得分</div>
+                            </div>
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--warning);">${bonus}</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">额外奖励</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                            <button class="btn btn-primary" onclick="saveGameResult('matching', ${finalScore})">
+                                <i class="fas fa-save"></i> 保存记录
+                            </button>
+                            <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                <i class="fas fa-redo"></i> 再玩一次
+                            </button>
+                            <button class="btn" onclick="exitToGameCenter()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                <i class="fas fa-home"></i> 返回游戏中心
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ================= 限时挑战游戏 =================
+        function startTimedChallenge() {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            if (selectedGameCategories.length === 0) {
+                showMessage('请至少选择一个游戏科目', 'warning');
+                return;
+            }
+            
+            // 准备题目
+            timedQuestions = [];
+            selectedGameCategories.forEach(category => {
+                if (localDSEKnowledge[category]) {
+                    localDSEKnowledge[category].forEach(item => {
+                        if (item.example && item.answer) {
+                            // 为每个题目生成错误选项
+                            const wrongAnswers = generateWrongAnswers(category, item.answer);
+                            const options = shuffleArray([item.answer, ...wrongAnswers.slice(0, 3)]);
+                            
+                            timedQuestions.push({
+                                question: item.example,
+                                correctAnswer: item.answer,
+                                options: options,
+                                category: category,
+                                explanation: item.content,
+                                title: item.title
+                            });
+                        }
+                    });
+                }
+            });
+            
+            if (timedQuestions.length < 5) {
+                showMessage('题目数量不足，请选择更多科目', 'warning');
+                return;
+            }
+            
+            // 限制为10题
+            if (timedQuestions.length > 10) {
+                timedQuestions = shuffleArray(timedQuestions).slice(0, 10);
+            }
+            
+            // 重置游戏状态
+            currentTimedQuestionIndex = 0;
+            timedCorrectAnswers = 0;
+            timeLeft = 60;
+            
+            document.getElementById('page-games').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            
+            startTimer();
+            renderTimedQuestion();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishTimedGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) {
+                timerDisplay.textContent = timeLeft;
+                
+                // 根据剩余时间改变颜色
+                if (timeLeft <= 10) {
+                    timerDisplay.style.color = 'var(--danger)';
+                    timerDisplay.style.animation = 'pulse 0.5s infinite';
+                } else if (timeLeft <= 30) {
+                    timerDisplay.style.color = 'var(--warning)';
+                }
+            }
+        }
+
+        function renderTimedQuestion() {
+            if (currentTimedQuestionIndex >= timedQuestions.length || timeLeft <= 0) {
+                finishTimedGame();
+                return;
+            }
+            
+            const container = document.getElementById('game-container');
+            const question = timedQuestions[currentTimedQuestionIndex];
+            
+            container.innerHTML = `
+                <div class="game-container">
+                    <div class="game-header">
+                        <h2 class="game-title-large">⏱ 限时挑战</h2>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="stat-value" id="timer-display">${timeLeft}</div>
+                                <div class="stat-label">剩余时间</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">${currentTimedQuestionIndex + 1}/${timedQuestions.length}</div>
+                                <div class="stat-label">题号</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">${timedCorrectAnswers}</div>
+                                <div class="stat-label">正确数</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-content">
+                        <div class="timed-question text-bold">
+                            ${question.question}
+                        </div>
+                        
+                        <div class="timed-options" id="timed-options">
+                            ${question.options.map((option, index) => `
+                                <div class="timed-option" onclick="selectTimedOption(${index})" data-index="${index}">
+                                    ${option}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn" onclick="skipTimedQuestion()" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
+                                <i class="fas fa-forward"></i> 跳过此题
+                            </button>
+                        </div>
+                        
+                        <div id="timed-result" style="margin-top: 30px;"></div>
+                    </div>
+                </div>
+            `;
+            
+            updateTimerDisplay();
+        }
+
+        function selectTimedOption(optionIndex) {
+            if (timeLeft <= 0) return;
+            
+            const question = timedQuestions[currentTimedQuestionIndex];
+            const selectedOption = question.options[optionIndex];
+            const isCorrect = selectedOption === question.correctAnswer;
+            
+            // 标记选项
+            const options = document.querySelectorAll('.timed-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+                option.style.cursor = 'default';
+                option.onclick = null;
+            });
+            
+            options[optionIndex].classList.add('selected');
+            
+            const resultDiv = document.getElementById('timed-result');
+            
+            if (isCorrect) {
+                timedCorrectAnswers++;
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: var(--radius-md); border-left: 4px solid var(--success);">
+                        <div style="color: var(--success); font-weight: 800; margin-bottom: 10px;">
+                            <i class="fas fa-check-circle"></i> 回答正确！
+                        </div>
+                        <div class="readable-text-secondary">
+                            正确答案：${question.correctAnswer}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 20px; border-radius: var(--radius-md); border-left: 4px solid var(--danger);">
+                        <div style="color: var(--danger); font-weight: 800; margin-bottom: 10px;">
+                            <i class="fas fa-times-circle"></i> 回答错误
+                        </div>
+                        <div class="readable-text-secondary">
+                            正确答案：${question.correctAnswer}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 1.5秒后下一题
+            setTimeout(() => {
+                currentTimedQuestionIndex++;
+                if (currentTimedQuestionIndex < timedQuestions.length && timeLeft > 0) {
+                    renderTimedQuestion();
+                } else {
+                    finishTimedGame();
+                }
+            }, 1500);
+        }
+
+        function skipTimedQuestion() {
+            if (timeLeft <= 0) return;
+            
+            currentTimedQuestionIndex++;
+            if (currentTimedQuestionIndex < timedQuestions.length && timeLeft > 0) {
+                renderTimedQuestion();
+            } else {
+                finishTimedGame();
+            }
+        }
+
+        function finishTimedGame() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            const totalScore = timedCorrectAnswers * 10;
+            const accuracy = timedQuestions.length > 0 ? Math.round((timedCorrectAnswers / timedQuestions.length) * 100) : 0;
+            
+            const container = document.getElementById('game-container');
+            
+            container.innerHTML = `
+                <div class="game-container">
+                    <div style="text-align: center; padding: 40px;">
+                        <div style="font-size: 72px; font-weight: 900; color: var(--primary); margin-bottom: 20px;">
+                            ${totalScore}
+                        </div>
+                        <div class="text-bold" style="font-size: 28px; margin-bottom: 10px; color: var(--text-primary);">
+                            ⏱ 限时挑战结束！
+                        </div>
+                        <div class="readable-text-secondary" style="font-size: 18px; margin-bottom: 30px;">
+                            你在60秒内回答了 ${currentTimedQuestionIndex} 题<br>
+                            其中 ${timedCorrectAnswers} 题正确，准确率：${accuracy}%
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px;">
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${timedCorrectAnswers}</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">正确题数</div>
+                            </div>
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--success);">${totalScore}</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">总得分</div>
+                            </div>
+                            <div style="text-align: center; background: var(--glass-bg); border-radius: var(--radius-lg); padding: 20px; border: var(--glass-border);">
+                                <div style="font-size: 32px; font-weight: 900; color: var(--warning);">${accuracy}%</div>
+                                <div class="readable-text-secondary" style="font-size: 14px;">准确率</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                            <button class="btn btn-primary" onclick="saveGameResult('timed', ${totalScore})">
+                                <i class="fas fa-save"></i> 保存记录
+                            </button>
+                            <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                <i class="fas fa-redo"></i> 再玩一次
+                            </button>
+                            <button class="btn" onclick="exitToGameCenter()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                <i class="fas fa-home"></i> 返回游戏中心
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 生成错误答案
+        function generateWrongAnswers(category, correctAnswer) {
+            const wrongAnswers = [];
+            const allAnswers = [];
+            
+            // 从同一科目中收集其他答案
+            if (localDSEKnowledge[category]) {
+                localDSEKnowledge[category].forEach(item => {
+                    if (item.answer && item.answer !== correctAnswer) {
+                        allAnswers.push(item.answer);
+                    }
+                });
+            }
+            
+            // 从其他科目中收集答案
+            Object.keys(localDSEKnowledge).forEach(cat => {
+                if (cat !== category && localDSEKnowledge[cat]) {
+                    localDSEKnowledge[cat].slice(0, 2).forEach(item => {
+                        if (item.answer) {
+                            allAnswers.push(item.answer);
+                        }
+                    });
+                }
+            });
+            
+            // 去重并随机选择
+            const uniqueAnswers = [...new Set(allAnswers)];
+            return shuffleArray(uniqueAnswers).slice(0, 5);
+        }
+
+        // ================= 保存游戏结果 =================
+        async function saveGameResult(gameType, customScore = null) {
             if (!currentUser) return;
             
             try {
+                const score = customScore !== null ? customScore : gameScore;
+                const gameData = {
+                    quiz: {
+                        questions: gameQuestions.length,
+                        correct_answers: Math.floor(gameScore/5),
+                        categories: selectedGameCategories
+                    },
+                    matching: {
+                        pairs: matchingPairs.length,
+                        matched_pairs: matchedPairsCount,
+                        categories: selectedGameCategories
+                    },
+                    timed: {
+                        total_questions: timedQuestions.length,
+                        correct_answers: timedCorrectAnswers,
+                        time_left: timeLeft,
+                        categories: selectedGameCategories
+                    }
+                }[gameType];
+                
                 await supabaseClient
                     .from('game_records')
                     .insert({
                         user_id: userProfile.id,
                         username: userProfile.username,
-                        game_type: 'quiz',
-                        score: gameScore,
-                        game_data: JSON.stringify({
-                            questions: gameQuestions.length,
-                            correct_answers: Math.floor(gameScore/5),
-                            categories: selectedGameCategories,
-                            accuracy: gameQuestions.length > 0 ? Math.round((Math.floor(gameScore/5) / gameQuestions.length) * 100) : 0
-                        }),
+                        game_type: gameType,
+                        score: score,
+                        game_data: JSON.stringify(gameData),
                         created_at: new Date().toISOString()
                     });
                 
-                const newScore = userProfile.score + gameScore;
+                const newScore = userProfile.score + score;
                 await supabaseClient
                     .from('profiles')
                     .update({ 
                         score: newScore,
                         games_played: (userProfile.games_played || 0) + 1,
-                        high_score: Math.max(userProfile.high_score || 0, gameScore)
+                        high_score: Math.max(userProfile.high_score || 0, score)
                     })
                     .eq('id', userProfile.id);
                 
@@ -2491,7 +3265,7 @@
                 document.getElementById('settings-score').textContent = userProfile.score;
                 document.getElementById('settings-games').textContent = userProfile.games_played;
                 
-                showMessage(`游戏记录已保存！获得${gameScore}积分`, 'success');
+                showMessage(`游戏记录已保存！获得${score}积分`, 'success');
                 
                 setTimeout(() => {
                     exitToGameCenter();
@@ -2504,9 +3278,23 @@
         }
 
         function exitGame() {
+            // 清理所有游戏变量
             gameQuestions = [];
             currentQuestionIndex = 0;
             gameScore = 0;
+            
+            matchingPairs = [];
+            selectedMatchingCards = [];
+            matchedPairsCount = 0;
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timeLeft = 60;
+            timedQuestions = [];
+            currentTimedQuestionIndex = 0;
+            timedCorrectAnswers = 0;
             
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('page-games').style.display = 'block';
@@ -2515,14 +3303,6 @@
         function exitToGameCenter() {
             exitGame();
             switchPage('games');
-        }
-
-        function startMatchingGame() {
-            showMessage('配对游戏开发中，敬请期待！', 'info');
-        }
-
-        function startTimedChallenge() {
-            showMessage('限时挑战开发中，敬请期待！', 'info');
         }
 
         // ================= 留言板系统 =================
