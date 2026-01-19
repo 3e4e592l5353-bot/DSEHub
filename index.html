@@ -109,7 +109,6 @@
             --text-secondary: #CBD5E1;
         }
 
-        /* 移除黑色渐变 */
         body {
             font-family: 'Inter', -apple-system, system-ui, sans-serif;
             background: var(--bg-gradient);
@@ -302,23 +301,24 @@
             border-color: var(--primary-dark);
         }
 
-        /* 🟢 管理员按钮白色背景 */
+        /* 🟢 修复：管理员按钮样式 */
         .nav-item.admin-btn {
             background: rgba(255, 255, 255, 0.9) !important;
-            border: 2px solid var(--warning) !important;
-            color: var(--warning) !important;
+            border: 2px solid #F59E0B !important;
+            color: #F59E0B !important;
+            margin-top: 10px;
         }
 
         .nav-item.admin-btn:hover {
-            background: var(--warning) !important;
+            background: #F59E0B !important;
             color: white !important;
-            border-color: var(--warning) !important;
+            border-color: #F59E0B !important;
         }
 
         .nav-item.admin-btn.active {
-            background: linear-gradient(135deg, var(--warning), var(--warning-dark)) !important;
+            background: linear-gradient(135deg, #F59E0B, #D97706) !important;
             color: white !important;
-            border-color: var(--warning-dark) !important;
+            border-color: #D97706 !important;
         }
 
         .nav-item i {
@@ -408,7 +408,6 @@
             padding: 28px;
             border: var(--glass-border);
             transition: var(--transition);
-            cursor: pointer;
             box-shadow: var(--shadow-sm);
         }
 
@@ -800,19 +799,19 @@
 
         .status-pending {
             background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
+            color: #F59E0B;
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .status-approved {
             background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
+            color: #10B981;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .status-rejected {
             background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
+            color: #EF4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
@@ -1033,6 +1032,7 @@
                     <h1 class="text-title">📚 知识宝库</h1>
                     <p class="text-subtitle">掌握 DSE 核心知识点，高效备考</p>
                     <div class="category-tabs">
+                        <button class="category-btn" onclick="changeKnowledgeCategory('all')">全部学科</button>
                         <button class="category-btn active" onclick="changeKnowledgeCategory('chi')">中国语文</button>
                         <button class="category-btn" onclick="changeKnowledgeCategory('eng')">英国语文</button>
                         <button class="category-btn" onclick="changeKnowledgeCategory('math')">数学</button>
@@ -1043,7 +1043,6 @@
                         <button class="category-btn" onclick="changeKnowledgeCategory('econ')">经济</button>
                         <button class="category-btn" onclick="changeKnowledgeCategory('geo')">地理</button>
                         <button class="category-btn" onclick="changeKnowledgeCategory('his')">历史</button>
-                        <button class="category-btn" onclick="changeKnowledgeCategory('cit')">公民与社会发展科</button>
                     </div>
                 </div>
                 
@@ -1061,13 +1060,8 @@
                 
                 <div class="chat-container">
                     <div class="chat-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                        <div class="chat-controls">
-                            <button class="btn btn-primary" onclick="loadChatMessages()">
-                                <i class="fas fa-sync-alt"></i> 刷新留言
-                            </button>
-                            <div style="font-size: 14px; color: var(--text-secondary); margin-left: 15px;" class="readable-text-secondary">
-                                共 <span id="message-count">0</span> 条留言
-                            </div>
+                        <div style="font-size: 14px; color: var(--text-secondary);" class="readable-text-secondary">
+                            共 <span id="message-count">0</span> 条留言
                         </div>
                     </div>
                     
@@ -1330,14 +1324,14 @@
         // ================= 全局变量 =================
         let currentUser = null;
         let userProfile = null;
-        let currentCategory = 'chi';
+        let currentCategory = 'all'; // 🟢 修改：默认显示全部学科
         let replyingToMessage = null;
         let currentGame = null;
         let gameQuestions = [];
         let currentQuestionIndex = 0;
         let gameScore = 0;
         let selectedDifficulty = 'medium';
-        let expandedCards = new Set(); // 存储已展开的卡片ID
+        let expandedCards = new Set();
 
         // ================= 本地DSE知识点库 =================
         const localDSEKnowledge = {
@@ -1452,14 +1446,11 @@
                     return;
                 }
                 
-                // 获取用户资料
                 await loadUserProfile(data.user.id);
                 
-                // 隐藏登录界面
                 document.getElementById('auth-modal').style.display = 'none';
                 document.querySelector('.app-container').style.display = 'flex';
                 
-                // 初始化用户界面
                 initializeUserInterface();
                 
                 showMessage('登录成功！', 'success');
@@ -1501,7 +1492,6 @@
                     return;
                 }
                 
-                // 创建用户资料
                 const username = email.split('@')[0];
                 
                 const { error: profileError } = await supabaseClient
@@ -1510,7 +1500,7 @@
                         auth_id: data.user.id,
                         email: email,
                         username: username,
-                        score: 100, // 新用户赠送100积分
+                        score: 100,
                         is_admin: false,
                         games_played: 0,
                         high_score: 0
@@ -1599,7 +1589,6 @@
                 
                 userProfile = data;
                 
-                // 更新界面显示
                 document.getElementById('username').textContent = userProfile.username;
                 document.getElementById('user-score').textContent = userProfile.score || 0;
                 document.getElementById('current-username').textContent = userProfile.username;
@@ -1608,15 +1597,12 @@
                 document.getElementById('settings-score').textContent = userProfile.score || 0;
                 document.getElementById('settings-games').textContent = userProfile.games_played || 0;
                 
-                // 更新用户头像
                 updateUserAvatar();
                 
-                // 检查是否是管理员
                 if (userProfile.is_admin) {
                     document.getElementById('admin-nav').style.display = 'flex';
                 }
                 
-                // 更新排名
                 updateUserRank();
                 
             } catch (error) {
@@ -1656,16 +1642,18 @@
         async function changeKnowledgeCategory(category) {
             currentCategory = category;
             
-            // 更新按钮状态
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
             
-            // 清空已展开的卡片
+            // 🟢 修复：获取正确的按钮元素
+            const activeButton = Array.from(document.querySelectorAll('.category-btn')).find(btn => 
+                btn.onclick.toString().includes(`'${category}'`)
+            );
+            if (activeButton) activeButton.classList.add('active');
+            
             expandedCards.clear();
             
-            // 加载该分类的知识
             await loadKnowledgeByCategory(category);
         }
 
@@ -1673,18 +1661,49 @@
             try {
                 let knowledgeItems = [];
                 
-                // 尝试从Supabase加载
+                // 🟢 修复：全部学科加载所有知识
+                if (category === 'all') {
+                    // 收集所有分类的知识
+                    for (const cat in localDSEKnowledge) {
+                        if (localDSEKnowledge[cat]) {
+                            knowledgeItems.push(...localDSEKnowledge[cat].map(item => ({
+                                ...item,
+                                category: cat,
+                                author: '本地知识库',
+                                source: 'local'
+                            })));
+                        }
+                    }
+                } else if (localDSEKnowledge[category]) {
+                    knowledgeItems = localDSEKnowledge[category].map(item => ({
+                        ...item,
+                        category: category,
+                        author: '本地知识库',
+                        source: 'local'
+                    }));
+                }
+                
+                // 尝试从Supabase加载（如果有的话）
                 try {
-                    const { data: submissions, error } = await supabaseClient
-                        .from('submissions')
-                        .select('*')
-                        .eq('category', category)
-                        .eq('status', 'approved')
-                        .order('created_at', { ascending: false })
-                        .limit(20);
+                    const query = category === 'all' 
+                        ? supabaseClient
+                            .from('submissions')
+                            .select('*')
+                            .eq('status', 'approved')
+                            .order('created_at', { ascending: false })
+                            .limit(20)
+                        : supabaseClient
+                            .from('submissions')
+                            .select('*')
+                            .eq('category', category)
+                            .eq('status', 'approved')
+                            .order('created_at', { ascending: false })
+                            .limit(20);
+                    
+                    const { data: submissions, error } = await query;
                     
                     if (!error && submissions) {
-                        knowledgeItems = submissions.map(sub => ({
+                        knowledgeItems = knowledgeItems.concat(submissions.map(sub => ({
                             id: sub.id,
                             title: sub.title,
                             content: sub.content,
@@ -1692,25 +1711,12 @@
                             example: sub.example,
                             answer: sub.answer,
                             difficulty: sub.difficulty || 'medium',
+                            category: sub.category,
                             source: 'online'
-                        }));
+                        })));
                     }
                 } catch (supabaseError) {
                     console.log('Supabase加载失败，使用本地数据');
-                }
-                
-                // 如果在线数据为空，添加本地数据
-                if (knowledgeItems.length === 0 && localDSEKnowledge[category]) {
-                    knowledgeItems = localDSEKnowledge[category].map(item => ({
-                        id: item.id,
-                        title: item.title,
-                        content: item.content,
-                        author: '本地知识库',
-                        example: item.example,
-                        answer: item.answer,
-                        difficulty: item.difficulty,
-                        source: 'local'
-                    }));
                 }
                 
                 const grid = document.getElementById('knowledge-grid');
@@ -1726,20 +1732,16 @@
                     return;
                 }
                 
-                // 渲染知识卡片
+                // 🟢 简化：移除展开功能，直接显示完整内容
                 grid.innerHTML = knowledgeItems.map(item => {
-                    const isExpanded = expandedCards.has(item.id);
-                    const displayContent = isExpanded ? item.content : 
-                        (item.content.length > 200 ? item.content.substring(0, 200) + '...' : item.content);
-                    
                     return `
-                        <div class="knowledge-card ${isExpanded ? 'expanded' : ''}" data-id="${item.id}">
+                        <div class="knowledge-card">
                             <div class="knowledge-category">
-                                ${getCategoryName(category)} ${item.difficulty === 'easy' ? '· 基础' : item.difficulty === 'hard' ? '· 高级' : '· 中等'}
+                                ${getCategoryName(item.category)} • ${item.difficulty === 'easy' ? '基础' : item.difficulty === 'hard' ? '高级' : '中等'}
                             </div>
                             <div class="knowledge-title text-bold">${item.title}</div>
-                            <div class="knowledge-content ${isExpanded ? 'expanded-content' : ''} readable-text-secondary">
-                                ${displayContent}
+                            <div class="knowledge-content readable-text-secondary">
+                                ${item.content}
                             </div>
                             ${item.example ? `
                                 <div class="knowledge-example" style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: var(--radius-md); margin-bottom: 15px; border-left: 3px solid var(--primary);">
@@ -1755,10 +1757,9 @@
                                     <i class="fas fa-user"></i>
                                     ${item.author}
                                 </div>
-                                <button class="expand-btn" onclick="toggleExpandCard('${item.id}')" data-id="${item.id}">
-                                    <i class="fas fa-${isExpanded ? 'compress' : 'expand'}"></i>
-                                    ${isExpanded ? '收起' : '展开'}
-                                </button>
+                                <div class="readable-text-secondary" style="font-size: 12px;">
+                                    ${item.source === 'online' ? '在线投稿' : '本地知识'}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1767,15 +1768,6 @@
             } catch (error) {
                 console.error('加载知识失败:', error);
             }
-        }
-
-        function toggleExpandCard(cardId) {
-            if (expandedCards.has(cardId)) {
-                expandedCards.delete(cardId);
-            } else {
-                expandedCards.add(cardId);
-            }
-            loadKnowledgeByCategory(currentCategory);
         }
 
         function getCategoryName(category) {
@@ -1798,7 +1790,6 @@
         }
 
         function loadLocalKnowledge() {
-            // 初始化时加载本地知识
             loadKnowledgeByCategory(currentCategory);
         }
 
@@ -1806,7 +1797,6 @@
         function setDifficulty(difficulty) {
             selectedDifficulty = difficulty;
             
-            // 更新按钮状态
             document.getElementById('btn-easy').classList.remove('active');
             document.getElementById('btn-medium').classList.remove('active');
             document.getElementById('btn-hard').classList.remove('active');
@@ -1846,12 +1836,13 @@
                     category: category,
                     title: title,
                     content: content,
-                    example: example,
-                    answer: answer,
+                    example: example || null,
+                    answer: answer || null,
                     difficulty: selectedDifficulty,
                     status: 'pending',
                     user_id: userProfile.id,
-                    author_name: userProfile.username
+                    author_name: userProfile.username,
+                    created_at: new Date().toISOString()
                 };
                 
                 const { error } = await supabaseClient
@@ -1864,7 +1855,6 @@
                     return;
                 }
                 
-                // 清空表单
                 document.getElementById('submit-title').value = '';
                 document.getElementById('submit-content').value = '';
                 document.getElementById('submit-example').value = '';
@@ -1873,7 +1863,6 @@
                 messageEl.textContent = '提交成功！等待管理员审核，获得10积分奖励';
                 messageEl.style.color = 'var(--success)';
                 
-                // 为用户增加积分
                 await supabaseClient
                     .from('profiles')
                     .update({ score: userProfile.score + 10 })
@@ -1899,10 +1888,8 @@
                 return;
             }
             
-            // 收集所有可用的题目
             let allQuestions = [];
             
-            // 添加本地题目
             Object.keys(localDSEKnowledge).forEach(category => {
                 localDSEKnowledge[category].forEach(item => {
                     if (item.example && item.answer) {
@@ -1917,7 +1904,6 @@
                 });
             });
             
-            // 随机选择10个题目
             if (allQuestions.length < 5) {
                 showMessage('题目数量不足，无法开始游戏', 'warning');
                 return;
@@ -1928,7 +1914,6 @@
             currentQuestionIndex = 0;
             gameScore = 0;
             
-            // 隐藏游戏中心，显示游戏界面
             document.getElementById('page-games').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             
@@ -1991,7 +1976,6 @@
                 </div>
             `;
             
-            // 自动聚焦到输入框
             setTimeout(() => {
                 document.getElementById('quiz-answer').focus();
             }, 100);
@@ -2013,7 +1997,6 @@
                 return;
             }
             
-            // 简单判断答案是否正确（包含关系）
             const isCorrect = userAnswer.toLowerCase().includes(correctAnswer.toLowerCase()) || 
                             correctAnswer.toLowerCase().includes(userAnswer.toLowerCase());
             
@@ -2056,7 +2039,6 @@
             resultDiv.style.display = 'block';
             document.getElementById('quiz-score').textContent = gameScore;
             
-            // 3秒后进入下一题
             setTimeout(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < gameQuestions.length) {
@@ -2103,7 +2085,6 @@
             if (!currentUser) return;
             
             try {
-                // 保存游戏记录
                 await supabaseClient
                     .from('game_records')
                     .insert({
@@ -2112,10 +2093,10 @@
                         game_type: 'quiz',
                         score: gameScore,
                         questions: gameQuestions.length,
-                        correct_answers: Math.floor(gameScore/5)
+                        correct_answers: Math.floor(gameScore/5),
+                        created_at: new Date().toISOString()
                     });
                 
-                // 更新用户积分
                 const newScore = userProfile.score + gameScore;
                 await supabaseClient
                     .from('profiles')
@@ -2129,14 +2110,12 @@
                 userProfile.score = newScore;
                 userProfile.games_played = (userProfile.games_played || 0) + 1;
                 
-                // 更新界面
                 document.getElementById('user-score').textContent = userProfile.score;
                 document.getElementById('settings-score').textContent = userProfile.score;
                 document.getElementById('settings-games').textContent = userProfile.games_played;
                 
                 showMessage(`游戏记录已保存！获得${gameScore}积分`, 'success');
                 
-                // 3秒后返回游戏中心
                 setTimeout(() => {
                     exitToGameCenter();
                 }, 3000);
@@ -2211,7 +2190,7 @@
                 const { data: messages, error } = await supabaseClient
                     .from('feedbacks')
                     .select('*')
-                    .eq('status', 'normal') // 🟢 只显示正常消息
+                    .eq('status', 'normal')
                     .order('created_at', { ascending: true })
                     .limit(50);
                 
@@ -2305,7 +2284,6 @@
                     created_at: new Date().toISOString()
                 };
                 
-                // 如果是回复
                 if (replyingToMessage) {
                     messageData.parent_id = replyingToMessage.id;
                     messageData.reply_to = replyingToMessage.author_name;
@@ -2385,9 +2363,9 @@
             const tabs = document.querySelectorAll('.admin-tab');
             tabs.forEach(t => t.classList.remove('active'));
             
-            // 修复：使用正确的event对象
-            const button = event.target.closest('.admin-tab');
-            if (button) button.classList.add('active');
+            // 🟢 修复：使用事件参数
+            const clickedBtn = event.currentTarget || event.target.closest('.admin-tab');
+            if (clickedBtn) clickedBtn.classList.add('active');
             
             container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>';
             
@@ -2480,11 +2458,11 @@
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-small" onclick="approveSubmission('${submission.id}')" 
-                                    style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                    style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
                                 <i class="fas fa-check"></i> 通过
                             </button>
                             <button class="btn btn-small" onclick="rejectSubmission('${submission.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
                                 <i class="fas fa-times"></i> 拒绝
                             </button>
                         </div>
@@ -2592,17 +2570,17 @@
                         <div>
                             <h4 class="text-bold" style="margin: 0 0 8px 0;">
                                 ${message.author_name}
-                                <span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">已举报</span>
+                                <span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3);">已举报</span>
                             </h4>
                             <div class="readable-text-secondary" style="font-size: 13px;">${time}</div>
                         </div>
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-small" onclick="restoreMessage('${message.id}')" 
-                                    style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                    style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
                                 <i class="fas fa-check"></i> 恢复
                             </button>
                             <button class="btn btn-small" onclick="deleteMessage('${message.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -2629,6 +2607,7 @@
                 }
                 
                 showMessage('留言已恢复', 'success');
+                // 🟢 修复：传递正确的tab参数
                 await loadAdminTab('reports');
                 
             } catch (error) {
@@ -2701,7 +2680,7 @@
                         <div>
                             <h4 class="text-bold" style="margin: 0 0 8px 0;">
                                 ${message.author_name}
-                                ${isReported ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);">已举报</span>' : 
+                                ${isReported ? '<span class="status-badge" style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3);">已举报</span>' : 
                                   '<span class="status-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.3);">正常</span>'}
                             </h4>
                             <div class="readable-text-secondary" style="font-size: 13px;">${time}</div>
@@ -2709,12 +2688,12 @@
                         <div style="display: flex; gap: 8px;">
                             ${isReported ? `
                                 <button class="btn btn-small" onclick="restoreMessage('${message.id}')" 
-                                        style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                        style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
                                     <i class="fas fa-check"></i> 恢复
                                 </button>
                             ` : ''}
                             <button class="btn btn-small" onclick="deleteMessage('${message.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -2776,7 +2755,7 @@
                         <div>
                             <h4 class="text-bold" style="margin: 0 0 8px 0;">
                                 ${user.username}
-                                ${user.is_admin ? '<span class="status-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3);">管理员</span>' : ''}
+                                ${user.is_admin ? '<span class="status-badge" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">管理员</span>' : ''}
                             </h4>
                             <div class="readable-text-secondary" style="font-size: 13px;">
                                 ${user.email} | 积分：${user.score} | 游戏：${user.games_played || 0}
@@ -2785,12 +2764,12 @@
                         <div style="display: flex; gap: 8px;">
                             ${!user.is_admin ? `
                                 <button class="btn btn-small" onclick="makeAdmin('${user.id}')" 
-                                        style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                                        style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
                                     <i class="fas fa-shield-alt"></i> 设为管理员
                                 </button>
                             ` : ''}
                             <button class="btn btn-small" onclick="deleteUser('${user.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -2850,7 +2829,6 @@
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('dse-theme', theme);
             
-            // 更新主题按钮状态
             document.querySelectorAll('.theme-option').forEach(option => {
                 option.classList.remove('active');
                 if (option.getAttribute('data-theme') === theme) {
@@ -2928,22 +2906,18 @@
         }
 
         function switchPage(pageId) {
-            // 隐藏所有页面
             document.querySelectorAll('.page').forEach(page => {
                 page.style.display = 'none';
             });
             
-            // 移除所有导航项的活动状态
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // 显示目标页面
             const targetPage = document.getElementById(`page-${pageId}`);
             if (targetPage) {
                 targetPage.style.display = 'block';
                 
-                // 设置导航项活动状态
                 const navItem = Array.from(document.querySelectorAll('.nav-item')).find(item => {
                     const pageName = getPageName(pageId);
                     return item.textContent.includes(pageName);
@@ -2951,12 +2925,10 @@
                 if (navItem) navItem.classList.add('active');
             }
             
-            // 关闭移动端侧边栏
             if (window.innerWidth <= 1024) {
                 document.getElementById('sidebar').classList.remove('open');
             }
             
-            // 根据页面加载内容
             switch (pageId) {
                 case 'home':
                     loadKnowledgeByCategory(currentCategory);
@@ -3066,7 +3038,6 @@
             }
         }
 
-        // 初始加载
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('auth-modal').style.display = 'flex';
         });
