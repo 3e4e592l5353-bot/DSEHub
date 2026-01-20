@@ -506,44 +506,83 @@
             color: var(--text-primary);
         }
 
-        /* 🟢 改进的科目选择器 */
+        /* 🟢 改进的科目选择器 - 更易读 */
         .category-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
             margin-top: 10px;
         }
 
         .category-option {
-            padding: 12px 16px;
+            padding: 14px 16px;
             background: rgba(99, 102, 241, 0.1);
             color: var(--primary);
             border-radius: var(--radius-md);
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
             text-align: center;
             border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
 
         .category-option:hover {
             background: rgba(99, 102, 241, 0.2);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-light);
         }
 
         .category-option.selected {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border-color: var(--primary-dark);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
         }
 
+        .category-option.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* 🟢 改进：突出显示已选择科目 */
+        .selected-categories-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: var(--radius-md);
+            border: 1px dashed rgba(16, 185, 129, 0.3);
+        }
+
+        .selected-category-tag {
+            padding: 8px 14px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 🟢 改进：更清晰的表单输入 */
         .form-textarea {
             width: 100%;
             padding: 16px;
             border-radius: var(--radius-md);
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.95);
             font-family: 'Inter', sans-serif;
             font-size: 15px;
             transition: var(--transition);
@@ -551,41 +590,138 @@
             resize: vertical;
             min-height: 150px;
             line-height: 1.6;
+            font-weight: 500;
         }
 
         .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            background: white;
         }
 
-        /* 🟢 移除文件上传区域 */
-        .difficulty-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .difficulty-btn {
-            padding: 10px 20px;
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+        /* 🟢 改进：更突出的按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 32px;
             border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 16px;
+            border: none;
             cursor: pointer;
             transition: var(--transition);
-            border: 2px solid transparent;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            min-height: 52px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .difficulty-btn:hover {
-            background: rgba(99, 102, 241, 0.2);
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
-        .difficulty-btn.active {
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            border-color: var(--primary-dark);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6B7280, #4B5563);
+            color: white;
+            box-shadow: 0 8px 24px rgba(107, 114, 128, 0.4);
+            border: 2px solid #4B5563;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(107, 114, 128, 0.5);
+            background: linear-gradient(135deg, #9CA3AF, #6B7280);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+            border: 2px solid #059669;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, #34D399, var(--success));
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #D97706);
+            color: white;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+            border: 2px solid #D97706;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(245, 158, 11, 0.5);
+            background: linear-gradient(135deg, #FBBF24, var(--warning));
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            border: 2px solid #DC2626;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(239, 68, 68, 0.5);
+            background: linear-gradient(135deg, #FCA5A5, var(--danger));
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            min-height: 40px;
+            text-transform: none;
+        }
+
+        /* 🟢 改进：游戏中心按钮 */
+        .game-card .btn-primary {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
 
         /* ================= 游戏中心 ================= */
@@ -642,6 +778,28 @@
             line-height: 1.6;
             margin-bottom: 28px;
             flex: 1;
+        }
+
+        /* 🟢 改进：游戏设置区域 */
+        #game-settings {
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.15);
+        }
+
+        #game-settings h3 {
+            color: var(--primary-dark);
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        #game-settings .category-selector {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+
+        #game-settings .category-option {
+            font-size: 14px;
+            padding: 12px 14px;
         }
 
         /* ================= 游戏界面 ================= */
@@ -781,43 +939,6 @@
         .timed-option.selected {
             border-color: var(--primary);
             background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* ================= 按钮 ================= */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 28px;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            font-size: 15px;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 700;
         }
 
         /* ================= 移动端菜单按钮 ================= */
@@ -1067,6 +1188,11 @@
             .timed-options {
                 grid-template-columns: 1fr;
             }
+            
+            .btn {
+                padding: 14px 24px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -1092,10 +1218,10 @@
             </button>
             
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn btn-block" onclick="handleRegister()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                <button class="btn btn-secondary btn-block" onclick="handleRegister()">
                     注册新账号
                 </button>
-                <button class="btn btn-block" id="resume-btn" onclick="handleResumeLogin()" style="display: none; background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                <button class="btn btn-secondary btn-block" id="resume-btn" onclick="handleResumeLogin()" style="display: none;">
                     恢复登录
                 </button>
             </div>
@@ -1156,7 +1282,7 @@
                     <span>积分: <strong id="user-score">0</strong></span>
                     <span>排名: <strong id="user-rank">#-</strong></span>
                 </div>
-                <button class="btn btn-block" onclick="handleLogout()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); margin-top: 10px;">
+                <button class="btn btn-danger btn-block" onclick="handleLogout()" style="margin-top: 10px;">
                     <i class="fas fa-sign-out-alt"></i> 登出
                 </button>
             </div>
@@ -1263,11 +1389,17 @@
                     <div class="category-selector" id="game-category-selector">
                         <!-- 科目选项会通过JS动态生成 -->
                     </div>
+                    
+                    <!-- 🟢 添加：显示已选择科目 -->
+                    <div class="selected-categories-display" id="selected-categories-display" style="display: none;">
+                        <!-- 已选择科目会动态显示在这里 -->
+                    </div>
+                    
                     <div style="margin-top: 20px;">
                         <button class="btn btn-primary" onclick="startQuizGame()">
                             <i class="fas fa-brain"></i> 开始知识问答
                         </button>
-                        <button class="btn" onclick="saveGameSettings()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary); margin-left: 10px;">
+                        <button class="btn btn-success" onclick="saveGameSettings()" style="margin-left: 10px;">
                             <i class="fas fa-save"></i> 保存设置
                         </button>
                     </div>
@@ -1335,9 +1467,9 @@
                         <h3>基本信息</h3>
                         <div class="form-group">
                             <label class="form-label text-bold">科目分类</label>
-                            <p class="readable-text-secondary" style="margin-bottom: 10px;">请选择投稿所属科目：</p>
+                            <p class="readable-text-secondary" style="margin-bottom: 10px;">请选择投稿所属科目（单选）：</p>
                             <!-- 🟢 改进的科目选择器 -->
-                            <div class="category-selector">
+                            <div class="category-selector" id="submit-category-selector">
                                 <div class="category-option" data-category="chi" onclick="selectSubmitCategory('chi')">中国语文</div>
                                 <div class="category-option" data-category="eng" onclick="selectSubmitCategory('eng')">英国语文</div>
                                 <div class="category-option" data-category="math" onclick="selectSubmitCategory('math')">数学</div>
@@ -1355,12 +1487,18 @@
                                 <div class="category-option" data-category="music" onclick="selectSubmitCategory('music')">音乐</div>
                                 <div class="category-option" data-category="pe" onclick="selectSubmitCategory('pe')">体育</div>
                             </div>
-                            <input type="hidden" id="submit-category" value="chi">
+                            
+                            <!-- 🟢 添加：显示已选择科目 -->
+                            <div class="selected-categories-display" id="submit-selected-display" style="margin-top: 20px; display: none;">
+                                <!-- 已选择科目会动态显示在这里 -->
+                            </div>
+                            
+                            <input type="hidden" id="submit-category" value="">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label text-bold">知识标题</label>
-                            <input type="text" class="form-input" id="submit-title" placeholder="请输入知识点标题" maxlength="100">
+                            <input type="text" class="form-input" id="submit-title" placeholder="请输入知识点标题" maxlength="100" style="font-weight: 500;">
                         </div>
                     </div>
                     
@@ -2173,6 +2311,12 @@
             const example = document.getElementById('submit-example').value.trim();
             const messageEl = document.getElementById('submit-message');
             
+            if (!category) {
+                messageEl.textContent = '请选择投稿科目';
+                messageEl.style.color = 'var(--danger)';
+                return;
+            }
+            
             if (!title || !content) {
                 messageEl.textContent = '请填写标题和内容';
                 messageEl.style.color = 'var(--danger)';
@@ -2235,16 +2379,40 @@
             }
         }
 
-        // 🟢 投稿科目选择功能
+        // 🟢 投稿科目选择功能 - 修复版
         function selectSubmitCategory(category) {
-            document.querySelectorAll('.category-option').forEach(option => {
+            document.querySelectorAll('#submit-category-selector .category-option').forEach(option => {
                 option.classList.remove('selected');
             });
             
-            const selectedOption = document.querySelector(`.category-option[data-category="${category}"]`);
+            const selectedOption = document.querySelector(`#submit-category-selector .category-option[data-category="${category}"]`);
             if (selectedOption) {
                 selectedOption.classList.add('selected');
                 document.getElementById('submit-category').value = category;
+                
+                // 更新显示已选择科目
+                updateSubmitSelectedDisplay();
+            }
+        }
+
+        // 🟢 更新投稿已选择科目显示
+        function updateSubmitSelectedDisplay() {
+            const category = document.getElementById('submit-category').value;
+            const displayDiv = document.getElementById('submit-selected-display');
+            
+            if (category) {
+                displayDiv.style.display = 'flex';
+                displayDiv.innerHTML = `
+                    <div class="selected-category-tag">
+                        <i class="fas fa-check-circle"></i>
+                        ${getCategoryName(category)}
+                    </div>
+                    <div style="margin-left: 10px; font-size: 14px; color: var(--success);">
+                        已选择此科目
+                    </div>
+                `;
+            } else {
+                displayDiv.style.display = 'none';
             }
         }
 
@@ -2284,6 +2452,9 @@
                 const option = selector.querySelector(`[data-category="${cat}"]`);
                 if (option) option.classList.add('selected');
             });
+            
+            // 更新显示已选择科目
+            updateGameSelectedDisplay();
         }
 
         // 🟢 切换游戏科目选择
@@ -2305,6 +2476,31 @@
                 selectedGameCategories.push('chi');
                 const defaultOption = document.querySelector(`#game-category-selector [data-category="chi"]`);
                 if (defaultOption) defaultOption.classList.add('selected');
+            }
+            
+            // 更新显示已选择科目
+            updateGameSelectedDisplay();
+        }
+
+        // 🟢 更新游戏已选择科目显示
+        function updateGameSelectedDisplay() {
+            const displayDiv = document.getElementById('selected-categories-display');
+            
+            if (selectedGameCategories.length > 0) {
+                displayDiv.style.display = 'flex';
+                displayDiv.innerHTML = `
+                    <div style="font-size: 14px; color: var(--success); margin-right: 10px;">
+                        已选择科目：
+                    </div>
+                    ${selectedGameCategories.map(cat => `
+                        <div class="selected-category-tag">
+                            <i class="fas fa-check-circle"></i>
+                            ${getCategoryName(cat)}
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                displayDiv.style.display = 'none';
             }
         }
 
@@ -2336,6 +2532,9 @@
                             option.classList.remove('selected');
                         }
                     });
+                    
+                    // 更新显示已选择科目
+                    updateGameSelectedDisplay();
                 }
             } catch (error) {
                 console.error('加载游戏设置异常:', error);
@@ -2494,10 +2693,10 @@
                                     <button class="btn btn-primary" onclick="checkQuizAnswer()">
                                         <i class="fas fa-check"></i> 提交答案
                                     </button>
-                                    <button class="btn" onclick="showQuizHint()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                    <button class="btn btn-warning" onclick="showQuizHint()">
                                         <i class="fas fa-lightbulb"></i> 提示
                                     </button>
-                                    <button class="btn" onclick="exitGame()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                    <button class="btn btn-danger" onclick="exitGame()">
                                         <i class="fas fa-times"></i> 退出
                                     </button>
                                 </div>
@@ -2628,10 +2827,10 @@
                             <button class="btn btn-primary" onclick="saveGameResult('quiz')">
                                 <i class="fas fa-save"></i> 保存记录
                             </button>
-                            <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            <button class="btn btn-warning" onclick="exitGame()">
                                 <i class="fas fa-redo"></i> 再玩一次
                             </button>
-                            <button class="btn" onclick="exitToGameCenter()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                            <button class="btn btn-danger" onclick="exitToGameCenter()">
                                 <i class="fas fa-home"></i> 返回游戏中心
                             </button>
                         </div>
@@ -2747,10 +2946,10 @@
                                 <button class="btn btn-primary" onclick="checkMatchingPair()">
                                     <i class="fas fa-check"></i> 检查配对
                                 </button>
-                                <button class="btn" onclick="resetMatchingSelection()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                                <button class="btn btn-warning" onclick="resetMatchingSelection()">
                                     <i class="fas fa-redo"></i> 重新选择
                                 </button>
-                                <button class="btn" onclick="exitGame()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                                <button class="btn btn-danger" onclick="exitGame()">
                                     <i class="fas fa-times"></i> 退出
                                 </button>
                             </div>
@@ -2906,10 +3105,10 @@
                             <button class="btn btn-primary" onclick="saveGameResult('matching', ${finalScore})">
                                 <i class="fas fa-save"></i> 保存记录
                             </button>
-                            <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            <button class="btn btn-warning" onclick="exitGame()">
                                 <i class="fas fa-redo"></i> 再玩一次
                             </button>
-                            <button class="btn" onclick="exitToGameCenter()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                            <button class="btn btn-danger" onclick="exitToGameCenter()">
                                 <i class="fas fa-home"></i> 返回游戏中心
                             </button>
                         </div>
@@ -3047,7 +3246,7 @@
                         </div>
                         
                         <div style="text-align: center; margin-top: 30px;">
-                            <button class="btn" onclick="skipTimedQuestion()" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
+                            <button class="btn btn-secondary" onclick="skipTimedQuestion()">
                                 <i class="fas fa-forward"></i> 跳过此题
                             </button>
                         </div>
@@ -3170,10 +3369,10 @@
                             <button class="btn btn-primary" onclick="saveGameResult('timed', ${totalScore})">
                                 <i class="fas fa-save"></i> 保存记录
                             </button>
-                            <button class="btn" onclick="exitGame()" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            <button class="btn btn-warning" onclick="exitGame()">
                                 <i class="fas fa-redo"></i> 再玩一次
                             </button>
-                            <button class="btn" onclick="exitToGameCenter()" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                            <button class="btn btn-danger" onclick="exitToGameCenter()">
                                 <i class="fas fa-home"></i> 返回游戏中心
                             </button>
                         </div>
@@ -3397,7 +3596,7 @@
                     </div>
                     
                     <div class="message-actions" style="display: flex; gap: 15px; margin-top: 15px;">
-                        <button class="btn btn-small" onclick="handleReportMessage('${message.id}')" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">
+                        <button class="btn btn-small btn-danger" onclick="handleReportMessage('${message.id}')">
                             <i class="fas fa-flag"></i> 举报
                         </button>
                     </div>
@@ -3613,20 +3812,16 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="margin: 0; color: var(--primary);">投稿列表</h3>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-small" onclick="loadAllSubmissions()" 
-                                    style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">
+                            <button class="btn btn-small btn-primary" onclick="loadAllSubmissions()">
                                 全部
                             </button>
-                            <button class="btn btn-small" onclick="loadSubmissionsByStatus('pending')" 
-                                    style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                            <button class="btn btn-small btn-warning" onclick="loadSubmissionsByStatus('pending')">
                                 待审核
                             </button>
-                            <button class="btn btn-small" onclick="loadSubmissionsByStatus('approved')" 
-                                    style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                            <button class="btn btn-small btn-success" onclick="loadSubmissionsByStatus('approved')">
                                 已通过
                             </button>
-                            <button class="btn btn-small" onclick="loadSubmissionsByStatus('rejected')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            <button class="btn btn-small btn-danger" onclick="loadSubmissionsByStatus('rejected')">
                                 已拒绝
                             </button>
                         </div>
@@ -3649,35 +3844,29 @@
             
             const actionButtons = submission.status === 'pending' ? `
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-small" onclick="approveSubmission('${submission.id}')" 
-                            style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                    <button class="btn btn-small btn-success" onclick="approveSubmission('${submission.id}')">
                         <i class="fas fa-check"></i> 通过
                     </button>
-                    <button class="btn btn-small" onclick="rejectSubmission('${submission.id}')" 
-                            style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                    <button class="btn btn-small btn-danger" onclick="rejectSubmission('${submission.id}')">
                         <i class="fas fa-times"></i> 拒绝
                     </button>
-                    <button class="btn btn-small" onclick="deleteSubmission('${submission.id}')" 
-                            style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
+                    <button class="btn btn-small btn-secondary" onclick="deleteSubmission('${submission.id}')">
                         <i class="fas fa-trash"></i> 删除
                     </button>
                 </div>
             ` : `
                 <div style="display: flex; gap: 8px;">
                     ${submission.status !== 'approved' ? `
-                        <button class="btn btn-small" onclick="approveSubmission('${submission.id}')" 
-                                style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                        <button class="btn btn-small btn-success" onclick="approveSubmission('${submission.id}')">
                             <i class="fas fa-check"></i> 通过
                         </button>
                     ` : ''}
                     ${submission.status !== 'rejected' ? `
-                        <button class="btn btn-small" onclick="rejectSubmission('${submission.id}')" 
-                                style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                        <button class="btn btn-small btn-danger" onclick="rejectSubmission('${submission.id}')">
                             <i class="fas fa-times"></i> 拒绝
                         </button>
                     ` : ''}
-                    <button class="btn btn-small" onclick="deleteSubmission('${submission.id}')" 
-                            style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
+                    <button class="btn btn-small btn-secondary" onclick="deleteSubmission('${submission.id}')">
                         <i class="fas fa-trash"></i> 删除
                     </button>
                 </div>
@@ -3823,12 +4012,10 @@
                             <div class="readable-text-secondary" style="font-size: 13px;">${time}</div>
                         </div>
                         <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-small" onclick="restoreMessage('${message.id}')" 
-                                    style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                            <button class="btn btn-small btn-success" onclick="restoreMessage('${message.id}')">
                                 <i class="fas fa-check"></i> 恢复
                             </button>
-                            <button class="btn btn-small" onclick="deleteMessage('${message.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            <button class="btn btn-small btn-danger" onclick="deleteMessage('${message.id}')">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -3934,13 +4121,11 @@
                         </div>
                         <div style="display: flex; gap: 8px;">
                             ${isReported ? `
-                                <button class="btn btn-small" onclick="restoreMessage('${message.id}')" 
-                                        style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                                <button class="btn btn-small btn-success" onclick="restoreMessage('${message.id}')">
                                     <i class="fas fa-check"></i> 恢复
                                 </button>
                             ` : ''}
-                            <button class="btn btn-small" onclick="deleteMessage('${message.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            <button class="btn btn-small btn-danger" onclick="deleteMessage('${message.id}')">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -4010,13 +4195,11 @@
                         </div>
                         <div style="display: flex; gap: 8px;">
                             ${!user.is_admin ? `
-                                <button class="btn btn-small" onclick="makeAdmin('${user.id}')" 
-                                        style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                                <button class="btn btn-small btn-warning" onclick="makeAdmin('${user.id}')">
                                     <i class="fas fa-shield-alt"></i> 设为管理员
                                 </button>
                             ` : ''}
-                            <button class="btn btn-small" onclick="deleteUser('${user.id}')" 
-                                    style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            <button class="btn btn-small btn-danger" onclick="deleteUser('${user.id}')">
                                 <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
@@ -4198,7 +4381,7 @@
                     break;
                 case 'submit':
                     // 默认选择第一个科目
-                    const firstCategoryOption = document.querySelector('.category-option');
+                    const firstCategoryOption = document.querySelector('#submit-category-selector .category-option');
                     if (firstCategoryOption) {
                         const firstCategory = firstCategoryOption.getAttribute('data-category');
                         selectSubmitCategory(firstCategory);
