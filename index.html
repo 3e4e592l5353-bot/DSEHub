@@ -18,6 +18,9 @@
             --border-color: rgba(255, 255, 255, 0.2);
             --hover-color: rgba(255, 255, 255, 0.15);
             --shadow-color: rgba(79, 140, 255, 0.3);
+            --success-color: #00c853;
+            --warning-color: #ff9800;
+            --danger-color: #ff5252;
         }
 
         /* 主题配色定义 */
@@ -139,7 +142,7 @@
 
         nav {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
@@ -147,7 +150,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 25px;
             text-decoration: none;
             font-weight: 600;
@@ -188,6 +191,12 @@
             border: 2px solid var(--border-color);
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* 内容区域 */
@@ -264,6 +273,7 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px var(--shadow-color);
             min-height: 600px;
+            overflow: hidden;
         }
 
         .panel-header {
@@ -286,24 +296,24 @@
             padding: 25px;
         }
 
-        /* 知识点展示样式 - 选科按钮改小 */
+        /* 知识点展示样式 */
         .subject-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* 减小最小宽度 */
-            gap: 12px; /* 减小间距 */
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
             margin-bottom: 25px;
         }
 
         .subject-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
-            border-radius: 12px; /* 减小圆角 */
-            padding: 12px; /* 减小内边距 */
+            border-radius: 12px;
+            padding: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            min-height: 80px; /* 减小最小高度 */
+            min-height: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -317,7 +327,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 2px; /* 减小高度 */
+            height: 2px;
             background: linear-gradient(90deg, var(--secondary-start), var(--secondary-end));
             transform: scaleX(0);
             transition: transform 0.3s ease;
@@ -329,7 +339,7 @@
 
         .subject-card:hover {
             background: var(--hover-color);
-            transform: translateY(-2px); /* 减小悬浮移动 */
+            transform: translateY(-2px);
         }
 
         .subject-card.selected {
@@ -342,19 +352,19 @@
         }
 
         .subject-icon {
-            font-size: 20px; /* 减小图标大小 */
-            margin-bottom: 8px; /* 减小间距 */
+            font-size: 20px;
+            margin-bottom: 8px;
         }
 
         .subject-name {
             font-weight: 600;
-            font-size: 12px; /* 减小字体大小 */
+            font-size: 12px;
         }
 
-        /* 筛选控制按钮也改小 */
+        /* 筛选控制按钮 */
         .subject-controls {
             display: flex;
-            gap: 8px; /* 减小间距 */
+            gap: 8px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
@@ -363,11 +373,11 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 6px 12px; /* 减小内边距 */
-            border-radius: 15px; /* 减小圆角 */
+            padding: 6px 12px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 11px; /* 减小字体大小 */
+            font-size: 11px;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -411,6 +421,8 @@
             border-radius: 15px;
             padding: 20px;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .knowledge-card:hover {
@@ -590,6 +602,181 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* 留言板样式 */
+        .message-board-container {
+            height: 550px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .message-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .message-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .message-tab.active {
+            background: var(--accent-color);
+        }
+
+        .messages-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 10px;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .message-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-item.note-message {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .message-author {
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message-author i {
+            color: var(--accent-color);
+        }
+
+        .note-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message-input-area {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: var(--text-color);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+
         /* 设置样式 */
         .settings-grid {
             display: grid;
@@ -664,6 +851,7 @@
 
         .login-status:hover {
             background: var(--hover-color);
+            transform: translateY(-2px);
         }
 
         .login-btn {
@@ -732,7 +920,7 @@
             font-weight: 600;
         }
 
-        /* 登录模态框 - 改进样式 */
+        /* 登录模态框 */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -877,6 +1065,62 @@
 
         .modal-switch a:hover {
             text-decoration: underline;
+        }
+
+        /* 通知样式 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            animation: slideInRight 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification.success {
+            background: rgba(0, 200, 83, 0.9);
+            border: 1px solid rgba(0, 200, 83, 0.3);
+        }
+
+        .notification.error {
+            background: rgba(255, 82, 82, 0.9);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+        }
+
+        .notification.warning {
+            background: rgba(255, 152, 0, 0.9);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* 隐藏类 */
@@ -1070,6 +1314,9 @@
                         <button class="nav-btn-small" onclick="DSEHub.showPanel('submission')">
                             <i class="fas fa-paper-plane"></i> 投稿提交
                         </button>
+                        <button class="nav-btn-small" onclick="DSEHub.showPanel('messageboard')">
+                            <i class="fas fa-comments"></i> 留言板
+                        </button>
                     </div>
                 </div>
                 
@@ -1199,6 +1446,39 @@
                     </div>
                 </div>
 
+                <!-- 留言板面板 -->
+                <div id="messageboardPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-comments"></i> 留言板</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="message-board-container">
+                            <div class="message-tabs">
+                                <button class="message-tab active" onclick="DSEHub.switchMessageTab('chat')">
+                                    <i class="fas fa-comment-dots"></i> 即时聊天
+                                </button>
+                                <button class="message-tab" onclick="DSEHub.switchMessageTab('notes')">
+                                    <i class="fas fa-sticky-note"></i> 笔记专区
+                                </button>
+                            </div>
+                            
+                            <div class="messages-area">
+                                <div class="messages-container" id="messagesContainer">
+                                    <!-- 消息将通过JavaScript动态生成 -->
+                                </div>
+                                
+                                <div class="message-input-area" id="messageInputArea">
+                                    <input type="text" class="message-input" id="messageInput" placeholder="输入消息..." 
+                                           onkeypress="if(event.key === 'Enter') DSEHub.sendMessage()">
+                                    <button class="send-btn" onclick="DSEHub.sendMessage()">
+                                        <i class="fas fa-paper-plane"></i> 发送
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 设置面板 -->
                 <div id="settingsPanel" class="panel-content hidden">
                     <div class="panel-header">
@@ -1236,6 +1516,7 @@
             // 当前用户
             currentUser: null,
             currentTheme: 'theme-blue-purple',
+            currentMessageTab: 'chat',
             
             // 静态数据
             subjects: [
@@ -1286,6 +1567,12 @@
                 { id: 'theme-darkblue-lightblue', name: '深蓝-深蓝(偏浅)极光' }
             ],
 
+            // 消息数据
+            messages: {
+                chat: [],
+                notes: []
+            },
+
             // 初始化
             init: function() {
                 // 初始化Supabase - 使用你提供的真实URL和Key
@@ -1298,11 +1585,14 @@
                 this.initSubjects();
                 this.initKnowledgeGrid();
                 this.initSubmissionForm();
-                this.checkAuth();
+                this.initMessageBoard();
                 this.showPanel('knowledge');
                 
                 // 监听Enter键提交表单
                 this.initKeyboardListeners();
+                
+                // 取消自动登录，显示欢迎消息
+                this.showNotification('欢迎来到DSE Hub！请登录以使用完整功能。', 'warning');
             },
 
             // 初始化键盘监听
@@ -1319,26 +1609,35 @@
                 });
             },
 
-            // 检查认证状态
-            checkAuth: async function() {
-                try {
-                    const { data: { session }, error } = await this.supabase.auth.getSession();
-                    
-                    if (error) {
-                        console.error('获取会话错误:', error);
-                        this.showLoginUI();
-                        return;
+            // 显示通知
+            showNotification: function(message, type = 'success') {
+                // 移除现有通知
+                const existing = document.querySelector('.notification');
+                if (existing) existing.remove();
+                
+                // 创建新通知
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(notification);
+                
+                // 5秒后自动移除
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100px)';
+                        setTimeout(() => notification.remove(), 300);
                     }
-                    
-                    if (session) {
-                        await this.loadUserProfile(session.user.id);
-                    } else {
-                        this.showLoginUI();
-                    }
-                } catch (err) {
-                    console.error('认证检查错误:', err);
-                    this.showLoginUI();
-                }
+                }, 5000);
+            },
+
+            // 检查认证状态 - 取消自动登录
+            checkAuth: function() {
+                // 取消自动登录，直接显示登录UI
+                this.showLoginUI();
             },
 
             // 加载用户资料
@@ -1372,6 +1671,7 @@
                     
                     this.updateUserUI();
                     await this.loadLeaderboard();
+                    await this.loadMessages();
                 } catch (err) {
                     console.error('加载用户资料错误:', err);
                     this.showLoginUI();
@@ -1530,7 +1830,7 @@
                 const password = document.getElementById('loginPassword').value;
                 
                 if (!email || !password) {
-                    alert('请输入邮箱和密码');
+                    this.showNotification('请输入邮箱和密码', 'error');
                     return;
                 }
                 
@@ -1541,18 +1841,18 @@
                     });
                     
                     if (error) {
-                        alert('登录失败: ' + error.message);
+                        this.showNotification('登录失败: ' + error.message, 'error');
                         return;
                     }
                     
                     if (data.session) {
                         await this.loadUserProfile(data.session.user.id);
                         this.closeModal();
-                        alert('登录成功！');
+                        this.showNotification('登录成功！', 'success');
                     }
                 } catch (err) {
                     console.error('登录错误:', err);
-                    alert('登录时发生错误');
+                    this.showNotification('登录时发生错误', 'error');
                 }
             },
 
@@ -1564,17 +1864,17 @@
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
                 
                 if (!username || !email || !password) {
-                    alert('请填写所有必填字段');
+                    this.showNotification('请填写所有必填字段', 'error');
                     return;
                 }
                 
                 if (password !== confirmPassword) {
-                    alert('两次输入的密码不一致');
+                    this.showNotification('两次输入的密码不一致', 'error');
                     return;
                 }
                 
                 if (password.length < 6) {
-                    alert('密码长度至少为6位');
+                    this.showNotification('密码长度至少为6位', 'error');
                     return;
                 }
                 
@@ -1591,7 +1891,7 @@
                     });
                     
                     if (authError) {
-                        alert('注册失败: ' + authError.message);
+                        this.showNotification('注册失败: ' + authError.message, 'error');
                         return;
                     }
                     
@@ -1617,12 +1917,12 @@
                             console.error('创建用户资料错误:', profileError);
                         }
                         
-                        alert('注册成功！请登录您的邮箱确认注册。');
+                        this.showNotification('注册成功！请登录您的邮箱确认注册。', 'success');
                         this.showLogin();
                     }
                 } catch (err) {
                     console.error('注册错误:', err);
-                    alert('注册时发生错误');
+                    this.showNotification('注册时发生错误', 'error');
                 }
             },
 
@@ -1636,7 +1936,7 @@
                     
                     this.currentUser = null;
                     this.showLoginUI();
-                    alert('已退出登录');
+                    this.showNotification('已退出登录', 'success');
                 } catch (err) {
                     console.error('退出登录错误:', err);
                 }
@@ -1665,6 +1965,10 @@
                 // 如果是投稿面板，加载历史记录
                 else if (panelId === 'submission') {
                     this.loadSubmissionHistory();
+                }
+                // 如果是留言板面板，加载消息
+                else if (panelId === 'messageboard') {
+                    this.loadMessages();
                 }
             },
 
@@ -1882,7 +2186,7 @@
 
             submitSubmission: async function() {
                 if (!this.currentUser) {
-                    alert('请先登录后再提交投稿');
+                    this.showNotification('请先登录后再提交投稿', 'warning');
                     this.showLoginModal();
                     return;
                 }
@@ -1893,7 +2197,7 @@
                 const example = document.getElementById('submissionExample').value;
                 
                 if (!category || !title || !content) {
-                    alert('请填写必填字段：学科分类、题目标题和题目内容');
+                    this.showNotification('请填写必填字段：学科分类、题目标题和题目内容', 'error');
                     return;
                 }
                 
@@ -1917,16 +2221,16 @@
                         ]);
                     
                     if (error) {
-                        alert('提交失败: ' + error.message);
+                        this.showNotification('提交失败: ' + error.message, 'error');
                         return;
                     }
                     
-                    alert('投稿提交成功！等待管理员审核。');
+                    this.showNotification('投稿提交成功！等待管理员审核。', 'success');
                     this.clearSubmissionForm();
                     this.loadSubmissionHistory();
                 } catch (err) {
                     console.error('投稿提交错误:', err);
-                    alert('提交时发生错误');
+                    this.showNotification('提交时发生错误', 'error');
                 }
             },
 
@@ -2004,6 +2308,180 @@
                 alert('查看投稿详情功能将在后续版本中实现\n投稿ID: ' + submissionId);
             },
 
+            // 留言板功能
+            initMessageBoard: function() {
+                // 初始化示例消息
+                this.messages.chat = [
+                    {
+                        id: 1,
+                        author: '学习助手',
+                        authorIcon: 'fas fa-robot',
+                        content: '欢迎来到DSE Hub留言板！这里是大家交流学习心得的地方。',
+                        time: '今天 10:00',
+                        isNote: false
+                    },
+                    {
+                        id: 2,
+                        author: '管理员',
+                        authorIcon: 'fas fa-user-shield',
+                        content: '请遵守社区规则，文明交流，互相帮助。',
+                        time: '今天 10:05',
+                        isNote: false
+                    }
+                ];
+
+                this.messages.notes = [
+                    {
+                        id: 101,
+                        author: '数学学霸',
+                        authorIcon: 'fas fa-calculator',
+                        content: '微积分学习笔记：重点掌握导数和积分的应用，理解几何意义。',
+                        time: '昨天 15:30',
+                        isNote: true
+                    },
+                    {
+                        id: 102,
+                        author: '物理高手',
+                        authorIcon: 'fas fa-atom',
+                        content: '牛顿运动定律总结：注意力的分解和合成，多练习斜面上的物体运动问题。',
+                        time: '昨天 16:45',
+                        isNote: true
+                    },
+                    {
+                        id: 103,
+                        author: '语文达人',
+                        authorIcon: 'fas fa-language',
+                        content: '古文阅读技巧：先通读全文，再逐句翻译，注意常见虚词的用法。',
+                        time: '今天 09:20',
+                        isNote: true
+                    }
+                ];
+
+                this.renderMessages('chat');
+            },
+
+            switchMessageTab: function(tab) {
+                this.currentMessageTab = tab;
+                
+                // 更新标签按钮状态
+                document.querySelectorAll('.message-tab').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // 渲染对应标签的消息
+                this.renderMessages(tab);
+                
+                // 如果是笔记专区，显示特殊提示
+                if (tab === 'notes') {
+                    this.showNotification('这里是精选笔记专区，内容由管理员从笔记板挑选而来。', 'success');
+                }
+            },
+
+            loadMessages: async function() {
+                // 在实际应用中，这里应该从Supabase加载消息
+                // 现在使用示例数据
+                this.renderMessages(this.currentMessageTab);
+            },
+
+            renderMessages: function(tab) {
+                const container = document.getElementById('messagesContainer');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                const messages = this.messages[tab];
+                
+                if (messages.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; opacity: 0.7;">
+                            <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3 style="margin-bottom: 10px;">暂无消息</h3>
+                            <p>${tab === 'chat' ? '快来发送第一条消息吧！' : '管理员正在整理精选笔记...'}</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                messages.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message-item ${message.isNote ? 'note-message' : ''}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <div class="message-author">
+                                <i class="${message.authorIcon || 'fas fa-user'}"></i>
+                                ${message.author}
+                                ${message.isNote ? '<span class="note-badge">精选笔记</span>' : ''}
+                            </div>
+                            <div class="message-time">${message.time}</div>
+                        </div>
+                        <div class="message-content">${message.content}</div>
+                    `;
+                    container.appendChild(messageDiv);
+                });
+                
+                // 滚动到底部
+                container.scrollTop = container.scrollHeight;
+            },
+
+            sendMessage: function() {
+                if (!this.currentUser) {
+                    this.showNotification('请先登录后再发送消息', 'warning');
+                    this.showLoginModal();
+                    return;
+                }
+                
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (!message) {
+                    this.showNotification('请输入消息内容', 'error');
+                    return;
+                }
+                
+                const newMessage = {
+                    id: Date.now(),
+                    author: this.currentUser.username,
+                    authorIcon: this.currentUser.role === 'admin' ? 'fas fa-user-shield' : 'fas fa-user',
+                    content: message,
+                    time: '刚刚',
+                    isNote: this.currentMessageTab === 'notes'
+                };
+                
+                this.messages[this.currentMessageTab].push(newMessage);
+                
+                // 清空输入框
+                input.value = '';
+                
+                // 重新渲染消息
+                this.renderMessages(this.currentMessageTab);
+                
+                // 如果是聊天消息，添加自动回复
+                if (this.currentMessageTab === 'chat' && !this.currentUser.role === 'admin') {
+                    setTimeout(() => {
+                        const responses = [
+                            '感谢分享！',
+                            '很有意思的观点！',
+                            '学习了！',
+                            '谢谢你的贡献！'
+                        ];
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        
+                        const autoReply = {
+                            id: Date.now() + 1,
+                            author: '学习助手',
+                            authorIcon: 'fas fa-robot',
+                            content: randomResponse,
+                            time: '刚刚',
+                            isNote: false
+                        };
+                        
+                        this.messages.chat.push(autoReply);
+                        this.renderMessages('chat');
+                    }, 1000);
+                }
+            },
+
             // 主题功能
             initThemes: function() {
                 const container = document.getElementById('themeGrid');
@@ -2041,7 +2519,7 @@
                 localStorage.setItem('dsehub_theme', themeId);
                 
                 if (!silent) {
-                    alert('主题已切换为: ' + this.themes.find(t => t.id === themeId)?.name || themeId);
+                    this.showNotification('主题已切换为: ' + this.themes.find(t => t.id === themeId)?.name || themeId, 'success');
                 }
             }
         };
@@ -2066,3 +2544,4 @@
     </script>
 </body>
 </html>
+
