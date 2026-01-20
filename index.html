@@ -729,6 +729,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
+            margin-top: 30px;
         }
 
         .game-card {
@@ -744,6 +745,7 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: var(--shadow-sm);
+            cursor: pointer;
         }
 
         .game-card:hover {
@@ -785,6 +787,7 @@
             background: rgba(255, 255, 255, 0.98);
             border: 2px solid rgba(99, 102, 241, 0.2);
             box-shadow: 0 12px 28px rgba(99, 102, 241, 0.15);
+            margin-bottom: 30px;
         }
 
         #game-settings h3 {
@@ -1382,15 +1385,15 @@
                     </div>
                 </div>
                 
-                <!-- 🟢 添加游戏设置区域 -->
-                <div id="game-settings" class="form-section" style="margin-bottom: 30px;">
+                <!-- 🟢 游戏设置区域 -->
+                <div id="game-settings" class="form-section">
                     <h3>游戏设置</h3>
                     <p class="readable-text-secondary" style="margin-bottom: 15px;">选择游戏科目（可多选）：</p>
                     <div class="category-selector" id="game-category-selector">
                         <!-- 科目选项会通过JS动态生成 -->
                     </div>
                     
-                    <!-- 🟢 添加：显示已选择科目 -->
+                    <!-- 🟢 显示已选择科目 -->
                     <div class="selected-categories-display" id="selected-categories-display" style="display: none;">
                         <!-- 已选择科目会动态显示在这里 -->
                     </div>
@@ -1440,6 +1443,7 @@
                     </div>
                 </div>
                 
+                <!-- 🟢 游戏容器（初始隐藏） -->
                 <div id="game-container" style="display: none; margin-top: 30px;"></div>
             </div>
 
@@ -1488,7 +1492,7 @@
                                 <div class="category-option" data-category="pe" onclick="selectSubmitCategory('pe')">体育</div>
                             </div>
                             
-                            <!-- 🟢 添加：显示已选择科目 -->
+                            <!-- 🟢 显示已选择科目 -->
                             <div class="selected-categories-display" id="submit-selected-display" style="margin-top: 20px; display: none;">
                                 <!-- 已选择科目会动态显示在这里 -->
                             </div>
@@ -2641,7 +2645,9 @@
             currentQuestionIndex = 0;
             gameScore = 0;
             
-            document.getElementById('page-games').style.display = 'none';
+            // 🟢 关键修复：正确切换显示状态
+            document.getElementById('game-settings').style.display = 'none';
+            document.querySelector('.games-grid').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             
             renderQuizGame();
@@ -2879,7 +2885,9 @@
             selectedMatchingCards = [];
             matchedPairsCount = 0;
             
-            document.getElementById('page-games').style.display = 'none';
+            // 🟢 关键修复：正确切换显示状态
+            document.getElementById('game-settings').style.display = 'none';
+            document.querySelector('.games-grid').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             
             renderMatchingGame();
@@ -3167,7 +3175,9 @@
             timedCorrectAnswers = 0;
             timeLeft = 60;
             
-            document.getElementById('page-games').style.display = 'none';
+            // 🟢 关键修复：正确切换显示状态
+            document.getElementById('game-settings').style.display = 'none';
+            document.querySelector('.games-grid').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
             
             startTimer();
@@ -3495,8 +3505,10 @@
             currentTimedQuestionIndex = 0;
             timedCorrectAnswers = 0;
             
+            // 🟢 关键修复：正确恢复显示
             document.getElementById('game-container').style.display = 'none';
-            document.getElementById('page-games').style.display = 'block';
+            document.getElementById('game-settings').style.display = 'block';
+            document.querySelector('.games-grid').style.display = 'grid';
         }
 
         function exitToGameCenter() {
@@ -4372,6 +4384,7 @@
                 case 'games':
                     document.getElementById('game-container').style.display = 'none';
                     document.getElementById('game-settings').style.display = 'block';
+                    document.querySelector('.games-grid').style.display = 'grid';
                     break;
                 case 'rank':
                     loadRankings();
