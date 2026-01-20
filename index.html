@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSE Hub - 主站</title>
-    <!-- 移除了错误的CSS链接 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -37,10 +36,11 @@
         }
 
         .theme-green-yellowgreen {
-            --primary-start: #38b000;
-            --primary-end: #ccff33;
-            --secondary-start: #2d9100;
-            --secondary-end: #aacc00;
+            --primary-start: #52b788;
+            --primary-end: #d8f3dc;
+            --secondary-start: #40916c;
+            --secondary-end: #b7e4c7;
+            --accent-color: #74c69d;
         }
 
         .theme-orange-red {
@@ -432,142 +432,6 @@
             margin-bottom: 15px;
         }
 
-        /* 留言板样式 */
-        .message-board {
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .message-tabs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-        }
-
-        .tab-btn.active {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            padding-right: 10px;
-        }
-
-        .messages-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .messages-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .messages-container::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: 3px;
-        }
-
-        .message {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message-header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .message-author {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .message-time {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .message-content {
-            font-size: 14px;
-        }
-
-        .message-input-area {
-            display: flex;
-            gap: 10px;
-        }
-
-        .message-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            padding: 12px 20px;
-            color: var(--text-color);
-            font-size: 14px;
-        }
-
-        .message-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .send-btn {
-            background: var(--accent-color);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .send-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px var(--shadow-color);
-        }
-
         /* 排行榜样式 */
         .leaderboard-list {
             max-height: 500px;
@@ -766,21 +630,167 @@
             font-weight: 600;
         }
 
-        /* 笔记专区特殊样式 */
-        .note-message {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
-            border-color: rgba(255, 215, 0, 0.3);
+        /* 投稿页面样式 */
+        .submission-form {
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .note-badge {
-            display: inline-block;
-            background: linear-gradient(45deg, #ffd700, #ff8c00);
-            color: #000;
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-right: 10px;
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .submit-btn {
+            background: var(--accent-color);
+            border: none;
+            color: var(--text-color);
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+
+        .submit-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 笔记预览样式 */
+        .note-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .note-meta {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .note-category {
+            background: var(--accent-color);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .note-author {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .note-date {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .note-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .note-content {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: var(--hover-color);
+        }
+
+        .action-btn.like {
+            background: rgba(255, 99, 99, 0.1);
+            border-color: rgba(255, 99, 99, 0.3);
+        }
+
+        .action-btn.like.active {
+            background: rgba(255, 99, 99, 0.2);
+        }
+
+        .action-btn.bookmark {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
+
+        .action-btn.bookmark.active {
+            background: rgba(255, 193, 7, 0.2);
         }
 
         /* 隐藏类 */
@@ -842,7 +852,7 @@
                 <button class="nav-btn" onclick="window.location.href='gaming.html'">
                     <i class="fas fa-gamepad"></i> 游戏区域
                 </button>
-                <button class="nav-btn" onclick="window.location.href='admin.html'">
+                <button class="nav-btn" onclick="window.location.href='admin.html'" id="adminNavBtn">
                     <i class="fas fa-user-shield"></i> 管理员面板
                 </button>
                 <button class="nav-btn" onclick="window.location.href='notes.html'">
@@ -872,8 +882,11 @@
                         <button class="nav-btn-small" onclick="showPanel('leaderboard')">
                             <i class="fas fa-trophy"></i> 排行榜
                         </button>
-                        <button class="nav-btn-small" onclick="showPanel('messages')">
-                            <i class="fas fa-comments"></i> 留言板
+                        <button class="nav-btn-small" onclick="showPanel('submission')">
+                            <i class="fas fa-edit"></i> 投稿笔记
+                        </button>
+                        <button class="nav-btn-small" onclick="showPanel('myNotes')">
+                            <i class="fas fa-bookmark"></i> 我的投稿
                         </button>
                     </div>
                 </div>
@@ -899,7 +912,7 @@
                         <button class="nav-btn-small" onclick="window.location.href='notes.html'">
                             <i class="fas fa-sticky-note"></i> 前往笔记板
                         </button>
-                        <button class="nav-btn-small" onclick="window.location.href='admin.html'" id="adminBtn">
+                        <button class="nav-btn-small" onclick="window.location.href='admin.html'" id="adminSideBtn">
                             <i class="fas fa-user-shield"></i> 前往管理员面板
                         </button>
                     </div>
@@ -931,7 +944,7 @@
                                 <i class="fas fa-filter"></i> 单个学科
                             </button>
                             <div style="flex: 1;"></div>
-                            <input type="text" class="message-input" placeholder="搜索知识点..." 
+                            <input type="text" class="form-control" placeholder="搜索知识点..." 
                                    oninput="searchKnowledge(this.value)" style="width: 200px;">
                         </div>
                         
@@ -954,32 +967,56 @@
                     </div>
                 </div>
 
-                <!-- 留言板面板 -->
-                <div id="messagesPanel" class="panel-content hidden">
+                <!-- 投稿面板 -->
+                <div id="submissionPanel" class="panel-content hidden">
                     <div class="panel-header">
-                        <h2><i class="fas fa-comments"></i> 留言板</h2>
+                        <h2><i class="fas fa-edit"></i> 投稿笔记</h2>
                     </div>
                     <div class="panel-content">
-                        <div class="message-board">
-                            <div class="message-header">
-                                <div class="message-tabs">
-                                    <button class="tab-btn active" onclick="switchTab('chat')">聊天</button>
-                                    <button class="tab-btn" onclick="switchTab('notes')">笔记专区</button>
-                                </div>
+                        <div class="submission-form">
+                            <div class="form-group">
+                                <label for="noteTitle">笔记标题</label>
+                                <input type="text" id="noteTitle" class="form-control" placeholder="请输入笔记标题">
                             </div>
                             
-                            <div class="messages-container" id="messagesContainer">
-                                <!-- 消息将通过JavaScript动态生成 -->
+                            <div class="form-group">
+                                <label for="noteCategory">学科分类</label>
+                                <select id="noteCategory" class="form-control">
+                                    <!-- 学科选项将通过JavaScript动态生成 -->
+                                </select>
                             </div>
                             
-                            <div class="message-input-area">
-                                <input type="text" class="message-input" id="messageInput" placeholder="输入消息..." 
-                                       onkeypress="if(event.key === 'Enter') sendMessage()">
-                                <button class="send-btn" onclick="sendMessage()">
-                                    <i class="fas fa-paper-plane"></i> 发送
+                            <div class="form-group">
+                                <label for="noteContent">笔记内容</label>
+                                <textarea id="noteContent" class="form-control" 
+                                          placeholder="请详细描述您的学习笔记...（支持Markdown格式）"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="noteExample">示例题目（可选）</label>
+                                <textarea id="noteExample" class="form-control" 
+                                          placeholder="可以添加相关示例题目及解答..."></textarea>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="submit-btn secondary" onclick="clearNoteForm()">
+                                    <i class="fas fa-trash"></i> 清空
+                                </button>
+                                <button class="submit-btn" onclick="submitNote()">
+                                    <i class="fas fa-paper-plane"></i> 提交投稿
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 我的投稿面板 -->
+                <div id="myNotesPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-bookmark"></i> 我的投稿</h2>
+                    </div>
+                    <div class="panel-content" id="myNotesList">
+                        <!-- 投稿笔记将通过JavaScript动态生成 -->
                     </div>
                 </div>
 
@@ -1039,43 +1076,6 @@
             { id: 'pe', name: '体育', icon: 'fas fa-running' }
         ];
 
-        // 示例知识点数据
-        const knowledgeData = [
-            { id: 1, subject: 'math', title: '微积分基础', content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。' },
-            { id: 2, subject: 'phy', title: '牛顿运动定律', content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。' },
-            { id: 3, subject: 'chem', title: '化学反应速率', content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。' },
-            { id: 4, subject: 'bio', title: '细胞结构', content: '真核细胞与原核细胞的区别，细胞器的功能和相互关系。' },
-            { id: 5, subject: 'econ', title: '供需理论', content: '需求定律、供给定律，市场均衡价格的形成和变动。' },
-            { id: 6, subject: 'chi', title: '古文鉴赏技巧', content: '文言文阅读方法，重点字词解释，篇章结构分析。' },
-            { id: 7, subject: 'eng', title: '英语写作技巧', content: '议论文结构，论点论据的组织，连接词的使用。' },
-            { id: 8, subject: 'ls', title: '社会议题分析', content: '从多角度分析社会问题，考虑不同持份者的观点。' },
-            { id: 9, subject: 'chist', title: '鸦片战争', content: '战争背景、过程和影响，以及对中国近代化的意义。' },
-            { id: 10, subject: 'whist', title: '二战历史', content: '主要战役、国际关系和战争对世界格局的影响。' }
-        ];
-
-        // 示例留言数据
-        const chatMessages = [
-            { id: 1, author: '学习助手', time: '10:30', content: '欢迎来到DSE Hub！这里可以交流学习心得，互相帮助解决问题。', isNote: false },
-            { id: 2, author: '管理员', time: '11:15', content: '精选笔记已更新：微积分解题技巧总结，请查看笔记专区。', isNote: false },
-            { id: 3, author: '优秀学员', time: '昨天 14:20', content: '物理力学部分的重要公式整理，包括动量守恒和能量转换。', isNote: true },
-            { id: 4, author: '数学高手', time: '昨天 16:45', content: '三角函数图像变换的规律总结，附带记忆口诀。', isNote: true },
-            { id: 5, author: '语文达人', time: '今天 09:10', content: '古文常见虚词用法总结，帮助理解文言文。', isNote: true }
-        ];
-
-        // 示例排行榜数据
-        const leaderboardData = [
-            { rank: 1, name: '学霸小明', score: 9850 },
-            { rank: 2, name: '智慧小红', score: 9420 },
-            { rank: 3, name: '勤奋小华', score: 9015 },
-            { rank: 4, name: '努力小刚', score: 8760 },
-            { rank: 5, name: '坚持小丽', score: 8540 },
-            { rank: 6, name: '专注小强', score: 8320 },
-            { rank: 7, name: '刻苦小美', score: 8150 },
-            { rank: 8, name: '执着小军', score: 7980 },
-            { rank: 9, name: '细心小芳', score: 7820 },
-            { rank: 10, name: '耐心小杰', score: 7650 }
-        ];
-
         // 主题数据
         const themes = [
             { id: 'theme-blue-purple', name: '蓝-紫极光' },
@@ -1089,14 +1089,19 @@
             { id: 'theme-darkblue-lightblue', name: '深蓝-深蓝(偏浅)极光' }
         ];
 
+        // 用户投稿数据存储
+        let userSubmissions = [];
+        let userLikedNotes = new Set();
+        let userBookmarkedNotes = new Set();
+
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
             initUser();
             initSubjects();
             initKnowledgeGrid();
             initLeaderboard();
-            initMessages();
             initThemes();
+            initSubmissionForm();
             showPanel('knowledge');
         });
 
@@ -1167,7 +1172,6 @@
         // 搜索知识点
         function searchKnowledge(keyword) {
             const selectedSubjects = getSelectedSubjects();
-            
             const filtered = knowledgeData.filter(item => {
                 const subjectMatch = selectedSubjects.includes('all') || selectedSubjects.includes(item.subject);
                 const keywordMatch = !keyword || 
@@ -1215,6 +1219,20 @@
 
         // 初始化知识网格
         function initKnowledgeGrid() {
+            // 示例知识点数据
+            const knowledgeData = [
+                { id: 1, subject: 'math', title: '微积分基础', content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。' },
+                { id: 2, subject: 'phy', title: '牛顿运动定律', content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。' },
+                { id: 3, subject: 'chem', title: '化学反应速率', content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。' },
+                { id: 4, subject: 'bio', title: '细胞结构', content: '真核细胞与原核细胞的区别，细胞器的功能和相互关系。' },
+                { id: 5, subject: 'econ', title: '供需理论', content: '需求定律、供给定律，市场均衡价格的形成和变动。' },
+                { id: 6, subject: 'chi', title: '古文鉴赏技巧', content: '文言文阅读方法，重点字词解释，篇章结构分析。' },
+                { id: 7, subject: 'eng', title: '英语写作技巧', content: '议论文结构，论点论据的组织，连接词的使用。' },
+                { id: 8, subject: 'ls', title: '社会议题分析', content: '从多角度分析社会问题，考虑不同持份者的观点。' },
+                { id: 9, subject: 'chist', title: '鸦片战争', content: '战争背景、过程和影响，以及对中国近代化的意义。' },
+                { id: 10, subject: 'whist', title: '二战历史', content: '主要战役、国际关系和战争对世界格局的影响。' }
+            ];
+            
             renderKnowledgeCards(knowledgeData);
         }
 
@@ -1243,15 +1261,30 @@
 
         // 初始化排行榜
         function initLeaderboard() {
-            renderLeaderboard();
+            // 从localStorage获取排行榜数据
+            const savedLeaderboard = localStorage.getItem('dsehub_leaderboard');
+            let leaderboardData = savedLeaderboard ? JSON.parse(savedLeaderboard) : [
+                { rank: 1, name: '学霸小明', score: 9850 },
+                { rank: 2, name: '智慧小红', score: 9420 },
+                { rank: 3, name: '勤奋小华', score: 9015 },
+                { rank: 4, name: '努力小刚', score: 8760 },
+                { rank: 5, name: '坚持小丽', score: 8540 },
+                { rank: 6, name: '专注小强', score: 8320 },
+                { rank: 7, name: '刻苦小美', score: 8150 },
+                { rank: 8, name: '执着小军', score: 7980 },
+                { rank: 9, name: '细心小芳', score: 7820 },
+                { rank: 10, name: '耐心小杰', score: 7650 }
+            ];
+            
+            renderLeaderboard(leaderboardData);
         }
 
         // 渲染排行榜
-        function renderLeaderboard() {
+        function renderLeaderboard(data) {
             const container = document.getElementById('leaderboardList');
             container.innerHTML = '';
             
-            leaderboardData.forEach(player => {
+            data.forEach(player => {
                 const item = document.createElement('div');
                 item.className = 'leaderboard-item';
                 item.innerHTML = `
@@ -1265,83 +1298,177 @@
             });
         }
 
-        // 初始化留言板
-        function initMessages() {
-            renderMessages('chat');
-        }
-
-        // 切换标签页
-        function switchTab(tab) {
-            const tabs = document.querySelectorAll('.tab-btn');
-            tabs.forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+        // 初始化投稿表单
+        function initSubmissionForm() {
+            const categorySelect = document.getElementById('noteCategory');
+            categorySelect.innerHTML = '<option value="">请选择学科</option>';
             
-            renderMessages(tab);
-        }
-
-        // 渲染消息
-        function renderMessages(tab) {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '';
-            
-            let messagesToShow = tab === 'notes' 
-                ? chatMessages.filter(m => m.isNote)
-                : chatMessages;
-            
-            if (messagesToShow.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; opacity: 0.7;">暂无消息</div>';
-                return;
-            }
-            
-            messagesToShow.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${msg.isNote ? 'note-message' : ''}`;
-                messageDiv.innerHTML = `
-                    <div class="message-header-info">
-                        <div>
-                            ${msg.isNote ? '<span class="note-badge">精选笔记</span>' : ''}
-                            <span class="message-author">${msg.author}</span>
-                        </div>
-                        <div class="message-time">${msg.time}</div>
-                    </div>
-                    <div class="message-content">${msg.content}</div>
-                `;
-                container.appendChild(messageDiv);
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.name;
+                categorySelect.appendChild(option);
             });
-            
-            // 滚动到底部
-            container.scrollTop = container.scrollHeight;
         }
 
-        // 发送消息
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
+        // 清空投稿表单
+        function clearNoteForm() {
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteCategory').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteExample').value = '';
+        }
+
+        // 提交投稿
+        function submitNote() {
             if (!currentUser) {
-                alert('请先登录后再发送消息');
+                alert('请先登录后再投稿');
+                showPanel('account');
                 return;
             }
             
-            // 添加到消息列表
-            const newMessage = {
+            const title = document.getElementById('noteTitle').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const content = document.getElementById('noteContent').value.trim();
+            
+            if (!title || !category || !content) {
+                alert('请填写完整的标题、学科和内容');
+                return;
+            }
+            
+            const newNote = {
                 id: Date.now(),
-                author: currentUser.username || '用户',
-                time: '刚刚',
-                content: message,
-                isNote: false
+                title: title,
+                category: category,
+                content: content,
+                example: document.getElementById('noteExample').value.trim(),
+                author: currentUser.username,
+                authorId: currentUser.id,
+                status: 'pending', // pending, approved, rejected
+                likeCount: 0,
+                viewCount: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
             
-            chatMessages.push(newMessage);
+            // 保存到localStorage
+            userSubmissions.push(newNote);
+            localStorage.setItem('dsehub_submissions', JSON.stringify(userSubmissions));
             
-            // 清空输入框
-            input.value = '';
+            // 更新用户积分
+            if (currentUser) {
+                currentUser.score = (currentUser.score || 0) + 50;
+                localStorage.setItem('dsehub_user', JSON.stringify(currentUser));
+                updateUserUI();
+                updateLeaderboard();
+            }
             
-            // 重新渲染消息
-            const activeTab = document.querySelector('.tab-btn.active').textContent;
-            renderMessages(activeTab === '笔记专区' ? 'notes' : 'chat');
+            // 清空表单
+            clearNoteForm();
+            
+            alert('投稿成功！感谢您的贡献。投稿正在审核中。');
+            
+            // 刷新我的投稿列表
+            loadMyNotes();
+        }
+
+        // 加载我的投稿
+        function loadMyNotes() {
+            const container = document.getElementById('myNotesList');
+            container.innerHTML = '';
+            
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-user-slash" style="font-size: 48px; opacity: 0.5; margin-bottom: 20px;"></i>
+                        <h3 style="margin-bottom: 10px;">请先登录</h3>
+                        <p style="opacity: 0.8; margin-bottom: 20px;">登录后查看您的投稿</p>
+                        <button class="login-btn" onclick="login()" style="padding: 12px 30px;">
+                            <i class="fas fa-sign-in-alt"></i> 立即登录
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const userNotes = userSubmissions.filter(note => note.authorId === currentUser.id);
+            
+            if (userNotes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-edit" style="font-size: 48px; opacity: 0.5; margin-bottom: 20px;"></i>
+                        <h3 style="margin-bottom: 10px;">暂无投稿</h3>
+                        <p style="opacity: 0.8; margin-bottom: 20px;">您还没有投稿过笔记</p>
+                        <button class="nav-btn" onclick="showPanel('submission')" style="padding: 12px 30px;">
+                            <i class="fas fa-plus"></i> 立即投稿
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            userNotes.forEach(note => {
+                const subject = subjects.find(s => s.id === note.category);
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note-preview';
+                noteDiv.innerHTML = `
+                    <div class="note-header">
+                        <div class="note-meta">
+                            <span class="note-category">${subject ? subject.name : note.category}</span>
+                            <span class="note-author">${note.author}</span>
+                            <span class="note-date">${formatDate(note.createdAt)}</span>
+                        </div>
+                        <span class="note-status" style="background: ${getStatusColor(note.status)}; 
+                               padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600;">
+                            ${getStatusText(note.status)}
+                        </span>
+                    </div>
+                    <h3 class="note-title">${note.title}</h3>
+                    <div class="note-content" style="max-height: 100px; overflow: hidden;">
+                        ${note.content.substring(0, 200)}...
+                    </div>
+                    <div class="note-actions">
+                        <button class="action-btn like ${userLikedNotes.has(note.id) ? 'active' : ''}" 
+                                onclick="toggleLike(${note.id})">
+                            <i class="fas fa-heart"></i> 赞 (${note.likeCount})
+                        </button>
+                        <button class="action-btn bookmark ${userBookmarkedNotes.has(note.id) ? 'active' : ''}" 
+                                onclick="toggleBookmark(${note.id})">
+                            <i class="fas fa-bookmark"></i> 收藏
+                        </button>
+                        <button class="action-btn" onclick="editNote(${note.id})">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="action-btn" onclick="deleteNote(${note.id})" 
+                                style="background: rgba(255, 99, 99, 0.1); border-color: rgba(255, 99, 99, 0.3);">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </div>
+                `;
+                container.appendChild(noteDiv);
+            });
+        }
+
+        // 辅助函数
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'approved': return 'rgba(76, 175, 80, 0.2)';
+                case 'rejected': return 'rgba(244, 67, 54, 0.2)';
+                default: return 'rgba(255, 193, 7, 0.2)';
+            }
+        }
+
+        function getStatusText(status) {
+            switch(status) {
+                case 'approved': return '已通过';
+                case 'rejected': return '未通过';
+                default: return '审核中';
+            }
         }
 
         // 初始化主题
@@ -1394,31 +1521,38 @@
             });
             event.target.classList.add('active');
             
-            // 如果是账号面板，更新信息
+            // 如果是特定面板，执行额外操作
             if (panelId === 'account') {
                 updateAccountInfo();
+            } else if (panelId === 'myNotes') {
+                loadMyNotes();
             }
         }
 
         // 初始化用户
         function initUser() {
-            // 检查本地存储中是否有用户信息
+            // 加载保存的数据
             const savedUser = localStorage.getItem('dsehub_user');
+            const savedSubmissions = localStorage.getItem('dsehub_submissions');
+            const savedLikes = localStorage.getItem('dsehub_likes');
+            const savedBookmarks = localStorage.getItem('dsehub_bookmarks');
+            
+            // 设置用户
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
-            } else {
-                // 创建默认用户
-                currentUser = {
-                    id: 1,
-                    username: '访客用户',
-                    email: 'guest@example.com',
-                    role: 'user',
-                    score: 1250,
-                    games_played: 15,
-                    high_score: 850,
-                    created_at: new Date().toISOString()
-                };
-                localStorage.setItem('dsehub_user', JSON.stringify(currentUser));
+            }
+            
+            // 设置投稿数据
+            if (savedSubmissions) {
+                userSubmissions = JSON.parse(savedSubmissions);
+            }
+            
+            // 设置点赞和收藏数据
+            if (savedLikes) {
+                userLikedNotes = new Set(JSON.parse(savedLikes));
+            }
+            if (savedBookmarks) {
+                userBookmarkedNotes = new Set(JSON.parse(savedBookmarks));
             }
             
             // 加载保存的主题
@@ -1435,7 +1569,8 @@
         function updateUserUI() {
             const loginStatus = document.getElementById('loginStatus');
             const userAvatar = document.getElementById('userAvatar');
-            const adminBtn = document.getElementById('adminBtn');
+            const adminNavBtn = document.getElementById('adminNavBtn');
+            const adminSideBtn = document.getElementById('adminSideBtn');
             
             if (currentUser) {
                 loginStatus.innerHTML = `
@@ -1446,13 +1581,9 @@
                 userAvatar.innerHTML = currentUser.username.charAt(0).toUpperCase();
                 
                 // 显示/隐藏管理员按钮
-                if (adminBtn) {
-                    if (currentUser.role === 'admin') {
-                        adminBtn.style.display = 'block';
-                    } else {
-                        adminBtn.style.display = 'none';
-                    }
-                }
+                const isAdmin = currentUser.role === 'admin';
+                if (adminNavBtn) adminNavBtn.style.display = isAdmin ? 'block' : 'none';
+                if (adminSideBtn) adminSideBtn.style.display = isAdmin ? 'block' : 'none';
             } else {
                 loginStatus.innerHTML = `
                     <button class="login-btn" onclick="login()">
@@ -1461,7 +1592,8 @@
                 `;
                 userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                 
-                if (adminBtn) adminBtn.style.display = 'none';
+                if (adminNavBtn) adminNavBtn.style.display = 'none';
+                if (adminSideBtn) adminSideBtn.style.display = 'none';
             }
             
             updateAccountInfo();
@@ -1489,12 +1621,12 @@
                             <div class="stat-label">学习积分</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">${currentUser.games_played || 0}</div>
-                            <div class="stat-label">游戏次数</div>
+                            <div class="stat-value">${userSubmissions.filter(n => n.authorId === currentUser.id).length}</div>
+                            <div class="stat-label">投稿数量</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">${currentUser.high_score || 0}</div>
-                            <div class="stat-label">最高分</div>
+                            <div class="stat-value">${userSubmissions.filter(n => n.authorId === currentUser.id && n.status === 'approved').length}</div>
+                            <div class="stat-label">通过审核</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-value">${Math.floor((currentUser.score || 0) / 100)}</div>
@@ -1527,34 +1659,70 @@
 
         // 登录函数
         function login() {
-            const username = prompt('请输入用户名：', `用户${Math.floor(Math.random() * 1000)}`);
+            // 简单登录界面
+            const username = prompt('请输入用户名：');
             if (!username) return;
             
-            const email = prompt('请输入邮箱：', `${username.toLowerCase().replace(/\s+/g, '')}@example.com`);
-            if (!email) return;
+            // 检查是否是管理员账号
+            const isAdmin = username === 'admin' || username.startsWith('admin_');
             
-            // 随机决定是否为管理员（演示用）
-            const isAdmin = Math.random() > 0.7;
+            // 检查是否已存在该用户
+            const existingUser = getExistingUser(username);
             
-            currentUser = {
-                id: Date.now(),
-                username: username,
-                email: email,
-                role: isAdmin ? 'admin' : 'user',
-                score: Math.floor(Math.random() * 5000) + 1000,
-                games_played: Math.floor(Math.random() * 50) + 10,
-                high_score: Math.floor(Math.random() * 1000) + 500,
-                created_at: new Date().toISOString()
-            };
+            if (existingUser) {
+                currentUser = existingUser;
+            } else {
+                // 创建新用户
+                currentUser = {
+                    id: Date.now(),
+                    username: username,
+                    email: `${username.toLowerCase().replace(/\s+/g, '')}@dsehub.com`,
+                    role: isAdmin ? 'admin' : 'user',
+                    score: 1000,
+                    games_played: 0,
+                    high_score: 0,
+                    created_at: new Date().toISOString()
+                };
+            }
             
-            localStorage.setItem('dsehub_user', JSON.stringify(currentUser));
+            // 保存用户数据
+            saveUserData(currentUser);
+            
             updateUserUI();
-            alert(`欢迎 ${currentUser.username}！${isAdmin ? '您拥有管理员权限。' : ''}`);
             
-            // 如果是管理员，显示管理员面板按钮
             if (isAdmin) {
-                const adminBtn = document.getElementById('adminBtn');
-                if (adminBtn) adminBtn.style.display = 'block';
+                alert(`管理员 ${currentUser.username}，欢迎回来！`);
+            } else {
+                alert(`欢迎 ${currentUser.username}！`);
+            }
+        }
+
+        // 获取已存在的用户
+        function getExistingUser(username) {
+            try {
+                const users = JSON.parse(localStorage.getItem('dsehub_users') || '[]');
+                return users.find(u => u.username === username);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 保存用户数据
+        function saveUserData(user) {
+            try {
+                const users = JSON.parse(localStorage.getItem('dsehub_users') || '[]');
+                const existingIndex = users.findIndex(u => u.id === user.id);
+                
+                if (existingIndex >= 0) {
+                    users[existingIndex] = user;
+                } else {
+                    users.push(user);
+                }
+                
+                localStorage.setItem('dsehub_users', JSON.stringify(users));
+                localStorage.setItem('dsehub_user', JSON.stringify(user));
+            } catch (e) {
+                console.error('保存用户数据失败:', e);
             }
         }
 
@@ -1565,6 +1733,103 @@
             updateUserUI();
             alert('已退出登录');
         }
+
+        // 更新排行榜
+        function updateLeaderboard() {
+            try {
+                const users = JSON.parse(localStorage.getItem('dsehub_users') || '[]');
+                const leaderboard = users
+                    .filter(user => user.score > 0)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 20)
+                    .map((user, index) => ({
+                        rank: index + 1,
+                        name: user.username,
+                        score: user.score
+                    }));
+                
+                localStorage.setItem('dsehub_leaderboard', JSON.stringify(leaderboard));
+                renderLeaderboard(leaderboard);
+            } catch (e) {
+                console.error('更新排行榜失败:', e);
+            }
+        }
+
+        // 点赞功能
+        function toggleLike(noteId) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            
+            const note = userSubmissions.find(n => n.id === noteId);
+            if (!note) return;
+            
+            if (userLikedNotes.has(noteId)) {
+                userLikedNotes.delete(noteId);
+                note.likeCount = Math.max(0, note.likeCount - 1);
+            } else {
+                userLikedNotes.add(noteId);
+                note.likeCount = (note.likeCount || 0) + 1;
+            }
+            
+            // 保存数据
+            localStorage.setItem('dsehub_submissions', JSON.stringify(userSubmissions));
+            localStorage.setItem('dsehub_likes', JSON.stringify([...userLikedNotes]));
+            
+            // 刷新显示
+            if (document.getElementById('myNotesPanel').classList.contains('hidden')) {
+                loadMyNotes();
+            }
+        }
+
+        // 收藏功能
+        function toggleBookmark(noteId) {
+            if (!currentUser) {
+                alert('请先登录');
+                return;
+            }
+            
+            if (userBookmarkedNotes.has(noteId)) {
+                userBookmarkedNotes.delete(noteId);
+            } else {
+                userBookmarkedNotes.add(noteId);
+            }
+            
+            localStorage.setItem('dsehub_bookmarks', JSON.stringify([...userBookmarkedNotes]));
+            
+            if (document.getElementById('myNotesPanel').classList.contains('hidden')) {
+                loadMyNotes();
+            }
+        }
+
+        // 编辑笔记
+        function editNote(noteId) {
+            const note = userSubmissions.find(n => n.id === noteId);
+            if (!note) return;
+            
+            document.getElementById('noteTitle').value = note.title;
+            document.getElementById('noteCategory').value = note.category;
+            document.getElementById('noteContent').value = note.content;
+            document.getElementById('noteExample').value = note.example || '';
+            
+            showPanel('submission');
+            
+            // 可以添加一个标记来知道是编辑模式
+            document.getElementById('submissionPanel').dataset.editing = noteId;
+        }
+
+        // 删除笔记
+        function deleteNote(noteId) {
+            if (!confirm('确定要删除这篇投稿吗？')) return;
+            
+            userSubmissions = userSubmissions.filter(n => n.id !== noteId);
+            localStorage.setItem('dsehub_submissions', JSON.stringify(userSubmissions));
+            
+            loadMyNotes();
+            alert('投稿已删除');
+        }
     </script>
 </body>
 </html>
+
