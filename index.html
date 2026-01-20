@@ -1591,8 +1591,8 @@
                 // 监听Enter键提交表单
                 this.initKeyboardListeners();
                 
-                // 取消自动登录，显示欢迎消息
-                this.showNotification('欢迎来到DSE Hub！请登录以使用完整功能。', 'warning');
+                // 检查认证状态
+                this.checkAuth();
             },
 
             // 初始化键盘监听
@@ -1634,10 +1634,39 @@
                 }, 5000);
             },
 
-            // 检查认证状态 - 取消自动登录
-            checkAuth: function() {
-                // 取消自动登录，直接显示登录UI
-                this.showLoginUI();
+            // 检查认证状态
+            checkAuth: async function() {
+                try {
+                    const { data: { session }, error } = await this.supabase.auth.getSession();
+                    
+                    if (error) {
+                        console.error('检查认证状态错误:', error);
+                        this.showLoginUI();
+                        return;
+                    }
+                    
+                    if (session) {
+                        await this.loadUserProfile(session.user.id);
+                        this.showNotification('欢迎回来！', 'success');
+                    } else {
+                        this.showLoginUI();
+                    }
+                } catch (err) {
+                    console.error('检查认证状态错误:', err);
+                    this.showLoginUI();
+                }
+                
+                // 监听认证状态变化
+                this.supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' && session) {
+                        this.loadUserProfile(session.user.id);
+                        this.showNotification('登录成功！', 'success');
+                    } else if (event === 'SIGNED_OUT') {
+                        this.currentUser = null;
+                        this.showLoginUI();
+                        this.showNotification('已退出登录', 'success');
+                    }
+                });
             },
 
             // 加载用户资料
