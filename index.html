@@ -3,449 +3,1467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora Study Hub</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>DSE Hub - 主站</title>
+    <link href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* ================== 1. CSS 变量与极光主题 ================== */
         :root {
-            /* 默认主题 (Theme 01) */
-            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.18);
-            --text-main: #ffffff;
-            --text-sub: #cbd5e0;
-            --accent: #00d2ff;
+            /* 默认主题：蓝-紫极光 */
+            --primary-start: #4f8cff;
+            --primary-end: #9d4edd;
+            --secondary-start: #3a86ff;
+            --secondary-end: #8338ec;
+            --accent-color: #5a67ff;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --hover-color: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(79, 140, 255, 0.3);
         }
 
-        /* 动态主题定义 */
-        [data-theme="theme-01"] { --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364); --accent: #00d2ff; }
-        [data-theme="theme-02"] { --bg-gradient: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); --accent: #fdbb2d; } /* Sunset */
-        [data-theme="theme-03"] { --bg-gradient: linear-gradient(135deg, #11998e, #38ef7d); --accent: #11998e; } /* Green Aurora */
-        [data-theme="theme-04"] { --bg-gradient: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); --accent: #fcb045; } /* Heat */
-        [data-theme="theme-05"] { --bg-gradient: linear-gradient(135deg, #000428, #004e92); --accent: #004e92; } /* Deep Sea */
-        [data-theme="theme-06"] { --bg-gradient: linear-gradient(135deg, #23074d, #cc5333); --accent: #cc5333; } /* Cyberpunk */
-        [data-theme="theme-07"] { --bg-gradient: linear-gradient(135deg, #302b63, #24243e); --accent: #764ba2; } /* Midnight */
-        [data-theme="theme-08"] { --bg-gradient: linear-gradient(135deg, #000000, #434343); --accent: #ffffff; } /* Monochrome */
-        [data-theme="theme-09"] { --bg-gradient: linear-gradient(135deg, #ff0099, #493240); --accent: #ff0099; } /* Neon Pink */
+        /* 主题配色定义 */
+        .theme-blue-purple {
+            --primary-start: #4f8cff;
+            --primary-end: #9d4edd;
+            --secondary-start: #3a86ff;
+            --secondary-end: #8338ec;
+        }
+
+        .theme-cyan-green {
+            --primary-start: #00b4d8;
+            --primary-end: #00b894;
+            --secondary-start: #0096c7;
+            --secondary-end: #00a896;
+        }
+
+        .theme-green-yellowgreen {
+            --primary-start: #38b000;
+            --primary-end: #ccff33;
+            --secondary-start: #2d9100;
+            --secondary-end: #aacc00;
+        }
+
+        .theme-orange-red {
+            --primary-start: #ff9e00;
+            --primary-end: #ff5400;
+            --secondary-start: #e68a00;
+            --secondary-end: #e64900;
+        }
+
+        .theme-lightpurple-darkblue {
+            --primary-start: #b388eb;
+            --primary-end: #4361ee;
+            --secondary-start: #9d6ee0;
+            --secondary-end: #3a56d4;
+        }
+
+        .theme-lightmagenta-pink {
+            --primary-start: #ff8fab;
+            --primary-end: #ff006e;
+            --secondary-start: #ff7ba6;
+            --secondary-end: #e60063;
+        }
+
+        .theme-skyblue-oceanblue {
+            --primary-start: #90e0ef;
+            --primary-end: #0077b6;
+            --secondary-start: #80d5e8;
+            --secondary-end: #0069a6;
+        }
+
+        .theme-cyan-lightgreen {
+            --primary-start: #06d6a0;
+            --primary-end: #caffbf;
+            --secondary-start: #05c692;
+            --secondary-end: #b5ffa8;
+        }
+
+        .theme-darkblue-lightblue {
+            --primary-start: #1a759f;
+            --primary-end: #76c893;
+            --secondary-start: #16688a;
+            --secondary-end: #68b580;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed; /* 极光背景固定 */
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: var(--text-color);
+            min-height: 100vh;
+            line-height: 1.6;
             transition: background 0.5s ease;
         }
 
-        /* 毛玻璃通用类 */
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        /* ================== 2. 布局 ================== */
-        /* 侧边栏 (学科导航) */
-        .sidebar {
-            width: 280px;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 20px;
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
         }
 
-        .subject-group { margin-bottom: 20px; }
-        .group-title { font-weight: bold; color: var(--accent); margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
-        .checkbox-wrapper:hover { background: rgba(255,255,255,0.1); }
-        .checkbox-wrapper input { margin-right: 10px; accent-color: var(--accent); transform: scale(1.2); }
-
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            padding: 20px 20px 20px 0;
-            display: grid;
-            grid-template-columns: 2fr 1fr; /* 知识点占2，侧边工具占1 */
-            grid-template-rows: auto 1fr;
-            gap: 20px;
-            overflow-y: auto;
-        }
-
-        /* 顶部栏 */
-        .header {
-            grid-column: 1 / -1;
+        /* 导航栏样式 */
+        header {
+            background: linear-gradient(90deg, var(--secondary-start), var(--secondary-end));
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
         }
 
-        /* 知识点展示区 */
-        .knowledge-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, #e0e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            background: linear-gradient(45deg, #fff, #e0e0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
             gap: 20px;
-            align-content: start;
+            align-items: center;
         }
 
-        .kp-card {
-            padding: 20px;
-            transition: transform 0.2s;
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-color);
+            font-weight: bold;
             cursor: pointer;
         }
-        .kp-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); }
-        .kp-tag { font-size: 12px; background: var(--accent); color: #000; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
-        
-        /* 右侧工具栏 (聊天/排行/设置) */
-        .tools-panel {
+
+        /* 主内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        /* 知识点区域样式 */
+        .knowledge-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--accent-color);
+        }
+
+        /* 学科选择器 */
+        .subject-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .subject-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary-start), var(--secondary-end));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .subject-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .subject-card:hover {
+            background: var(--hover-color);
+            transform: translateY(-3px);
+        }
+
+        .subject-card.selected {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .subject-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* 筛选控制 */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn:hover {
+            background: var(--hover-color);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* 知识卡片网格 */
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .knowledge-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .knowledge-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .knowledge-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .knowledge-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-card:hover {
+            background: var(--hover-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .knowledge-subject {
+            display: inline-block;
+            background: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .knowledge-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .knowledge-content {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        /* 右侧面板样式 */
+        .right-panel {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            height: calc(100vh - 100px);
+            gap: 30px;
         }
 
-        .tab-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: rgba(0,0,0,0.2); color: white; border-radius: 8px; cursor: pointer; }
-        .tab-btn.active { background: var(--accent); color: #000; font-weight: bold; }
+        /* 留言板样式 */
+        .message-board {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
 
-        .chat-box { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .messages-list { flex: 1; overflow-y: auto; padding: 10px; font-size: 14px; }
-        .message-item { margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; }
-        .chat-input-area { display: flex; gap: 5px; padding-top: 10px; }
-        .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: rgba(0,0,0,0.3); color: white; }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-        .leaderboard-list { max-height: 200px; overflow-y: auto; }
-        .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        
-        .settings-panel select { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; }
-        
-        /* 滚动条美化 */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .message-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .message-author {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .message-content {
+            font-size: 14px;
+        }
+
+        .message-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .message-input input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+
+        /* 排行榜样式 */
+        .leaderboard {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+
+        .leaderboard-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: var(--hover-color);
+            transform: translateX(5px);
+        }
+
+        .rank {
+            font-size: 20px;
+            font-weight: 800;
+            margin-right: 15px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .player-score {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* 设置面板模态框 */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-content {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .theme-option {
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-option.selected {
+            border-color: var(--text-color);
+        }
+
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .subject-selector {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .theme-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 笔记专区特殊样式 */
+        .note-message {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.1));
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .note-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        /* 登录状态样式 */
+        .login-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-btn {
+            background: var(--accent-color);
+            border: none;
+            color: var(--text-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
-<body data-theme="theme-01">
-
-    <nav class="sidebar glass">
-        <h2 style="margin-top:0"><i class="fas fa-layer-group"></i> 学科筛选</h2>
-        
-        <label class="checkbox-wrapper" style="background: rgba(255,255,255,0.05);">
-            <input type="checkbox" id="select-all" checked onchange="toggleAllSubjects()"> 
-            <b>全部学科</b>
-        </label>
-        <hr style="border-color: rgba(255,255,255,0.1); width:100%">
-        
-        <div id="subject-container">
+<body class="theme-blue-purple">
+    <!-- 设置模态框 -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2><i class="fas fa-cog"></i> 设置</h2>
+                <button class="close-settings" onclick="closeSettings()">&times;</button>
             </div>
-    </nav>
-
-    <div class="main-content">
-        
-        <div class="header glass" style="padding: 15px;">
-            <div>
-                <h2 style="margin:0">知识点展示区</h2>
-                <small id="filter-status" style="color: var(--accent)">正在显示: 全部学科</small>
-            </div>
-            <div id="user-info">
-                <span>未登录</span>
-                <button onclick="login()" style="margin-left:10px; padding:5px 15px; border-radius:20px; border:none; cursor:pointer;">登录</button>
-            </div>
-        </div>
-
-        <div class="knowledge-grid" id="kp-container">
-            </div>
-
-        <aside class="tools-panel">
             
-            <div class="glass" style="flex:1; padding:20px; display:flex; flex-direction:column;">
-                <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="switchTab('chat')">实时群聊</button>
-                    <button class="tab-btn" onclick="switchTab('notes')">精选笔记</button>
+            <div class="theme-selector">
+                <div class="theme-option theme-blue-purple selected" onclick="changeTheme('theme-blue-purple')">
+                    蓝-紫极光
                 </div>
-
-                <div id="tab-chat" class="chat-box">
-                    <div class="messages-list" id="msg-list">
-                        </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="msg-input" placeholder="按回车发送..." onkeypress="handleChatInput(event)">
-                        <button onclick="sendMessage()" style="background:var(--accent); border:none; border-radius:8px; width:40px;"><i class="fas fa-paper-plane"></i></button>
-                    </div>
+                <div class="theme-option theme-cyan-green" onclick="changeTheme('theme-cyan-green')">
+                    青-绿极光
                 </div>
-
-                <div id="tab-notes" class="chat-box" style="display:none;">
-                    <div style="text-align:center; padding:20px; opacity:0.7;">
-                        <i class="fas fa-book-open" style="font-size:30px; margin-bottom:10px;"></i>
-                        <p>暂无精选笔记</p>
-                    </div>
+                <div class="theme-option theme-green-yellowgreen" onclick="changeTheme('theme-green-yellowgreen')">
+                    绿-黄绿极光
+                </div>
+                <div class="theme-option theme-orange-red" onclick="changeTheme('theme-orange-red')">
+                    橙-红极光
+                </div>
+                <div class="theme-option theme-lightpurple-darkblue" onclick="changeTheme('theme-lightpurple-darkblue')">
+                    浅紫-深蓝极光
+                </div>
+                <div class="theme-option theme-lightmagenta-pink" onclick="changeTheme('theme-lightmagenta-pink')">
+                    浅紫红-粉极光
+                </div>
+                <div class="theme-option theme-skyblue-oceanblue" onclick="changeTheme('theme-skyblue-oceanblue')">
+                    天蓝-海蓝极光
+                </div>
+                <div class="theme-option theme-cyan-lightgreen" onclick="changeTheme('theme-cyan-lightgreen')">
+                    青绿-薄绿极光
+                </div>
+                <div class="theme-option theme-darkblue-lightblue" onclick="changeTheme('theme-darkblue-lightblue')">
+                    深蓝-深蓝(偏浅)极光
                 </div>
             </div>
-
-            <div class="glass" style="padding:20px;">
-                <h3 style="margin-top:0"><i class="fas fa-trophy" style="color:gold;"></i> 积分榜 Top 20</h3>
-                <div class="leaderboard-list" id="leaderboard">
-                    </div>
+            
+            <div class="user-stats" id="userStats">
+                <!-- 用户信息将通过JavaScript动态加载 -->
             </div>
-
-            <div class="glass" style="padding:20px;">
-                <h3 style="margin-top:0"><i class="fas fa-cog"></i> 个性化</h3>
-                <label>极光主题切换：</label>
-                <select id="theme-select" onchange="changeTheme(this.value)" style="margin-top:5px;">
-                    <option value="theme-01">Default Blue</option>
-                    <option value="theme-02">Sunset Glow</option>
-                    <option value="theme-03">Aurora Green</option>
-                    <option value="theme-04">Heat Wave</option>
-                    <option value="theme-05">Deep Sea</option>
-                    <option value="theme-06">Cyberpunk</option>
-                    <option value="theme-07">Midnight</option>
-                    <option value="theme-08">Monochrome</option>
-                    <option value="theme-09">Neon Pink</option>
-                </select>
-                <div id="my-stats" style="margin-top:15px; font-size:0.9em;">
-                    </div>
-            </div>
-
-        </aside>
+            
+            <button class="nav-btn" onclick="logout()" style="width: 100%;">
+                <i class="fas fa-sign-out-alt"></i> 退出登录
+            </button>
+        </div>
     </div>
 
+    <!-- 主页面容器 -->
+    <div class="container">
+        <!-- 导航栏 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                DSE HUB
+            </div>
+            <nav>
+                <a href="#" class="nav-btn active">
+                    <i class="fas fa-home"></i> 主站
+                </a>
+                <a href="gaming.html" class="nav-btn">
+                    <i class="fas fa-gamepad"></i> 游戏区域
+                </a>
+                <a href="admin.html" class="nav-btn">
+                    <i class="fas fa-user-shield"></i> 管理员面板
+                </a>
+                <a href="notes.html" class="nav-btn">
+                    <i class="fas fa-sticky-note"></i> 笔记板
+                </a>
+            </nav>
+            <div class="user-info">
+                <div id="loginStatus" class="login-status">
+                    <!-- 登录状态将通过JavaScript动态加载 -->
+                </div>
+                <div class="user-avatar" onclick="openSettings()" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧：知识点区域 -->
+            <div class="knowledge-section">
+                <h2 class="section-title">
+                    <i class="fas fa-book-open"></i> 知识点展示
+                </h2>
+                
+                <!-- 学科选择器 -->
+                <div class="subject-selector" id="subjectSelector">
+                    <!-- 学科将通过JavaScript动态生成 -->
+                </div>
+                
+                <!-- 筛选控制 -->
+                <div class="filter-controls">
+                    <button class="filter-btn active" onclick="filterSubjects('all')">
+                        <i class="fas fa-globe"></i> 全部学科
+                    </button>
+                    <button class="filter-btn" onclick="filterSubjects('selected')">
+                        <i class="fas fa-check-circle"></i> 已选学科
+                    </button>
+                    <button class="filter-btn" onclick="filterSubjects('single')">
+                        <i class="fas fa-filter"></i> 单个学科
+                    </button>
+                    <div style="flex: 1;"></div>
+                    <input type="text" placeholder="搜索知识点..." 
+                           oninput="searchKnowledge(this.value)"
+                           style="background: var(--card-bg); border: 1px solid var(--border-color); 
+                                  color: var(--text-color); padding: 10px 20px; border-radius: 20px;
+                                  width: 200px;">
+                </div>
+                
+                <!-- 知识卡片网格 -->
+                <div class="knowledge-grid" id="knowledgeGrid">
+                    <!-- 知识卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 右侧面板 -->
+            <div class="right-panel">
+                <!-- 留言板 -->
+                <div class="message-board">
+                    <div class="message-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-comments"></i> 留言板
+                        </h2>
+                        <div class="message-tabs">
+                            <button class="tab-btn active" onclick="switchTab('chat')">聊天</button>
+                            <button class="tab-btn" onclick="switchTab('notes')">笔记专区</button>
+                        </div>
+                    </div>
+                    
+                    <div class="messages-container" id="messagesContainer">
+                        <!-- 消息将通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <div class="message-input">
+                        <input type="text" id="messageInput" placeholder="输入消息...">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i> 发送
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 排行榜 -->
+                <div class="leaderboard">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i> 学习积分排行榜
+                    </h2>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- 排行榜条目将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase 初始化 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ================= CONFIG =================
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // 替换你的 URL
-        const SUPABASE_KEY = 'YOUR_ANON_KEY';     // 替换你的 Key
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // 初始化Supabase客户端
+        const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // 学科定义 (20个)
-        const subjects = {
-            "Languages": ["Chinese", "English", "English Lit"],
-            "Sciences": ["Math", "M1/M2", "Physics", "Chemistry", "Biology", "ICT"],
-            "Humanities": ["History", "Chi History", "Geography", "Liberal Studies"],
-            "Business": ["Econ", "BAFS", "Accounting"],
-            "Arts & Others": ["Visual Arts", "Music", "PE", "Health Mgt"]
-        };
-
+        // 用户状态管理
         let currentUser = null;
-        let userProfile = null;
+        let currentTheme = 'theme-blue-purple';
 
-        // ================= INIT =================
-        window.onload = async () => {
-            renderSubjects();
-            checkAuth();
-            fetchKnowledge();
-            fetchLeaderboard();
-            setupRealtime();
+        // DSE学科数据
+        const subjects = [
+            { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
+            { id: 'eng', name: '英国语文', icon: 'fas fa-language' },
+            { id: 'math', name: '数学', icon: 'fas fa-calculator' },
+            { id: 'ls', name: '通识', icon: 'fas fa-globe-asia' },
+            { id: 'edu', name: '教育', icon: 'fas fa-school' },
+            { id: 'phy', name: '物理', icon: 'fas fa-atom' },
+            { id: 'chem', name: '化学', icon: 'fas fa-flask' },
+            { id: 'bio', name: '生物', icon: 'fas fa-dna' },
+            { id: 'econ', name: '经济', icon: 'fas fa-chart-line' },
+            { id: 'geo', name: '地理', icon: 'fas fa-mountain' },
+            { id: 'chist', name: '中国历史', icon: 'fas fa-landmark' },
+            { id: 'whist', name: '世界历史', icon: 'fas fa-globe-europe' },
+            { id: 'csd', name: '公民与社会发展科', icon: 'fas fa-users' },
+            { id: 'baf', name: '企业会计与财务', icon: 'fas fa-file-invoice-dollar' },
+            { id: 'ict', name: '概论资讯与通讯科技', icon: 'fas fa-laptop-code' },
+            { id: 'm1', name: '数学延伸一', icon: 'fas fa-infinity' },
+            { id: 'm2', name: '数学延伸二', icon: 'fas fa-square-root-alt' },
+            { id: 'va', name: '视觉艺术', icon: 'fas fa-palette' },
+            { id: 'music', name: '音乐', icon: 'fas fa-music' },
+            { id: 'pe', name: '体育', icon: 'fas fa-running' }
+        ];
+
+        // 示例知识点数据
+        const knowledgeData = [
+            {
+                id: 1,
+                subject: 'math',
+                title: '微积分基础',
+                content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。'
+            },
+            {
+                id: 2,
+                subject: 'phy',
+                title: '牛顿运动定律',
+                content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。'
+            },
+            {
+                id: 3,
+                subject: 'chem',
+                title: '化学反应速率',
+                content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。'
+            },
+            {
+                id: 4,
+                subject: 'bio',
+                title: '细胞结构',
+                content: '真核细胞与原核细胞的区别，细胞器的功能和相互关系。'
+            },
+            {
+                id: 5,
+                subject: 'econ',
+                title: '供需理论',
+                content: '需求定律、供给定律，市场均衡价格的形成和变动。'
+            },
+            {
+                id: 6,
+                subject: 'chi',
+                title: '古文鉴赏技巧',
+                content: '文言文阅读方法，重点字词解释，篇章结构分析。'
+            }
+        ];
+
+        // 示例留言数据
+        const chatMessages = [
+            {
+                id: 1,
+                author: '学习助手',
+                time: '10:30',
+                content: '欢迎来到DSE Hub！这里可以交流学习心得，互相帮助解决问题。',
+                isNote: false
+            },
+            {
+                id: 2,
+                author: '管理员',
+                time: '11:15',
+                content: '精选笔记已更新：微积分解题技巧总结，请查看笔记专区。',
+                isNote: false
+            },
+            {
+                id: 3,
+                author: '优秀学员',
+                time: '昨天 14:20',
+                content: '物理力学部分的重要公式整理，包括动量守恒和能量转换。',
+                isNote: true
+            },
+            {
+                id: 4,
+                author: '数学高手',
+                time: '昨天 16:45',
+                content: '三角函数图像变换的规律总结，附带记忆口诀。',
+                isNote: true
+            }
+        ];
+
+        // 示例排行榜数据
+        const leaderboardData = [
+            { rank: 1, name: '学霸小明', score: 9850 },
+            { rank: 2, name: '智慧小红', score: 9420 },
+            { rank: 3, name: '勤奋小华', score: 9015 },
+            { rank: 4, name: '努力小刚', score: 8760 },
+            { rank: 5, name: '坚持小丽', score: 8540 },
+            { rank: 6, name: '专注小强', score: 8320 },
+            { rank: 7, name: '刻苦小美', score: 8150 },
+            { rank: 8, name: '执着小军', score: 7980 },
+            { rank: 9, name: '细心小芳', score: 7820 },
+            { rank: 10, name: '耐心小杰', score: 7650 }
+        ];
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initSubjects();
+            initKnowledgeGrid();
+            initMessages();
+            initLeaderboard();
+            initUser();
+        });
+
+        // 初始化学科选择器
+        function initSubjects() {
+            const container = document.getElementById('subjectSelector');
+            container.innerHTML = '';
+            
+            // 添加"全部学科"选项
+            const allCard = document.createElement('div');
+            allCard.className = 'subject-card selected';
+            allCard.innerHTML = `
+                <div class="subject-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="subject-name">全部学科</div>
+            `;
+            allCard.onclick = () => selectSubject('all');
+            container.appendChild(allCard);
+            
+            // 添加各学科选项
+            subjects.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.dataset.subjectId = subject.id;
+                card.innerHTML = `
+                    <div class="subject-icon"><i class="${subject.icon}"></i></div>
+                    <div class="subject-name">${subject.name}</div>
+                `;
+                card.onclick = () => selectSubject(subject.id);
+                container.appendChild(card);
+            });
+        }
+
+        // 选择学科
+        function selectSubject(subjectId) {
+            if (subjectId === 'all') {
+                // 选择全部学科
+                document.querySelectorAll('.subject-card').forEach(card => {
+                    card.classList.add('selected');
+                });
+            } else {
+                // 切换单个学科选择状态
+                const card = document.querySelector(`[data-subject-id="${subjectId}"]`);
+                card.classList.toggle('selected');
+                
+                // 更新"全部学科"状态
+                const allCard = document.querySelector('.subject-card:first-child');
+                const selectedCount = document.querySelectorAll('.subject-card.selected').length - 1; // 减去"全部学科"本身
+                if (selectedCount === subjects.length) {
+                    allCard.classList.add('selected');
+                } else {
+                    allCard.classList.remove('selected');
+                }
+            }
+            
+            // 刷新知识网格
+            filterSubjects('selected');
+        }
+
+        // 筛选学科
+        function filterSubjects(filterType) {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            refreshKnowledgeGrid(filterType);
+        }
+
+        // 搜索知识点
+        function searchKnowledge(keyword) {
+            const container = document.getElementById('knowledgeGrid');
+            const selectedSubjects = getSelectedSubjects();
+            
+            const filtered = knowledgeData.filter(item => {
+                const subjectMatch = selectedSubjects.includes('all') || selectedSubjects.includes(item.subject);
+                const keywordMatch = !keyword || 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.content.toLowerCase().includes(keyword.toLowerCase());
+                return subjectMatch && keywordMatch;
+            });
+            
+            renderKnowledgeCards(filtered);
+        }
+
+        // 获取已选学科
+        function getSelectedSubjects() {
+            const selectedCards = document.querySelectorAll('.subject-card.selected');
+            const selectedSubjects = [];
+            
+            selectedCards.forEach(card => {
+                if (card.dataset.subjectId === 'all') {
+                    selectedSubjects.push('all');
+                } else if (card.dataset.subjectId) {
+                    selectedSubjects.push(card.dataset.subjectId);
+                }
+            });
+            
+            return selectedSubjects;
+        }
+
+        // 刷新知识网格
+        function refreshKnowledgeGrid(filterType) {
+            const selectedSubjects = getSelectedSubjects();
+            let filteredData = knowledgeData;
+            
+            if (filterType === 'selected' && !selectedSubjects.includes('all')) {
+                filteredData = knowledgeData.filter(item => 
+                    selectedSubjects.includes(item.subject)
+                );
+            } else if (filterType === 'single' && selectedSubjects.length === 1 && !selectedSubjects.includes('all')) {
+                filteredData = knowledgeData.filter(item => 
+                    item.subject === selectedSubjects[0]
+                );
+            }
+            
+            renderKnowledgeCards(filteredData);
+        }
+
+        // 初始化知识网格
+        function initKnowledgeGrid() {
+            renderKnowledgeCards(knowledgeData);
+        }
+
+        // 渲染知识卡片
+        function renderKnowledgeCards(data) {
+            const container = document.getElementById('knowledgeGrid');
+            container.innerHTML = '';
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; opacity: 0.7;">暂无相关知识点</div>';
+                return;
+            }
+            
+            data.forEach(item => {
+                const subject = subjects.find(s => s.id === item.subject);
+                const card = document.createElement('div');
+                card.className = 'knowledge-card';
+                card.innerHTML = `
+                    <div class="knowledge-subject">${subject ? subject.name : item.subject}</div>
+                    <div class="knowledge-title">${item.title}</div>
+                    <div class="knowledge-content">${item.content}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 初始化留言板
+        function initMessages() {
+            renderMessages('chat');
+        }
+
+        // 切换标签页
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            renderMessages(tab);
+        }
+
+        // 渲染消息
+        function renderMessages(tab) {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            
+            let messagesToShow = tab === 'notes' 
+                ? chatMessages.filter(m => m.isNote)
+                : chatMessages;
+            
+            if (messagesToShow.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; opacity: 0.7;">暂无消息</div>';
+                return;
+            }
+            
+            messagesToShow.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.isNote ? 'note-message' : ''}`;
+                messageDiv.innerHTML = `
+                    <div class="message-header-info">
+                        <div>
+                            ${msg.isNote ? '<span class="note-badge">精选笔记</span>' : ''}
+                            <span class="message-author">${msg.author}</span>
+                        </div>
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                    <div class="message-content">${msg.content}</div>
+                `;
+                container.appendChild(messageDiv);
+            });
+            
+            // 滚动到底部
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            if (!currentUser) {
+                alert('请先登录后再发送消息');
+                return;
+            }
+            
+            // 添加到消息列表
+            const newMessage = {
+                id: Date.now(),
+                author: currentUser.username || '用户',
+                time: '刚刚',
+                content: message,
+                isNote: false
+            };
+            
+            chatMessages.push(newMessage);
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 重新渲染消息
+            const activeTab = document.querySelector('.tab-btn.active').textContent;
+            renderMessages(activeTab === '笔记专区' ? 'notes' : 'chat');
+        }
+
+        // 初始化排行榜
+        function initLeaderboard() {
+            renderLeaderboard();
+        }
+
+        // 渲染排行榜
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = '';
+            
+            leaderboardData.forEach(player => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <div class="rank rank-${player.rank}">${player.rank}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-score">学习积分: ${player.score.toLocaleString()}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 初始化用户
+        async function initUser() {
+            // 检查本地存储中是否有用户信息
+            const savedUser = localStorage.getItem('dsehub_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserUI();
+            } else {
+                // 演示用：创建默认用户
+                currentUser = {
+                    id: 1,
+                    username: '访客用户',
+                    email: 'guest@example.com',
+                    role: 'user',
+                    score: 1250,
+                    games_played: 15,
+                    high_score: 850,
+                    created_at: new Date().toISOString()
+                };
+                localStorage.setItem('dsehub_user', JSON.stringify(currentUser));
+                updateUserUI();
+            }
+            
+            // 在实际应用中，这里应该使用Supabase认证
+            // const { data: { user } } = await supabase.auth.getUser();
+            // if (user) {
+            //     currentUser = user;
+            //     updateUserUI();
+            // }
+        }
+
+        // 更新用户界面
+        function updateUserUI() {
+            const loginStatus = document.getElementById('loginStatus');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (currentUser) {
+                loginStatus.innerHTML = `
+                    <div>欢迎, <strong>${currentUser.username}</strong></div>
+                    <div style="font-size: 12px; opacity: 0.8;">积分: ${currentUser.score || 0}</div>
+                `;
+                
+                userAvatar.innerHTML = currentUser.username.charAt(0).toUpperCase();
+                
+                // 更新用户统计
+                updateUserStats();
+            } else {
+                loginStatus.innerHTML = `
+                    <button class="login-btn" onclick="login()">
+                        <i class="fas fa-sign-in-alt"></i> 登录
+                    </button>
+                `;
+                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
+        }
+
+        // 更新用户统计
+        function updateUserStats() {
+            const container = document.getElementById('userStats');
+            if (!container || !currentUser) return;
+            
+            container.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${currentUser.score || 0}</div>
+                    <div class="stat-label">学习积分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${currentUser.games_played || 0}</div>
+                    <div class="stat-label">游戏次数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${currentUser.high_score || 0}</div>
+                    <div class="stat-label">最高分</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${currentUser.role === 'admin' ? '管理员' : '用户'}</div>
+                    <div class="stat-label">账号类型</div>
+                </div>
+            `;
+        }
+
+        // 登录函数
+        async function login() {
+            // 演示用：创建模拟用户
+            currentUser = {
+                id: Date.now(),
+                username: '测试用户' + Math.floor(Math.random() * 1000),
+                email: `user${Math.floor(Math.random() * 1000)}@example.com`,
+                role: 'user',
+                score: Math.floor(Math.random() * 5000) + 1000,
+                games_played: Math.floor(Math.random() * 50) + 10,
+                high_score: Math.floor(Math.random() * 1000) + 500,
+                created_at: new Date().toISOString()
+            };
+            
+            localStorage.setItem('dsehub_user', JSON.stringify(currentUser));
+            updateUserUI();
+            alert(`欢迎 ${currentUser.username}！登录成功。`);
+            
+            // 在实际应用中，这里应该使用Supabase认证
+            // const { data, error } = await supabase.auth.signInWithPassword({
+            //     email: email,
+            //     password: password
+            // });
+        }
+
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('dsehub_user');
+            updateUserUI();
+            closeSettings();
+            alert('已退出登录');
+        }
+
+        // 打开设置面板
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+            updateUserStats();
+        }
+
+        // 关闭设置面板
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // 切换主题
+        function changeTheme(themeName) {
+            // 移除当前主题
+            document.body.classList.remove(currentTheme);
+            
+            // 添加新主题
+            currentTheme = themeName;
+            document.body.classList.add(themeName);
+            
+            // 更新主题选项选中状态
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            // 保存主题偏好
+            localStorage.setItem('dsehub_theme', themeName);
+        }
+
+        // 加载保存的主题
+        const savedTheme = localStorage.getItem('dsehub_theme');
+        if (savedTheme) {
+            currentTheme = savedTheme;
+            document.body.classList.add(savedTheme);
+            
+            // 更新选中状态
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.classList.contains(savedTheme)) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // 处理Enter键发送消息
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                closeSettings();
+            }
         };
 
-        // ================= 1. 学科导航逻辑 =================
-        function renderSubjects() {
-            const container = document.getElementById('subject-container');
-            let html = '';
-            for (const [group, subs] of Object.entries(subjects)) {
-                html += `<div class="subject-group">
-                            <div class="group-title">${group}</div>`;
-                subs.forEach(sub => {
-                    html += `<label class="checkbox-wrapper">
-                                <input type="checkbox" class="sub-chk" value="${sub}" checked onchange="filterKnowledge()"> 
-                                ${sub}
-                             </label>`;
-                });
-                html += `</div>`;
+        // 全局键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+/ 打开设置
+            if (e.ctrlKey && e.key === '/') {
+                e.preventDefault();
+                openSettings();
             }
-            container.innerHTML = html;
-        }
-
-        function toggleAllSubjects() {
-            const allChecked = document.getElementById('select-all').checked;
-            document.querySelectorAll('.sub-chk').forEach(cb => cb.checked = allChecked);
-            filterKnowledge();
-        }
-
-        // ================= 2. 知识点获取逻辑 =================
-        async function fetchKnowledge() {
-            // 获取选中的学科
-            const checkboxes = document.querySelectorAll('.sub-chk:checked');
-            const selected = Array.from(checkboxes).map(cb => cb.value);
-            
-            document.getElementById('filter-status').innerText = selected.length === 20 ? "显示: 全部" : `选中 ${selected.length} 个学科`;
-
-            if (selected.length === 0) {
-                document.getElementById('kp-container').innerHTML = '<div style="padding:20px">请至少选择一个学科</div>';
-                return;
+            // Esc 关闭设置
+            if (e.key === 'Escape') {
+                closeSettings();
             }
-
-            // 查询数据库
-            const { data, error } = await supabase
-                .from('knowledge_points')
-                .select('*')
-                .in('subject', selected)
-                .order('created_at', { ascending: false })
-                .limit(50);
-
-            if (error) console.error(error);
-            renderKnowledgeCards(data || []);
-        }
-
-        function renderKnowledgeCards(data) {
-            const container = document.getElementById('kp-container');
-            if (data.length === 0) {
-                container.innerHTML = '<div style="padding:20px; opacity:0.6;">暂无相关知识点</div>';
-                return;
-            }
-            container.innerHTML = data.map(item => `
-                <div class="glass kp-card">
-                    <span class="kp-tag">${item.subject}</span>
-                    <span class="kp-tag" style="background:rgba(255,255,255,0.2); color:#fff;">${item.difficulty || 'General'}</span>
-                    <h3>${item.title}</h3>
-                    <p style="opacity:0.8; font-size:14px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;">
-                        ${item.content || '暂无预览...'}
-                    </p>
-                </div>
-            `).join('');
-        }
-        
-        // 这里的 filterKnowledge 是 checkbox onchange 的回调
-        function filterKnowledge() {
-            // 防抖可以加在这里，目前直接调用
-            fetchKnowledge();
-        }
-
-        // ================= 3. 实时聊天逻辑 =================
-        async function setupRealtime() {
-            // 1. 加载历史消息
-            const { data } = await supabase.from('chat_messages').select('*').order('created_at', {ascending: false}).limit(20);
-            if(data) data.reverse().forEach(appendMessage);
-
-            // 2. 订阅新消息
-            const channel = supabase.channel('public:chat_messages')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
-                    appendMessage(payload.new);
-                })
-                .subscribe();
-        }
-
-        function appendMessage(msg) {
-            const list = document.getElementById('msg-list');
-            const div = document.createElement('div');
-            div.className = 'message-item';
-            div.innerHTML = `<strong style="color:var(--accent)">${msg.username}:</strong> ${msg.content}`;
-            list.appendChild(div);
-            list.scrollTop = list.scrollHeight;
-        }
-
-        async function sendMessage() {
-            if (!currentUser) return alert("请先登录");
-            const input = document.getElementById('msg-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            await supabase.from('chat_messages').insert({
-                user_id: currentUser.id,
-                username: userProfile?.username || 'User',
-                content: text
-            });
-            input.value = '';
-        }
-
-        function handleChatInput(e) { if(e.key === 'Enter') sendMessage(); }
-
-        // ================= 4. 排行榜 =================
-        async function fetchLeaderboard() {
-            const { data } = await supabase
-                .from('profiles')
-                .select('username, score')
-                .order('score', { ascending: false })
-                .limit(20);
-
-            const list = document.getElementById('leaderboard');
-            list.innerHTML = (data || []).map((u, i) => `
-                <div class="rank-item">
-                    <span><b style="color:var(--accent)">#${i+1}</b> ${u.username || 'Unknown'}</span>
-                    <span>${u.score || 0} pts</span>
-                </div>
-            `).join('');
-        }
-
-        // ================= 5. 用户与主题 =================
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                // 获取 Profile 和 主题
-                const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-                userProfile = data;
-                
-                document.getElementById('user-info').innerHTML = `
-                    <i class="fas fa-user-circle"></i> ${userProfile?.username || 'User'}
-                    <small style="cursor:pointer; margin-left:10px; opacity:0.7" onclick="logout()">[登出]</small>
-                `;
-                
-                // 应用保存的主题
-                if (userProfile?.theme) {
-                    changeTheme(userProfile.theme, false); // false = don't update DB again
-                    document.getElementById('theme-select').value = userProfile.theme;
-                }
-
-                // 显示个人数据
-                document.getElementById('my-stats').innerHTML = `
-                    我的积分: <b style="color:var(--accent)">${userProfile?.score || 0}</b><br>
-                    已玩场次: ${userProfile?.games_played || 0}
-                `;
-            }
-        }
-
-        async function changeTheme(themeName, saveToDb = true) {
-            // 切换 CSS
-            document.body.setAttribute('data-theme', themeName);
-            
-            // 保存到数据库
-            if (saveToDb && currentUser) {
-                await supabase.from('profiles').update({ theme: themeName }).eq('id', currentUser.id);
-            }
-        }
-
-        // 简单的登录占位 (实际项目中应重定向到 Auth 页面)
-        async function login() {
-            // 这里为了演示，请使用 supabase.auth.signInWithOAuth 或 Password
-            // const email = prompt("Email:");
-            // const password = prompt("Password:");
-            // await supabase.auth.signInWithPassword({ email, password });
-            alert("请集成你的登录页面逻辑，或使用 supabase.auth.signInWithOAuth()。");
-        }
-        
-        async function logout() {
-            await supabase.auth.signOut();
-            location.reload();
-        }
-
-        // Tab Switcher
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.chat-box').forEach(b => b.style.display = 'none');
-            
-            if(tab === 'chat') {
-                document.getElementById('tab-chat').style.display = 'flex';
-                event.target.classList.add('active');
-            } else {
-                document.getElementById('tab-notes').style.display = 'flex';
-                event.target.classList.add('active');
-            }
-        }
+        });
     </script>
 </body>
 </html>
+
