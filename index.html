@@ -50,21 +50,11 @@
             --transition-normal: 0.3s ease; /* 正常过渡 */
             --transition-slow: 0.5s ease;   /* 慢速过渡 */
             
-            /* 子网站链接变量 - 在这里修改页面URL */
-            /* 修改这里的值来更新所有页面的跳转链接 */
-            --url-gaming: 'gaming.html';     /* 游戏区域页面路径 */
-            --url-admin: 'admin.html';       /* 管理员面板页面路径 */
-            --url-notes: 'notes.html';       /* 笔记板页面路径 */
-            
             /* 毛玻璃滤镜强度 */
             --blur-intensity: 20px;
-            
-            /* 投稿界面状态变量 */
-            --submission-mode: false; /* 投稿模式开关 */
         }
 
         /* ==================== 主题系统 ==================== */
-        /* 修改这里的颜色值来切换主题 */
         .theme-blue-purple {
             --primary-start: #4f8cff;
             --primary-end: #9d4edd;
@@ -216,7 +206,6 @@
         }
 
         /* ==================== 按钮系统 ==================== */
-        /* 基础按钮样式 */
         .btn {
             background: var(--btn-bg);
             border: 1px solid var(--btn-border);
@@ -247,7 +236,6 @@
             border-color: var(--accent-color);
         }
 
-        /* 主要按钮样式 */
         .btn-primary {
             background: var(--btn-primary-bg);
             border: none;
@@ -257,18 +245,6 @@
 
         .btn-primary:hover {
             opacity: 0.9;
-        }
-
-        /* 投稿模式下的按钮样式 */
-        body:has(#submissionPanel:not(.hidden)) .subject-card {
-            padding: var(--spacing-md) !important;
-            min-height: 60px !important;
-            font-size: 12px !important;
-        }
-
-        body:has(#submissionPanel:not(.hidden)) .subject-icon {
-            font-size: 18px !important;
-            margin-bottom: var(--spacing-xs) !important;
         }
 
         .user-info {
@@ -307,7 +283,6 @@
             position: relative;
         }
 
-        /* 左侧导航栏 */
         .side-nav {
             width: 260px;
             background: var(--card-bg);
@@ -346,7 +321,6 @@
             gap: var(--spacing-sm);
         }
 
-        /* 主内容面板 */
         .main-panel {
             flex: 1;
             background: var(--card-bg);
@@ -380,7 +354,6 @@
         }
 
         /* ==================== 知识点系统 ==================== */
-        /* 学科选择器 */
         .subject-selector {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -388,7 +361,6 @@
             margin-bottom: var(--spacing-xl);
         }
 
-        /* 学科卡片 */
         .subject-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -428,7 +400,6 @@
             line-height: 1.3;
         }
 
-        /* 知识点筛选控制 */
         .subject-controls {
             display: flex;
             gap: var(--spacing-sm);
@@ -437,7 +408,6 @@
             align-items: center;
         }
 
-        /* 知识网格布局 */
         .knowledge-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -447,7 +417,6 @@
             padding: var(--spacing-sm);
         }
 
-        /* 滚动条样式 */
         .knowledge-grid::-webkit-scrollbar {
             width: 6px;
         }
@@ -462,7 +431,6 @@
             border-radius: var(--border-radius-sm);
         }
 
-        /* 知识卡片 */
         .knowledge-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -479,7 +447,6 @@
             background: var(--hover-color);
         }
 
-        /* 知识点展开详情 */
         .knowledge-detail {
             max-height: 0;
             overflow: hidden;
@@ -499,7 +466,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* 知识点标签 */
         .knowledge-tags {
             display: flex;
             flex-wrap: wrap;
@@ -602,7 +568,6 @@
         }
 
         /* ==================== 投稿系统 ==================== */
-        /* 表单样式 */
         .form-group {
             margin-bottom: var(--spacing-lg);
         }
@@ -621,7 +586,6 @@
             color: var(--accent-color);
         }
 
-        /* 表单输入框 */
         .form-input, .form-textarea, .form-select {
             width: 100%;
             background: var(--card-bg);
@@ -660,7 +624,6 @@
             margin-top: var(--spacing-xl);
         }
 
-        /* 投稿历史 */
         .submission-history-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -892,7 +855,6 @@
         }
 
         /* ==================== 模态框系统 ==================== */
-        /* 登录强制模态框 */
         .modal-overlay.required {
             display: flex !important;
             z-index: 1000 !important;
@@ -1155,7 +1117,6 @@
         }
 
         /* ==================== 投稿模式特殊样式 ==================== */
-        /* 投稿界面下的学科选择器 */
         .submission-subject-selector .subject-card {
             padding: var(--spacing-md) !important;
             min-height: 70px !important;
@@ -1170,7 +1131,6 @@
             font-size: 12px !important;
         }
 
-        /* 多选指示器 */
         .subject-card.multi-selected {
             position: relative;
         }
@@ -1199,7 +1159,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-sign-in-alt"></i> 欢迎使用 DSE Hub</h2>
-                <!-- 移除关闭按钮，强制登录 -->
             </div>
             <div class="modal-form">
                 <div class="form-input-group">
@@ -1254,7 +1213,7 @@
         </div>
     </div>
 
-    <!-- 主页面容器（登录前不可用） -->
+    <!-- 主页面容器 -->
     <div class="container">
         <!-- 导航栏 -->
         <header>
@@ -1364,7 +1323,6 @@
                         <h2><i class="fas fa-paper-plane"></i> 投稿提交</h2>
                     </div>
                     <div class="panel-content">
-                        <!-- 投稿学科选择器 -->
                         <div class="form-group">
                             <label><i class="fas fa-tag"></i> 选择相关学科（可多选）</label>
                             <div class="subject-selector submission-subject-selector" id="submissionSubjectSelector"></div>
@@ -1449,21 +1407,14 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // CSS变量工具函数
-        const CSSVar = {
-            get: function(name) {
-                return getComputedStyle(document.documentElement).getPropertyValue(name).trim().slice(1, -1);
-            }
-        };
-
         const DSEHub = {
             // 状态变量
             supabase: null,
             currentUser: null,
             currentTheme: 'theme-blue-purple',
             currentMessageTab: 'chat',
-            selectedSubjects: new Set(['all']), // 默认选择全部学科
-            selectedSubmissionSubjects: new Set(), // 投稿学科选择
+            selectedSubjects: new Set(['all']),
+            selectedSubmissionSubjects: new Set(),
             currentFilter: 'all',
             isLoggedIn: false,
             isAdmin: false,
@@ -1505,46 +1456,113 @@
             ],
 
             // 知识点数据
-            knowledgeData: (() => {
-                const baseData = [
-                    { 
-                        id: 1, subject: 'math', title: '微积分基础', 
-                        content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。微积分在物理、工程、经济学等领域有广泛应用。',
-                        detail: '微分学主要研究函数的变化率，包括极限、导数、微分等概念。积分学则研究累积量，包括不定积分和定积分。两者通过微积分基本定理相互联系。',
-                        tags: ['基础', '公式', '应用', 'M1', 'M2'],
-                        relatedSubjects: ['math', 'm1', 'm2', 'phy', 'econ']
-                    },
-                    { 
-                        id: 2, subject: 'phy', title: '牛顿运动定律', 
-                        content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。',
-                        detail: '牛顿第一定律：物体在没有外力作用下保持静止或匀速直线运动。牛顿第二定律：物体的加速度与作用力成正比，与质量成反比。牛顿第三定律：两个物体之间的作用力和反作用力总是大小相等，方向相反。',
-                        tags: ['力学', '基础定律', '运动学'],
-                        relatedSubjects: ['phy', 'math']
-                    },
-                    { 
-                        id: 3, subject: 'chem', title: '化学反应速率', 
-                        content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。',
-                        detail: '化学反应速率受多种因素影响：反应物浓度（浓度越大速率越快）、温度（温度每升高10°C，速率约增加2-4倍）、催化剂（降低活化能）、表面积（固体表面积越大反应越快）。速率方程描述反应速率与浓度的关系。',
-                        tags: ['反应速率', '影响因素', '方程式'],
-                        relatedSubjects: ['chem', 'bio']
-                    }
-                ];
-                
-                // 生成更多示例数据
-                for (let i = 4; i <= 15; i++) {
-                    const subject = DSEHub.subjects[Math.floor(Math.random() * DSEHub.subjects.length)];
-                    baseData.push({
-                        id: i,
-                        subject: subject.id,
-                        title: `${subject.name}知识点 ${i}`,
-                        content: `这是${subject.name}的相关知识点内容，包含重要概念和应用实例。`,
-                        detail: `详细内容：这是${subject.name}的详细知识点讲解，包含公式推导、例题分析和解题技巧。`,
-                        tags: [subject.name.slice(0, 2), '知识点', '示例'],
-                        relatedSubjects: [subject.id]
-                    });
+            knowledgeData: [
+                { 
+                    id: 1, subject: 'math', title: '微积分基础', 
+                    content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。微积分在物理、工程、经济学等领域有广泛应用。',
+                    detail: '微分学主要研究函数的变化率，包括极限、导数、微分等概念。积分学则研究累积量，包括不定积分和定积分。两者通过微积分基本定理相互联系。',
+                    tags: ['基础', '公式', '应用', 'M1', 'M2'],
+                    relatedSubjects: ['math', 'm1', 'm2', 'phy', 'econ']
+                },
+                { 
+                    id: 2, subject: 'phy', title: '牛顿运动定律', 
+                    content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。',
+                    detail: '牛顿第一定律：物体在没有外力作用下保持静止或匀速直线运动。牛顿第二定律：物体的加速度与作用力成正比，与质量成反比。牛顿第三定律：两个物体之间的作用力和反作用力总是大小相等，方向相反。',
+                    tags: ['力学', '基础定律', '运动学'],
+                    relatedSubjects: ['phy', 'math']
+                },
+                { 
+                    id: 3, subject: 'chem', title: '化学反应速率', 
+                    content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。',
+                    detail: '化学反应速率受多种因素影响：反应物浓度（浓度越大速率越快）、温度（温度每升高10°C，速率约增加2-4倍）、催化剂（降低活化能）、表面积（固体表面积越大反应越快）。速率方程描述反应速率与浓度的关系。',
+                    tags: ['反应速率', '影响因素', '方程式'],
+                    relatedSubjects: ['chem', 'bio']
+                },
+                { 
+                    id: 4, subject: 'chi', title: '古诗词鉴赏', 
+                    content: '掌握古诗词的基本鉴赏方法，包括意象分析、意境把握、语言特色等。',
+                    detail: '古诗词鉴赏需要从意象、意境、语言、情感等多个角度进行分析。意象指诗歌中具体的物象，意境是意象组合形成的艺术境界，语言特色包括修辞手法、用词特点等。',
+                    tags: ['语文', '诗词', '鉴赏'],
+                    relatedSubjects: ['chi']
+                },
+                { 
+                    id: 5, subject: 'eng', title: '英语语法要点', 
+                    content: '掌握英语时态、语态、非谓语动词等核心语法知识。',
+                    detail: '英语语法包括时态（现在时、过去时、将来时等）、语态（主动语态、被动语态）、非谓语动词（不定式、动名词、分词）等。正确运用语法是英语学习的基础。',
+                    tags: ['英语', '语法', '基础'],
+                    relatedSubjects: ['eng']
+                },
+                { 
+                    id: 6, subject: 'ls', title: '通识议题分析', 
+                    content: '学习分析社会议题的基本框架和方法，包括多角度思考、证据运用等。',
+                    detail: '通识教育强调从不同角度分析社会议题，需要运用逻辑思维、批判性思考和证据支持。分析框架通常包括议题背景、各方观点、影响因素和解决方案等。',
+                    tags: ['通识', '社会', '分析'],
+                    relatedSubjects: ['ls', 'csd']
+                },
+                { 
+                    id: 7, subject: 'econ', title: '供需理论', 
+                    content: '理解供给和需求的基本原理及其对市场价格的影响。',
+                    detail: '供需理论是经济学的基础，供给曲线表示价格与供给量的关系，需求曲线表示价格与需求量的关系。市场均衡由供给曲线和需求曲线的交点决定。',
+                    tags: ['经济', '基础', '理论'],
+                    relatedSubjects: ['econ']
+                },
+                { 
+                    id: 8, subject: 'bio', title: '细胞结构', 
+                    content: '了解细胞的基本结构和功能，包括细胞膜、细胞核、细胞器等。',
+                    detail: '细胞是生物体的基本单位，包含细胞膜（控制物质进出）、细胞核（储存遗传信息）、线粒体（能量生产）、核糖体（蛋白质合成）等结构。不同细胞器协同工作维持细胞生命活动。',
+                    tags: ['生物', '细胞', '结构'],
+                    relatedSubjects: ['bio', 'chem']
+                },
+                { 
+                    id: 9, subject: 'geo', title: '板块构造理论', 
+                    content: '理解地球板块的运动机制及其对地质现象的影响。',
+                    detail: '板块构造理论认为地球表层由多个板块组成，板块之间相对运动导致地震、火山、山脉形成等地质现象。板块边界分为离散边界、汇聚边界和转换边界三种类型。',
+                    tags: ['地理', '地质', '理论'],
+                    relatedSubjects: ['geo', 'phy']
+                },
+                { 
+                    id: 10, subject: 'chist', title: '中国近代史', 
+                    content: '掌握中国近代史上的重要事件和发展脉络。',
+                    detail: '中国近代史从1840年鸦片战争开始，经历了洋务运动、戊戌变法、辛亥革命、抗日战争等重要历史阶段。这一时期中国经历了从封建社会向现代国家的转型。',
+                    tags: ['历史', '中国', '近代'],
+                    relatedSubjects: ['chist']
+                },
+                { 
+                    id: 11, subject: 'whist', title: '世界两次大战', 
+                    content: '了解第一次世界大战和第二次世界大战的起因、过程和影响。',
+                    detail: '第一次世界大战（1914-1918）主要由帝国主义矛盾引发，第二次世界大战（1939-1945）则源于法西斯主义扩张。两次大战对世界格局产生深远影响，推动了国际秩序的重建。',
+                    tags: ['历史', '世界', '战争'],
+                    relatedSubjects: ['whist']
+                },
+                { 
+                    id: 12, subject: 'baf', title: '会计基本原则', 
+                    content: '掌握会计的基本假设、原则和记账方法。',
+                    detail: '会计基本原则包括实体假设、持续经营假设、会计分期假设、货币计量假设。记账方法采用复式记账法，确保会计等式的平衡。',
+                    tags: ['会计', '财务', '基础'],
+                    relatedSubjects: ['baf', 'econ']
+                },
+                { 
+                    id: 13, subject: 'ict', title: '编程基础', 
+                    content: '学习计算机编程的基本概念和逻辑思维。',
+                    detail: '编程基础包括变量、数据类型、控制结构（顺序、选择、循环）、函数等概念。掌握编程思维有助于解决复杂问题和实现自动化。',
+                    tags: ['计算机', '编程', '基础'],
+                    relatedSubjects: ['ict', 'math']
+                },
+                { 
+                    id: 14, subject: 'm1', title: '概率与统计', 
+                    content: '掌握概率计算和统计分析的基本方法。',
+                    detail: '概率论研究随机现象的规律性，统计学研究数据的收集、分析和解释。两者结合为决策提供科学依据。',
+                    tags: ['数学', '概率', '统计'],
+                    relatedSubjects: ['m1', 'math']
+                },
+                { 
+                    id: 15, subject: 'm2', title: '代数与微积分进阶', 
+                    content: '深入学习代数和微积分的进阶内容。',
+                    detail: '代数进阶包括矩阵、向量空间等，微积分进阶包括多元函数、偏导数、重积分等。这些内容在工程和科学领域有广泛应用。',
+                    tags: ['数学', '代数', '微积分'],
+                    relatedSubjects: ['m2', 'math', 'phy']
                 }
-                return baseData;
-            })(),
+            ],
 
             // 初始化函数
             init: function() {
@@ -1555,10 +1573,7 @@
                 this.initMessageBoard();
                 this.showPanel('knowledge');
                 
-                // 强制登录模式
                 this.enforceLogin();
-                
-                // 监听窗口变化
                 window.addEventListener('resize', () => this.handleResize());
             },
 
@@ -1567,7 +1582,6 @@
                 document.body.classList.add('login-required');
                 document.getElementById('loginModal').classList.add('required');
                 
-                // 检查是否有已保存的登录状态
                 const savedSession = localStorage.getItem('dsehub_session');
                 if (savedSession) {
                     try {
@@ -1590,13 +1604,9 @@
                 document.getElementById('loginModal').style.display = 'none';
                 this.isLoggedIn = true;
                 
-                // 更新用户界面
                 this.updateUserUI();
-                
-                // 显示欢迎消息
                 this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                 
-                // 如果是管理员，显示管理按钮
                 if (this.currentUser.role === 'admin') {
                     this.isAdmin = true;
                     document.getElementById('adminNavBtn').style.display = 'flex';
@@ -1649,13 +1659,11 @@
                 
                 container.innerHTML = '';
                 
-                // 添加"全部学科"选项（仅知识点模式）
                 if (mode === 'knowledge') {
                     const allCard = this.createSubjectCard('all', '全部学科', 'fas fa-layer-group', selectedSet.has('all'), mode);
                     container.appendChild(allCard);
                 }
                 
-                // 添加各学科选项
                 this.subjects.forEach(subject => {
                     const isSelected = mode === 'submission' ? 
                         selectedSet.has(subject.id) : 
@@ -1712,7 +1720,6 @@
                     } else {
                         this.selectedSubjects.add(subjectId);
                         
-                        // 检查是否选择了所有学科
                         const allSelected = this.subjects.every(s => 
                             s.id === subjectId || this.selectedSubjects.has(s.id)
                         );
@@ -1739,7 +1746,6 @@
 
             // 知识点筛选
             filterSubjects: function(filterType, element) {
-                // 更新按钮状态
                 const btns = element.parentElement.querySelectorAll('.btn');
                 btns.forEach(btn => btn.classList.remove('active'));
                 element.classList.add('active');
@@ -1752,7 +1758,6 @@
             filterKnowledge: function() {
                 let filteredData = this.knowledgeData;
                 
-                // 根据选择的学科筛选
                 if (!this.selectedSubjects.has('all') && this.selectedSubjects.size > 0) {
                     filteredData = filteredData.filter(item => 
                         this.selectedSubjects.has(item.subject) ||
@@ -1760,7 +1765,6 @@
                     );
                 }
                 
-                // 根据筛选类型进一步筛选
                 if (this.currentFilter === 'single' && this.selectedSubjects.size === 1 && !this.selectedSubjects.has('all')) {
                     const selectedSubject = Array.from(this.selectedSubjects)[0];
                     filteredData = filteredData.filter(item => 
@@ -1825,7 +1829,6 @@
                 card.className = 'knowledge-card';
                 card.dataset.id = item.id;
                 
-                // 构建标签HTML
                 let tagsHTML = '';
                 if (item.tags && item.tags.length > 0) {
                     tagsHTML = `
@@ -1835,7 +1838,6 @@
                     `;
                 }
                 
-                // 构建相关学科HTML
                 let relatedSubjectsHTML = '';
                 if (item.relatedSubjects && item.relatedSubjects.length > 1) {
                     const related = item.relatedSubjects
@@ -1897,18 +1899,15 @@
                     return;
                 }
                 
-                // 隐藏所有面板
                 document.querySelectorAll('.main-panel > div').forEach(panel => {
                     panel.classList.add('hidden');
                 });
                 
-                // 显示目标面板
                 const targetPanel = document.getElementById(panelId + 'Panel');
                 if (targetPanel) {
                     targetPanel.classList.remove('hidden');
                 }
                 
-                // 更新导航按钮状态
                 document.querySelectorAll('.side-nav .btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -1916,7 +1915,6 @@
                 const targetBtn = document.querySelector(`.side-nav .btn[onclick*="showPanel('${panelId}')"]`);
                 if (targetBtn) targetBtn.classList.add('active');
                 
-                // 面板特定操作
                 switch(panelId) {
                     case 'account':
                         this.updateAccountInfo();
@@ -1977,15 +1975,14 @@
                     }
                     
                     if (data.session) {
-                        // 保存会话信息
                         const sessionData = {
                             user: {
                                 id: data.session.user.id,
                                 email: data.session.user.email,
                                 username: data.session.user.email.split('@')[0],
-                                role: 'user' // 默认角色
+                                role: 'user'
                             },
-                            expires_at: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7天有效期
+                            expires_at: Date.now() + 7 * 24 * 60 * 60 * 1000
                         };
                         
                         localStorage.setItem('dsehub_session', JSON.stringify(sessionData));
@@ -2070,7 +2067,6 @@
                     userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
                     userAvatar.onclick = () => this.showPanel('account');
                     
-                    // 管理员按钮
                     if (this.isAdmin) {
                         adminNavBtn.style.display = 'flex';
                     } else {
@@ -2240,7 +2236,6 @@
                     container.appendChild(messageDiv);
                 });
                 
-                // 滚动到底部
                 container.scrollTop = container.scrollHeight;
             },
 
@@ -2285,7 +2280,6 @@
                     container.appendChild(option);
                 });
                 
-                // 加载保存的主题
                 const savedTheme = localStorage.getItem('dsehub_theme');
                 if (savedTheme) {
                     this.changeTheme(savedTheme, true);
@@ -2356,5 +2350,3 @@
     </script>
 </body>
 </html>
-
-
