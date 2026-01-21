@@ -6,6 +6,1153 @@
     <title>DSE Hub - 主站</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* 样式保持不变，此处省略以节省篇幅 */
+        /* ... 保留所有CSS样式 ... */
+    </style>
+</head>
+<body class="theme-blue-purple login-required">
+    <!-- 强制登录模态框 -->
+    <div id="loginModal" class="modal-overlay required">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-in-alt"></i> 欢迎使用 DSE Hub</h2>
+            </div>
+            <div class="modal-form">
+                <div class="form-input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" class="modal-input" placeholder="请输入邮箱" autocomplete="email" required>
+                </div>
+                <div class="form-input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="loginPassword" class="modal-input" placeholder="请输入密码" autocomplete="current-password" required>
+                </div>
+                <button class="modal-btn" onclick="DSEHub.login()">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+                <div class="modal-switch">
+                    还没有账号？ <a onclick="DSEHub.showRegister()">立即注册</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> 注册新账号</h2>
+                <button class="close-modal" onclick="DSEHub.closeModal()">&times;</button>
+            </div>
+            <div class="modal-form">
+                <div class="form-input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="registerUsername" class="modal-input" placeholder="请输入用户名" autocomplete="username" required>
+                </div>
+                <div class="form-input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="registerEmail" class="modal-input" placeholder="请输入邮箱" autocomplete="email" required>
+                </div>
+                <div class="form-input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerPassword" class="modal-input" placeholder="请输入密码（至少6位）" autocomplete="new-password" required minlength="6">
+                </div>
+                <div class="form-input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="registerConfirmPassword" class="modal-input" placeholder="请再次输入密码" autocomplete="new-password" required>
+                </div>
+                <button class="modal-btn" onclick="DSEHub.register()">
+                    <i class="fas fa-check"></i> 注册
+                </button>
+                <div class="modal-switch">
+                    已有账号？ <a onclick="DSEHub.showLogin()">立即登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主页面容器 -->
+    <div class="container">
+        <!-- 导航栏 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                DSE HUB
+            </div>
+            <nav>
+                <button class="btn active" onclick="DSEHub.showPanel('knowledge')">
+                    <i class="fas fa-brain"></i> 知识点
+                </button>
+                <button class="btn" onclick="window.location.href=CSSVar.get('url-gaming')">
+                    <i class="fas fa-gamepad"></i> 游戏区
+                </button>
+                <button class="btn" onclick="window.location.href=CSSVar.get('url-admin')" id="adminNavBtn" style="display: none;">
+                    <i class="fas fa-user-shield"></i> 管理
+                </button>
+                <button class="btn" onclick="window.location.href=CSSVar.get('url-notes')">
+                    <i class="fas fa-sticky-note"></i> 笔记板
+                </button>
+            </nav>
+            <div class="user-info">
+                <div id="loginStatus" class="login-status" onclick="DSEHub.showLoginModal()">
+                    <i class="fas fa-user"></i>
+                    <span>登录/注册</span>
+                </div>
+                <div class="user-avatar" id="userAvatar" onclick="DSEHub.showPanel('account')">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <!-- 左侧导航 -->
+            <div class="side-nav">
+                <div class="nav-section">
+                    <h3><i class="fas fa-book"></i> 学习功能</h3>
+                    <div class="nav-btn-list">
+                        <button class="btn active" onclick="DSEHub.showPanel('knowledge')">
+                            <i class="fas fa-brain"></i> 知识点
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('leaderboard')">
+                            <i class="fas fa-trophy"></i> 排行榜
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('submission')">
+                            <i class="fas fa-paper-plane"></i> 投稿
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('messageboard')">
+                            <i class="fas fa-comments"></i> 留言板
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h3><i class="fas fa-cog"></i> 系统设置</h3>
+                    <div class="nav-btn-list">
+                        <button class="btn" onclick="DSEHub.showPanel('settings')">
+                            <i class="fas fa-palette"></i> 主题
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('account')">
+                            <i class="fas fa-user-circle"></i> 账号
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主面板 -->
+            <div class="main-panel">
+                <!-- 知识点面板 -->
+                <div id="knowledgePanel" class="panel-content">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-brain"></i> 知识点展示</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="subject-selector" id="subjectSelector"></div>
+                        <div class="subject-controls">
+                            <button class="btn active" onclick="DSEHub.filterSubjects('all', this)">
+                                <i class="fas fa-globe"></i> 全部
+                            </button>
+                            <button class="btn" onclick="DSEHub.filterSubjects('selected', this)">
+                                <i class="fas fa-check-circle"></i> 已选
+                            </button>
+                            <button class="btn" onclick="DSEHub.filterSubjects('single', this)">
+                                <i class="fas fa-filter"></i> 单个
+                            </button>
+                            <input type="text" class="form-input" placeholder="搜索知识点..." 
+                                   oninput="DSEHub.searchKnowledge(this.value)" style="width: 200px; margin-left: auto;">
+                        </div>
+                        <div class="knowledge-grid" id="knowledgeGrid"></div>
+                    </div>
+                </div>
+
+                <!-- 排行榜面板 -->
+                <div id="leaderboardPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-trophy"></i> 学习积分排行榜</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="leaderboard-list" id="leaderboardList"></div>
+                    </div>
+                </div>
+
+                <!-- 投稿提交面板 -->
+                <div id="submissionPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-paper-plane"></i> 投稿提交</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> 选择相关学科（可多选）</label>
+                            <div class="subject-selector submission-subject-selector" id="submissionSubjectSelector"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="submissionTitle"><i class="fas fa-heading"></i> 题目标题</label>
+                            <input type="text" id="submissionTitle" class="form-input" placeholder="请输入题目标题" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="submissionContent"><i class="fas fa-file-alt"></i> 题目内容</label>
+                            <textarea id="submissionContent" class="form-textarea" placeholder="请输入题目详细内容..." required></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="DSEHub.submitSubmission()">
+                                <i class="fas fa-paper-plane"></i> 提交投稿
+                            </button>
+                            <button class="btn" onclick="DSEHub.clearSubmissionForm()">
+                                <i class="fas fa-eraser"></i> 清空
+                            </button>
+                        </div>
+                        
+                        <div id="submissionHistory" class="hidden">
+                            <h3 style="margin-bottom: var(--spacing-lg);"><i class="fas fa-history"></i> 投稿历史</h3>
+                            <div id="historyList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 留言板面板 -->
+                <div id="messageboardPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-comments"></i> 留言板</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="message-tabs">
+                            <button class="message-tab active" onclick="DSEHub.switchMessageTab('chat', this)">
+                                <i class="fas fa-comment-dots"></i> 聊天
+                            </button>
+                            <button class="message-tab" onclick="DSEHub.switchMessageTab('notes', this)">
+                                <i class="fas fa-sticky-note"></i> 笔记区
+                            </button>
+                        </div>
+                        <div class="messages-area">
+                            <div class="messages-container" id="messagesContainer"></div>
+                            <div class="message-input-area">
+                                <input type="text" class="form-input" id="messageInput" placeholder="输入消息..." 
+                                       onkeypress="if(event.key === 'Enter') DSEHub.sendMessage()">
+                                <button class="btn btn-primary" onclick="DSEHub.sendMessage()">
+                                    <i class="fas fa-paper-plane"></i> 发送
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设置面板 -->
+                <div id="settingsPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-palette"></i> 主题设置</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="settings-grid" id="themeGrid"></div>
+                    </div>
+                </div>
+
+                <!-- 账号信息面板 -->
+                <div id="accountPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-user-circle"></i> 账号信息</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="account-info" id="accountInfo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const CSSVar = {
+            get: function(name) {
+                return getComputedStyle(document.documentElement).getPropertyValue(name).trim().slice(1, -1);
+            }
+        };
+
+        const DSEHub = {
+            // 状态变量
+            supabase: null,
+            currentUser: null,
+            currentTheme: 'theme-blue-purple',
+            currentMessageTab: 'chat',
+            selectedSubjects: new Set(['all']),
+            selectedSubmissionSubjects: new Set(),
+            currentFilter: 'all',
+            isLoggedIn: false,
+            isAdmin: false,
+
+            // 学科数据
+            subjects: [
+                { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
+                { id: 'eng', name: '英国语文', icon: 'fas fa-language' },
+                { id: 'math', name: '数学', icon: 'fas fa-calculator' },
+                { id: 'ls', name: '通识', icon: 'fas fa-globe-asia' },
+                { id: 'edu', name: '教育', icon: 'fas fa-school' },
+                { id: 'phy', name: '物理', icon: 'fas fa-atom' },
+                { id: 'chem', name: '化学', icon: 'fas fa-flask' },
+                { id: 'bio', name: '生物', icon: 'fas fa-dna' },
+                { id: 'econ', name: '经济', icon: 'fas fa-chart-line' },
+                { id: 'geo', name: '地理', icon: 'fas fa-mountain' },
+                { id: 'chist', name: '中国历史', icon: 'fas fa-landmark' },
+                { id: 'whist', name: '世界历史', icon: 'fas fa-globe-europe' },
+                { id: 'csd', name: '公民与社会发展科', icon: 'fas fa-users' },
+                { id: 'baf', name: '企业会计与财务', icon: 'fas fa-file-invoice-dollar' },
+                { id: 'ict', name: '概论资讯与通讯科技', icon: 'fas fa-laptop-code' },
+                { id: 'm1', name: '数学延伸一', icon: 'fas fa-infinity' },
+                { id: 'm2', name: '数学延伸二', icon: 'fas fa-square-root-alt' },
+                { id: 'va', name: '视觉艺术', icon: 'fas fa-palette' },
+                { id: 'music', name: '音乐', icon: 'fas fa-music' },
+                { id: 'pe', name: '体育', icon: 'fas fa-running' }
+            ],
+
+            themes: [
+                { id: 'theme-blue-purple', name: '蓝-紫极光' },
+                { id: 'theme-cyan-green', name: '青-绿极光' },
+                { id: 'theme-green-yellowgreen', name: '绿-黄绿极光' },
+                { id: 'theme-orange-red', name: '橙-红极光' },
+                { id: 'theme-lightpurple-darkblue', name: '浅紫-深蓝极光' },
+                { id: 'theme-lightmagenta-pink', name: '浅紫红-粉极光' },
+                { id: 'theme-skyblue-oceanblue', name: '天蓝-海蓝极光' },
+                { id: 'theme-cyan-lightgreen', name: '青绿-薄绿极光' },
+                { id: 'theme-darkblue-lightblue', name: '深蓝-深蓝(偏浅)极光' }
+            ],
+
+            // 知识点数据
+            knowledgeData: (() => {
+                const baseData = [
+                    { 
+                        id: 1, subject: 'math', title: '微积分基础', 
+                        content: '微分的基本概念，包括导数的定义、计算法则和应用。积分作为微分的逆运算，用于计算面积和体积。微积分在物理、工程、经济学等领域有广泛应用。',
+                        detail: '微分学主要研究函数的变化率，包括极限、导数、微分等概念。积分学则研究累积量，包括不定积分和定积分。两者通过微积分基本定理相互联系。',
+                        tags: ['基础', '公式', '应用', 'M1', 'M2'],
+                        relatedSubjects: ['math', 'm1', 'm2', 'phy', 'econ']
+                    },
+                    { 
+                        id: 2, subject: 'phy', title: '牛顿运动定律', 
+                        content: '第一定律：惯性定律；第二定律：F=ma；第三定律：作用力与反作用力。',
+                        detail: '牛顿第一定律：物体在没有外力作用下保持静止或匀速直线运动。牛顿第二定律：物体的加速度与作用力成正比，与质量成反比。牛顿第三定律：两个物体之间的作用力和反作用力总是大小相等，方向相反。',
+                        tags: ['力学', '基础定律', '运动学'],
+                        relatedSubjects: ['phy', 'math']
+                    },
+                    { 
+                        id: 3, subject: 'chem', title: '化学反应速率', 
+                        content: '影响反应速率的因素：浓度、温度、催化剂、表面积。速率方程的推导和应用。',
+                        detail: '化学反应速率受多种因素影响：反应物浓度（浓度越大速率越快）、温度（温度每升高10°C，速率约增加2-4倍）、催化剂（降低活化能）、表面积（固体表面积越大反应越快）。速率方程描述反应速率与浓度的关系。',
+                        tags: ['反应速率', '影响因素', '方程式'],
+                        relatedSubjects: ['chem', 'bio']
+                    }
+                ];
+                
+                for (let i = 4; i <= 15; i++) {
+                    const subject = this.subjects[Math.floor(Math.random() * this.subjects.length)];
+                    baseData.push({
+                        id: i,
+                        subject: subject.id,
+                        title: `${subject.name}知识点 ${i}`,
+                        content: `这是${subject.name}的相关知识点内容，包含重要概念和应用实例。`,
+                        detail: `详细内容：这是${subject.name}的详细知识点讲解，包含公式推导、例题分析和解题技巧。`,
+                        tags: [subject.name.slice(0, 2), '知识点', '示例'],
+                        relatedSubjects: [subject.id]
+                    });
+                }
+                return baseData;
+            }).call(DSEHub),
+
+            // 初始化函数
+            init: function() {
+                this.initSupabase();
+                this.initThemes();
+                this.initSubjects();
+                this.initKnowledgeGrid();
+                this.initMessageBoard();
+                this.showPanel('knowledge');
+                
+                this.enforceLogin();
+                window.addEventListener('resize', () => this.handleResize());
+            },
+
+            // 强制登录系统
+            enforceLogin: function() {
+                document.body.classList.add('login-required');
+                document.getElementById('loginModal').classList.add('required');
+                
+                const savedSession = localStorage.getItem('dsehub_session');
+                if (savedSession) {
+                    try {
+                        const session = JSON.parse(savedSession);
+                        if (session.expires_at > Date.now()) {
+                            this.currentUser = session.user;
+                            this.isLoggedIn = true;
+                            this.loginSuccess();
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('dsehub_session');
+                    }
+                }
+            },
+
+            // 登录成功处理
+            loginSuccess: function() {
+                document.body.classList.remove('login-required');
+                document.getElementById('loginModal').classList.remove('required');
+                document.getElementById('loginModal').style.display = 'none';
+                this.isLoggedIn = true;
+                
+                this.updateUserUI();
+                this.showNotification(`欢迎回来，${this.currentUser.username}！`);
+                
+                if (this.currentUser.role === 'admin') {
+                    this.isAdmin = true;
+                    document.getElementById('adminNavBtn').style.display = 'flex';
+                }
+            },
+
+            // 初始化Supabase
+            initSupabase: function() {
+                // 使用您提供的Supabase URL和密钥
+                const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
+                const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+                
+                this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false,
+                        detectSessionInUrl: false
+                    }
+                });
+            },
+
+            // 显示通知
+            showNotification: function(message, duration = 3000) {
+                const existing = document.querySelector('.notification');
+                if (existing) existing.remove();
+                
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100%)';
+                        setTimeout(() => notification.remove(), 300);
+                    }
+                }, duration);
+            },
+
+            // 初始化学科选择器
+            initSubjects: function() {
+                this.renderSubjectSelector('subjectSelector', this.selectedSubjects, 'knowledge');
+                this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
+            },
+
+            // 渲染学科选择器
+            renderSubjectSelector: function(containerId, selectedSet, mode = 'knowledge') {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (mode === 'knowledge') {
+                    const allCard = this.createSubjectCard('all', '全部学科', 'fas fa-layer-group', selectedSet.has('all'), mode);
+                    container.appendChild(allCard);
+                }
+                
+                this.subjects.forEach(subject => {
+                    const isSelected = mode === 'submission' ? 
+                        selectedSet.has(subject.id) : 
+                        (selectedSet.has('all') || selectedSet.has(subject.id));
+                    
+                    const card = this.createSubjectCard(subject.id, subject.name, subject.icon, isSelected, mode);
+                    container.appendChild(card);
+                });
+            },
+
+            // 创建学科卡片
+            createSubjectCard: function(id, name, icon, isSelected, mode) {
+                const card = document.createElement('div');
+                card.className = `subject-card ${isSelected ? 'selected' : ''} ${mode === 'submission' && isSelected ? 'multi-selected' : ''}`;
+                card.dataset.subjectId = id;
+                card.dataset.mode = mode;
+                
+                card.innerHTML = `
+                    <div class="subject-icon"><i class="${icon}"></i></div>
+                    <div class="subject-name">${name}</div>
+                `;
+                
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    this.handleSubjectSelect(id, mode);
+                };
+                
+                return card;
+            },
+
+            // 处理学科选择
+            handleSubjectSelect: function(subjectId, mode) {
+                if (mode === 'knowledge') {
+                    this.handleKnowledgeSubjectSelect(subjectId);
+                } else {
+                    this.handleSubmissionSubjectSelect(subjectId);
+                }
+            },
+
+            // 知识点模式学科选择
+            handleKnowledgeSubjectSelect: function(subjectId) {
+                if (subjectId === 'all') {
+                    if (this.selectedSubjects.has('all')) {
+                        this.selectedSubjects.clear();
+                    } else {
+                        this.selectedSubjects.clear();
+                        this.selectedSubjects.add('all');
+                        this.subjects.forEach(s => this.selectedSubjects.add(s.id));
+                    }
+                } else {
+                    if (this.selectedSubjects.has(subjectId)) {
+                        this.selectedSubjects.delete(subjectId);
+                        this.selectedSubjects.delete('all');
+                    } else {
+                        this.selectedSubjects.add(subjectId);
+                        
+                        const allSelected = this.subjects.every(s => 
+                            s.id === subjectId || this.selectedSubjects.has(s.id)
+                        );
+                        if (allSelected) {
+                            this.selectedSubjects.add('all');
+                        }
+                    }
+                }
+                
+                this.renderSubjectSelector('subjectSelector', this.selectedSubjects, 'knowledge');
+                this.filterKnowledge();
+            },
+
+            // 投稿模式学科选择（多选）
+            handleSubmissionSubjectSelect: function(subjectId) {
+                if (this.selectedSubmissionSubjects.has(subjectId)) {
+                    this.selectedSubmissionSubjects.delete(subjectId);
+                } else {
+                    this.selectedSubmissionSubjects.add(subjectId);
+                }
+                
+                this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
+            },
+
+            // 知识点筛选
+            filterSubjects: function(filterType, element) {
+                const btns = element.parentElement.querySelectorAll('.btn');
+                btns.forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+                
+                this.currentFilter = filterType;
+                this.filterKnowledge();
+            },
+
+            // 筛选知识点
+            filterKnowledge: function() {
+                let filteredData = this.knowledgeData;
+                
+                if (!this.selectedSubjects.has('all') && this.selectedSubjects.size > 0) {
+                    filteredData = filteredData.filter(item => 
+                        this.selectedSubjects.has(item.subject) ||
+                        (item.relatedSubjects && item.relatedSubjects.some(s => this.selectedSubjects.has(s)))
+                    );
+                }
+                
+                if (this.currentFilter === 'single' && this.selectedSubjects.size === 1 && !this.selectedSubjects.has('all')) {
+                    const selectedSubject = Array.from(this.selectedSubjects)[0];
+                    filteredData = filteredData.filter(item => 
+                        item.subject === selectedSubject ||
+                        (item.relatedSubjects && item.relatedSubjects.includes(selectedSubject))
+                    );
+                }
+                
+                this.renderKnowledgeCards(filteredData);
+            },
+
+            // 搜索知识点
+            searchKnowledge: function(keyword) {
+                if (!keyword.trim()) {
+                    this.filterKnowledge();
+                    return;
+                }
+                
+                const filteredData = this.knowledgeData.filter(item => 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.content.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.detail.toLowerCase().includes(keyword.toLowerCase()) ||
+                    (item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase())))
+                );
+                
+                this.renderKnowledgeCards(filteredData);
+            },
+
+            // 初始化知识网格
+            initKnowledgeGrid: function() {
+                this.renderKnowledgeCards(this.knowledgeData);
+            },
+
+            // 渲染知识卡片
+            renderKnowledgeCards: function(data) {
+                const container = document.getElementById('knowledgeGrid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); grid-column: 1 / -1;">
+                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未找到相关知识点</h3>
+                            <p>请尝试选择其他学科或搜索其他关键词</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                data.forEach(item => {
+                    const subject = this.subjects.find(s => s.id === item.subject);
+                    const card = this.createKnowledgeCard(item, subject);
+                    container.appendChild(card);
+                });
+            },
+
+            // 创建知识卡片
+            createKnowledgeCard: function(item, subject) {
+                const card = document.createElement('div');
+                card.className = 'knowledge-card';
+                card.dataset.id = item.id;
+                
+                let tagsHTML = '';
+                if (item.tags && item.tags.length > 0) {
+                    tagsHTML = `
+                        <div class="knowledge-tags">
+                            ${item.tags.map(tag => `<span class="knowledge-tag">${tag}</span>`).join('')}
+                        </div>
+                    `;
+                }
+                
+                let relatedSubjectsHTML = '';
+                if (item.relatedSubjects && item.relatedSubjects.length > 1) {
+                    const related = item.relatedSubjects
+                        .map(sid => this.subjects.find(s => s.id === sid)?.name)
+                        .filter(name => name)
+                        .slice(0, 3);
+                    
+                    if (related.length > 0) {
+                        relatedSubjectsHTML = `
+                            <div style="margin-top: var(--spacing-sm);">
+                                <small style="color: var(--text-secondary);">相关学科: ${related.join('、')}</small>
+                            </div>
+                        `;
+                    }
+                }
+                
+                card.innerHTML = `
+                    <div class="knowledge-subject">${subject ? subject.name : item.subject}</div>
+                    <div class="knowledge-title">${item.title}</div>
+                    ${tagsHTML}
+                    <div class="knowledge-content">${item.content}</div>
+                    ${relatedSubjectsHTML}
+                    <div class="knowledge-detail">
+                        <div class="knowledge-detail-content">
+                            ${item.detail || item.content}
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: var(--spacing-md);">
+                        <button class="btn" onclick="DSEHub.toggleKnowledgeDetail(${item.id})" style="padding: var(--spacing-xs) var(--spacing-md); font-size: 12px;">
+                            <i class="fas fa-chevron-down"></i> 展开详情
+                        </button>
+                    </div>
+                `;
+                
+                return card;
+            },
+
+            // 切换知识点详情展开/收起
+            toggleKnowledgeDetail: function(id) {
+                const card = document.querySelector(`.knowledge-card[data-id="${id}"]`);
+                if (!card) return;
+                
+                const isExpanded = card.classList.contains('expanded');
+                const button = card.querySelector('button');
+                
+                if (isExpanded) {
+                    card.classList.remove('expanded');
+                    button.innerHTML = '<i class="fas fa-chevron-down"></i> 展开详情';
+                } else {
+                    card.classList.add('expanded');
+                    button.innerHTML = '<i class="fas fa-chevron-up"></i> 收起详情';
+                }
+            },
+
+            // 显示面板
+            showPanel: function(panelId) {
+                if (!this.isLoggedIn && panelId !== 'knowledge') {
+                    this.showNotification('请先登录以使用此功能');
+                    return;
+                }
+                
+                document.querySelectorAll('.main-panel > div').forEach(panel => {
+                    panel.classList.add('hidden');
+                });
+                
+                const targetPanel = document.getElementById(panelId + 'Panel');
+                if (targetPanel) {
+                    targetPanel.classList.remove('hidden');
+                }
+                
+                document.querySelectorAll('.side-nav .btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                const targetBtn = document.querySelector(`.side-nav .btn[onclick*="showPanel('${panelId}')"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+                
+                switch(panelId) {
+                    case 'account':
+                        this.updateAccountInfo();
+                        break;
+                    case 'submission':
+                        this.loadSubmissionHistory();
+                        break;
+                    case 'leaderboard':
+                        this.loadLeaderboard();
+                        break;
+                }
+            },
+
+            // 模态框相关函数
+            showLoginModal: function() {
+                if (!this.isLoggedIn) {
+                    document.getElementById('loginModal').style.display = 'flex';
+                    document.getElementById('registerModal').classList.add('hidden');
+                }
+            },
+
+            showRegister: function() {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('registerModal').style.display = 'flex';
+            },
+
+            showLogin: function() {
+                document.getElementById('registerModal').classList.add('hidden');
+                document.getElementById('loginModal').style.display = 'flex';
+            },
+
+            closeModal: function() {
+                if (this.isLoggedIn) {
+                    document.getElementById('loginModal').style.display = 'none';
+                    document.getElementById('registerModal').style.display = 'none';
+                }
+            },
+
+            // 登录
+            login: async function() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!email || !password) {
+                    this.showNotification('请输入邮箱和密码');
+                    return;
+                }
+                
+                try {
+                    const { data, error } = await this.supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) {
+                        this.showNotification('登录失败: ' + error.message);
+                        return;
+                    }
+                    
+                    if (data.session) {
+                        const sessionData = {
+                            user: {
+                                id: data.session.user.id,
+                                email: data.session.user.email,
+                                username: data.session.user.email.split('@')[0],
+                                role: 'user'
+                            },
+                            expires_at: Date.now() + 7 * 24 * 60 * 60 * 1000
+                        };
+                        
+                        localStorage.setItem('dsehub_session', JSON.stringify(sessionData));
+                        this.currentUser = sessionData.user;
+                        this.loginSuccess();
+                    }
+                } catch (err) {
+                    this.showNotification('登录时发生错误');
+                }
+            },
+
+            // 注册
+            register: async function() {
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (!username || !email || !password) {
+                    this.showNotification('请填写所有必填字段');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    this.showNotification('两次输入的密码不一致');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    this.showNotification('密码长度至少为6位');
+                    return;
+                }
+                
+                try {
+                    const { data: authData, error: authError } = await this.supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: { data: { username: username } }
+                    });
+                    
+                    if (authError) {
+                        this.showNotification('注册失败: ' + authError.message);
+                        return;
+                    }
+                    
+                    if (authData.user) {
+                        this.showNotification('注册成功！请使用新账号登录');
+                        this.showLogin();
+                    }
+                } catch (err) {
+                    this.showNotification('注册时发生错误');
+                }
+            },
+
+            // 退出登录
+            logout: function() {
+                localStorage.removeItem('dsehub_session');
+                this.currentUser = null;
+                this.isLoggedIn = false;
+                this.isAdmin = false;
+                this.enforceLogin();
+                this.updateUserUI();
+                this.showNotification('已退出登录');
+            },
+
+            // 更新用户界面
+            updateUserUI: function() {
+                const loginStatus = document.getElementById('loginStatus');
+                const userAvatar = document.getElementById('userAvatar');
+                const adminNavBtn = document.getElementById('adminNavBtn');
+                
+                if (this.isLoggedIn && this.currentUser) {
+                    loginStatus.innerHTML = `
+                        <i class="fas fa-user-check"></i>
+                        <div>
+                            <div style="font-weight: 600;">${this.currentUser.username}</div>
+                            <div style="font-size: 11px;">已登录</div>
+                        </div>
+                    `;
+                    loginStatus.onclick = () => this.showPanel('account');
+                    
+                    userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
+                    userAvatar.onclick = () => this.showPanel('account');
+                    
+                    if (this.isAdmin) {
+                        adminNavBtn.style.display = 'flex';
+                    } else {
+                        adminNavBtn.style.display = 'none';
+                    }
+                } else {
+                    loginStatus.innerHTML = '<i class="fas fa-user"></i><span>登录/注册</span>';
+                    loginStatus.onclick = () => this.showLoginModal();
+                    userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                    userAvatar.onclick = () => this.showLoginModal();
+                    adminNavBtn.style.display = 'none';
+                }
+            },
+
+            // 更新账号信息 - 修复后的版本
+            updateAccountInfo: function() {
+                const container = document.getElementById('accountInfo');
+                if (!container) return;
+                
+                if (this.isLoggedIn && this.currentUser) {
+                    container.innerHTML = `
+                        <div class="account-header">
+                            <div class="account-avatar">${this.currentUser.username.charAt(0).toUpperCase()}</div>
+                            <div class="account-details">
+                                <div class="account-username">${this.currentUser.username}</div>
+                                <div class="account-email">${this.currentUser.email}</div>
+                                <div class="account-role">${this.currentUser.role === 'admin' ? '管理员' : '用户'}</div>
+                            </div>
+                        </div>
+                        <div class="user-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">学习积分</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">投稿数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">消息数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">Lv.1</div>
+                                <div class="stat-label">学习等级</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: var(--spacing-xl);">
+                            <button class="btn" onclick="DSEHub.logout()">
+                                <i class="fas fa-sign-out-alt"></i> 退出登录
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看账号信息</p>
+                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 立即登录
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+
+            // 投稿功能
+            submitSubmission: function() {
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录后再提交投稿');
+                    return;
+                }
+                
+                const title = document.getElementById('submissionTitle').value;
+                const content = document.getElementById('submissionContent').value;
+                
+                if (!title || !content) {
+                    this.showNotification('请填写标题和内容');
+                    return;
+                }
+                
+                if (this.selectedSubmissionSubjects.size === 0) {
+                    this.showNotification('请至少选择一个相关学科');
+                    return;
+                }
+                
+                const selectedSubjects = Array.from(this.selectedSubmissionSubjects);
+                
+                this.showNotification(`投稿提交成功！相关学科：${selectedSubjects.map(id => 
+                    this.subjects.find(s => s.id === id)?.name || id
+                ).join('、')}`);
+                
+                this.clearSubmissionForm();
+            },
+
+            clearSubmissionForm: function() {
+                document.getElementById('submissionTitle').value = '';
+                document.getElementById('submissionContent').value = '';
+                this.selectedSubmissionSubjects.clear();
+                this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
+            },
+
+            loadSubmissionHistory: function() {
+                if (!this.isLoggedIn) {
+                    document.getElementById('submissionHistory').classList.add('hidden');
+                    return;
+                }
+                
+                document.getElementById('submissionHistory').classList.remove('hidden');
+                document.getElementById('historyList').innerHTML = `
+                    <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
+                        暂无投稿记录
+                    </div>
+                `;
+            },
+
+            // 留言板功能
+            initMessageBoard: function() {
+                this.messages = {
+                    chat: [
+                        { author: '学习助手', content: '欢迎来到DSE Hub留言板！', time: '10:00' },
+                        { author: '管理员', content: '请文明交流，互相帮助。', time: '10:05' }
+                    ],
+                    notes: [
+                        { author: '数学学霸', content: '微积分学习笔记：重点掌握导数和积分的应用。', time: '昨天 15:30' },
+                        { author: '物理高手', content: '牛顿运动定律总结：注意力的分解和合成。', time: '昨天 16:45' }
+                    ]
+                };
+
+                this.renderMessages('chat');
+            },
+
+            switchMessageTab: function(tab, element) {
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录以使用留言板');
+                    return;
+                }
+                
+                this.currentMessageTab = tab;
+                document.querySelectorAll('.message-tab').forEach(t => t.classList.remove('active'));
+                element.classList.add('active');
+                this.renderMessages(tab);
+            },
+
+            renderMessages: function(tab) {
+                const container = document.getElementById('messagesContainer');
+                const messages = this.messages[tab] || [];
+                
+                container.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">暂无消息</div>';
+                    return;
+                }
+                
+                messages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-item';
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <div class="message-author">${msg.author}</div>
+                            <div class="message-time">${msg.time}</div>
+                        </div>
+                        <div class="message-content">${msg.content}</div>
+                    `;
+                    container.appendChild(messageDiv);
+                });
+                
+                container.scrollTop = container.scrollHeight;
+            },
+
+            sendMessage: function() {
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录后再发送消息');
+                    return;
+                }
+                
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (!message) {
+                    this.showNotification('请输入消息内容');
+                    return;
+                }
+                
+                const newMessage = {
+                    author: this.currentUser.username,
+                    content: message,
+                    time: new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })
+                };
+                
+                this.messages[this.currentMessageTab].push(newMessage);
+                input.value = '';
+                this.renderMessages(this.currentMessageTab);
+                this.showNotification('消息发送成功！');
+            },
+
+            // 主题功能
+            initThemes: function() {
+                const container = document.getElementById('themeGrid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                this.themes.forEach(theme => {
+                    const option = document.createElement('div');
+                    option.className = `theme-option ${theme.id === this.currentTheme ? 'selected' : ''}`;
+                    option.textContent = theme.name;
+                    option.onclick = () => this.changeTheme(theme.id);
+                    container.appendChild(option);
+                });
+                
+                const savedTheme = localStorage.getItem('dsehub_theme');
+                if (savedTheme) {
+                    this.changeTheme(savedTheme, true);
+                }
+            },
+
+            changeTheme: function(themeId, silent = false) {
+                document.body.classList.remove(this.currentTheme);
+                this.currentTheme = themeId;
+                document.body.classList.add(themeId);
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.classList.contains(themeId)) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                localStorage.setItem('dsehub_theme', themeId);
+                
+                if (!silent) {
+                    this.showNotification(`已切换至${this.themes.find(t => t.id === themeId)?.name}主题`);
+                }
+            },
+
+            // 排行榜功能
+            loadLeaderboard: function() {
+                const container = document.getElementById('leaderboardList');
+                if (!container) return;
+                
+                container.innerHTML = `
+                    <div style="text-align: center; padding: var(--spacing-xl);">
+                        <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: var(--spacing-md); color: var(--accent-color);"></i>
+                        <h3 style="margin-bottom: var(--spacing-sm);">排行榜功能准备中</h3>
+                        <p>该功能将在后续版本中推出</p>
+                    </div>
+                `;
+            },
+
+            // 响应式处理
+            handleResize: function() {
+                const width = window.innerWidth;
+                const subjectSelector = document.getElementById('subjectSelector');
+                
+                if (subjectSelector) {
+                    if (width < 768) {
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(110px, 1fr))';
+                    } else if (width < 1024) {
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(130px, 1fr))';
+                    } else {
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                    }
+                }
+            }
+        };
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            DSEHub.init();
+        });
+
+        // 模态框点击外部关闭
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-overlay') && DSEHub.isLoggedIn) {
+                DSEHub.closeModal();
+            }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSE Hub - 主站</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
         /* ==================== CSS 变量系统 ==================== */
         :root {
             /* 主色调 - 蓝紫极光主题 */
@@ -2085,7 +3232,7 @@
                 }
             },
 
-            // 更新账号信息
+            // 更新账号信息 - 修复语法错误
             updateAccountInfo: function() {
                 const container = document.getElementById('accountInfo');
                 if (!container) return;
@@ -2108,203 +3255,101 @@
                             <div class="stat-item">
                                 <div class="stat-value">0</div>
                                 <div class="stat-label">投稿数</div>
-div>
-                            <div class                            </div>
+                            </div>
                             <div class="stat-item">
-                               ="stat-item">
-                                <div class="stat-value"> <div class="stat-value">0</0</div>
-                               div>
-                                <div class <div class="stat-label">消息数="stat-label">消息数</div</div>
+                                <div class="stat-value">0</div>
+                                <div class="stat-label">消息数</div>
                             </div>
+                            <div class="stat-item">
+                                <div class="stat-value">Lv.1</div>
+                                <div class="stat-label">学习等级</div>
                             </div>
-                           >
-                            <div class="stat-item <div class="stat-item">
-">
-                                <div class="                                <div class="stat-valuestat-value">Lv.">Lv.1</div1</div>
-                                <div class>
-                                <div class="stat="stat-label">学习等级</div-label">学习等级</div>
-                            </div>
-                       >
-                            </div>
-                        </div </div>
-                        <div>
-                        <div style=" style="margin-top: var(--spmargin-top: var(--spacing-xlacing-xl);">
-                            <button class);">
-                            <button class="btn" onclick="D="btn" onclick="DSEHubSEHub.logout()">
-                               .logout()">
-                                <i class="fas fa-sign <i class="fas fa-sign-out-alt-out-alt"></i> 退出登录"></i> 退出登录
+                        </div>
+                        <div style="margin-top: var(--spacing-xl);">
+                            <button class="btn" onclick="DSEHub.logout()">
+                                <i class="fas fa-sign-out-alt"></i> 退出登录
                             </button>
-                       
-                            </button>
-                        </div </div>
-                    `;
-                }>
-                    `;
-                } else {
- else {
-                    container.innerHTML = `
-                                           container.innerHTML = `
-                        <div <div style="text-align: center; padding: var style="text-align: center; padding: var(--sp(--spacing-xl);">
-                           acing-xl);">
-                            <i class="fas fa-user <i class="fas fa-user-slash-slash" style="font" style="font-size:-size: 48px; margin-bottom 48px; margin-bottom: var: var(--spacing-lg);"></(--spacing-lg);"></i>
-                            <h3i>
-                            <h3 style=" style="margin-bottom: var(--spacing-sm);">未登录</hmargin-bottom: var(--spacing-sm);">未登录</3>
-                            <p styleh3>
-                            <p style="margin-bottom: var(--="margin-bottom: var(--spacing-lg);">请登录以spacing-lg);">请登录以查看账号信息</p>
-查看账号信息</p>
-                            <button class="btn                            <button class="btn btn-primary btn-primary" onclick="DSEHub" onclick="DSEHub.showLoginModal()">
-                               .showLoginModal()">
-                                <i <i class="fas fa class="fas fa-sign-in-sign-in-alt"></i> 立即-alt"></i> 立即登录
-登录
-                            </button>
-                        </                            </button>
                         </div>
                     `;
-               div>
+                } else {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看账号信息</p>
+                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 立即登录
+                            </button>
+                        </div>
                     `;
                 }
-            }
             },
 
-            // 投稿功能 },
-
             // 投稿功能
-            submitSubmission: function
             submitSubmission: function() {
-                if (!this.isLogged() {
                 if (!this.isLoggedIn) {
-                    this.showIn) {
-                    this.showNotification('Notification('请先登录后再请先登录后再提交投稿提交投稿');
+                    this.showNotification('请先登录后再提交投稿');
                     return;
                 }
                 
-               ');
+                const title = document.getElementById('submissionTitle').value;
+                const content = document.getElementById('submissionContent').value;
+                
+                if (!title || !content) {
+                    this.showNotification('请填写标题和内容');
                     return;
                 }
                 
- const title =                const title = document.getElementById document.getElementById('submissionTitle').value('submissionTitle').value;
-               ;
-                const content const content = document.getElementById(' = document.getElementById('submissionContent').value;
-                
-               submissionContent').value;
-                
-                if (!title || !content if (!title || !content) {
-                    this.showNotification) {
-                    this.showNotification('请填写标题和内容('请填写标题和内容');
-                   ');
+                if (this.selectedSubmissionSubjects.size === 0) {
+                    this.showNotification('请至少选择一个相关学科');
                     return;
                 }
                 
-                return;
-                }
+                const selectedSubjects = Array.from(this.selectedSubmissionSubjects);
                 
-                if (this.selectedSubmissionSubjects if (this.selectedSubmissionSubjects.size ===.size === 0) {
- 0) {
-                    this                    this.showNotification('请至少选择一个.showNotification('请至少选择一个相关相关学科');
-                    return;
-               学科');
-                    return;
-                }
-                
-                const selectedSubjects }
-                
-                const selectedSubjects = Array = Array.from(this.selectedSubmissionSubjects);
-.from(this.selectedSubmissionSubjects);
-                
-                this.showNotification                
-                this.showNotification(`(`投稿提交成功！相关投稿提交成功！相关学科：${selectedSubjects.map(id学科：${selectedSubjects.map(id => 
-                    this => 
-                    this.subjects.subjects.find(s => s.id ===.find(s => s.id === id) id)?.name || id?.name || id
-               
+                this.showNotification(`投稿提交成功！相关学科：${selectedSubjects.map(id => 
+                    this.subjects.find(s => s.id === id)?.name || id
                 ).join('、')}`);
- ).join('、')}`);
                 
-                               
                 this.clearSubmissionForm();
             },
 
-            clearSubmissionForm: this.clearSubmissionForm();
-            },
-
             clearSubmissionForm: function() {
-                document.getElementById function() {
-                document.getElementById('sub('submissionTitle').value = '';
-missionTitle').value = '';
-                document.getElementById('submission                document.getElementById('submissionContent').Content').value = '';
-               value = '';
+                document.getElementById('submissionTitle').value = '';
+                document.getElementById('submissionContent').value = '';
                 this.selectedSubmissionSubjects.clear();
-                this.renderSubject this.selectedSubmissionSubjects.clear();
-                this.renderSubjectSelector('submissionSubjectSelectorSelector('submissionSubjectSelector', this.selectedSubmissionSubjects,', this.selectedSubmissionSubjects, ' 'submission');
-            },
-
-            loadsubmission');
+                this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
             },
 
             loadSubmissionHistory: function() {
-SubmissionHistory: function() {
-                if                if (!this.isLogged (!this.isLoggedIn)In) {
-                    document.getElementById('sub {
-                    document.getElementById('submissionHistorymissionHistory').classList.add('hidden').classList.add('hidden');
-                    return;
-                }
-');
+                if (!this.isLoggedIn) {
+                    document.getElementById('submissionHistory').classList.add('hidden');
                     return;
                 }
                 
-                               
-                document.getElementById('submissionHistory document.getElementById('submissionHistory').classList.remove('hidden');
-               ').classList.remove('hidden');
-                document.getElementById('history document.getElementById('historyList').List').innerHTML = `
-                    <div styleinnerHTML = `
-                    <div="text-align: center; style="text-align: center; padding: var(--spacing padding: var(--spacing-xl); opacity: 0-xl); opacity: 0.7.7;">
-                        暂无投稿记录
-;">
+                document.getElementById('submissionHistory').classList.remove('hidden');
+                document.getElementById('historyList').innerHTML = `
+                    <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
                         暂无投稿记录
                     </div>
-                `                    </div>
                 `;
-           ;
             },
 
-            // 留言板 },
-
             // 留言板功能
-            initMessageBoard: function功能
             initMessageBoard: function() {
-                this.messages() {
                 this.messages = {
                     chat: [
-                        { = {
-                    chat: [
-                        { author: '学习助手', author: '学习助手', content: '欢迎来到D content: '欢迎来到DSE HubSE Hub留言板留言板！', time:！', time: '10:00' },
- '10:00' },
-                        {                        { author: '管理员', content author: '管理员', content: '请文明交流，互相帮助: '请文明交流，互相帮助。', time: '10。', time: '10:05' }
-                    ],
-                    notes:05' }
+                        { author: '学习助手', content: '欢迎来到DSE Hub留言板！', time: '10:00' },
+                        { author: '管理员', content: '请文明交流，互相帮助。', time: '10:05' }
                     ],
                     notes: [
-                        { author:: [
-                        { author: '数学学霸', '数学学霸', content: '微 content: '微积分学习笔记：积分学习笔记：重点掌握重点掌握导数和积分的应用。导数和积分的应用。', time', time: '昨天 15:: '昨天 15:30' },
-                        { author: '30' },
-                        { author:物理高手', content: ' '物理高手', content: '牛顿运动定律总结：注意牛顿运动定律总结：注意力的分解和合成。',力的分解和合成。', time: '昨天 time: '昨天 16:45 16:45' }
-                    ]
-' }
+                        { author: '数学学霸', content: '微积分学习笔记：重点掌握导数和积分的应用。', time: '昨天 15:30' },
+                        { author: '物理高手', content: '牛顿运动定律总结：注意力的分解和合成。', time: '昨天 16:45' }
                     ]
                 };
 
-                this                };
-
-                this.renderMessages('chat.renderMessages('chat');
-           ');
+                this.renderMessages('chat');
             },
-
-            switchMessageTab: function(tab, element) {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录以使用留言板');
-                    return;
-                }
-                
-                this },
 
             switchMessageTab: function(tab, element) {
                 if (!this.isLoggedIn) {
@@ -2313,295 +3358,148 @@ SubmissionHistory: function() {
                 }
                 
                 this.currentMessageTab = tab;
-                document.currentMessageTab = tab;
-                document.querySelectorAll('.message.querySelectorAll('.message-tab').forEach-tab').forEach(t =>(t => t.classList.remove('active'));
- t.classList.remove('active'));
-                element                element.classList.add('active');
-               .classList.add('active');
+                document.querySelectorAll('.message-tab').forEach(t => t.classList.remove('active'));
+                element.classList.add('active');
                 this.renderMessages(tab);
- this.renderMessages(tab);
             },
 
-            },
-
-            renderMessages:            renderMessages: function(t function(tab) {
-               ab) {
-                const container = document const container = document.getElementById('messagesContainer');
-               .getElementById('messagesContainer');
-                const messages = this const messages = this.messages.messages[tab] || [];
+            renderMessages: function(tab) {
+                const container = document.getElementById('messagesContainer');
+                const messages = this.messages[tab] || [];
                 
-[tab] || [];
+                container.innerHTML = '';
                 
-                container                container.innerHTML = '';
-                
-.innerHTML = '';
-                
-                if                if (messages.length === 0 (messages.length === 0) {
-) {
-                    container.innerHTML = '<div                    container.innerHTML = '<div style="text-align: center style="text-align: center; padding; padding: var(--spacing-xl: var(--spacing-xl); opacity: 0.7;">); opacity: 0.7;">暂无消息</div>';
-                   暂无消息</div>';
+                if (messages.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">暂无消息</div>';
                     return;
                 }
                 
-                messages.forEach return;
-                }
-                
-                messages(msg => {
-                    const message.forEach(msg => {
+                messages.forEach(msg => {
                     const messageDiv = document.createElement('div');
-                   Div = document.createElement('div');
-                    messageDiv.className = ' messageDiv.className = 'message-item';
-                    messageDivmessage-item';
-                    messageDiv.innerHTML =.innerHTML = `
-                        <div `
-                        <div class=" class="message-header">
-                            <div class="message-header">
-                            <div class="message-author">${msg.authormessage-author">${msg.author}</div>
-                           }</div>
-                            <div class <div class="message-time">${="message-time">${msg.timemsg.time}</div>
-                        </div}</div>
+                    messageDiv.className = 'message-item';
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <div class="message-author">${msg.author}</div>
+                            <div class="message-time">${msg.time}</div>
                         </div>
-                        <div>
-                        <div class="message-content class="message-content">${">${msg.content}</div>
+                        <div class="message-content">${msg.content}</div>
                     `;
-                    containermsg.content}</div>
-                    `;
-                    container.appendChild(message.appendChild(messageDiv);
+                    container.appendChild(messageDiv);
                 });
                 
-                // Div);
-                });
-                
-               滚动到底部
- // 滚动到底部
-                container                container.scrollTop = container.sc.scrollTop = container.scrollHeight;
-            },
-
-            sendMessagerollHeight;
+                // 滚动到底部
+                container.scrollTop = container.scrollHeight;
             },
 
             sendMessage: function() {
-                if: function() {
-                if (!this.isLoggedIn) (!this.isLoggedIn) {
-                    {
-                    this.showNotification(' this.showNotification('请先登录后再发送消息');
-                   请先登录后再发送消息');
-                    return return;
-                }
-                
-                const input;
-                }
-                
-                const input = document.getElementById('messageInput = document.getElementById('messageInput');
-               ');
-                const message = input.value.trim const message = input.value.trim();
-                
-                if (!message();
-                
-                if (!message) {
-) {
-                    this.showNotification                    this.showNotification('请输入('请输入消息内容');
-                   消息内容');
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录后再发送消息');
                     return;
                 }
- return;
+                
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (!message) {
+                    this.showNotification('请输入消息内容');
+                    return;
                 }
                 
-                const new                
-                const newMessage =Message = {
-                    author: this.current {
-                    author: this.currentUser.usernameUser.username,
-                   ,
+                const newMessage = {
+                    author: this.currentUser.username,
                     content: message,
- content: message,
-                    time: new                    time: new Date().toLocale Date().toLocaleTimeString('zhTimeString('zh-HK-HK', { hour: '2', { hour: '2-digit-digit', minute:', minute: '2-digit' '2-digit' })
+                    time: new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })
                 };
                 
- })
-                };
-                
-                this                this.messages[this.currentMessageTab]..messages[this.currentMessageTab].push(newMessage);
-push(newMessage);
-                input.value                input.value = '';
+                this.messages[this.currentMessageTab].push(newMessage);
+                input.value = '';
                 this.renderMessages(this.currentMessageTab);
                 this.showNotification('消息发送成功！');
             },
 
             // 主题功能
             initThemes: function() {
-                const container = document.getElementById('theme = '';
-                this.renderMessages(this.currentMessageTab);
-                this.showNotification('消息发送成功！');
-            },
-
-            // 主题功能
-            initThemes: function() {
-                const container =Grid');
-                if (!container document.getElementById('themeGrid');
-                if) return (!container) return;
-                
-;
+                const container = document.getElementById('themeGrid');
+                if (!container) return;
                 
                 container.innerHTML = '';
                 
-                container.innerHTML = '';
-                
-                this.themes.forEach(                this.themes.forEach(theme => {
-                    const option = documenttheme => {
-                    const option = document.createElement.createElement('div');
-('div');
-                    option.className                    option.className = `theme- = `theme-option ${themeoption ${theme.id === this.currentTheme.id === this.currentTheme ? ' ? 'selected' : ''}`;
-selected' : ''}`;
+                this.themes.forEach(theme => {
+                    const option = document.createElement('div');
+                    option.className = `theme-option ${theme.id === this.currentTheme ? 'selected' : ''}`;
                     option.textContent = theme.name;
-                    option.textContent = theme.name;
-                    option.onclick = ()                    option.onclick = () => this.changeTheme(theme.id);
- => this.changeTheme(theme.id);
-                    container.appendChild(option);
+                    option.onclick = () => this.changeTheme(theme.id);
                     container.appendChild(option);
                 });
                 
-                //                 });
-                
-                // 加载保存加载保存的主题
-                const savedTheme的主题
-                const savedTheme = localStorage.getItem('dse = localStorage.getItem('dsehub_hub_theme');
-                iftheme');
-                if (s (savedTheme) {
-                    thisavedTheme) {
-                    this.changeTheme.changeTheme(savedTheme, true(savedTheme, true);
-               );
+                // 加载保存的主题
+                const savedTheme = localStorage.getItem('dsehub_theme');
+                if (savedTheme) {
+                    this.changeTheme(savedTheme, true);
                 }
             },
 
-            changeTheme }
-            },
-
-            changeTheme: function(themeId,: function(themeId, silent = false) {
-                silent = false) {
-                document.body document.body.classList.remove.classList.remove(this.currentTheme);
-(this.currentTheme);
-                this.currentTheme = theme                this.currentTheme = themeId;
-Id;
-                document.body.classList.add(                document.body.classList.add(themeId);
+            changeTheme: function(themeId, silent = false) {
+                document.body.classList.remove(this.currentTheme);
+                this.currentTheme = themeId;
+                document.body.classList.add(themeId);
                 
-themeId);
-                
-                document                document.querySelectorAll('.theme-option.querySelectorAll('.theme-option').forEach').forEach(option => {
-                    option(option => {
+                document.querySelectorAll('.theme-option').forEach(option => {
                     option.classList.remove('selected');
-                   .classList.remove('selected');
-                    if ( if (option.classList.contains(option.classList.contains(themeIdthemeId)) {
-                        option.classList.add('selected)) {
+                    if (option.classList.contains(themeId)) {
                         option.classList.add('selected');
                     }
                 });
                 
-');
-                    }
-                });
+                localStorage.setItem('dsehub_theme', themeId);
                 
-                localStorage.setItem('d                localStorage.setItem('dsehubsehub_theme_theme', themeId);
-', themeId);
-                
-                if (!                
-                if (!silentsilent) {
-                    this.showNotification) {
-                    this.showNotification(`(`已切换至${this已切换至${this.the.themes.find(t => t.id ===mes.find(t => t.id === themeId)?.name} themeId)?.name}主题`);
-                }
-            },
-
-            //主题`);
+                if (!silent) {
+                    this.showNotification(`已切换至${this.themes.find(t => t.id === themeId)?.name}主题`);
                 }
             },
 
             // 排行榜功能
-            load 排行榜功能
             loadLeaderboard: function() {
-                constLeaderboard: function() {
-                const container = document.getElementById(' container = document.getElementById('leaderboardList');
-                if (!containerleaderboardList');
+                const container = document.getElementById('leaderboardList');
                 if (!container) return;
                 
-                container) return;
-                
                 container.innerHTML = `
-                    <div.innerHTML = `
-                    <div style=" style="text-align: centertext-align: center; padding: var(--spacing-xl; padding: var(--spacing-xl);">
-                        <i class);">
-                        <i class="fas="fas fa-trophy" style=" fa-trophy" style="font-size: 48px; marginfont-size: 48px; margin-bottom: var(--spacing-bottom: var(--spacing-md); color: var(--accent-md); color: var(--accent-color);"></i>
-                       -color);"></i>
-                        <h3 style="margin-bottom: <h3 style="margin-bottom: var(--spacing-sm);">排行榜功能准备中</h3>
+                    <div style="text-align: center; padding: var(--spacing-xl);">
+                        <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: var(--spacing-md); color: var(--accent-color);"></i>
+                        <h3 style="margin-bottom: var(--spacing-sm);">排行榜功能准备中</h3>
                         <p>该功能将在后续版本中推出</p>
                     </div>
                 `;
             },
 
-            //  var(--spacing-sm);">排行榜功能准备中</h3>
-                        <p>该功能将在后续版本中推出</p>
-                    </div>
-                `;
-            },
-
-           响应式 // 响应式处理
-            handleResize处理
-            handleResize: function: function() {
-                const width =() {
-                const width = window.inner window.innerWidth;
-                const subjectSelectorWidth;
-                const subjectSelector = document.getElementById(' = document.getElementById('subjectSelectorsubjectSelector');
+            // 响应式处理
+            handleResize: function() {
+                const width = window.innerWidth;
+                const subjectSelector = document.getElementById('subjectSelector');
                 
-                if');
-                
-                if (subject (subjectSelector) {
-                    if (widthSelector) {
+                if (subjectSelector) {
                     if (width < 768) {
- < 768) {
-                        subject                        subjectSelector.style.gridTemplateColumns = 'repeatSelector.style.gridTemplateColumns = 'repeat(auto-fill,(auto-fill, minmax minmax(110px, 1fr))(110px, 1fr))';
-                    } else if (';
-                    } else if (width < 102width < 1024) {
-                       4) {
-                        subjectSelector.style.grid subjectSelector.style.gridTemplateColumnsTemplateColumns = 'repeat(auto-fill = 'repeat(auto-fill, minmax(130px, minmax(130px, , 1fr))';
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(110px, 1fr))';
+                    } else if (width < 1024) {
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(130px, 1fr))';
                     } else {
-                        subject1fr))';
-                    } else {
-                        subjectSelector.styleSelector.style.gridTemplateColumns = 'repeat.gridTemplateColumns = 'repeat(auto-fill, minmax(150(auto-fill, minmax(150px, 1fr))px, 1fr))';
-                    }
-                }
-            }
-       ';
+                        subjectSelector.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
                     }
                 }
             }
         };
 
-        //  };
-
-        // 初始化应用初始化应用
-        document.addEventListener('DOM
-        document.addEventListener('DOMContentLoadedContentLoaded', function() {
-            D', function() {
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
             DSEHub.init();
         });
 
-SEHub.init();
-        });
-
-        // 模态框点击        // 模态框点击外部关闭
-        window.addEventListener('click外部关闭
+        // 模态框点击外部关闭
         window.addEventListener('click', function(event) {
-           ', function(event) {
-            if (event.target if (event.target.classList.contains('modal.classList.contains('modal-overlay') && D-overlay') && DSEHub.isLoggedIn)SEHub.isLoggedIn) {
-                {
-                DSEHub.close DSEHub.closeModal();
-Modal();
-            }
-        });
+            if (event.target.classList.contains('modal-overlay') && DSEHub.isLoggedIn) {
+                DSEHub.closeModal();
             }
         });
     </script>
-    </script>
 </body>
 </html>
-</body>
-</html>
-
