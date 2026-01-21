@@ -401,54 +401,10 @@
             color: var(--text-secondary);
         }
 
-        /* ==================== 投稿系统（重大更新） ==================== */
-        .form-group {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: var(--spacing-sm);
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .form-group label i {
-            color: var(--accent-color);
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md);
-            color: var(--text-color);
-            font-size: 14px;
-            transition: var(--transition-normal);
-            font-family: inherit;
-            backdrop-filter: blur(5px);
-        }
-
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background: var(--hover-color);
-        }
-
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-
-        /* 游戏题库投稿特殊样式 */
+        /* ==================== 游戏题库投稿系统样式 ==================== */
         .game-type-selector {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
@@ -461,6 +417,11 @@
             text-align: center;
             cursor: pointer;
             transition: var(--transition-normal);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .game-type-card:hover {
@@ -481,11 +442,11 @@
 
         .game-type-form {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .game-type-form.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
 
         .match-pair {
@@ -495,13 +456,7 @@
             margin-bottom: var(--spacing-md);
         }
 
-        .form-actions {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-        }
-
-        /* ==================== 我的账户（合并版） ==================== */
+        /* ==================== 我的账户 ==================== */
         .account-card {
             background: var(--card-bg);
             border-radius: var(--border-radius-lg);
@@ -558,7 +513,7 @@
 
         .account-stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
@@ -582,15 +537,9 @@
             color: var(--text-secondary);
         }
 
-        .account-actions {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-        }
-
         /* ==================== 模态框系统 ==================== */
         .modal-overlay {
-            display: flex;
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -627,6 +576,76 @@
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ==================== 表单组件 ==================== */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .form-group label i {
+            color: var(--accent-color);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+            color: var(--text-color);
+            font-size: 14px;
+            transition: var(--transition-normal);
+            font-family: inherit;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: var(--hover-color);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        /* ==================== 通知系统 ==================== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         /* ==================== 响应式设计 ==================== */
@@ -674,6 +693,10 @@
             }
             
             .knowledge-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .match-pair {
                 grid-template-columns: 1fr;
             }
         }
@@ -855,26 +878,26 @@
                         
                         <div class="form-group">
                             <label><i class="fas fa-tags"></i> 知识点标签（可多选）</label>
-                            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="公式"> 公式
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="语法"> 语法
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="名言金句"> 名言金句
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="成语"> 成语
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="术语"> 术语
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="基础"> 基础
                                 </label>
-                                <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <label style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                     <input type="checkbox" value="进阶"> 进阶
                                 </label>
                             </div>
@@ -901,7 +924,7 @@
                     </div>
                 </div>
 
-                <!-- 游戏题库投稿面板（全新） -->
+                <!-- 游戏题库投稿面板 -->
                 <div id="gameSubmissionPanel" class="panel-content hidden">
                     <div class="panel-header">
                         <h2><i class="fas fa-gamepad"></i> 投稿游戏题目</h2>
@@ -964,10 +987,10 @@
                             <div class="form-group">
                                 <label><i class="fas fa-check-circle"></i> 正确答案</label>
                                 <div style="display: flex; gap: var(--spacing-md);">
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                         <input type="radio" name="tfAnswer" value="true"> 正确
                                     </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: rgba(255,255,255,0.1); border-radius: var(--border-radius-sm);">
                                         <input type="radio" name="tfAnswer" value="false"> 错误
                                     </label>
                                 </div>
@@ -1017,7 +1040,7 @@
                     </div>
                 </div>
 
-                <!-- 我的账户面板（合并版） -->
+                <!-- 我的账户面板 -->
                 <div id="myAccountPanel" class="panel-content hidden">
                     <div class="panel-header">
                         <h2><i class="fas fa-user-circle"></i> 我的账户</h2>
@@ -1067,7 +1090,21 @@
                         <h2><i class="fas fa-palette"></i> 主题设置</h2>
                     </div>
                     <div class="panel-content">
-                        <div class="settings-grid" id="themeGrid"></div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);" id="themeGrid"></div>
+                    </div>
+                </div>
+
+                <!-- 排行榜面板 -->
+                <div id="leaderboardPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-trophy"></i> 排行榜</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-chart-bar" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">排行榜功能开发中</h3>
+                            <p>即将展示用户积分和游戏成绩排名</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1087,6 +1124,13 @@
             currentTagFilter: 'all',
             isLoggedIn: false,
             isAdmin: false,
+
+            // 主题列表
+            themes: [
+                { id: 'theme-blue-purple', name: '蓝-紫极光' },
+                { id: 'theme-cyan-green', name: '青-绿极光' },
+                { id: 'theme-orange-red', name: '橙-红极光' }
+            ],
 
             // 标签系统
             knowledgeTags: ['公式', '语法', '名言金句', '成语', '术语', '基础', '进阶'],
@@ -1121,6 +1165,7 @@
                 this.initKnowledgeGrid();
                 this.showPanel('knowledge');
                 this.checkExistingSession();
+                // 移除 initMessageBoard 调用，因为它不存在
             },
 
             // Supabase初始化
@@ -1184,6 +1229,8 @@
 
             // 更新账户UI
             updateAccountUI: function() {
+                if (!this.currentUser) return;
+                
                 const profile = this.userProfile || {
                     username: this.currentUser.username,
                     score: 0,
@@ -1356,6 +1403,20 @@
                 const notification = document.createElement('div');
                 notification.className = 'notification';
                 notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--accent-color);
+                    color: white;
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    border-radius: var(--border-radius-md);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease;
+                    max-width: 300px;
+                `;
+                
                 document.body.appendChild(notification);
                 
                 setTimeout(() => {
@@ -1473,6 +1534,18 @@
                 this.filterKnowledge();
             },
 
+            filterSubjects: function(filter, button) {
+                this.currentFilter = filter;
+                
+                // 更新按钮状态
+                document.querySelectorAll('.subject-controls .btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                
+                this.filterKnowledge();
+            },
+
             filterKnowledge: function() {
                 let filteredData = this.knowledgeData;
                 
@@ -1545,10 +1618,10 @@
                     ` : '';
                     
                     card.innerHTML = `
-                        <div class="knowledge-subject">${subjectNames[item.subject] || item.subject}</div>
-                        <div class="knowledge-title">${item.title}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">${subjectNames[item.subject] || item.subject}</div>
+                        <div style="font-weight: 600; font-size: 16px; margin-bottom: var(--spacing-sm);">${item.title}</div>
                         ${tagsHTML}
-                        <div class="knowledge-content">${item.content}</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.5;">${item.content}</div>
                     `;
                     
                     container.appendChild(card);
@@ -1588,15 +1661,20 @@
                 try {
                     // 保存到数据库
                     const { data, error } = await this.supabase
-                        .from('knowledge_points')
+                        .from('submissions')
                         .insert([
                             {
                                 subject: selectedSubjects.join(','),
                                 title: title,
                                 content: content,
                                 tags: selectedTags,
-                                difficulty: 'medium',
-                                created_at: new Date().toISOString()
+                                status: 'pending',
+                                user_id: this.currentUser.id,
+                                author_name: this.currentUser.username,
+                                like_count: 0,
+                                view_count: 0,
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
                             }
                         ]);
                     
@@ -1605,7 +1683,7 @@
                         return;
                     }
                     
-                    this.showNotification('知识点投稿提交成功！');
+                    this.showNotification('知识点投稿提交成功！等待审核。');
                     this.clearSubmissionForm();
                     
                     // 更新本地数据
@@ -1618,6 +1696,7 @@
                     });
                     
                 } catch (err) {
+                    console.error('投稿提交错误:', err);
                     this.showNotification('投稿提交时发生错误');
                 }
             },
@@ -1745,16 +1824,20 @@
                     
                     // 保存到数据库
                     const { data, error } = await this.supabase
-                        .from('game_questions')
+                        .from('submissions')
                         .insert([
                             {
-                                game_type: this.selectedGameType,
+                                subject: 'game',
                                 title: gameData.title,
                                 content: JSON.stringify(gameData),
+                                game_type: this.selectedGameType,
+                                status: 'pending',
                                 user_id: this.currentUser.id,
                                 author_name: this.currentUser.username,
-                                status: 'pending',
-                                created_at: new Date().toISOString()
+                                like_count: 0,
+                                view_count: 0,
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
                             }
                         ]);
                     
@@ -1763,7 +1846,7 @@
                         return;
                     }
                     
-                    this.showNotification('游戏题目投稿成功！');
+                    this.showNotification('游戏题目投稿成功！等待审核。');
                     this.clearGameForm();
                     
                 } catch (err) {
@@ -1805,6 +1888,7 @@
             showPanel: function(panelId) {
                 if (!this.isLoggedIn && panelId !== 'knowledge') {
                     this.showNotification('请先登录以使用此功能');
+                    this.showLoginModal();
                     return;
                 }
                 
@@ -1838,18 +1922,15 @@
                 const container = document.getElementById('themeGrid');
                 if (!container) return;
                 
-                const themes = [
-                    { id: 'theme-blue-purple', name: '蓝-紫极光' },
-                    { id: 'theme-cyan-green', name: '青-绿极光' },
-                    { id: 'theme-orange-red', name: '橙-红极光' }
-                ];
-                
                 container.innerHTML = '';
                 
-                themes.forEach(theme => {
+                this.themes.forEach(theme => {
                     const option = document.createElement('div');
-                    option.className = `theme-option ${theme.id === this.currentTheme ? 'selected' : ''}`;
-                    option.textContent = theme.name;
+                    option.className = `game-type-card ${theme.id === this.currentTheme ? 'selected' : ''}`;
+                    option.innerHTML = `
+                        <div style="font-weight: 600; margin-bottom: var(--spacing-xs);">${theme.name}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">点击应用主题</div>
+                    `;
                     option.onclick = () => this.changeTheme(theme.id);
                     container.appendChild(option);
                 });
@@ -1859,13 +1940,6 @@
                 document.body.classList.remove(this.currentTheme);
                 this.currentTheme = themeId;
                 document.body.classList.add(themeId);
-                
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.classList.remove('selected');
-                    if (option.classList.contains(themeId)) {
-                        option.classList.add('selected');
-                    }
-                });
                 
                 this.showNotification(`已切换至${this.themes.find(t => t.id === themeId)?.name}主题`);
             },
@@ -1905,7 +1979,10 @@
 
         // 模态框点击外部关闭
         window.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            
+            if (event.target === loginModal) {
                 if (!DSEHub.isLoggedIn) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -1913,7 +1990,40 @@
                     DSEHub.closeModal();
                 }
             }
+            
+            if (event.target === registerModal) {
+                DSEHub.closeModal();
+            }
         });
+
+        // 添加 CSS 动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            .theme-option {
+                padding: var(--spacing-md);
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: var(--border-radius-md);
+                border: 1px solid var(--border-color);
+                cursor: pointer;
+                transition: var(--transition-normal);
+                text-align: center;
+            }
+            
+            .theme-option:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            
+            .theme-option.selected {
+                border-color: var(--accent-color);
+                background: rgba(90, 103, 255, 0.2);
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
