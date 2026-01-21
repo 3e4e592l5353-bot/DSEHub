@@ -136,7 +136,7 @@
             position: relative;
         }
 
-        /* 登录前毛玻璃遮罩 */
+        /* 登录前毛玻璃遮罩 - 网站加载时直接显示 */
         body.login-required::before {
             content: '';
             position: fixed;
@@ -863,14 +863,14 @@
         }
 
         /* ==================== 模态框系统 ==================== */
-        /* 登录强制模态框 */
+        /* 网站加载时强制显示登录模态框 */
         .modal-overlay.required {
             display: flex !important;
             z-index: 1000 !important;
         }
 
         .modal-overlay {
-            display: none;
+            display: flex;
             position: fixed;
             top: 0;
             left: 0;
@@ -1166,10 +1166,126 @@
             font-size: 10px;
             font-weight: bold;
         }
+
+        /* ==================== 用户资料卡片 ==================== */
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .profile-achievements {
+            margin-top: var(--spacing-xl);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .achievement-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-normal);
+        }
+
+        .achievement-card:hover {
+            background: var(--hover-color);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+            color: var(--accent-color);
+        }
+
+        .achievement-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .achievement-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ==================== 游戏记录 ==================== */
+        .game-records-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .game-record-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .game-record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .game-type {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--accent-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .game-score {
+            font-size: 18px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="theme-blue-purple login-required">
-    <!-- 强制登录模态框 -->
+    <!-- 强制登录模态框 - 网站加载时直接显示 -->
     <div id="loginModal" class="modal-overlay required">
         <div class="modal-content">
             <div class="modal-header">
@@ -1255,7 +1371,7 @@
                     <i class="fas fa-user"></i>
                     <span>登录/注册</span>
                 </div>
-                <div class="user-avatar" id="userAvatar" onclick="DSEHub.showPanel('account')">
+                <div class="user-avatar" id="userAvatar" onclick="DSEHub.showPanel('profile')">
                     <i class="fas fa-user"></i>
                 </div>
             </div>
@@ -1283,6 +1399,21 @@
                     </div>
                 </div>
                 
+                <div class="nav-section">
+                    <h3><i class="fas fa-user"></i> 个人中心</h3>
+                    <div class="nav-btn-list">
+                        <button class="btn" onclick="DSEHub.showPanel('profile')">
+                            <i class="fas fa-id-card"></i> 个人资料
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('achievements')">
+                            <i class="fas fa-award"></i> 成就系统
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('gameRecords')">
+                            <i class="fas fa-history"></i> 游戏记录
+                        </button>
+                    </div>
+                </div>
+
                 <div class="nav-section">
                     <h3><i class="fas fa-cog"></i> 系统设置</h3>
                     <div class="nav-btn-list">
@@ -1396,6 +1527,36 @@
                     </div>
                 </div>
 
+                <!-- 个人资料面板 -->
+                <div id="profilePanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-id-card"></i> 个人资料</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="profileContent"></div>
+                    </div>
+                </div>
+
+                <!-- 成就系统面板 -->
+                <div id="achievementsPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-award"></i> 成就系统</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="achievementsContent"></div>
+                    </div>
+                </div>
+
+                <!-- 游戏记录面板 -->
+                <div id="gameRecordsPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-history"></i> 游戏记录</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div id="gameRecordsContent"></div>
+                    </div>
+                </div>
+
                 <!-- 设置面板 -->
                 <div id="settingsPanel" class="panel-content hidden">
                     <div class="panel-header">
@@ -1426,6 +1587,7 @@
             // 状态变量
             supabase: null,
             currentUser: null,
+            userProfile: null,
             currentTheme: 'theme-blue-purple',
             currentMessageTab: 'chat',
             selectedSubjects: new Set(['all']),
@@ -1526,70 +1688,32 @@
                     detail: '细胞是生物体的基本单位，包含细胞膜（控制物质进出）、细胞核（储存遗传信息）、线粒体（能量生产）、核糖体（蛋白质合成）等结构。不同细胞器协同工作维持细胞生命活动。',
                     tags: ['生物', '细胞', '结构'],
                     relatedSubjects: ['bio', 'chem']
-                },
-                { 
-                    id: 9, subject: 'geo', title: '板块构造理论', 
-                    content: '理解地球板块的运动机制及其对地质现象的影响。',
-                    detail: '板块构造理论认为地球表层由多个板块组成，板块之间相对运动导致地震、火山、山脉形成等地质现象。板块边界分为离散边界、汇聚边界和转换边界三种类型。',
-                    tags: ['地理', '地质', '理论'],
-                    relatedSubjects: ['geo', 'phy']
-                },
-                { 
-                    id: 10, subject: 'chist', title: '中国近代史', 
-                    content: '掌握中国近代史上的重要事件和发展脉络。',
-                    detail: '中国近代史从1840年鸦片战争开始，经历了洋务运动、戊戌变法、辛亥革命、抗日战争等重要历史阶段。这一时期中国经历了从封建社会向现代国家的转型。',
-                    tags: ['历史', '中国', '近代'],
-                    relatedSubjects: ['chist']
-                },
-                { 
-                    id: 11, subject: 'whist', title: '世界两次大战', 
-                    content: '了解第一次世界大战和第二次世界大战的起因、过程和影响。',
-                    detail: '第一次世界大战（1914-1918）主要由帝国主义矛盾引发，第二次世界大战（1939-1945）则源于法西斯主义扩张。两次大战对世界格局产生深远影响，推动了国际秩序的重建。',
-                    tags: ['历史', '世界', '战争'],
-                    relatedSubjects: ['whist']
-                },
-                { 
-                    id: 12, subject: 'baf', title: '会计基本原则', 
-                    content: '掌握会计的基本假设、原则和记账方法。',
-                    detail: '会计基本原则包括实体假设、持续经营假设、会计分期假设、货币计量假设。记账方法采用复式记账法，确保会计等式的平衡。',
-                    tags: ['会计', '财务', '基础'],
-                    relatedSubjects: ['baf', 'econ']
-                },
-                { 
-                    id: 13, subject: 'ict', title: '编程基础', 
-                    content: '学习计算机编程的基本概念和逻辑思维。',
-                    detail: '编程基础包括变量、数据类型、控制结构（顺序、选择、循环）、函数等概念。掌握编程思维有助于解决复杂问题和实现自动化。',
-                    tags: ['计算机', '编程', '基础'],
-                    relatedSubjects: ['ict', 'math']
-                },
-                { 
-                    id: 14, subject: 'm1', title: '概率与统计', 
-                    content: '掌握概率计算和统计分析的基本方法。',
-                    detail: '概率论研究随机现象的规律性，统计学研究数据的收集、分析和解释。两者结合为决策提供科学依据。',
-                    tags: ['数学', '概率', '统计'],
-                    relatedSubjects: ['m1', 'math']
-                },
-                { 
-                    id: 15, subject: 'm2', title: '代数与微积分进阶', 
-                    content: '深入学习代数和微积分的进阶内容。',
-                    detail: '代数进阶包括矩阵、向量空间等，微积分进阶包括多元函数、偏导数、重积分等。这些内容在工程和科学领域有广泛应用。',
-                    tags: ['数学', '代数', '微积分'],
-                    relatedSubjects: ['m2', 'math', 'phy']
                 }
             ],
 
-            // 排行榜数据
-            leaderboardData: [
-                { rank: 1, username: '数学天才', score: 9850, level: 'Lv.99', subjects: ['数学', '物理', '化学'] },
-                { rank: 2, username: '语言大师', score: 8720, level: 'Lv.87', subjects: ['语文', '英语', '历史'] },
-                { rank: 3, username: '理科全能', score: 7540, level: 'Lv.75', subjects: ['数学', '物理', '化学', '生物'] },
-                { rank: 4, username: '文科强者', score: 6890, level: 'Lv.68', subjects: ['语文', '英语', '历史', '地理'] },
-                { rank: 5, username: '学习之星', score: 6320, level: 'Lv.63', subjects: ['数学', '语文', '英语'] },
-                { rank: 6, username: '进步神速', score: 5870, level: 'Lv.58', subjects: ['通识', '公民与社会发展科'] },
-                { rank: 7, username: '勤奋学员', score: 5430, level: 'Lv.54', subjects: ['数学', '英语', '经济'] },
-                { rank: 8, username: '知识猎手', score: 4980, level: 'Lv.49', subjects: ['生物', '化学', '物理'] },
-                { rank: 9, username: '艺术精英', score: 4560, level: 'Lv.45', subjects: ['视觉艺术', '音乐'] },
-                { rank: 10, username: '体育健将', score: 4120, level: 'Lv.41', subjects: ['体育', '生物'] }
+            // 成就数据
+            achievements: [
+                { id: 1, name: '初出茅庐', description: '首次登录DSE Hub', icon: 'fas fa-user-graduate', category: '基础', unlocked: true },
+                { id: 2, name: '学习先锋', description: '学习10个知识点', icon: 'fas fa-book-open', category: '学习', unlocked: true },
+                { id: 3, name: '投稿达人', description: '提交5个投稿', icon: 'fas fa-paper-plane', category: '贡献', unlocked: false },
+                { id: 4, name: '社交之星', description: '发送50条消息', icon: 'fas fa-comments', category: '社交', unlocked: false },
+                { id: 5, name: '游戏大师', description: '赢得10场游戏', icon: 'fas fa-gamepad', category: '游戏', unlocked: false },
+                { id: 6, name: '全科精通', description: '学习所有学科的知识点', icon: 'fas fa-brain', category: '学习', unlocked: false },
+                { id: 7, name: '高分王', description: '获得1000学习积分', icon: 'fas fa-trophy', category: '成就', unlocked: false },
+                { id: 8, name: '坚持不懈', description: '连续登录7天', icon: 'fas fa-calendar-check', category: '坚持', unlocked: false },
+                { id: 9, name: '助人为乐', description: '帮助他人解答10次', icon: 'fas fa-hands-helping', category: '贡献', unlocked: false },
+                { id: 10, name: '知识守护者', description: '收藏50个知识点', icon: 'fas fa-bookmark', category: '学习', unlocked: false },
+                { id: 11, name: '速学专家', description: '1小时内学习5个知识点', icon: 'fas fa-bolt', category: '学习', unlocked: false },
+                { id: 12, name: '冠军选手', description: '登上排行榜第一名', icon: 'fas fa-crown', category: '成就', unlocked: false }
+            ],
+
+            // 游戏记录数据
+            gameRecords: [
+                { id: 1, gameType: '数学挑战', score: 85, date: '2024-01-10', duration: '15分钟', opponent: 'AI' },
+                { id: 2, gameType: '物理对决', score: 72, date: '2024-01-09', duration: '20分钟', opponent: '用户A' },
+                { id: 3, gameType: '化学竞赛', score: 93, date: '2024-01-08', duration: '10分钟', opponent: 'AI' },
+                { id: 4, gameType: '历史问答', score: 68, date: '2024-01-07', duration: '18分钟', opponent: '用户B' },
+                { id: 5, gameType: '英语测验', score: 88, date: '2024-01-06', duration: '12分钟', opponent: 'AI' }
             ],
 
             // 初始化函数
@@ -1601,28 +1725,105 @@
                 this.initMessageBoard();
                 this.showPanel('knowledge');
                 
-                this.enforceLogin();
+                // 检查已有登录状态
+                this.checkExistingSession();
                 window.addEventListener('resize', () => this.handleResize());
             },
 
-            // 强制登录系统
+            // 初始化Supabase
+            initSupabase: function() {
+                const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsc2FseXNrdWxvendha2htem9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNzg4NDQsImV4cCI6MjA1Mjc1NDg0NH0.4NVhG9j1XCh3xcv_J7L61nP9SYvBSl7wy42F1ysJ7KM';
+                
+                this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                });
+            },
+
+            // 检查现有会话
+            checkExistingSession: async function() {
+                try {
+                    const { data, error } = await this.supabase.auth.getSession();
+                    
+                    if (error) {
+                        console.error('获取会话失败:', error);
+                        this.enforceLogin();
+                        return;
+                    }
+                    
+                    if (data.session) {
+                        this.currentUser = {
+                            id: data.session.user.id,
+                            email: data.session.user.email,
+                            username: data.session.user.email.split('@')[0]
+                        };
+                        
+                        await this.loadUserProfile();
+                        this.loginSuccess();
+                    } else {
+                        this.enforceLogin();
+                    }
+                } catch (err) {
+                    console.error('检查会话失败:', err);
+                    this.enforceLogin();
+                }
+            },
+
+            // 加载用户资料
+            loadUserProfile: async function() {
+                if (!this.currentUser) return;
+                
+                try {
+                    const { data, error } = await this.supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('email', this.currentUser.email)
+                        .single();
+                    
+                    if (error && error.code !== 'PGRST116') {
+                        console.error('加载用户资料失败:', error);
+                        return;
+                    }
+                    
+                    if (data) {
+                        this.userProfile = data;
+                        this.isAdmin = data.is_admin === true;
+                        
+                        if (data.theme) {
+                            this.changeTheme(data.theme, true);
+                        }
+                    }
+                } catch (err) {
+                    console.error('加载用户资料出错:', err);
+                }
+            },
+
+            // 更新用户资料主题
+            updateUserTheme: async function(themeId) {
+                if (!this.userProfile) return;
+                
+                try {
+                    const { error } = await this.supabase
+                        .from('profiles')
+                        .update({ theme: themeId })
+                        .eq('id', this.userProfile.id);
+                    
+                    if (error) {
+                        console.error('更新主题失败:', error);
+                    }
+                } catch (err) {
+                    console.error('更新主题出错:', err);
+                }
+            },
+
+            // 强制登录（网站加载时直接显示登录界面）
             enforceLogin: function() {
                 document.body.classList.add('login-required');
                 document.getElementById('loginModal').classList.add('required');
-                
-                const savedSession = localStorage.getItem('dsehub_session');
-                if (savedSession) {
-                    try {
-                        const session = JSON.parse(savedSession);
-                        if (session.expires_at > Date.now()) {
-                            this.currentUser = session.user;
-                            this.isLoggedIn = true;
-                            this.loginSuccess();
-                        }
-                    } catch (e) {
-                        localStorage.removeItem('dsehub_session');
-                    }
-                }
             },
 
             // 登录成功处理
@@ -1635,24 +1836,9 @@
                 this.updateUserUI();
                 this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                 
-                if (this.currentUser.role === 'admin') {
-                    this.isAdmin = true;
+                if (this.isAdmin) {
                     document.getElementById('adminNavBtn').style.display = 'flex';
                 }
-            },
-
-            // 初始化Supabase
-            initSupabase: function() {
-                const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
-                const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-                
-                this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                    auth: {
-                        autoRefreshToken: false,
-                        persistSession: false,
-                        detectSessionInUrl: false
-                    }
-                });
             },
 
             // 显示通知
@@ -1947,6 +2133,15 @@
                     case 'account':
                         this.updateAccountInfo();
                         break;
+                    case 'profile':
+                        this.renderProfile();
+                        break;
+                    case 'achievements':
+                        this.renderAchievements();
+                        break;
+                    case 'gameRecords':
+                        this.renderGameRecords();
+                        break;
                     case 'submission':
                         this.loadSubmissionHistory();
                         break;
@@ -1954,6 +2149,190 @@
                         this.loadLeaderboard();
                         break;
                 }
+            },
+
+            // 渲染个人资料
+            renderProfile: function() {
+                const container = document.getElementById('profileContent');
+                if (!container) return;
+                
+                if (!this.isLoggedIn) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看个人资料</p>
+                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 立即登录
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const profile = this.userProfile || {
+                    username: this.currentUser.username,
+                    score: 0,
+                    games_played: 0,
+                    high_score: 0,
+                    duel_wins: 0,
+                    duel_losses: 0
+                };
+                
+                container.innerHTML = `
+                    <div class="profile-card">
+                        <div class="account-header">
+                            <div class="account-avatar">${profile.username.charAt(0).toUpperCase()}</div>
+                            <div class="account-details">
+                                <div class="account-username">${profile.username}</div>
+                                <div class="account-email">${this.currentUser.email}</div>
+                                <div class="account-role">${this.isAdmin ? '管理员' : '用户'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">${profile.score || 0}</div>
+                                <div class="stat-title">学习积分</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${profile.games_played || 0}</div>
+                                <div class="stat-title">游戏次数</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${profile.high_score || 0}</div>
+                                <div class="stat-title">最高分</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">${profile.duel_wins || 0}</div>
+                                <div class="stat-title">对战胜利</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-achievements">
+                            <h3 style="margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
+                                <i class="fas fa-award" style="color: var(--accent-color);"></i> 成就进度
+                            </h3>
+                            <div class="achievements-grid">
+                                ${this.achievements.slice(0, 6).map(achievement => `
+                                    <div class="achievement-card ${achievement.unlocked ? '' : 'locked'}">
+                                        <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
+                                        <div class="achievement-name">${achievement.name}</div>
+                                        <div class="achievement-desc">${achievement.description}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // 渲染成就系统
+            renderAchievements: function() {
+                const container = document.getElementById('achievementsContent');
+                if (!container) return;
+                
+                if (!this.isLoggedIn) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看成就系统</p>
+                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 立即登录
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const unlockedCount = this.achievements.filter(a => a.unlocked).length;
+                const totalCount = this.achievements.length;
+                const progress = Math.round((unlockedCount / totalCount) * 100);
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: var(--spacing-xl);">
+                        <h3 style="margin-bottom: var(--spacing-md);">成就进度</h3>
+                        <div style="background: var(--card-bg); border-radius: var(--border-radius-md); padding: var(--spacing-md); border: 1px solid var(--border-color);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+                                <div>已解锁: ${unlockedCount}/${totalCount}</div>
+                                <div>${progress}%</div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div style="background: var(--accent-color); height: 100%; width: ${progress}%; transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="achievements-grid">
+                        ${this.achievements.map(achievement => `
+                            <div class="achievement-card ${achievement.unlocked ? '' : 'locked'}">
+                                <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
+                                <div class="achievement-name">${achievement.name}</div>
+                                <div class="achievement-desc">${achievement.description}</div>
+                                <div style="margin-top: var(--spacing-xs); font-size: 10px; color: var(--text-secondary);">${achievement.category}</div>
+                                ${achievement.unlocked ? 
+                                    '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #4CAF50;"><i class="fas fa-check"></i> 已解锁</div>' : 
+                                    '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #FF9800;"><i class="fas fa-lock"></i> 未解锁</div>'
+                                }
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            // 渲染游戏记录
+            renderGameRecords: function() {
+                const container = document.getElementById('gameRecordsContent');
+                if (!container) return;
+                
+                if (!this.isLoggedIn) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看游戏记录</p>
+                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 立即登录
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (this.gameRecords.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-gamepad" style="font-size: 48px; margin-bottom: var(--spacing-lg); opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">暂无游戏记录</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">开始游戏来创建你的第一份记录吧！</p>
+                            <button class="btn btn-primary" onclick="window.location.href='gaming.html'">
+                                <i class="fas fa-play"></i> 开始游戏
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <div class="game-records-list">
+                        ${this.gameRecords.map(record => `
+                            <div class="game-record-card">
+                                <div class="game-record-header">
+                                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                        <span class="game-type">${record.gameType}</span>
+                                        <span style="font-size: 14px; color: var(--text-secondary);">vs ${record.opponent}</span>
+                                    </div>
+                                    <div class="game-score">${record.score}分</div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary);">
+                                    <div>${record.date}</div>
+                                    <div>时长: ${record.duration}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             },
 
             // 模态框相关函数
@@ -1975,7 +2354,9 @@
             },
 
             closeModal: function() {
-                if (this.isLoggedIn) {
+                if (!this.isLoggedIn) {
+                    document.getElementById('loginModal').style.display = 'flex';
+                } else {
                     document.getElementById('loginModal').style.display = 'none';
                     document.getElementById('registerModal').style.display = 'none';
                 }
@@ -2003,22 +2384,20 @@
                     }
                     
                     if (data.session) {
-                        const sessionData = {
-                            user: {
-                                id: data.session.user.id,
-                                email: data.session.user.email,
-                                username: data.session.user.email.split('@')[0],
-                                role: 'user'
-                            },
-                            expires_at: Date.now() + 7 * 24 * 60 * 60 * 1000
+                        this.currentUser = {
+                            id: data.session.user.id,
+                            email: data.session.user.email,
+                            username: data.session.user.email.split('@')[0]
                         };
                         
-                        localStorage.setItem('dsehub_session', JSON.stringify(sessionData));
-                        this.currentUser = sessionData.user;
+                        await this.loadUserProfile();
                         this.loginSuccess();
+                        
+                        this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                     }
                 } catch (err) {
                     this.showNotification('登录时发生错误');
+                    console.error('登录错误:', err);
                 }
             },
 
@@ -2029,7 +2408,7 @@
                 const password = document.getElementById('registerPassword').value;
                 const confirmPassword = document.getElementById('registerConfirmPassword').value;
                 
-                if (!username || !email || !password) {
+                if (!username || !email || !password || !confirmPassword) {
                     this.showNotification('请填写所有必填字段');
                     return;
                 }
@@ -2045,10 +2424,15 @@
                 }
                 
                 try {
+                    // 1. 注册认证账号
                     const { data: authData, error: authError } = await this.supabase.auth.signUp({
                         email: email,
                         password: password,
-                        options: { data: { username: username } }
+                        options: {
+                            data: {
+                                username: username
+                            }
+                        }
                     });
                     
                     if (authError) {
@@ -2057,23 +2441,63 @@
                     }
                     
                     if (authData.user) {
-                        this.showNotification('注册成功！请使用新账号登录');
+                        // 2. 创建用户资料
+                        const { error: profileError } = await this.supabase
+                            .from('profiles')
+                            .insert([
+                                {
+                                    auth_id: authData.user.id,
+                                    username: username,
+                                    email: email,
+                                    is_admin: false,
+                                    score: 0,
+                                    games_played: 0,
+                                    high_score: 0,
+                                    duel_wins: 0,
+                                    duel_losses: 0,
+                                    role: 'user',
+                                    theme: 'theme-blue-purple'
+                                }
+                            ]);
+                        
+                        if (profileError) {
+                            console.error('创建用户资料失败:', profileError);
+                        }
+                        
+                        this.showNotification('注册成功！请登录您的账号');
                         this.showLogin();
                     }
                 } catch (err) {
                     this.showNotification('注册时发生错误');
+                    console.error('注册错误:', err);
                 }
             },
 
             // 退出登录
-            logout: function() {
-                localStorage.removeItem('dsehub_session');
-                this.currentUser = null;
-                this.isLoggedIn = false;
-                this.isAdmin = false;
-                this.enforceLogin();
-                this.updateUserUI();
-                this.showNotification('已退出登录');
+            logout: async function() {
+                try {
+                    const { error } = await this.supabase.auth.signOut();
+                    
+                    if (error) {
+                        console.error('退出登录失败:', error);
+                    }
+                    
+                    this.currentUser = null;
+                    this.userProfile = null;
+                    this.isLoggedIn = false;
+                    this.isAdmin = false;
+                    
+                    this.enforceLogin();
+                    this.updateUserUI();
+                    this.showNotification('已退出登录');
+                    
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    
+                    document.getElementById('loginModal').style.display = 'flex';
+                } catch (err) {
+                    console.error('退出登录错误:', err);
+                }
             },
 
             // 更新用户界面
@@ -2090,10 +2514,10 @@
                             <div style="font-size: 11px;">已登录</div>
                         </div>
                     `;
-                    loginStatus.onclick = () => this.showPanel('account');
+                    loginStatus.onclick = () => this.showPanel('profile');
                     
                     userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
-                    userAvatar.onclick = () => this.showPanel('account');
+                    userAvatar.onclick = () => this.showPanel('profile');
                     
                     if (this.isAdmin) {
                         adminNavBtn.style.display = 'flex';
@@ -2121,25 +2545,25 @@
                             <div class="account-details">
                                 <div class="account-username">${this.currentUser.username}</div>
                                 <div class="account-email">${this.currentUser.email}</div>
-                                <div class="account-role">${this.currentUser.role === 'admin' ? '管理员' : '用户'}</div>
+                                <div class="account-role">${this.isAdmin ? '管理员' : '用户'}</div>
                             </div>
                         </div>
                         <div class="user-stats">
                             <div class="stat-item">
-                                <div class="stat-value">${Math.floor(Math.random() * 5000) + 1000}</div>
+                                <div class="stat-value">${this.userProfile?.score || 0}</div>
                                 <div class="stat-label">学习积分</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">${Math.floor(Math.random() * 50)}</div>
-                                <div class="stat-label">投稿数</div>
+                                <div class="stat-value">${this.userProfile?.games_played || 0}</div>
+                                <div class="stat-label">游戏次数</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">${Math.floor(Math.random() * 100)}</div>
-                                <div class="stat-label">消息数</div>
+                                <div class="stat-value">${this.userProfile?.high_score || 0}</div>
+                                <div class="stat-label">最高分</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">Lv.${Math.floor(Math.random() * 50) + 1}</div>
-                                <div class="stat-label">学习等级</div>
+                                <div class="stat-value">${this.userProfile?.duel_wins || 0}</div>
+                                <div class="stat-label">对战胜利</div>
                             </div>
                         </div>
                         <div style="margin-top: var(--spacing-xl);">
@@ -2163,7 +2587,7 @@
             },
 
             // 投稿功能
-            submitSubmission: function() {
+            submitSubmission: async function() {
                 if (!this.isLoggedIn) {
                     this.showNotification('请先登录后再提交投稿');
                     return;
@@ -2182,13 +2606,39 @@
                     return;
                 }
                 
-                const selectedSubjects = Array.from(this.selectedSubmissionSubjects);
-                
-                this.showNotification(`投稿提交成功！相关学科：${selectedSubjects.map(id => 
-                    this.subjects.find(s => s.id === id)?.name || id
-                ).join('、')}`);
-                
-                this.clearSubmissionForm();
+                try {
+                    const selectedSubjects = Array.from(this.selectedSubmissionSubjects);
+                    
+                    const { data, error } = await this.supabase
+                        .from('submissions')
+                        .insert([
+                            {
+                                category: selectedSubjects.join(','),
+                                title: title,
+                                content: content,
+                                status: 'pending',
+                                user_id: this.currentUser.id,
+                                author_name: this.currentUser.username,
+                                like_count: 0,
+                                view_count: 0
+                            }
+                        ]);
+                    
+                    if (error) {
+                        this.showNotification('投稿提交失败: ' + error.message);
+                        return;
+                    }
+                    
+                    this.showNotification(`投稿提交成功！相关学科：${selectedSubjects.map(id => 
+                        this.subjects.find(s => s.id === id)?.name || id
+                    ).join('、')}`);
+                    
+                    this.clearSubmissionForm();
+                    this.loadSubmissionHistory();
+                } catch (err) {
+                    this.showNotification('投稿提交时发生错误');
+                    console.error('投稿错误:', err);
+                }
             },
 
             clearSubmissionForm: function() {
@@ -2198,18 +2648,56 @@
                 this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
             },
 
-            loadSubmissionHistory: function() {
+            loadSubmissionHistory: async function() {
                 if (!this.isLoggedIn) {
                     document.getElementById('submissionHistory').classList.add('hidden');
                     return;
                 }
                 
-                document.getElementById('submissionHistory').classList.remove('hidden');
-                document.getElementById('historyList').innerHTML = `
-                    <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
-                        暂无投稿记录
-                    </div>
-                `;
+                try {
+                    const { data, error } = await this.supabase
+                        .from('submissions')
+                        .select('*')
+                        .eq('user_id', this.currentUser.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        console.error('加载投稿历史失败:', error);
+                        return;
+                    }
+                    
+                    document.getElementById('submissionHistory').classList.remove('hidden');
+                    const historyList = document.getElementById('historyList');
+                    
+                    if (!data || data.length === 0) {
+                        historyList.innerHTML = `
+                            <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
+                                暂无投稿记录
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    historyList.innerHTML = data.map(submission => `
+                        <div class="submission-history-item">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
+                                <div style="font-weight: 600;">${submission.title}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">
+                                    ${new Date(submission.created_at).toLocaleDateString('zh-HK')}
+                                </div>
+                            </div>
+                            <div style="margin-bottom: var(--spacing-sm); font-size: 13px; color: var(--text-secondary);">
+                                ${submission.content.substring(0, 100)}...
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                                <div>状态: <span style="color: ${submission.status === 'approved' ? '#4CAF50' : submission.status === 'rejected' ? '#F44336' : '#FF9800'}">${submission.status === 'approved' ? '已通过' : submission.status === 'rejected' ? '已拒绝' : '审核中'}</span></div>
+                                <div>学科: ${submission.category}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (err) {
+                    console.error('加载投稿历史出错:', err);
+                }
             },
 
             // 留言板功能
@@ -2267,7 +2755,7 @@
                 container.scrollTop = container.scrollHeight;
             },
 
-            sendMessage: function() {
+            sendMessage: async function() {
                 if (!this.isLoggedIn) {
                     this.showNotification('请先登录后再发送消息');
                     return;
@@ -2281,16 +2769,39 @@
                     return;
                 }
                 
-                const newMessage = {
-                    author: this.currentUser.username,
-                    content: message,
-                    time: new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })
-                };
-                
-                this.messages[this.currentMessageTab].push(newMessage);
-                input.value = '';
-                this.renderMessages(this.currentMessageTab);
-                this.showNotification('消息发送成功！');
+                try {
+                    // 保存消息到数据库
+                    const { error } = await this.supabase
+                        .from('chat_messages')
+                        .insert([
+                            {
+                                user_id: this.currentUser.id,
+                                username: this.currentUser.username,
+                                content: message
+                            }
+                        ]);
+                    
+                    if (error) {
+                        console.error('发送消息失败:', error);
+                        this.showNotification('发送消息失败');
+                        return;
+                    }
+                    
+                    // 更新本地消息
+                    const newMessage = {
+                        author: this.currentUser.username,
+                        content: message,
+                        time: new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })
+                    };
+                    
+                    this.messages[this.currentMessageTab].push(newMessage);
+                    input.value = '';
+                    this.renderMessages(this.currentMessageTab);
+                    this.showNotification('消息发送成功！');
+                } catch (err) {
+                    console.error('发送消息错误:', err);
+                    this.showNotification('发送消息时发生错误');
+                }
             },
 
             // 主题功能
@@ -2307,11 +2818,6 @@
                     option.onclick = () => this.changeTheme(theme.id);
                     container.appendChild(option);
                 });
-                
-                const savedTheme = localStorage.getItem('dsehub_theme');
-                if (savedTheme) {
-                    this.changeTheme(savedTheme, true);
-                }
             },
 
             changeTheme: function(themeId, silent = false) {
@@ -2326,37 +2832,72 @@
                     }
                 });
                 
-                localStorage.setItem('dsehub_theme', themeId);
+                // 保存到用户资料
+                if (this.isLoggedIn && this.userProfile) {
+                    this.updateUserTheme(themeId);
+                }
                 
                 if (!silent) {
                     this.showNotification(`已切换至${this.themes.find(t => t.id === themeId)?.name}主题`);
                 }
             },
 
-            // 排行榜功能 - 完善版本
-            loadLeaderboard: function() {
+            // 排行榜功能
+            loadLeaderboard: async function() {
                 const container = document.getElementById('leaderboardList');
                 if (!container) return;
                 
-                container.innerHTML = '';
-                
-                this.leaderboardData.forEach(player => {
-                    const playerItem = document.createElement('div');
-                    playerItem.className = 'leaderboard-item';
-                    playerItem.innerHTML = `
-                        <div class="rank rank-${player.rank}">${player.rank}</div>
-                        <div class="player-info">
-                            <div class="player-name">${player.username}</div>
-                            <div class="player-score">积分: ${player.score.toLocaleString()} | 等级: ${player.level}</div>
-                            <div class="player-subjects">
-                                ${player.subjects.map(subject => 
-                                    `<span class="subject-badge">${subject}</span>`
-                                ).join('')}
+                try {
+                    const { data, error } = await this.supabase
+                        .from('profiles')
+                        .select('username, score, games_played, high_score, duel_wins, duel_losses')
+                        .order('score', { ascending: false })
+                        .limit(20);
+                    
+                    if (error) {
+                        console.error('加载排行榜失败:', error);
+                        return;
+                    }
+                    
+                    container.innerHTML = '';
+                    
+                    if (!data || data.length === 0) {
+                        container.innerHTML = `
+                            <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
+                                暂无排行榜数据
                             </div>
+                        `;
+                        return;
+                    }
+                    
+                    data.forEach((player, index) => {
+                        const rank = index + 1;
+                        const playerItem = document.createElement('div');
+                        playerItem.className = 'leaderboard-item';
+                        
+                        playerItem.innerHTML = `
+                            <div class="rank rank-${rank}">${rank}</div>
+                            <div class="player-info">
+                                <div class="player-name">${player.username}</div>
+                                <div class="player-score">积分: ${player.score.toLocaleString()} | 游戏: ${player.games_played}次 | 胜率: ${player.duel_wins + player.duel_losses > 0 ? Math.round((player.duel_wins / (player.duel_wins + player.duel_losses)) * 100) : 0}%</div>
+                                <div class="player-subjects">
+                                    <span class="subject-badge">最高分: ${player.high_score}</span>
+                                    <span class="subject-badge">胜利: ${player.duel_wins}</span>
+                                    <span class="subject-badge">总分: ${player.score}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        container.appendChild(playerItem);
+                    });
+                } catch (err) {
+                    console.error('加载排行榜出错:', err);
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
+                            加载排行榜失败
                         </div>
                     `;
-                    container.appendChild(playerItem);
-                });
+                }
             },
 
             // 响应式处理
@@ -2383,8 +2924,13 @@
 
         // 模态框点击外部关闭
         window.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal-overlay') && DSEHub.isLoggedIn) {
-                DSEHub.closeModal();
+            if (event.target.classList.contains('modal-overlay')) {
+                if (!DSEHub.isLoggedIn) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    DSEHub.closeModal();
+                }
             }
         });
     </script>
