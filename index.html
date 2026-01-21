@@ -71,14 +71,6 @@
             --accent-color: #00d4aa;
         }
 
-        .theme-green-yellowgreen {
-            --primary-start: #38b000;
-            --primary-end: #9ef01a;
-            --secondary-start: #2d9100;
-            --secondary-end: #80ed99;
-            --accent-color: #5fd45f;
-        }
-
         .theme-orange-red {
             --primary-start: #ff9e00;
             --primary-end: #ff5400;
@@ -567,6 +559,22 @@
             color: var(--text-secondary);
         }
 
+        .player-subjects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-xs);
+        }
+
+        .subject-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
         /* ==================== 投稿系统 ==================== */
         .form-group {
             margin-bottom: var(--spacing-lg);
@@ -855,6 +863,7 @@
         }
 
         /* ==================== 模态框系统 ==================== */
+        /* 登录强制模态框 */
         .modal-overlay.required {
             display: flex !important;
             z-index: 1000 !important;
@@ -868,8 +877,8 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(15px); /* 加强版毛玻璃效果 */
+            -webkit-backdrop-filter: blur(15px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -888,8 +897,8 @@
             width: 90%;
             max-width: 400px;
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px); /* 更强的毛玻璃效果 */
+            -webkit-backdrop-filter: blur(25px);
             animation: slideUp 0.3s ease;
         }
 
@@ -956,6 +965,8 @@
             color: var(--text-color);
             font-size: 14px;
             transition: var(--transition-normal);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .modal-input:focus {
@@ -978,6 +989,8 @@
             justify-content: center;
             gap: var(--spacing-sm);
             min-height: 44px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .modal-btn:hover {
@@ -989,6 +1002,8 @@
             margin-top: var(--spacing-lg);
             font-size: 14px;
             color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .modal-switch a {
@@ -1446,7 +1461,6 @@
             themes: [
                 { id: 'theme-blue-purple', name: '蓝-紫极光' },
                 { id: 'theme-cyan-green', name: '青-绿极光' },
-                { id: 'theme-green-yellowgreen', name: '绿-黄绿极光' },
                 { id: 'theme-orange-red', name: '橙-红极光' },
                 { id: 'theme-lightpurple-darkblue', name: '浅紫-深蓝极光' },
                 { id: 'theme-lightmagenta-pink', name: '浅紫红-粉极光' },
@@ -1562,6 +1576,20 @@
                     tags: ['数学', '代数', '微积分'],
                     relatedSubjects: ['m2', 'math', 'phy']
                 }
+            ],
+
+            // 排行榜数据
+            leaderboardData: [
+                { rank: 1, username: '数学天才', score: 9850, level: 'Lv.99', subjects: ['数学', '物理', '化学'] },
+                { rank: 2, username: '语言大师', score: 8720, level: 'Lv.87', subjects: ['语文', '英语', '历史'] },
+                { rank: 3, username: '理科全能', score: 7540, level: 'Lv.75', subjects: ['数学', '物理', '化学', '生物'] },
+                { rank: 4, username: '文科强者', score: 6890, level: 'Lv.68', subjects: ['语文', '英语', '历史', '地理'] },
+                { rank: 5, username: '学习之星', score: 6320, level: 'Lv.63', subjects: ['数学', '语文', '英语'] },
+                { rank: 6, username: '进步神速', score: 5870, level: 'Lv.58', subjects: ['通识', '公民与社会发展科'] },
+                { rank: 7, username: '勤奋学员', score: 5430, level: 'Lv.54', subjects: ['数学', '英语', '经济'] },
+                { rank: 8, username: '知识猎手', score: 4980, level: 'Lv.49', subjects: ['生物', '化学', '物理'] },
+                { rank: 9, username: '艺术精英', score: 4560, level: 'Lv.45', subjects: ['视觉艺术', '音乐'] },
+                { rank: 10, username: '体育健将', score: 4120, level: 'Lv.41', subjects: ['体育', '生物'] }
             ],
 
             // 初始化函数
@@ -2098,19 +2126,19 @@
                         </div>
                         <div class="user-stats">
                             <div class="stat-item">
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">${Math.floor(Math.random() * 5000) + 1000}</div>
                                 <div class="stat-label">学习积分</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">${Math.floor(Math.random() * 50)}</div>
                                 <div class="stat-label">投稿数</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">0</div>
+                                <div class="stat-value">${Math.floor(Math.random() * 100)}</div>
                                 <div class="stat-label">消息数</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">Lv.1</div>
+                                <div class="stat-value">Lv.${Math.floor(Math.random() * 50) + 1}</div>
                                 <div class="stat-label">学习等级</div>
                             </div>
                         </div>
@@ -2305,18 +2333,30 @@
                 }
             },
 
-            // 排行榜功能
+            // 排行榜功能 - 完善版本
             loadLeaderboard: function() {
                 const container = document.getElementById('leaderboardList');
                 if (!container) return;
                 
-                container.innerHTML = `
-                    <div style="text-align: center; padding: var(--spacing-xl);">
-                        <i class="fas fa-trophy" style="font-size: 48px; margin-bottom: var(--spacing-md); color: var(--accent-color);"></i>
-                        <h3 style="margin-bottom: var(--spacing-sm);">排行榜功能准备中</h3>
-                        <p>该功能将在后续版本中推出</p>
-                    </div>
-                `;
+                container.innerHTML = '';
+                
+                this.leaderboardData.forEach(player => {
+                    const playerItem = document.createElement('div');
+                    playerItem.className = 'leaderboard-item';
+                    playerItem.innerHTML = `
+                        <div class="rank rank-${player.rank}">${player.rank}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.username}</div>
+                            <div class="player-score">积分: ${player.score.toLocaleString()} | 等级: ${player.level}</div>
+                            <div class="player-subjects">
+                                ${player.subjects.map(subject => 
+                                    `<span class="subject-badge">${subject}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(playerItem);
+                });
             },
 
             // 响应式处理
@@ -2350,3 +2390,4 @@
     </script>
 </body>
 </html>
+
