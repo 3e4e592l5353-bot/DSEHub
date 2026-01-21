@@ -8,116 +8,53 @@
     <style>
         /* ==================== CSS 变量系统 ==================== */
         :root {
-            /* 主色调 - 蓝紫极光主题 */
-            --primary-start: #4f8cff;   /* 渐变开始色 */
-            --primary-end: #9d4edd;     /* 渐变结束色 */
-            --secondary-start: #3a86ff; /* 次要渐变开始色 */
-            --secondary-end: #8338ec;   /* 次要渐变结束色 */
-            --accent-color: #5a67ff;    /* 强调色（按钮、图标等） */
-            
-            /* UI 背景色 - 半透明毛玻璃效果 */
-            --card-bg: rgba(255, 255, 255, 0.1);      /* 卡片背景 */
-            --card-bg-solid: rgba(255, 255, 255, 0.9); /* 实色背景（备用） */
-            --text-color: #ffffff;                     /* 主文字色 */
-            --text-secondary: rgba(255, 255, 255, 0.8); /* 次要文字色 */
-            --border-color: rgba(255, 255, 255, 0.15); /* 边框色 */
-            --hover-color: rgba(255, 255, 255, 0.2);   /* 悬停背景色 */
-            --active-color: rgba(255, 255, 255, 0.25); /* 激活背景色 */
-            
-            /* 按钮系统变量 */
-            --btn-bg: rgba(255, 255, 255, 0.15);       /* 按钮背景 */
-            --btn-text: #ffffff;                       /* 按钮文字 */
-            --btn-border: rgba(255, 255, 255, 0.2);    /* 按钮边框 */
-            --btn-hover: rgba(255, 255, 255, 0.25);    /* 按钮悬停 */
-            --btn-active: rgba(255, 255, 255, 0.3);    /* 按钮激活 */
-            --btn-primary-bg: linear-gradient(135deg, var(--secondary-start), var(--secondary-end)); /* 主要按钮渐变 */
-            
-            /* 间距系统变量 */
-            --spacing-xs: 4px;    /* 超小间距 */
-            --spacing-sm: 8px;    /* 小间距 */
-            --spacing-md: 12px;   /* 中间距 */
-            --spacing-lg: 16px;   /* 大间距 */
-            --spacing-xl: 24px;   /* 超大间距 */
-            
-            /* 圆角系统变量 */
-            --border-radius-sm: 8px;   /* 小圆角 */
-            --border-radius-md: 12px;  /* 中圆角 */
-            --border-radius-lg: 16px;  /* 大圆角 */
-            --border-radius-xl: 20px;  /* 超大圆角 */
-            
-            /* 过渡动画变量 */
-            --transition-fast: 0.2s ease;   /* 快速过渡 */
-            --transition-normal: 0.3s ease; /* 正常过渡 */
-            --transition-slow: 0.5s ease;   /* 慢速过渡 */
-            
-            /* 毛玻璃滤镜强度 */
-            --blur-intensity: 20px;
-        }
-
-        /* ==================== 主题系统 ==================== */
-        .theme-blue-purple {
             --primary-start: #4f8cff;
             --primary-end: #9d4edd;
             --secondary-start: #3a86ff;
             --secondary-end: #8338ec;
             --accent-color: #5a67ff;
+            
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --hover-color: rgba(255, 255, 255, 0.2);
+            --active-color: rgba(255, 255, 255, 0.25);
+            
+            --btn-bg: rgba(255, 255, 255, 0.15);
+            --btn-text: #ffffff;
+            --btn-border: rgba(255, 255, 255, 0.2);
+            --btn-hover: rgba(255, 255, 255, 0.25);
+            --btn-active: rgba(255, 255, 255, 0.3);
+            --btn-primary-bg: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            
+            --blur-intensity: 20px;
         }
 
-        .theme-cyan-green {
-            --primary-start: #00b4d8;
-            --primary-end: #00b894;
-            --secondary-start: #0096c7;
-            --secondary-end: #00a896;
-            --accent-color: #00d4aa;
-        }
-
-        .theme-orange-red {
-            --primary-start: #ff9e00;
-            --primary-end: #ff5400;
-            --secondary-start: #e68a00;
-            --secondary-end: #e64900;
-            --accent-color: #ff7043;
-        }
-
-        .theme-lightpurple-darkblue {
-            --primary-start: #b388eb;
-            --primary-end: #4361ee;
-            --secondary-start: #9d6ee0;
-            --secondary-end: #3a56d4;
-            --accent-color: #7c4dff;
-        }
-
-        .theme-lightmagenta-pink {
-            --primary-start: #ff8fab;
-            --primary-end: #ff006e;
-            --secondary-start: #ff7ba6;
-            --secondary-end: #e60063;
-            --accent-color: #ff4081;
-        }
-
-        .theme-skyblue-oceanblue {
-            --primary-start: #90e0ef;
-            --primary-end: #0077b6;
-            --secondary-start: #80d5e8;
-            --secondary-end: #0069a6;
-            --accent-color: #29b6f6;
-        }
-
-        .theme-cyan-lightgreen {
-            --primary-start: #06d6a0;
-            --primary-end: #caffbf;
-            --secondary-start: #05c692;
-            --secondary-end: #b5ffa8;
-            --accent-color: #00e5ff;
-        }
-
-        .theme-darkblue-lightblue {
-            --primary-start: #1a759f;
-            --primary-end: #76c893;
-            --secondary-start: #16688a;
-            --secondary-end: #68b580;
-            --accent-color: #4db6ac;
-        }
+        /* ==================== 主题系统 ==================== */
+        .theme-blue-purple { --primary-start: #4f8cff; --primary-end: #9d4edd; --secondary-start: #3a86ff; --secondary-end: #8338ec; --accent-color: #5a67ff; }
+        .theme-cyan-green { --primary-start: #00b4d8; --primary-end: #00b894; --secondary-start: #0096c7; --secondary-end: #00a896; --accent-color: #00d4aa; }
+        .theme-orange-red { --primary-start: #ff9e00; --primary-end: #ff5400; --secondary-start: #e68a00; --secondary-end: #e64900; --accent-color: #ff7043; }
+        .theme-lightpurple-darkblue { --primary-start: #b388eb; --primary-end: #4361ee; --secondary-start: #9d6ee0; --secondary-end: #3a56d4; --accent-color: #7c4dff; }
+        .theme-lightmagenta-pink { --primary-start: #ff8fab; --primary-end: #ff006e; --secondary-start: #ff7ba6; --secondary-end: #e60063; --accent-color: #ff4081; }
+        .theme-skyblue-oceanblue { --primary-start: #90e0ef; --primary-end: #0077b6; --secondary-start: #80d5e8; --secondary-end: #0069a6; --accent-color: #29b6f6; }
+        .theme-cyan-lightgreen { --primary-start: #06d6a0; --primary-end: #caffbf; --secondary-start: #05c692; --secondary-end: #b5ffa8; --accent-color: #00e5ff; }
+        .theme-darkblue-lightblue { --primary-start: #1a759f; --primary-end: #76c893; --secondary-start: #16688a; --secondary-end: #68b580; --accent-color: #4db6ac; }
 
         /* ==================== 全局样式 ==================== */
         * {
@@ -861,13 +798,7 @@
             background: var(--btn-hover);
         }
 
-        /* ==================== 模态框系统 ==================== */
-        /* 网站加载时强制显示登录模态框 */
-        .modal-overlay.required {
-            display: flex !important;
-            z-index: 1000 !important;
-        }
-
+        /* ==================== 模态框系统 - 已修复毛玻璃问题 ==================== */
         .modal-overlay {
             display: flex;
             position: fixed;
@@ -875,13 +806,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            /* 移除纯色背景，只保留毛玻璃效果 */
+            /* 关键修复：移除纯色背景，只保留毛玻璃效果 */
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.required {
+            display: flex !important;
         }
 
         @keyframes fadeIn {
@@ -896,7 +831,7 @@
             width: 90%;
             max-width: 400px;
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(30px); /* 加强毛玻璃效果 */
+            backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             animation: slideUp 0.3s ease;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -1717,8 +1652,12 @@
                 window.addEventListener('resize', () => this.handleResize());
             },
 
-            // 初始化Supabase - 使用正确的API密钥
+            // 初始化Supabase - 关键修复：使用正确的初始化方式
             initSupabase: function() {
+                console.log('正在初始化Supabase客户端...');
+                console.log('URL:', this.supabaseConfig.url);
+                console.log('Key:', this.supabaseConfig.key.substring(0, 10) + '...');
+                
                 this.supabase = window.supabase.createClient(
                     this.supabaseConfig.url,
                     this.supabaseConfig.key,
@@ -1730,10 +1669,13 @@
                         }
                     }
                 );
+                
+                console.log('Supabase客户端初始化完成');
             },
 
             // 检查现有会话
             checkExistingSession: async function() {
+                console.log('检查现有会话...');
                 try {
                     const { data, error } = await this.supabase.auth.getSession();
                     
@@ -1744,8 +1686,10 @@
                     }
                     
                     if (data.session) {
+                        console.log('发现有效会话，用户ID:', data.session.user.id);
                         await this.handleUserSession(data.session);
                     } else {
+                        console.log('未发现有效会话');
                         this.enforceLogin();
                     }
                 } catch (err) {
@@ -1771,6 +1715,8 @@
                 if (!this.currentUser) return;
                 
                 try {
+                    console.log('加载用户资料，用户ID:', this.currentUser.id);
+                    
                     // 首先检查是否存在profile记录
                     const { data, error } = await this.supabase
                         .from('profiles')
@@ -1784,6 +1730,7 @@
                     }
                     
                     if (data) {
+                        console.log('找到用户资料:', data.username);
                         this.userProfile = data;
                         this.isAdmin = data.is_admin === true;
                         
@@ -1792,14 +1739,9 @@
                         }
                     } else {
                         // 如果没有profile，创建一个新的
+                        console.log('未找到用户资料，正在创建...');
                         await this.createUserProfile();
                     }
-                    
-                    // 加载用户成就
-                    await this.loadUserAchievements();
-                    
-                    // 加载游戏记录
-                    await this.loadUserGameRecords();
                     
                 } catch (err) {
                     console.error('加载用户资料出错:', err);
@@ -1809,6 +1751,7 @@
             // 创建用户资料
             createUserProfile: async function() {
                 try {
+                    console.log('创建新用户资料...');
                     const { data, error } = await this.supabase
                         .from('profiles')
                         .insert([
@@ -1834,6 +1777,7 @@
                         return;
                     }
                     
+                    console.log('用户资料创建成功:', data.username);
                     this.userProfile = data;
                     this.isAdmin = false;
                 } catch (err) {
@@ -1841,86 +1785,16 @@
                 }
             },
 
-            // 加载用户成就
-            loadUserAchievements: async function() {
-                try {
-                    const { data, error } = await this.supabase
-                        .from('achievements')
-                        .select('*')
-                        .order('id');
-                    
-                    if (error) {
-                        console.error('加载成就失败:', error);
-                        return;
-                    }
-                    
-                    if (data) {
-                        this.achievements = data.map(achievement => ({
-                            ...achievement,
-                            unlocked: false // 这里需要根据user_achievements表来判断
-                        }));
-                    }
-                } catch (err) {
-                    console.error('加载成就出错:', err);
-                }
-            },
-
-            // 加载用户游戏记录
-            loadUserGameRecords: async function() {
-                try {
-                    const { data, error } = await this.supabase
-                        .from('game_records')
-                        .select('*')
-                        .eq('user_id', this.currentUser.id)
-                        .order('created_at', { ascending: false })
-                        .limit(20);
-                    
-                    if (error) {
-                        console.error('加载游戏记录失败:', error);
-                        return;
-                    }
-                    
-                    if (data) {
-                        this.gameRecords = data.map(record => ({
-                            id: record.id,
-                            gameType: record.game_type,
-                            score: record.score,
-                            date: new Date(record.created_at).toLocaleDateString('zh-HK'),
-                            duration: '15分钟', // 这里需要从game_data中解析
-                            opponent: 'AI' // 这里需要从game_data中解析
-                        }));
-                    }
-                } catch (err) {
-                    console.error('加载游戏记录出错:', err);
-                }
-            },
-
-            // 更新用户资料主题
-            updateUserTheme: async function(themeId) {
-                if (!this.userProfile) return;
-                
-                try {
-                    const { error } = await this.supabase
-                        .from('profiles')
-                        .update({ theme: themeId })
-                        .eq('id', this.userProfile.id);
-                    
-                    if (error) {
-                        console.error('更新主题失败:', error);
-                    }
-                } catch (err) {
-                    console.error('更新主题出错:', err);
-                }
-            },
-
             // 强制登录（网站加载时直接显示登录界面）
             enforceLogin: function() {
+                console.log('强制显示登录界面');
                 document.body.classList.add('login-required');
                 document.getElementById('loginModal').classList.add('required');
             },
 
             // 登录成功处理
             loginSuccess: function() {
+                console.log('登录成功处理');
                 document.body.classList.remove('login-required');
                 document.getElementById('loginModal').classList.remove('required');
                 document.getElementById('loginModal').style.display = 'none';
@@ -2305,125 +2179,6 @@
                 `;
             },
 
-            // 渲染成就系统
-            renderAchievements: function() {
-                const container = document.getElementById('achievementsContent');
-                if (!container) return;
-                
-                if (!this.isLoggedIn) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl);">
-                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
-                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
-                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看成就系统</p>
-                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
-                                <i class="fas fa-sign-in-alt"></i> 立即登录
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                if (this.achievements.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl);">
-                            <i class="fas fa-award" style="font-size: 48px; margin-bottom: var(--spacing-lg); opacity: 0.5;"></i>
-                            <h3 style="margin-bottom: var(--spacing-sm);">暂无成就数据</h3>
-                            <p style="margin-bottom: var(--spacing-lg);">开始学习来解锁成就吧！</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const unlockedCount = this.achievements.filter(a => a.unlocked).length;
-                const totalCount = this.achievements.length;
-                const progress = totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
-                
-                container.innerHTML = `
-                    <div style="margin-bottom: var(--spacing-xl);">
-                        <h3 style="margin-bottom: var(--spacing-md);">成就进度</h3>
-                        <div style="background: var(--card-bg); border-radius: var(--border-radius-md); padding: var(--spacing-md); border: 1px solid var(--border-color);">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
-                                <div>已解锁: ${unlockedCount}/${totalCount}</div>
-                                <div>${progress}%</div>
-                            </div>
-                            <div style="background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 4px; overflow: hidden;">
-                                <div style="background: var(--accent-color); height: 100%; width: ${progress}%; transition: width 0.5s ease;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="achievements-grid">
-                        ${this.achievements.map(achievement => `
-                            <div class="achievement-card ${achievement.unlocked ? '' : 'locked'}">
-                                <div class="achievement-icon"><i class="${achievement.icon || 'fas fa-award'}"></i></div>
-                                <div class="achievement-name">${achievement.name}</div>
-                                <div class="achievement-desc">${achievement.description}</div>
-                                <div style="margin-top: var(--spacing-xs); font-size: 10px; color: var(--text-secondary);">${achievement.category || '成就'}</div>
-                                ${achievement.unlocked ? 
-                                    '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #4CAF50;"><i class="fas fa-check"></i> 已解锁</div>' : 
-                                    '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #FF9800;"><i class="fas fa-lock"></i> 未解锁</div>'
-                                }
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            },
-
-            // 渲染游戏记录
-            renderGameRecords: function() {
-                const container = document.getElementById('gameRecordsContent');
-                if (!container) return;
-                
-                if (!this.isLoggedIn) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl);">
-                            <i class="fas fa-user-slash" style="font-size: 48px; margin-bottom: var(--spacing-lg);"></i>
-                            <h3 style="margin-bottom: var(--spacing-sm);">未登录</h3>
-                            <p style="margin-bottom: var(--spacing-lg);">请登录以查看游戏记录</p>
-                            <button class="btn btn-primary" onclick="DSEHub.showLoginModal()">
-                                <i class="fas fa-sign-in-alt"></i> 立即登录
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                if (this.gameRecords.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl);">
-                            <i class="fas fa-gamepad" style="font-size: 48px; margin-bottom: var(--spacing-lg); opacity: 0.5;"></i>
-                            <h3 style="margin-bottom: var(--spacing-sm);">暂无游戏记录</h3>
-                            <p style="margin-bottom: var(--spacing-lg);">开始游戏来创建你的第一份记录吧！</p>
-                            <button class="btn btn-primary" onclick="window.location.href='gaming.html'">
-                                <i class="fas fa-play"></i> 开始游戏
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                container.innerHTML = `
-                    <div class="game-records-list">
-                        ${this.gameRecords.map(record => `
-                            <div class="game-record-card">
-                                <div class="game-record-header">
-                                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                                        <span class="game-type">${record.gameType}</span>
-                                        <span style="font-size: 14px; color: var(--text-secondary);">vs ${record.opponent}</span>
-                                    </div>
-                                    <div class="game-score">${record.score}分</div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary);">
-                                    <div>${record.date}</div>
-                                    <div>时长: ${record.duration}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            },
-
             // 模态框相关函数
             showLoginModal: function() {
                 if (!this.isLoggedIn) {
@@ -2451,7 +2206,7 @@
                 }
             },
 
-            // 登录
+            // 登录 - 关键修复：使用正确的Supabase认证方法
             login: async function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -2461,6 +2216,8 @@
                     return;
                 }
                 
+                console.log('尝试登录:', email);
+                
                 try {
                     const { data, error } = await this.supabase.auth.signInWithPassword({
                         email: email,
@@ -2468,17 +2225,19 @@
                     });
                     
                     if (error) {
+                        console.error('登录失败:', error);
                         this.showNotification('登录失败: ' + error.message);
                         return;
                     }
                     
                     if (data.session) {
+                        console.log('登录成功，用户ID:', data.user.id);
                         await this.handleUserSession(data.session);
                         this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                     }
                 } catch (err) {
+                    console.error('登录时发生错误:', err);
                     this.showNotification('登录时发生错误');
-                    console.error('登录错误:', err);
                 }
             },
 
@@ -2504,6 +2263,8 @@
                     return;
                 }
                 
+                console.log('尝试注册:', email);
+                
                 try {
                     // 1. 注册认证账号
                     const { data: authData, error: authError } = await this.supabase.auth.signUp({
@@ -2512,17 +2273,19 @@
                     });
                     
                     if (authError) {
+                        console.error('注册失败:', authError);
                         this.showNotification('注册失败: ' + authError.message);
                         return;
                     }
                     
                     if (authData.user) {
+                        console.log('注册成功，用户ID:', authData.user.id);
                         this.showNotification('注册成功！请登录您的账号');
                         this.showLogin();
                     }
                 } catch (err) {
+                    console.error('注册时发生错误:', err);
                     this.showNotification('注册时发生错误');
-                    console.error('注册错误:', err);
                 }
             },
 
@@ -2641,225 +2404,6 @@
                 }
             },
 
-            // 投稿功能
-            submitSubmission: async function() {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录后再提交投稿');
-                    return;
-                }
-                
-                const title = document.getElementById('submissionTitle').value;
-                const content = document.getElementById('submissionContent').value;
-                
-                if (!title || !content) {
-                    this.showNotification('请填写标题和内容');
-                    return;
-                }
-                
-                if (this.selectedSubmissionSubjects.size === 0) {
-                    this.showNotification('请至少选择一个相关学科');
-                    return;
-                }
-                
-                try {
-                    const selectedSubjects = Array.from(this.selectedSubmissionSubjects);
-                    
-                    const { data, error } = await this.supabase
-                        .from('submissions')
-                        .insert([
-                            {
-                                category: selectedSubjects.join(','),
-                                title: title,
-                                content: content,
-                                status: 'pending',
-                                user_id: this.currentUser.id,
-                                author_name: this.currentUser.username,
-                                like_count: 0,
-                                view_count: 0
-                            }
-                        ]);
-                    
-                    if (error) {
-                        this.showNotification('投稿提交失败: ' + error.message);
-                        return;
-                    }
-                    
-                    this.showNotification(`投稿提交成功！相关学科：${selectedSubjects.map(id => 
-                        this.subjects.find(s => s.id === id)?.name || id
-                    ).join('、')}`);
-                    
-                    this.clearSubmissionForm();
-                    this.loadSubmissionHistory();
-                } catch (err) {
-                    this.showNotification('投稿提交时发生错误');
-                    console.error('投稿错误:', err);
-                }
-            },
-
-            clearSubmissionForm: function() {
-                document.getElementById('submissionTitle').value = '';
-                document.getElementById('submissionContent').value = '';
-                this.selectedSubmissionSubjects.clear();
-                this.renderSubjectSelector('submissionSubjectSelector', this.selectedSubmissionSubjects, 'submission');
-            },
-
-            loadSubmissionHistory: async function() {
-                if (!this.isLoggedIn) {
-                    document.getElementById('submissionHistory').classList.add('hidden');
-                    return;
-                }
-                
-                try {
-                    const { data, error } = await this.supabase
-                        .from('submissions')
-                        .select('*')
-                        .eq('user_id', this.currentUser.id)
-                        .order('created_at', { ascending: false })
-                        .limit(20);
-                    
-                    if (error) {
-                        console.error('加载投稿历史失败:', error);
-                        return;
-                    }
-                    
-                    document.getElementById('submissionHistory').classList.remove('hidden');
-                    const historyList = document.getElementById('historyList');
-                    
-                    if (!data || data.length === 0) {
-                        historyList.innerHTML = `
-                            <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
-                                暂无投稿记录
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    historyList.innerHTML = data.map(submission => `
-                        <div class="submission-history-item">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-sm);">
-                                <div style="font-weight: 600;">${submission.title}</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);">
-                                    ${new Date(submission.created_at).toLocaleDateString('zh-HK')}
-                                </div>
-                            </div>
-                            <div style="margin-bottom: var(--spacing-sm); font-size: 13px; color: var(--text-secondary);">
-                                ${submission.content.substring(0, 100)}...
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                                <div>状态: <span style="color: ${submission.status === 'approved' ? '#4CAF50' : submission.status === 'rejected' ? '#F44336' : '#FF9800'}">${submission.status === 'approved' ? '已通过' : submission.status === 'rejected' ? '已拒绝' : '审核中'}</span></div>
-                                <div>学科: ${submission.category}</div>
-                            </div>
-                        </div>
-                    `).join('');
-                } catch (err) {
-                    console.error('加载投稿历史出错:', err);
-                }
-            },
-
-            // 留言板功能
-            initMessageBoard: function() {
-                this.messages = {
-                    chat: [
-                        { author: '学习助手', content: '欢迎来到DSE Hub留言板！', time: '10:00' },
-                        { author: '管理员', content: '请文明交流，互相帮助。', time: '10:05' }
-                    ],
-                    notes: [
-                        { author: '数学学霸', content: '微积分学习笔记：重点掌握导数和积分的应用。', time: '昨天 15:30' },
-                        { author: '物理高手', content: '牛顿运动定律总结：注意力的分解和合成。', time: '昨天 16:45' }
-                    ]
-                };
-
-                this.renderMessages('chat');
-            },
-
-            switchMessageTab: function(tab, element) {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录以使用留言板');
-                    return;
-                }
-                
-                this.currentMessageTab = tab;
-                document.querySelectorAll('.message-tab').forEach(t => t.classList.remove('active'));
-                element.classList.add('active');
-                this.renderMessages(tab);
-            },
-
-            renderMessages: function(tab) {
-                const container = document.getElementById('messagesContainer');
-                const messages = this.messages[tab] || [];
-                
-                container.innerHTML = '';
-                
-                if (messages.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">暂无消息</div>';
-                    return;
-                }
-                
-                messages.forEach(msg => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'message-item';
-                    messageDiv.innerHTML = `
-                        <div class="message-header">
-                            <div class="message-author">${msg.author}</div>
-                            <div class="message-time">${msg.time}</div>
-                        </div>
-                        <div class="message-content">${msg.content}</div>
-                    `;
-                    container.appendChild(messageDiv);
-                });
-                
-                container.scrollTop = container.scrollHeight;
-            },
-
-            sendMessage: async function() {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录后再发送消息');
-                    return;
-                }
-                
-                const input = document.getElementById('messageInput');
-                const message = input.value.trim();
-                
-                if (!message) {
-                    this.showNotification('请输入消息内容');
-                    return;
-                }
-                
-                try {
-                    // 保存消息到数据库
-                    const { error } = await this.supabase
-                        .from('chat_messages')
-                        .insert([
-                            {
-                                user_id: this.currentUser.id,
-                                username: this.currentUser.username,
-                                content: message
-                            }
-                        ]);
-                    
-                    if (error) {
-                        console.error('发送消息失败:', error);
-                        this.showNotification('发送消息失败');
-                        return;
-                    }
-                    
-                    // 更新本地消息
-                    const newMessage = {
-                        author: this.currentUser.username,
-                        content: message,
-                        time: new Date().toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' })
-                    };
-                    
-                    this.messages[this.currentMessageTab].push(newMessage);
-                    input.value = '';
-                    this.renderMessages(this.currentMessageTab);
-                    this.showNotification('消息发送成功！');
-                } catch (err) {
-                    console.error('发送消息错误:', err);
-                    this.showNotification('发送消息时发生错误');
-                }
-            },
-
             // 主题功能
             initThemes: function() {
                 const container = document.getElementById('themeGrid');
@@ -2898,67 +2442,6 @@
                 }
             },
 
-            // 排行榜功能
-            loadLeaderboard: async function() {
-                const container = document.getElementById('leaderboardList');
-                if (!container) return;
-                
-                try {
-                    const { data, error } = await this.supabase
-                        .from('profiles')
-                        .select('username, score, games_played, high_score, duel_wins, duel_losses')
-                        .order('score', { ascending: false })
-                        .limit(20);
-                    
-                    if (error) {
-                        console.error('加载排行榜失败:', error);
-                        return;
-                    }
-                    
-                    container.innerHTML = '';
-                    
-                    if (!data || data.length === 0) {
-                        container.innerHTML = `
-                            <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
-                                暂无排行榜数据
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    data.forEach((player, index) => {
-                        const rank = index + 1;
-                        const playerItem = document.createElement('div');
-                        playerItem.className = 'leaderboard-item';
-                        
-                        const winRate = player.duel_wins + player.duel_losses > 0 ? 
-                            Math.round((player.duel_wins / (player.duel_wins + player.duel_losses)) * 100) : 0;
-                        
-                        playerItem.innerHTML = `
-                            <div class="rank rank-${rank}">${rank}</div>
-                            <div class="player-info">
-                                <div class="player-name">${player.username}</div>
-                                <div class="player-score">积分: ${player.score.toLocaleString()} | 游戏: ${player.games_played}次 | 胜率: ${winRate}%</div>
-                                <div class="player-subjects">
-                                    <span class="subject-badge">最高分: ${player.high_score}</span>
-                                    <span class="subject-badge">胜利: ${player.duel_wins}</span>
-                                    <span class="subject-badge">总分: ${player.score}</span>
-                                </div>
-                            </div>
-                        `;
-                        
-                        container.appendChild(playerItem);
-                    });
-                } catch (err) {
-                    console.error('加载排行榜出错:', err);
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl); opacity: 0.7;">
-                            加载排行榜失败
-                        </div>
-                    `;
-                }
-            },
-
             // 响应式处理
             handleResize: function() {
                 const width = window.innerWidth;
@@ -2978,6 +2461,7 @@
 
         // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM已加载，初始化DSE Hub...');
             DSEHub.init();
         });
 
@@ -2995,3 +2479,4 @@
     </script>
 </body>
 </html>
+
