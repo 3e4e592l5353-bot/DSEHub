@@ -146,7 +146,6 @@
             bottom: 0;
             backdrop-filter: blur(var(--blur-intensity));
             -webkit-backdrop-filter: blur(var(--blur-intensity));
-            background: rgba(0, 0, 0, 0.3);
             z-index: 999;
             pointer-events: none;
         }
@@ -876,9 +875,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(15px); /* 加强版毛玻璃效果 */
-            -webkit-backdrop-filter: blur(15px);
+            /* 移除纯色背景，只保留毛玻璃效果 */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -897,9 +896,10 @@
             width: 90%;
             max-width: 400px;
             border: 1px solid var(--border-color);
-            backdrop-filter: blur(25px); /* 更强的毛玻璃效果 */
-            -webkit-backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px); /* 加强毛玻璃效果 */
+            -webkit-backdrop-filter: blur(30px);
             animation: slideUp 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes slideUp {
@@ -1596,6 +1596,12 @@
             isLoggedIn: false,
             isAdmin: false,
 
+            // Supabase 配置 - 使用您提供的项目API
+            supabaseConfig: {
+                url: 'https://alsalyskulozwakhmzoa.supabase.co',
+                key: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
+            },
+
             // 学科数据
             subjects: [
                 { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
@@ -1691,30 +1697,11 @@
                 }
             ],
 
-            // 成就数据
-            achievements: [
-                { id: 1, name: '初出茅庐', description: '首次登录DSE Hub', icon: 'fas fa-user-graduate', category: '基础', unlocked: true },
-                { id: 2, name: '学习先锋', description: '学习10个知识点', icon: 'fas fa-book-open', category: '学习', unlocked: true },
-                { id: 3, name: '投稿达人', description: '提交5个投稿', icon: 'fas fa-paper-plane', category: '贡献', unlocked: false },
-                { id: 4, name: '社交之星', description: '发送50条消息', icon: 'fas fa-comments', category: '社交', unlocked: false },
-                { id: 5, name: '游戏大师', description: '赢得10场游戏', icon: 'fas fa-gamepad', category: '游戏', unlocked: false },
-                { id: 6, name: '全科精通', description: '学习所有学科的知识点', icon: 'fas fa-brain', category: '学习', unlocked: false },
-                { id: 7, name: '高分王', description: '获得1000学习积分', icon: 'fas fa-trophy', category: '成就', unlocked: false },
-                { id: 8, name: '坚持不懈', description: '连续登录7天', icon: 'fas fa-calendar-check', category: '坚持', unlocked: false },
-                { id: 9, name: '助人为乐', description: '帮助他人解答10次', icon: 'fas fa-hands-helping', category: '贡献', unlocked: false },
-                { id: 10, name: '知识守护者', description: '收藏50个知识点', icon: 'fas fa-bookmark', category: '学习', unlocked: false },
-                { id: 11, name: '速学专家', description: '1小时内学习5个知识点', icon: 'fas fa-bolt', category: '学习', unlocked: false },
-                { id: 12, name: '冠军选手', description: '登上排行榜第一名', icon: 'fas fa-crown', category: '成就', unlocked: false }
-            ],
+            // 成就数据（这些将从数据库加载）
+            achievements: [],
 
-            // 游戏记录数据
-            gameRecords: [
-                { id: 1, gameType: '数学挑战', score: 85, date: '2024-01-10', duration: '15分钟', opponent: 'AI' },
-                { id: 2, gameType: '物理对决', score: 72, date: '2024-01-09', duration: '20分钟', opponent: '用户A' },
-                { id: 3, gameType: '化学竞赛', score: 93, date: '2024-01-08', duration: '10分钟', opponent: 'AI' },
-                { id: 4, gameType: '历史问答', score: 68, date: '2024-01-07', duration: '18分钟', opponent: '用户B' },
-                { id: 5, gameType: '英语测验', score: 88, date: '2024-01-06', duration: '12分钟', opponent: 'AI' }
-            ],
+            // 游戏记录数据（这些将从数据库加载）
+            gameRecords: [],
 
             // 初始化函数
             init: function() {
@@ -1730,18 +1717,19 @@
                 window.addEventListener('resize', () => this.handleResize());
             },
 
-            // 初始化Supabase
+            // 初始化Supabase - 使用正确的API密钥
             initSupabase: function() {
-                const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
-                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsc2FseXNrdWxvendha2htem9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxNzg4NDQsImV4cCI6MjA1Mjc1NDg0NH0.4NVhG9j1XCh3xcv_J7L61nP9SYvBSl7wy42F1ysJ7KM';
-                
-                this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                    auth: {
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
+                this.supabase = window.supabase.createClient(
+                    this.supabaseConfig.url,
+                    this.supabaseConfig.key,
+                    {
+                        auth: {
+                            autoRefreshToken: true,
+                            persistSession: true,
+                            detectSessionInUrl: true
+                        }
                     }
-                });
+                );
             },
 
             // 检查现有会话
@@ -1756,14 +1744,7 @@
                     }
                     
                     if (data.session) {
-                        this.currentUser = {
-                            id: data.session.user.id,
-                            email: data.session.user.email,
-                            username: data.session.user.email.split('@')[0]
-                        };
-                        
-                        await this.loadUserProfile();
-                        this.loginSuccess();
+                        await this.handleUserSession(data.session);
                     } else {
                         this.enforceLogin();
                     }
@@ -1773,15 +1754,28 @@
                 }
             },
 
+            // 处理用户会话
+            handleUserSession: async function(session) {
+                this.currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    username: session.user.email.split('@')[0]
+                };
+                
+                await this.loadUserProfile();
+                this.loginSuccess();
+            },
+
             // 加载用户资料
             loadUserProfile: async function() {
                 if (!this.currentUser) return;
                 
                 try {
+                    // 首先检查是否存在profile记录
                     const { data, error } = await this.supabase
                         .from('profiles')
                         .select('*')
-                        .eq('email', this.currentUser.email)
+                        .eq('auth_id', this.currentUser.id)
                         .single();
                     
                     if (error && error.code !== 'PGRST116') {
@@ -1796,9 +1790,108 @@
                         if (data.theme) {
                             this.changeTheme(data.theme, true);
                         }
+                    } else {
+                        // 如果没有profile，创建一个新的
+                        await this.createUserProfile();
                     }
+                    
+                    // 加载用户成就
+                    await this.loadUserAchievements();
+                    
+                    // 加载游戏记录
+                    await this.loadUserGameRecords();
+                    
                 } catch (err) {
                     console.error('加载用户资料出错:', err);
+                }
+            },
+
+            // 创建用户资料
+            createUserProfile: async function() {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('profiles')
+                        .insert([
+                            {
+                                auth_id: this.currentUser.id,
+                                username: this.currentUser.username,
+                                email: this.currentUser.email,
+                                is_admin: false,
+                                score: 0,
+                                games_played: 0,
+                                high_score: 0,
+                                duel_wins: 0,
+                                duel_losses: 0,
+                                role: 'user',
+                                theme: 'theme-blue-purple'
+                            }
+                        ])
+                        .select()
+                        .single();
+                    
+                    if (error) {
+                        console.error('创建用户资料失败:', error);
+                        return;
+                    }
+                    
+                    this.userProfile = data;
+                    this.isAdmin = false;
+                } catch (err) {
+                    console.error('创建用户资料出错:', err);
+                }
+            },
+
+            // 加载用户成就
+            loadUserAchievements: async function() {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('achievements')
+                        .select('*')
+                        .order('id');
+                    
+                    if (error) {
+                        console.error('加载成就失败:', error);
+                        return;
+                    }
+                    
+                    if (data) {
+                        this.achievements = data.map(achievement => ({
+                            ...achievement,
+                            unlocked: false // 这里需要根据user_achievements表来判断
+                        }));
+                    }
+                } catch (err) {
+                    console.error('加载成就出错:', err);
+                }
+            },
+
+            // 加载用户游戏记录
+            loadUserGameRecords: async function() {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('game_records')
+                        .select('*')
+                        .eq('user_id', this.currentUser.id)
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+                    
+                    if (error) {
+                        console.error('加载游戏记录失败:', error);
+                        return;
+                    }
+                    
+                    if (data) {
+                        this.gameRecords = data.map(record => ({
+                            id: record.id,
+                            gameType: record.game_type,
+                            score: record.score,
+                            date: new Date(record.created_at).toLocaleDateString('zh-HK'),
+                            duration: '15分钟', // 这里需要从game_data中解析
+                            opponent: 'AI' // 这里需要从game_data中解析
+                        }));
+                    }
+                } catch (err) {
+                    console.error('加载游戏记录出错:', err);
                 }
             },
 
@@ -2208,21 +2301,6 @@
                                 <div class="stat-title">对战胜利</div>
                             </div>
                         </div>
-                        
-                        <div class="profile-achievements">
-                            <h3 style="margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-sm);">
-                                <i class="fas fa-award" style="color: var(--accent-color);"></i> 成就进度
-                            </h3>
-                            <div class="achievements-grid">
-                                ${this.achievements.slice(0, 6).map(achievement => `
-                                    <div class="achievement-card ${achievement.unlocked ? '' : 'locked'}">
-                                        <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
-                                        <div class="achievement-name">${achievement.name}</div>
-                                        <div class="achievement-desc">${achievement.description}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
                     </div>
                 `;
             },
@@ -2246,9 +2324,20 @@
                     return;
                 }
                 
+                if (this.achievements.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-award" style="font-size: 48px; margin-bottom: var(--spacing-lg); opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">暂无成就数据</h3>
+                            <p style="margin-bottom: var(--spacing-lg);">开始学习来解锁成就吧！</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
                 const unlockedCount = this.achievements.filter(a => a.unlocked).length;
                 const totalCount = this.achievements.length;
-                const progress = Math.round((unlockedCount / totalCount) * 100);
+                const progress = totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
                 
                 container.innerHTML = `
                     <div style="margin-bottom: var(--spacing-xl);">
@@ -2267,10 +2356,10 @@
                     <div class="achievements-grid">
                         ${this.achievements.map(achievement => `
                             <div class="achievement-card ${achievement.unlocked ? '' : 'locked'}">
-                                <div class="achievement-icon"><i class="${achievement.icon}"></i></div>
+                                <div class="achievement-icon"><i class="${achievement.icon || 'fas fa-award'}"></i></div>
                                 <div class="achievement-name">${achievement.name}</div>
                                 <div class="achievement-desc">${achievement.description}</div>
-                                <div style="margin-top: var(--spacing-xs); font-size: 10px; color: var(--text-secondary);">${achievement.category}</div>
+                                <div style="margin-top: var(--spacing-xs); font-size: 10px; color: var(--text-secondary);">${achievement.category || '成就'}</div>
                                 ${achievement.unlocked ? 
                                     '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #4CAF50;"><i class="fas fa-check"></i> 已解锁</div>' : 
                                     '<div style="margin-top: var(--spacing-xs); font-size: 10px; color: #FF9800;"><i class="fas fa-lock"></i> 未解锁</div>'
@@ -2384,15 +2473,7 @@
                     }
                     
                     if (data.session) {
-                        this.currentUser = {
-                            id: data.session.user.id,
-                            email: data.session.user.email,
-                            username: data.session.user.email.split('@')[0]
-                        };
-                        
-                        await this.loadUserProfile();
-                        this.loginSuccess();
-                        
+                        await this.handleUserSession(data.session);
                         this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                     }
                 } catch (err) {
@@ -2427,12 +2508,7 @@
                     // 1. 注册认证账号
                     const { data: authData, error: authError } = await this.supabase.auth.signUp({
                         email: email,
-                        password: password,
-                        options: {
-                            data: {
-                                username: username
-                            }
-                        }
+                        password: password
                     });
                     
                     if (authError) {
@@ -2441,29 +2517,6 @@
                     }
                     
                     if (authData.user) {
-                        // 2. 创建用户资料
-                        const { error: profileError } = await this.supabase
-                            .from('profiles')
-                            .insert([
-                                {
-                                    auth_id: authData.user.id,
-                                    username: username,
-                                    email: email,
-                                    is_admin: false,
-                                    score: 0,
-                                    games_played: 0,
-                                    high_score: 0,
-                                    duel_wins: 0,
-                                    duel_losses: 0,
-                                    role: 'user',
-                                    theme: 'theme-blue-purple'
-                                }
-                            ]);
-                        
-                        if (profileError) {
-                            console.error('创建用户资料失败:', profileError);
-                        }
-                        
                         this.showNotification('注册成功！请登录您的账号');
                         this.showLogin();
                     }
@@ -2484,6 +2537,8 @@
                     
                     this.currentUser = null;
                     this.userProfile = null;
+                    this.achievements = [];
+                    this.gameRecords = [];
                     this.isLoggedIn = false;
                     this.isAdmin = false;
                     
@@ -2659,7 +2714,8 @@
                         .from('submissions')
                         .select('*')
                         .eq('user_id', this.currentUser.id)
-                        .order('created_at', { ascending: false });
+                        .order('created_at', { ascending: false })
+                        .limit(20);
                     
                     if (error) {
                         console.error('加载投稿历史失败:', error);
@@ -2875,11 +2931,14 @@
                         const playerItem = document.createElement('div');
                         playerItem.className = 'leaderboard-item';
                         
+                        const winRate = player.duel_wins + player.duel_losses > 0 ? 
+                            Math.round((player.duel_wins / (player.duel_wins + player.duel_losses)) * 100) : 0;
+                        
                         playerItem.innerHTML = `
                             <div class="rank rank-${rank}">${rank}</div>
                             <div class="player-info">
                                 <div class="player-name">${player.username}</div>
-                                <div class="player-score">积分: ${player.score.toLocaleString()} | 游戏: ${player.games_played}次 | 胜率: ${player.duel_wins + player.duel_losses > 0 ? Math.round((player.duel_wins / (player.duel_wins + player.duel_losses)) * 100) : 0}%</div>
+                                <div class="player-score">积分: ${player.score.toLocaleString()} | 游戏: ${player.games_played}次 | 胜率: ${winRate}%</div>
                                 <div class="player-subjects">
                                     <span class="subject-badge">最高分: ${player.high_score}</span>
                                     <span class="subject-badge">胜利: ${player.duel_wins}</span>
@@ -2936,4 +2995,3 @@
     </script>
 </body>
 </html>
-
