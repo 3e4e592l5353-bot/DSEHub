@@ -6,7 +6,6 @@
     <title>DSEhub - 学习中心</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 基础重置和变量 */
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
@@ -25,17 +24,12 @@
             --text-muted: #9ca3af;
             
             --border: #e5e7eb;
-            --border-light: #f3f4f6;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             
-            --radius-sm: 0.375rem;
-            --radius: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.3s ease;
         }
 
         [data-theme="dark"] {
@@ -56,10 +50,8 @@
             --text-muted: #94a3b8;
             
             --border: #334155;
-            --border-light: #475569;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -68,38 +60,32 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #f0f4f8 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
             transition: var(--transition);
-            padding-top: 64px;
         }
 
         /* 导航栏 */
         .navbar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0;
+            box-shadow: var(--shadow-lg);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
-            box-shadow: var(--shadow-lg);
-            height: 64px;
+            height: 60px;
         }
 
         .nav-container {
-            max-width: 1280px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 0 20px;
             height: 100%;
             display: flex;
             justify-content: space-between;
@@ -109,45 +95,48 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            font-weight: 700;
+            gap: 10px;
             font-size: 1.25rem;
+            font-weight: 700;
             color: white;
+            text-decoration: none;
         }
 
-        .logo-icon {
-            background: linear-gradient(135deg, #f97316, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .logo i {
             font-size: 1.5rem;
         }
 
-        .nav-links {
+        .nav-tabs {
             display: flex;
-            gap: 1rem;
-            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            padding: 4px;
         }
 
-        .nav-link {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
+        .nav-tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
             border-radius: var(--radius);
+            cursor: pointer;
             font-weight: 500;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
         }
 
-        .nav-link:hover {
+        .nav-tab:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
+            color: white;
         }
 
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
+        .nav-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow);
         }
 
         .user-menu {
@@ -158,30 +147,29 @@
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 6px 12px;
             border-radius: var(--radius);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
             font-weight: 500;
             transition: var(--transition);
         }
 
         .user-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
         }
 
         .dropdown {
             position: absolute;
-            top: calc(100% + 0.5rem);
+            top: calc(100% + 8px);
             right: 0;
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            padding: 0.5rem;
-            min-width: 200px;
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            min-width: 180px;
             display: none;
             border: 1px solid var(--border);
             z-index: 1001;
@@ -206,8 +194,8 @@
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
+            gap: 10px;
+            padding: 10px;
             color: var(--text-primary);
             text-decoration: none;
             border-radius: var(--radius);
@@ -218,160 +206,118 @@
             background: var(--bg-hover);
         }
 
-        .dropdown-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 0.5rem 0;
+        /* 主内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 0 20px;
         }
 
-        /* 主容器 */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
+        /* 页面内容 */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* 英雄区域 */
         .hero {
             text-align: center;
-            padding: 4rem 1rem;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--radius-xl);
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            border-radius: var(--radius-lg);
             background: linear-gradient(135deg, 
-                rgba(99, 102, 241, 0.05) 0%, 
-                rgba(236, 72, 153, 0.05) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.1);
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-            z-index: -1;
+                rgba(99, 102, 241, 0.1) 0%, 
+                rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 1.5rem;
+            margin-bottom: 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            line-height: 1.2;
         }
 
         .hero p {
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: var(--text-secondary);
             max-width: 600px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
+            margin: 0 auto 24px;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* 特性卡片 */
-        .features {
+        /* 特性网格 */
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
+            gap: 24px;
+            margin: 40px 0;
         }
 
         .feature-card {
             background: var(--bg-card);
-            padding: 2.5rem 2rem;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            transition: var(--transition);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: var(--transition);
+            text-align: center;
         }
 
         .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
         }
 
         .feature-icon {
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            margin: 0 auto 16px;
             color: white;
             font-size: 1.5rem;
         }
 
         .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            margin-bottom: 12px;
             color: var(--text-primary);
         }
 
         .feature-card p {
             color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            line-height: 1.7;
+            margin-bottom: 20px;
         }
 
-        /* 按钮样式 */
+        /* 按钮 */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 0.875rem 2rem;
+            gap: 8px;
+            padding: 10px 20px;
             border-radius: var(--radius);
             font-weight: 600;
             text-decoration: none;
             transition: var(--transition);
             border: none;
             cursor: pointer;
-            font-size: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            font-size: 0.95rem;
         }
 
         .btn-primary {
@@ -381,7 +327,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
         }
 
         .btn-secondary {
@@ -393,42 +339,32 @@
         .btn-secondary:hover {
             border-color: var(--primary);
             color: var(--primary);
-            transform: translateY(-2px);
         }
 
-        /* 部分标题 */
+        /* 知识库页面 */
+        .knowledge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
         .section-title {
-            font-size: 2.25rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            margin: 4rem 0 2rem;
             color: var(--text-primary);
-            position: relative;
-            padding-bottom: 1rem;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 2px;
-        }
-
-        /* 知识点展示 */
         .knowledge-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .knowledge-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 1.75rem;
+            padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             transition: var(--transition);
@@ -441,191 +377,143 @@
 
         .knowledge-category {
             display: inline-block;
-            padding: 0.375rem 1rem;
+            padding: 4px 12px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border-radius: 20px;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 12px;
         }
 
         .knowledge-card h4 {
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            margin-bottom: 8px;
             color: var(--text-primary);
         }
 
         .knowledge-card p {
             color: var(--text-secondary);
-            margin-bottom: 1rem;
-            line-height: 1.6;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
         }
 
-        .knowledge-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-light);
-        }
-
-        /* 留言板 */
-        .chat-section {
-            margin: 4rem 0;
-        }
-
+        /* 留言板页面 */
         .chat-container {
             background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
+            border-radius: var(--radius-lg);
+            padding: 24px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
-            margin-bottom: 1.5rem;
-        }
-
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: var(--bg-hover);
-            border-radius: 3px;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
+            margin-bottom: 20px;
         }
 
         .message {
-            margin-bottom: 1.25rem;
-            padding: 1.25rem;
+            margin-bottom: 16px;
+            padding: 16px;
             background: var(--bg-secondary);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             border-left: 4px solid var(--primary);
-            transition: var(--transition);
-        }
-
-        .message:hover {
-            background: var(--bg-hover);
         }
 
         .message-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
         }
 
         .username {
             font-weight: 600;
             color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .timestamp {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
         }
 
         .message-content {
             color: var(--text-primary);
-            line-height: 1.6;
+        }
+
+        .message-input-area {
+            display: flex;
+            gap: 12px;
         }
 
         .message-input {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .message-input input {
             flex: 1;
-            padding: 1rem 1.25rem;
+            padding: 12px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
             background: var(--bg-card);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
         }
 
-        .message-input input:focus {
+        .message-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        /* 子网站卡片 */
-        .subsite-grid {
+        /* 子网站页面 */
+        .subsites-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
         }
 
         .subsite-card {
             background: var(--bg-card);
-            padding: 2.5rem 2rem;
-            border-radius: var(--radius-xl);
+            padding: 32px 24px;
+            border-radius: var(--radius-lg);
             text-align: center;
             transition: var(--transition);
             border: 1px solid var(--border);
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .subsite-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
         .subsite-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
         }
 
         .subsite-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 16px;
             color: white;
-            font-size: 2rem;
+            font-size: 1.75rem;
         }
 
         .subsite-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
             color: var(--text-primary);
         }
 
         .subsite-card p {
             color: var(--text-secondary);
-            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         /* 主题切换按钮 */
         .theme-toggle {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border-radius: 50%;
@@ -641,7 +529,6 @@
 
         .theme-toggle:hover {
             transform: rotate(15deg) scale(1.1);
-            box-shadow: var(--shadow-xl);
         }
 
         /* 模态框 */
@@ -653,11 +540,10 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
             z-index: 1002;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 20px;
         }
 
         .modal.show {
@@ -665,30 +551,25 @@
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .modal-content {
             background: var(--bg-card);
-            padding: 2.5rem;
-            border-radius: var(--radius-xl);
-            max-width: 500px;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            max-width: 400px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-xl);
+            box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
             position: relative;
         }
 
         .modal-close {
             position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            width: 40px;
-            height: 40px;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -698,7 +579,6 @@
             color: var(--text-primary);
             cursor: pointer;
             transition: var(--transition);
-            font-size: 1.25rem;
         }
 
         .modal-close:hover {
@@ -707,71 +587,60 @@
         }
 
         .modal-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            margin-bottom: 24px;
             color: var(--text-primary);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 8px;
             color: var(--text-primary);
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 12px;
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .form-control:disabled {
-            background: var(--bg-hover);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        /* 主题设置 - 极简版 */
+        /* 主题设置 */
         .theme-presets {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 12px;
+            margin: 20px 0;
         }
 
         .theme-preset {
-            padding: 1.5rem 1rem;
-            border-radius: var(--radius-lg);
+            padding: 16px 12px;
+            border-radius: var(--radius);
             cursor: pointer;
             text-align: center;
             transition: var(--transition);
             border: 2px solid var(--border);
-            background: var(--bg-secondary);
+            background: var(--bg-card);
         }
 
         .theme-preset:hover {
             border-color: var(--primary);
-            transform: translateY(-2px);
         }
 
         .theme-preset.active {
@@ -780,63 +649,23 @@
         }
 
         .theme-preset-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
             color: var(--primary);
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1003;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .loading.show {
-            display: flex;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: white;
-            font-size: 1.125rem;
-            font-weight: 500;
         }
 
         /* 通知 */
         .notification {
             position: fixed;
-            top: 6rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            z-index: 1004;
+            top: 80px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1003;
             animation: slideInRight 0.3s ease;
             display: none;
-            max-width: 400px;
+            max-width: 300px;
             border-left: 4px solid var(--primary);
         }
 
@@ -866,35 +695,22 @@
             color: white;
         }
 
-        .notification.info {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-
         /* 空状态 */
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 40px 20px;
             color: var(--text-muted);
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            margin-bottom: 1rem;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .features {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links {
+            .nav-tabs {
                 display: none;
             }
             
@@ -902,31 +718,16 @@
                 display: block;
             }
             
-            .modal-content {
-                padding: 2rem 1.5rem;
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
             }
             
             .theme-presets {
                 grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero {
-                padding: 3rem 1rem;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .message-input {
-                flex-direction: column;
             }
         }
     </style>
@@ -936,122 +737,130 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
-                <i class="fas fa-brain logo-icon"></i>
+                <i class="fas fa-brain"></i>
                 <span>DSEhub</span>
             </a>
-            <div class="nav-links">
-                <a href="#home" class="nav-link active">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-page="home">
                     <i class="fas fa-home"></i> 首页
-                </a>
-                <a href="#knowledge" class="nav-link">
+                </button>
+                <button class="nav-tab" data-page="knowledge">
                     <i class="fas fa-book"></i> 知识库
-                </a>
-                <a href="#chat" class="nav-link">
+                </button>
+                <button class="nav-tab" data-page="chat">
                     <i class="fas fa-comments"></i> 留言板
-                </a>
-                <a href="#subsites" class="nav-link">
+                </button>
+                <button class="nav-tab" data-page="subsites">
                     <i class="fas fa-sitemap"></i> 子网站
-                </a>
-                <div class="user-menu">
-                    <button class="user-btn" id="userBtn">
-                        <i class="fas fa-user"></i>
-                        <span id="usernameDisplay">未登录</span>
-                        <i class="fas fa-chevron-down" style="font-size: 0.875rem;"></i>
-                    </button>
-                    <div class="dropdown" id="userDropdown">
-                        <a href="#profile" class="dropdown-item" onclick="showProfileModal()">
-                            <i class="fas fa-user-cog"></i> 个人资料
-                        </a>
-                        <a href="#theme" class="dropdown-item" onclick="showThemeModal()">
-                            <i class="fas fa-palette"></i> 主题设置
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> 退出登录
-                        </a>
-                    </div>
+                </button>
+            </div>
+            <div class="user-menu">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="usernameDisplay">未登录</span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem;"></i>
+                </button>
+                <div class="dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" onclick="showProfileModal()">
+                        <i class="fas fa-user-cog"></i> 个人资料
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="showThemeModal()">
+                        <i class="fas fa-palette"></i> 主题设置
+                    </a>
+                    <div style="margin: 8px 0; border-top: 1px solid var(--border);"></div>
+                    <a href="#" class="dropdown-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> 退出登录
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- 主内容 -->
-    <main class="container">
-        <!-- 英雄区域 -->
-        <section class="hero" id="home">
-            <div class="hero-bg"></div>
-            <h1>欢迎来到 DSEhub</h1>
-            <p>一站式学习平台，整合知识分享、游戏化学习和社区交流，助你高效备考DSE</p>
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="showLoginModal()">
-                    <i class="fas fa-sign-in-alt"></i> 立即开始
-                </button>
-                <button class="btn btn-secondary" onclick="showThemeModal()">
-                    <i class="fas fa-palette"></i> 主题设置
-                </button>
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 首页 -->
+        <div class="page active" id="home-page">
+            <div class="hero">
+                <h1>欢迎来到 DSEhub</h1>
+                <p>一站式学习平台，整合知识分享、游戏化学习和社区交流，助你高效备考DSE</p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button class="btn btn-primary" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> 立即开始
+                    </button>
+                    <button class="btn btn-secondary" onclick="showThemeModal()">
+                        <i class="fas fa-palette"></i> 主题设置
+                    </button>
+                </div>
             </div>
-        </section>
 
-        <!-- 特性介绍 -->
-        <section class="features">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-gamepad"></i>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>游戏中心</h3>
+                    <p>通过游戏化学习巩固知识，包含排行榜和成就系统</p>
+                    <button class="btn btn-primary" onclick="goToSubsite('games')">
+                        <i class="fas fa-gamepad"></i> 开始游戏
+                    </button>
                 </div>
-                <h3>游戏中心</h3>
-                <p>通过游戏化学习巩固知识，包含排行榜和成就系统，让学习变得更有趣</p>
-                <button class="btn btn-primary" onclick="goToSubsite('games')">
-                    <i class="fas fa-gamepad"></i> 开始游戏
-                </button>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-edit"></i>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>投稿中心</h3>
+                    <p>分享你的学习笔记和经验，帮助其他考生</p>
+                    <button class="btn btn-primary" onclick="goToSubsite('submit')">
+                        <i class="fas fa-upload"></i> 我要投稿
+                    </button>
                 </div>
-                <h3>投稿中心</h3>
-                <p>分享你的学习笔记和经验，帮助其他考生，共同进步</p>
-                <button class="btn btn-primary" onclick="goToSubsite('submit')">
-                    <i class="fas fa-upload"></i> 我要投稿
-                </button>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-sticky-note"></i>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3>笔记专区</h3>
+                    <p>整理个人学习笔记，支持标签和分类管理</p>
+                    <button class="btn btn-primary" onclick="goToSubsite('notes')">
+                        <i class="fas fa-book"></i> 查看笔记
+                    </button>
                 </div>
-                <h3>笔记专区</h3>
-                <p>整理个人学习笔记，支持标签和分类管理，随时查阅</p>
-                <button class="btn btn-primary" onclick="goToSubsite('notes')">
-                    <i class="fas fa-book"></i> 查看笔记
-                </button>
             </div>
-        </section>
+        </div>
 
-        <!-- 知识点展示 -->
-        <section id="knowledge">
-            <h2 class="section-title">热门知识点</h2>
+        <!-- 知识库页面 -->
+        <div class="page" id="knowledge-page">
+            <div class="knowledge-header">
+                <h2 class="section-title">知识库</h2>
+                <button class="btn btn-secondary" onclick="loadKnowledgePoints()">
+                    <i class="fas fa-sync-alt"></i> 刷新
+                </button>
+            </div>
             <div class="knowledge-grid" id="knowledgeGrid">
                 <!-- 知识点卡片将通过JS动态加载 -->
             </div>
-        </section>
+        </div>
 
-        <!-- 留言板 -->
-        <section class="chat-section" id="chat">
-            <h2 class="section-title">社区留言板</h2>
+        <!-- 留言板页面 -->
+        <div class="page" id="chat-page">
+            <h2 class="section-title">留言板</h2>
             <div class="chat-container" id="chatContainer">
                 <!-- 留言将通过JS动态加载 -->
             </div>
-            <div class="message-input">
-                <input type="text" id="messageInput" placeholder="输入留言内容...">
+            <div class="message-input-area">
+                <input type="text" class="message-input" id="messageInput" placeholder="输入留言内容...">
                 <button class="btn btn-primary" id="sendMessageBtn" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i> 发送
                 </button>
             </div>
-        </section>
+        </div>
 
-        <!-- 子网站 -->
-        <section id="subsites">
-            <h2 class="section-title">探索子网站</h2>
-            <div class="subsite-grid">
+        <!-- 子网站页面 -->
+        <div class="page" id="subsites-page">
+            <h2 class="section-title">子网站</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                点击以下卡片访问各个子网站功能
+            </p>
+            <div class="subsites-grid">
                 <div class="subsite-card" onclick="goToSubsite('games')">
                     <div class="subsite-icon">
                         <i class="fas fa-gamepad"></i>
@@ -1074,7 +883,7 @@
                     <p>整理学习笔记，支持多科目管理</p>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <!-- 主题切换按钮 -->
@@ -1082,16 +891,10 @@
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
-    <!-- 通知区域 -->
+    <!-- 通知 -->
     <div class="notification" id="notification"></div>
 
-    <!-- 加载动画 -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">加载中...</div>
-    </div>
-
-    <!-- 登录/注册模态框 -->
+    <!-- 模态框 -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeLoginModal()">&times;</button>
@@ -1117,7 +920,6 @@
         </div>
     </div>
 
-    <!-- 注册模态框 -->
     <div class="modal" id="registerModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
@@ -1142,12 +944,10 @@
         </div>
     </div>
 
-    <!-- 主题设置模态框 - 极简版 -->
     <div class="modal" id="themeModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeThemeModal()">&times;</button>
             <h2 class="modal-title">主题设置</h2>
-            
             <div class="form-group">
                 <label class="form-label">选择主题</label>
                 <div class="theme-presets">
@@ -1171,28 +971,26 @@
                     </div>
                 </div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">颜色模式</label>
-                <div style="display: flex; gap: 1rem;">
+                <div style="display: flex; gap: 12px;">
                     <label style="flex: 1; text-align: center;">
                         <input type="radio" name="colorMode" value="light" checked 
-                               onchange="changeColorMode('light')" style="margin-right: 0.5rem;">
-                        浅色模式
+                               onchange="changeColorMode('light')" style="margin-right: 4px;">
+                        浅色
                     </label>
                     <label style="flex: 1; text-align: center;">
                         <input type="radio" name="colorMode" value="dark" 
-                               onchange="changeColorMode('dark')" style="margin-right: 0.5rem;">
-                        深色模式
+                               onchange="changeColorMode('dark')" style="margin-right: 4px;">
+                        深色
                     </label>
                     <label style="flex: 1; text-align: center;">
                         <input type="radio" name="colorMode" value="auto" 
-                               onchange="changeColorMode('auto')" style="margin-right: 0.5rem;">
-                        自动模式
+                               onchange="changeColorMode('auto')" style="margin-right: 4px;">
+                        自动
                     </label>
                 </div>
             </div>
-
             <div class="form-group">
                 <button class="btn btn-primary" style="width: 100%;" onclick="applyTheme()">
                     <i class="fas fa-check"></i> 应用主题
@@ -1201,22 +999,17 @@
         </div>
     </div>
 
-    <!-- 个人资料模态框 -->
     <div class="modal" id="profileModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeProfileModal()">&times;</button>
             <h2 class="modal-title">个人资料</h2>
             <div class="form-group">
                 <label class="form-label">用户名</label>
-                <input type="text" id="profileUsername" class="form-control" placeholder="用户名">
+                <input type="text" id="profileUsername" class="form-control">
             </div>
             <div class="form-group">
                 <label class="form-label">邮箱</label>
-                <input type="email" id="profileEmail" class="form-control" placeholder="邮箱" disabled>
-            </div>
-            <div class="form-group">
-                <label class="form-label">积分</label>
-                <input type="text" id="profileScore" class="form-control" value="0" disabled>
+                <input type="email" id="profileEmail" class="form-control" disabled>
             </div>
             <div class="form-group">
                 <button class="btn btn-primary" style="width: 100%;" onclick="updateProfile()">
@@ -1228,7 +1021,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase 配置
+        // 配置
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
@@ -1236,6 +1029,7 @@
         let currentUser = null;
         let currentTheme = 'blue';
         let colorMode = 'light';
+        let supabaseClient = null;
         
         // 主题配置
         const themes = {
@@ -1259,61 +1053,61 @@
             }
         };
         
-        // DOM 元素
-        const elements = {
-            loginModal: document.getElementById('loginModal'),
-            registerModal: document.getElementById('registerModal'),
-            themeModal: document.getElementById('themeModal'),
-            profileModal: document.getElementById('profileModal'),
-            userBtn: document.getElementById('userBtn'),
-            userDropdown: document.getElementById('userDropdown'),
-            usernameDisplay: document.getElementById('usernameDisplay'),
-            messageInput: document.getElementById('messageInput'),
-            sendMessageBtn: document.getElementById('sendMessageBtn'),
-            knowledgeGrid: document.getElementById('knowledgeGrid'),
-            chatContainer: document.getElementById('chatContainer'),
-            loading: document.getElementById('loading'),
-            notification: document.getElementById('notification'),
-            themeIcon: document.getElementById('themeIcon')
-        };
-        
-        // 等待Supabase加载完成后初始化
-        function waitForSupabase() {
-            return new Promise((resolve) => {
-                if (window.supabase && window.supabase.createClient) {
-                    resolve();
-                } else {
-                    setTimeout(() => waitForSupabase().then(resolve), 100);
-                }
+        // 页面切换
+        function switchPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
             });
+            
+            // 显示目标页面
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 更新导航标签
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.page === pageId);
+            });
+            
+            // 根据页面加载数据
+            if (pageId === 'knowledge') {
+                loadKnowledgePoints();
+            } else if (pageId === 'chat') {
+                loadChatMessages();
+            }
         }
         
         // 初始化
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 等待Supabase加载完成
-                await waitForSupabase();
+                // 初始化Supabase
+                if (window.supabase && window.supabase.createClient) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                } else {
+                    console.error('Supabase库未加载');
+                    return;
+                }
                 
-                // 初始化 Supabase 客户端
-                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                
-                // 检查本地存储的跨站点会话
-                await checkCrossSiteSession();
-                
-                // 加载初始数据
-                loadKnowledgePoints();
-                loadChatMessages();
-                
-                // 加载保存的主题设置
+                // 加载主题设置
                 loadThemeSettings();
                 
                 // 初始化事件监听器
                 initEventListeners();
                 
-                // 设置自动刷新
-                setInterval(loadChatMessages, 30000);
+                // 检查会话
+                await checkCrossSiteSession();
                 
                 console.log('初始化完成');
+                
+                // 设置聊天自动刷新
+                setInterval(() => {
+                    if (document.getElementById('chat-page').classList.contains('active')) {
+                        loadChatMessages();
+                    }
+                }, 30000);
+                
             } catch (error) {
                 console.error('初始化失败:', error);
                 showNotification('初始化失败，请刷新页面重试', 'error');
@@ -1324,10 +1118,9 @@
         async function checkCrossSiteSession() {
             const sessionToken = getCookie('cross_site_session');
             
-            if (sessionToken) {
-                showLoading();
+            if (sessionToken && supabaseClient) {
                 try {
-                    const { data, error } = await window.supabaseClient
+                    const { data, error } = await supabaseClient
                         .from('cross_site_sessions')
                         .select('*, profiles(*)')
                         .eq('session_token', sessionToken)
@@ -1342,7 +1135,7 @@
                         updateUIForUser();
                         
                         // 更新会话活动时间
-                        await window.supabaseClient
+                        await supabaseClient
                             .from('cross_site_sessions')
                             .update({ last_activity: new Date().toISOString() })
                             .eq('id', data.id);
@@ -1352,45 +1145,7 @@
                 } catch (error) {
                     console.error('会话验证失败:', error);
                 }
-                hideLoading();
             }
-        }
-        
-        // 创建跨站点会话
-        async function createCrossSiteSession(userId) {
-            const sessionToken = generateSessionToken();
-            const expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + 7);
-            
-            const sessionData = {
-                user_id: userId,
-                session_token: sessionToken,
-                expires_at: expiresAt.toISOString(),
-                last_activity: new Date().toISOString()
-            };
-            
-            try {
-                const { error } = await window.supabaseClient
-                    .from('cross_site_sessions')
-                    .insert([sessionData]);
-                
-                if (!error) {
-                    setCookie('cross_site_session', sessionToken, 7);
-                    
-                    await window.supabaseClient
-                        .from('profiles')
-                        .update({
-                            last_session_token: sessionToken,
-                            session_expires_at: expiresAt.toISOString()
-                        })
-                        .eq('auth_id', userId);
-                    
-                    return true;
-                }
-            } catch (error) {
-                console.error('创建会话失败:', error);
-            }
-            return false;
         }
         
         // 加载主题设置
@@ -1407,13 +1162,15 @@
                 applyColorMode();
             }
             
-            // 更新主题预设UI
+            // 更新UI
             document.querySelectorAll('.theme-preset').forEach(preset => {
                 preset.classList.toggle('active', false);
             });
-            document.querySelector(`.theme-preset[onclick*="${currentTheme}"]`)?.classList.add('active');
+            const activePreset = document.querySelector(`.theme-preset[onclick*="${currentTheme}"]`);
+            if (activePreset) {
+                activePreset.classList.add('active');
+            }
             
-            // 更新颜色模式单选按钮
             const colorModeInput = document.querySelector(`input[name="colorMode"][value="${colorMode}"]`);
             if (colorModeInput) {
                 colorModeInput.checked = true;
@@ -1423,8 +1180,6 @@
         // 选择主题
         function selectTheme(theme) {
             currentTheme = theme;
-            
-            // 更新UI
             document.querySelectorAll('.theme-preset').forEach(preset => {
                 preset.classList.toggle('active', false);
             });
@@ -1434,18 +1189,6 @@
         // 更改颜色模式
         function changeColorMode(mode) {
             colorMode = mode;
-        }
-        
-        // 应用颜色模式
-        function applyColorMode() {
-            if (colorMode === 'auto') {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-                elements.themeIcon.className = prefersDark ? 'fas fa-sun' : 'fas fa-moon';
-            } else {
-                document.documentElement.setAttribute('data-theme', colorMode);
-                elements.themeIcon.className = colorMode === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            }
         }
         
         // 应用主题
@@ -1468,15 +1211,26 @@
             closeThemeModal();
         }
         
+        // 应用颜色模式
+        function applyColorMode() {
+            if (colorMode === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                document.getElementById('themeIcon').className = prefersDark ? 'fas fa-sun' : 'fas fa-moon';
+            } else {
+                document.documentElement.setAttribute('data-theme', colorMode);
+                document.getElementById('themeIcon').className = colorMode === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        }
+        
         // 切换暗黑模式
         function toggleDarkMode() {
             const currentMode = document.documentElement.getAttribute('data-theme');
             const newMode = currentMode === 'dark' ? 'light' : 'dark';
             
             document.documentElement.setAttribute('data-theme', newMode);
-            elements.themeIcon.className = newMode === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            document.getElementById('themeIcon').className = newMode === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
             
-            // 如果当前是自动模式，切换到手动模式
             if (colorMode === 'auto') {
                 colorMode = newMode;
                 document.querySelector(`input[name="colorMode"][value="${newMode}"]`).checked = true;
@@ -1487,83 +1241,133 @@
         
         // 加载知识点
         async function loadKnowledgePoints() {
-            showLoading();
+            if (!supabaseClient) return;
+            
             try {
-                const { data, error } = await window.supabaseClient
+                const { data, error } = await supabaseClient
                     .from('knowledge_points')
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(6);
                 
-                if (data && !error) {
-                    renderKnowledgePoints(data);
-                } else {
-                    showEmptyState(elements.knowledgeGrid, 'book-open', '暂无知识点内容');
+                const container = document.getElementById('knowledgeGrid');
+                if (error) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <p>加载失败：${error.message}</p>
+                        </div>
+                    `;
+                    return;
                 }
+                
+                renderKnowledgePoints(data || []);
             } catch (error) {
                 console.error('加载知识点失败:', error);
-                showEmptyState(elements.knowledgeGrid, 'book-open', '加载失败，请稍后重试');
+                document.getElementById('knowledgeGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <p>加载失败，请检查网络连接</p>
+                    </div>
+                `;
             }
-            hideLoading();
         }
         
         function renderKnowledgePoints(points) {
-            elements.knowledgeGrid.innerHTML = '';
+            const container = document.getElementById('knowledgeGrid');
             
             if (!points || points.length === 0) {
-                showEmptyState(elements.knowledgeGrid, 'book-open', '暂无知识点内容');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <p>暂无知识点内容</p>
+                    </div>
+                `;
                 return;
             }
             
+            container.innerHTML = '';
             points.forEach(point => {
                 const card = document.createElement('div');
                 card.className = 'knowledge-card';
                 card.innerHTML = `
                     <div class="knowledge-category">${point.category_group || '综合'}</div>
                     <h4>${point.title || '未命名知识点'}</h4>
-                    <p>${(point.content || '').substring(0, 100)}${point.content && point.content.length > 100 ? '...' : ''}</p>
-                    <div class="knowledge-footer">
+                    <p>${(point.content || '').substring(0, 80)}...</p>
+                    <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: var(--primary); font-weight: 600;">
                             难度: ${'★'.repeat(point.difficulty || 1)}
                         </span>
-                        <span style="font-size: 0.875rem; color: var(--text-muted);">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">
                             ${new Date(point.created_at).toLocaleDateString()}
                         </span>
                     </div>
                 `;
-                elements.knowledgeGrid.appendChild(card);
+                container.appendChild(card);
             });
         }
         
         // 加载聊天消息
         async function loadChatMessages() {
+            if (!supabaseClient) return;
+            
             try {
-                const { data, error } = await window.supabaseClient
+                const { data, error } = await supabaseClient
                     .from('chat_messages')
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(20);
                 
-                if (data && !error) {
-                    renderChatMessages(data.reverse());
-                } else {
-                    showEmptyState(elements.chatContainer, 'comments', '暂无留言');
+                const container = document.getElementById('chatContainer');
+                if (error) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <p>加载失败：${error.message}</p>
+                        </div>
+                    `;
+                    return;
                 }
+                
+                renderChatMessages(data || []);
             } catch (error) {
                 console.error('加载聊天消息失败:', error);
-                showEmptyState(elements.chatContainer, 'comments', '加载失败');
+                document.getElementById('chatContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>加载失败，请检查网络连接</p>
+                    </div>
+                `;
             }
         }
         
         function renderChatMessages(messages) {
-            elements.chatContainer.innerHTML = '';
+            const container = document.getElementById('chatContainer');
             
             if (!messages || messages.length === 0) {
-                showEmptyState(elements.chatContainer, 'comments', '暂无留言，快来第一个发言吧！');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>暂无留言，快来第一个发言吧！</p>
+                    </div>
+                `;
                 return;
             }
             
-            messages.forEach(msg => {
+            container.innerHTML = '';
+            messages.reverse().forEach(msg => {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
                 messageDiv.innerHTML = `
@@ -1578,43 +1382,34 @@
                     </div>
                     <div class="message-content">${msg.content || ''}</div>
                 `;
-                elements.chatContainer.appendChild(messageDiv);
+                container.appendChild(messageDiv);
             });
             
-            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
-        }
-        
-        // 显示空状态
-        function showEmptyState(container, icon, text) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-${icon}"></i>
-                    </div>
-                    <p>${text}</p>
-                </div>
-            `;
+            container.scrollTop = container.scrollHeight;
         }
         
         // 发送消息
         async function sendMessage() {
-            const content = elements.messageInput.value.trim();
-            
-            // 检查用户是否登录
-            if (!currentUser) {
-                showNotification('请先登录后再发送消息', 'warning');
-                showLoginModal();
-                return;
-            }
+            const content = document.getElementById('messageInput').value.trim();
             
             if (!content) {
                 showNotification('请输入消息内容', 'warning');
                 return;
             }
             
-            showLoading();
+            if (!currentUser) {
+                showNotification('请先登录后再发送消息', 'warning');
+                showLoginModal();
+                return;
+            }
+            
+            if (!supabaseClient) {
+                showNotification('系统错误，请刷新页面重试', 'error');
+                return;
+            }
+            
             try {
-                const { error } = await window.supabaseClient
+                const { error } = await supabaseClient
                     .from('chat_messages')
                     .insert([{
                         user_id: currentUser.id,
@@ -1623,18 +1418,18 @@
                         created_at: new Date().toISOString()
                     }]);
                 
-                if (!error) {
-                    elements.messageInput.value = '';
-                    loadChatMessages();
-                    showNotification('消息发送成功', 'success');
-                } else {
-                    showNotification('发送失败，请重试', 'error');
+                if (error) {
+                    showNotification('发送失败：' + error.message, 'error');
+                    return;
                 }
+                
+                document.getElementById('messageInput').value = '';
+                loadChatMessages();
+                showNotification('消息发送成功', 'success');
             } catch (error) {
                 console.error('发送消息失败:', error);
-                showNotification('发送失败', 'error');
+                showNotification('发送失败，请重试', 'error');
             }
-            hideLoading();
         }
         
         // 登录
@@ -1647,39 +1442,90 @@
                 return;
             }
             
-            showLoading();
+            if (!supabaseClient) {
+                showNotification('系统错误，请刷新页面重试', 'error');
+                return;
+            }
+            
             try {
-                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
-                if (data.user && !error) {
-                    const { data: profile, error: profileError } = await window.supabaseClient
+                if (error) {
+                    showNotification('登录失败：' + error.message, 'error');
+                    return;
+                }
+                
+                if (data.user) {
+                    // 获取用户资料
+                    const { data: profile, error: profileError } = await supabaseClient
                         .from('profiles')
                         .select('*')
                         .eq('auth_id', data.user.id)
                         .single();
                     
-                    if (profile && !profileError) {
-                        currentUser = { ...data.user, ...profile };
-                        
-                        await createCrossSiteSession(data.user.id);
-                        
-                        updateUIForUser();
-                        closeLoginModal();
-                        showNotification('登录成功', 'success');
-                    } else {
+                    if (profileError) {
                         showNotification('用户资料加载失败', 'error');
+                        return;
                     }
-                } else {
-                    showNotification('登录失败，请检查邮箱和密码', 'error');
+                    
+                    currentUser = { ...data.user, ...profile };
+                    
+                    // 创建跨站点会话
+                    await createCrossSiteSession(data.user.id);
+                    
+                    updateUIForUser();
+                    closeLoginModal();
+                    showNotification('登录成功', 'success');
                 }
             } catch (error) {
                 console.error('登录失败:', error);
                 showNotification('登录失败，请重试', 'error');
             }
-            hideLoading();
+        }
+        
+        // 创建跨站点会话
+        async function createCrossSiteSession(userId) {
+            if (!supabaseClient) return false;
+            
+            const sessionToken = generateSessionToken();
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 7);
+            
+            const sessionData = {
+                user_id: userId,
+                session_token: sessionToken,
+                expires_at: expiresAt.toISOString(),
+                last_activity: new Date().toISOString()
+            };
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('cross_site_sessions')
+                    .insert([sessionData]);
+                
+                if (error) {
+                    console.error('创建会话失败:', error);
+                    return false;
+                }
+                
+                setCookie('cross_site_session', sessionToken, 7);
+                
+                await supabaseClient
+                    .from('profiles')
+                    .update({
+                        last_session_token: sessionToken,
+                        session_expires_at: expiresAt.toISOString()
+                    })
+                    .eq('auth_id', userId);
+                
+                return true;
+            } catch (error) {
+                console.error('创建会话失败:', error);
+                return false;
+            }
         }
         
         // 注册
@@ -1693,21 +1539,24 @@
                 return;
             }
             
-            showLoading();
+            if (!supabaseClient) {
+                showNotification('系统错误，请刷新页面重试', 'error');
+                return;
+            }
+            
             try {
-                const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password
                 });
                 
                 if (authError) {
-                    console.error('注册错误:', authError);
-                    showNotification(authError.message || '注册失败', 'error');
+                    showNotification('注册失败：' + authError.message, 'error');
                     return;
                 }
                 
                 if (authData.user) {
-                    const { error: profileError } = await window.supabaseClient
+                    const { error: profileError } = await supabaseClient
                         .from('profiles')
                         .insert([{
                             auth_id: authData.user.id,
@@ -1722,29 +1571,29 @@
                             theme: 'blue'
                         }]);
                     
-                    if (!profileError) {
-                        closeRegisterModal();
-                        showLoginModal();
-                        showNotification('注册成功，请登录', 'success');
-                    } else {
-                        console.error('创建用户资料错误:', profileError);
+                    if (profileError) {
                         showNotification('创建用户资料失败', 'error');
+                        return;
                     }
+                    
+                    closeRegisterModal();
+                    showLoginModal();
+                    showNotification('注册成功，请登录', 'success');
                 }
             } catch (error) {
                 console.error('注册失败:', error);
                 showNotification('注册失败，请重试', 'error');
             }
-            hideLoading();
         }
         
         // 登出
         async function logout() {
-            showLoading();
+            if (!supabaseClient) return;
+            
             try {
                 const sessionToken = getCookie('cross_site_session');
                 if (sessionToken) {
-                    await window.supabaseClient
+                    await supabaseClient
                         .from('cross_site_sessions')
                         .delete()
                         .eq('session_token', sessionToken);
@@ -1755,27 +1604,25 @@
                 currentUser = null;
                 updateUIForUser();
                 
-                await window.supabaseClient.auth.signOut();
+                await supabaseClient.auth.signOut();
                 
                 showNotification('已退出登录', 'success');
             } catch (error) {
                 console.error('登出失败:', error);
                 showNotification('登出失败', 'error');
             }
-            hideLoading();
         }
         
-        // 更新UI以反映用户状态
+        // 更新UI
         function updateUIForUser() {
+            const usernameDisplay = document.getElementById('usernameDisplay');
             if (currentUser) {
-                elements.usernameDisplay.textContent = currentUser.username || '用户';
-                elements.userDropdown.classList.remove('show');
+                usernameDisplay.textContent = currentUser.username || '用户';
                 
                 document.getElementById('profileUsername').value = currentUser.username || '';
                 document.getElementById('profileEmail').value = currentUser.email || '';
-                document.getElementById('profileScore').value = currentUser.score || 0;
             } else {
-                elements.usernameDisplay.textContent = '未登录';
+                usernameDisplay.textContent = '未登录';
             }
         }
         
@@ -1783,28 +1630,27 @@
         async function updateProfile() {
             const username = document.getElementById('profileUsername').value;
             
-            if (!username || !currentUser) return;
+            if (!username || !currentUser || !supabaseClient) return;
             
-            showLoading();
             try {
-                const { error } = await window.supabaseClient
+                const { error } = await supabaseClient
                     .from('profiles')
                     .update({ username: username })
                     .eq('auth_id', currentUser.id);
                 
-                if (!error) {
-                    currentUser.username = username;
-                    updateUIForUser();
-                    closeProfileModal();
-                    showNotification('资料更新成功', 'success');
-                } else {
-                    showNotification('更新失败，请重试', 'error');
+                if (error) {
+                    showNotification('更新失败：' + error.message, 'error');
+                    return;
                 }
+                
+                currentUser.username = username;
+                updateUIForUser();
+                closeProfileModal();
+                showNotification('资料更新成功', 'success');
             } catch (error) {
                 console.error('更新资料失败:', error);
                 showNotification('更新失败', 'error');
             }
-            hideLoading();
         }
         
         // 跳转到子网站
@@ -1814,13 +1660,13 @@
             
             switch(site) {
                 case 'games':
-                    subsiteUrl = `${baseUrl}/games/`;
+                    subsiteUrl = `${baseUrl}/games.html`;
                     break;
                 case 'submit':
-                    subsiteUrl = `${baseUrl}/submit/`;
+                    subsiteUrl = `${baseUrl}/submit.html`;
                     break;
                 case 'notes':
-                    subsiteUrl = `${baseUrl}/notes/`;
+                    subsiteUrl = `${baseUrl}/notes.html`;
                     break;
                 default:
                     subsiteUrl = baseUrl;
@@ -1857,77 +1703,77 @@
         }
         
         function showNotification(message, type = 'info') {
-            elements.notification.textContent = message;
-            elements.notification.className = `notification ${type}`;
-            elements.notification.style.display = 'block';
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
             
             setTimeout(() => {
-                elements.notification.style.display = 'none';
+                notification.style.display = 'none';
             }, 3000);
         }
         
-        function showLoading() {
-            elements.loading.classList.add('show');
-        }
-        
-        function hideLoading() {
-            elements.loading.classList.remove('show');
-        }
-        
-        // 模态框控制函数
+        // 模态框控制
         function showLoginModal() {
-            elements.loginModal.classList.add('show');
+            document.getElementById('loginModal').classList.add('show');
         }
         
         function closeLoginModal() {
-            elements.loginModal.classList.remove('show');
+            document.getElementById('loginModal').classList.remove('show');
             document.getElementById('loginEmail').value = '';
             document.getElementById('loginPassword').value = '';
         }
         
         function showRegisterModal() {
             closeLoginModal();
-            elements.registerModal.classList.add('show');
+            document.getElementById('registerModal').classList.add('show');
         }
         
         function closeRegisterModal() {
-            elements.registerModal.classList.remove('show');
+            document.getElementById('registerModal').classList.remove('show');
             document.getElementById('registerUsername').value = '';
             document.getElementById('registerEmail').value = '';
             document.getElementById('registerPassword').value = '';
         }
         
         function showThemeModal() {
-            elements.themeModal.classList.add('show');
+            document.getElementById('themeModal').classList.add('show');
         }
         
         function closeThemeModal() {
-            elements.themeModal.classList.remove('show');
+            document.getElementById('themeModal').classList.remove('show');
         }
         
         function showProfileModal() {
-            elements.profileModal.classList.add('show');
+            document.getElementById('profileModal').classList.add('show');
         }
         
         function closeProfileModal() {
-            elements.profileModal.classList.remove('show');
+            document.getElementById('profileModal').classList.remove('show');
         }
         
         // 初始化事件监听器
         function initEventListeners() {
-            // 用户菜单点击
-            elements.userBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                elements.userDropdown.classList.toggle('show');
+            // 页面切换
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchPage(tab.dataset.page);
+                });
             });
             
-            // 点击其他地方关闭下拉菜单
+            // 用户菜单
+            document.getElementById('userBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.getElementById('userDropdown').classList.toggle('show');
+            });
+            
+            // 点击关闭下拉菜单
             document.addEventListener('click', () => {
-                elements.userDropdown.classList.remove('show');
+                document.getElementById('userDropdown').classList.remove('show');
             });
             
             // 消息输入框回车发送
-            elements.messageInput.addEventListener('keypress', (e) => {
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
@@ -1943,29 +1789,6 @@
                 });
             });
             
-            // 平滑滚动到锚点
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                        
-                        // 更新活动导航链接
-                        document.querySelectorAll('.nav-link').forEach(link => {
-                            link.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                    }
-                });
-            });
-            
             // 监听系统主题变化
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
                 if (colorMode === 'auto') {
@@ -1973,6 +1796,9 @@
                 }
             });
         }
+        
+        // 初始化页面切换
+        switchPage('home');
     </script>
 </body>
 </html>
