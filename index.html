@@ -748,6 +748,7 @@
         .form-control:disabled {
             background: var(--bg-hover);
             cursor: not-allowed;
+            opacity: 0.6;
         }
 
         /* 主题设置 - 极简版 */
@@ -1040,8 +1041,8 @@
                 <!-- 留言将通过JS动态加载 -->
             </div>
             <div class="message-input">
-                <input type="text" id="messageInput" placeholder="输入留言内容..." disabled>
-                <button class="btn btn-primary" id="sendMessageBtn" disabled onclick="sendMessage()">
+                <input type="text" id="messageInput" placeholder="输入留言内容...">
+                <button class="btn btn-primary" id="sendMessageBtn" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i> 发送
                 </button>
             </div>
@@ -1225,13 +1226,11 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Supabase 配置
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-        
-        // 初始化 Supabase 客户端
-        let supabaseClient;
         
         // 全局状态
         let currentUser = null;
@@ -1278,26 +1277,47 @@
             themeIcon: document.getElementById('themeIcon')
         };
         
+        // 等待Supabase加载完成后初始化
+        function waitForSupabase() {
+            return new Promise((resolve) => {
+                if (window.supabase && window.supabase.createClient) {
+                    resolve();
+                } else {
+                    setTimeout(() => waitForSupabase().then(resolve), 100);
+                }
+            });
+        }
+        
         // 初始化
         document.addEventListener('DOMContentLoaded', async () => {
-            // 初始化 Supabase
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            
-            // 检查本地存储的跨站点会话
-            await checkCrossSiteSession();
-            
-            // 加载初始数据
-            loadKnowledgePoints();
-            loadChatMessages();
-            
-            // 加载保存的主题设置
-            loadThemeSettings();
-            
-            // 初始化事件监听器
-            initEventListeners();
-            
-            // 设置自动刷新
-            setInterval(loadChatMessages, 30000);
+            try {
+                // 等待Supabase加载完成
+                await waitForSupabase();
+                
+                // 初始化 Supabase 客户端
+                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                
+                // 检查本地存储的跨站点会话
+                await checkCrossSiteSession();
+                
+                // 加载初始数据
+                loadKnowledgePoints();
+                loadChatMessages();
+                
+                // 加载保存的主题设置
+                loadThemeSettings();
+                
+                // 初始化事件监听器
+                initEventListeners();
+                
+                // 设置自动刷新
+                setInterval(loadChatMessages, 30000);
+                
+                console.log('初始化完成');
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showNotification('初始化失败，请刷新页面重试', 'error');
+            }
         });
         
         // 检查跨站点会话
@@ -1307,7 +1327,7 @@
             if (sessionToken) {
                 showLoading();
                 try {
-                    const { data, error } = await supabaseClient
+                    const { data, error } = await window.supabaseClient
                         .from('cross_site_sessions')
                         .select('*, profiles(*)')
                         .eq('session_token', sessionToken)
@@ -1322,7 +1342,7 @@
                         updateUIForUser();
                         
                         // 更新会话活动时间
-                        await supabaseClient
+                        await window.supabaseClient
                             .from('cross_site_sessions')
                             .update({ last_activity: new Date().toISOString() })
                             .eq('id', data.id);
@@ -1350,14 +1370,14 @@
             };
             
             try {
-                const { error } = await supabaseClient
+                const { error } = await window.supabaseClient
                     .from('cross_site_sessions')
                     .insert([sessionData]);
                 
                 if (!error) {
                     setCookie('cross_site_session', sessionToken, 7);
                     
-                    await supabaseClient
+                    await window.supabaseClient
                         .from('profiles')
                         .update({
                             last_session_token: sessionToken,
@@ -1394,7 +1414,10 @@
             document.querySelector(`.theme-preset[onclick*="${currentTheme}"]`)?.classList.add('active');
             
             // 更新颜色模式单选按钮
-            document.querySelector(`input[name="colorMode"][value="${colorMode}"]`).checked = true;
+            const colorModeInput = document.querySelector(`input[name="colorMode"][value="${colorMode}"]`);
+            if (colorModeInput) {
+                colorModeInput.checked = true;
+            }
         }
         
         // 选择主题
@@ -1466,7 +1489,7 @@
         async function loadKnowledgePoints() {
             showLoading();
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await window.supabaseClient
                     .from('knowledge_points')
                     .select('*')
                     .order('created_at', { ascending: false })
@@ -1515,7 +1538,7 @@
         // 加载聊天消息
         async function loadChatMessages() {
             try {
-                const { data, error } = await supabaseClient
+                const { data, error } = await window.supabaseClient
                     .from('chat_messages')
                     .select('*')
                     .order('created_at', { ascending: false })
@@ -1576,11 +1599,22 @@
         // 发送消息
         async function sendMessage() {
             const content = elements.messageInput.value.trim();
-            if (!content || !currentUser) return;
+            
+            // 检查用户是否登录
+            if (!currentUser) {
+                showNotification('请先登录后再发送消息', 'warning');
+                showLoginModal();
+                return;
+            }
+            
+            if (!content) {
+                showNotification('请输入消息内容', 'warning');
+                return;
+            }
             
             showLoading();
             try {
-                const { error } = await supabaseClient
+                const { error } = await window.supabaseClient
                     .from('chat_messages')
                     .insert([{
                         user_id: currentUser.id,
@@ -1615,13 +1649,13 @@
             
             showLoading();
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
                 if (data.user && !error) {
-                    const { data: profile, error: profileError } = await supabaseClient
+                    const { data: profile, error: profileError } = await window.supabaseClient
                         .from('profiles')
                         .select('*')
                         .eq('auth_id', data.user.id)
@@ -1661,15 +1695,19 @@
             
             showLoading();
             try {
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
                     email: email,
                     password: password
                 });
                 
-                if (authError) throw authError;
+                if (authError) {
+                    console.error('注册错误:', authError);
+                    showNotification(authError.message || '注册失败', 'error');
+                    return;
+                }
                 
                 if (authData.user) {
-                    const { error: profileError } = await supabaseClient
+                    const { error: profileError } = await window.supabaseClient
                         .from('profiles')
                         .insert([{
                             auth_id: authData.user.id,
@@ -1689,7 +1727,8 @@
                         showLoginModal();
                         showNotification('注册成功，请登录', 'success');
                     } else {
-                        throw profileError;
+                        console.error('创建用户资料错误:', profileError);
+                        showNotification('创建用户资料失败', 'error');
                     }
                 }
             } catch (error) {
@@ -1705,7 +1744,7 @@
             try {
                 const sessionToken = getCookie('cross_site_session');
                 if (sessionToken) {
-                    await supabaseClient
+                    await window.supabaseClient
                         .from('cross_site_sessions')
                         .delete()
                         .eq('session_token', sessionToken);
@@ -1716,7 +1755,7 @@
                 currentUser = null;
                 updateUIForUser();
                 
-                await supabaseClient.auth.signOut();
+                await window.supabaseClient.auth.signOut();
                 
                 showNotification('已退出登录', 'success');
             } catch (error) {
@@ -1730,8 +1769,6 @@
         function updateUIForUser() {
             if (currentUser) {
                 elements.usernameDisplay.textContent = currentUser.username || '用户';
-                elements.messageInput.disabled = false;
-                elements.sendMessageBtn.disabled = false;
                 elements.userDropdown.classList.remove('show');
                 
                 document.getElementById('profileUsername').value = currentUser.username || '';
@@ -1739,8 +1776,6 @@
                 document.getElementById('profileScore').value = currentUser.score || 0;
             } else {
                 elements.usernameDisplay.textContent = '未登录';
-                elements.messageInput.disabled = true;
-                elements.sendMessageBtn.disabled = true;
             }
         }
         
@@ -1752,7 +1787,7 @@
             
             showLoading();
             try {
-                const { error } = await supabaseClient
+                const { error } = await window.supabaseClient
                     .from('profiles')
                     .update({ username: username })
                     .eq('auth_id', currentUser.id);
@@ -1941,4 +1976,3 @@
     </script>
 </body>
 </html>
-
