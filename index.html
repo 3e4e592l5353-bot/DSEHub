@@ -79,13 +79,12 @@
             padding: 0 20px;
         }
 
-        /* 导航栏样式 */
+        /* 修复导航栏 - 移除sticky定位 */
         .navbar {
             background: var(--header-bg);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
-            position: sticky;
-            top: 0;
+            position: relative; /* 改为relative */
             z-index: 1000;
             box-shadow: var(--shadow);
         }
@@ -219,6 +218,13 @@
             max-width: 600px;
             margin: 0 auto 2rem;
             opacity: 0.9;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .features {
@@ -459,6 +465,7 @@
             text-align: center;
             transition: var(--transition);
             border: 2px solid transparent;
+            background: var(--card-bg);
         }
 
         .theme-option:hover {
@@ -467,6 +474,8 @@
 
         .theme-option.active {
             border-color: var(--primary);
+            background: var(--primary);
+            color: white;
         }
 
         .color-picker {
@@ -488,6 +497,7 @@
         .color-item.selected {
             border-color: white;
             transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .color-preview {
@@ -495,6 +505,58 @@
             border-radius: 10px;
             margin: 1rem 0;
             background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2), var(--aurora-3), var(--aurora-4), var(--aurora-5), var(--aurora-6), var(--aurora-7));
+        }
+
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
         }
 
         /* 暗黑模式切换 */
@@ -537,6 +599,8 @@
             color: var(--text-color);
             transition: var(--transition);
             border: 1px solid var(--border-color);
+            display: block;
+            cursor: pointer;
         }
 
         .subsite-card:hover {
@@ -569,6 +633,11 @@
             
             .features {
                 grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
             }
         }
 
@@ -704,7 +773,7 @@
                 </div>
                 <h3>游戏中心</h3>
                 <p>通过游戏化学习巩固知识，包含排行榜和成就系统</p>
-                <a href="#games" class="btn btn-primary">开始游戏</a>
+                <button class="btn btn-primary" onclick="goToSubsite('games')">开始游戏</button>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -712,7 +781,7 @@
                 </div>
                 <h3>投稿中心</h3>
                 <p>分享你的学习笔记和经验，帮助其他考生</p>
-                <a href="#submit" class="btn btn-primary">我要投稿</a>
+                <button class="btn btn-primary" onclick="goToSubsite('submit')">我要投稿</button>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -720,7 +789,7 @@
                 </div>
                 <h3>笔记专区</h3>
                 <p>整理个人学习笔记，支持标签和分类管理</p>
-                <a href="#notes" class="btn btn-primary">查看笔记</a>
+                <button class="btn btn-primary" onclick="goToSubsite('notes')">查看笔记</button>
             </div>
         </section>
 
@@ -750,27 +819,27 @@
         <section id="subsites">
             <h2 style="margin-bottom: 2rem; color: var(--primary);">探索子网站</h2>
             <div class="subsite-grid">
-                <a href="#" class="subsite-card" onclick="goToSubsite('games')">
+                <div class="subsite-card" onclick="goToSubsite('games')">
                     <div class="subsite-icon">
                         <i class="fas fa-gamepad"></i>
                     </div>
                     <h3>游戏中心</h3>
                     <p>挑战游戏，赢取积分，查看排行榜</p>
-                </a>
-                <a href="#" class="subsite-card" onclick="goToSubsite('submit')">
+                </div>
+                <div class="subsite-card" onclick="goToSubsite('submit')">
                     <div class="subsite-icon">
                         <i class="fas fa-upload"></i>
                     </div>
                     <h3>投稿中心</h3>
                     <p>分享优质内容，帮助更多考生</p>
-                </a>
-                <a href="#" class="subsite-card" onclick="goToSubsite('notes')">
+                </div>
+                <div class="subsite-card" onclick="goToSubsite('notes')">
                     <div class="subsite-icon">
                         <i class="fas fa-book"></i>
                     </div>
                     <h3>笔记专区</h3>
                     <p>整理学习笔记，支持多科目管理</p>
-                </a>
+                </div>
             </div>
         </section>
     </main>
@@ -924,7 +993,7 @@
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
         // 初始化 Supabase 客户端
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // 全局状态
         let currentUser = null;
@@ -990,9 +1059,9 @@
                 showLoading();
                 try {
                     // 验证会话令牌
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('cross_site_sessions')
-                        .select('*, profiles(*)')
+                        .select('*, profiles!inner(*)')
                         .eq('session_token', sessionToken)
                         .gt('expires_at', new Date().toISOString())
                         .single();
@@ -1005,7 +1074,7 @@
                         updateUIForUser();
                         
                         // 更新会话活动时间
-                        await supabase
+                        await supabaseClient
                             .from('cross_site_sessions')
                             .update({ last_activity: new Date().toISOString() })
                             .eq('id', data.id);
@@ -1036,7 +1105,7 @@
             };
             
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('cross_site_sessions')
                     .insert([sessionData]);
                 
@@ -1045,7 +1114,7 @@
                     setCookie('cross_site_session', sessionToken, 7);
                     
                     // 更新用户资料中的会话信息
-                    await supabase
+                    await supabaseClient
                         .from('profiles')
                         .update({
                             last_session_token: sessionToken,
@@ -1197,7 +1266,7 @@
             
             showLoading();
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('profiles')
                     .update({
                         theme_type: currentTheme,
@@ -1226,7 +1295,7 @@
         async function loadKnowledgePoints() {
             showLoading();
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('knowledge_points')
                     .select('*')
                     .order('created_at', { ascending: false })
@@ -1269,7 +1338,7 @@
         // 加载聊天消息
         async function loadChatMessages() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('chat_messages')
                     .select('*')
                     .order('created_at', { ascending: false })
@@ -1312,7 +1381,7 @@
             
             showLoading();
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('chat_messages')
                     .insert([{
                         user_id: currentUser.id,
@@ -1347,14 +1416,14 @@
             
             showLoading();
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
                 if (data.user && !error) {
                     // 获取用户资料
-                    const { data: profile, error: profileError } = await supabase
+                    const { data: profile, error: profileError } = await supabaseClient
                         .from('profiles')
                         .select('*')
                         .eq('auth_id', data.user.id)
@@ -1405,7 +1474,7 @@
             showLoading();
             try {
                 // 注册新用户
-                const { data: authData, error: authError } = await supabase.auth.signUp({
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password
                 });
@@ -1414,7 +1483,7 @@
                 
                 if (authData.user) {
                     // 创建用户资料
-                    const { error: profileError } = await supabase
+                    const { error: profileError } = await supabaseClient
                         .from('profiles')
                         .insert([{
                             auth_id: authData.user.id,
@@ -1451,7 +1520,7 @@
                 // 清除跨站点会话
                 const sessionToken = getCookie('cross_site_session');
                 if (sessionToken) {
-                    await supabase
+                    await supabaseClient
                         .from('cross_site_sessions')
                         .delete()
                         .eq('session_token', sessionToken);
@@ -1464,7 +1533,7 @@
                 updateUIForUser();
                 
                 // 登出Supabase
-                await supabase.auth.signOut();
+                await supabaseClient.auth.signOut();
                 
                 showNotification('已退出登录', 'success');
             } catch (error) {
@@ -1502,7 +1571,7 @@
             
             showLoading();
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('profiles')
                     .update({ username: username })
                     .eq('auth_id', currentUser.id);
@@ -1668,7 +1737,25 @@
                     }
                 });
             });
+            
+            // 平滑滚动到锚点
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
         }
     </script>
 </body>
 </html>
+
