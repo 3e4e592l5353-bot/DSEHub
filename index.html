@@ -7,106 +7,77 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --primary-light: #6366f1;
-            --primary-dark: #4338ca;
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --secondary-start: #667eea;
+            --secondary-end: #764ba2;
+            --accent-color: #5a67d8;
             
-            --secondary-color: #10b981;
-            --secondary-light: #34d399;
-            --secondary-dark: #059669;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --hover-color: rgba(102, 126, 234, 0.1);
+            --active-color: rgba(102, 126, 234, 0.2);
             
-            --accent-color: #f59e0b;
-            --accent-light: #fbbf24;
-            --accent-dark: #d97706;
+            --btn-bg: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+            --btn-text: #ffffff;
+            --btn-border: transparent;
+            --btn-hover: linear-gradient(135deg, #5a67d8, #6b46c1);
+            --btn-active: linear-gradient(135deg, #4c51bf, #553c9a);
             
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-tertiary: #f1f5f9;
+            --btn-secondary-bg: #ffffff;
+            --btn-secondary-text: #667eea;
+            --btn-secondary-border: #667eea;
             
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --card-shadow: rgba(0, 0, 0, 0.08);
-            --card-border: rgba(241, 245, 249, 0.8);
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
             
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --text-tertiary: #94a3b8;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
             
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --info-color: #3b82f6;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
             
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
-            --spacing-2xl: 3rem;
-            
-            --radius-sm: 0.5rem;
-            --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.25rem;
-            --radius-2xl: 1.5rem;
-            
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-            
-            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            --gradient-accent: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-            --gradient-success: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
         }
 
         /* ==================== 主题系统 ==================== */
-        .theme-blue {
-            --primary-color: #4f46e5;
-            --primary-light: #6366f1;
-            --primary-dark: #4338ca;
-            --accent-color: #f59e0b;
-            --bg-primary: #ffffff;
-            --text-primary: #1e293b;
+        .theme-blue-purple { 
+            --primary-start: #667eea; --primary-end: #764ba2; 
+            --secondary-start: #667eea; --secondary-end: #764ba2; 
+            --accent-color: #5a67d8; 
         }
-        
-        .theme-indigo {
-            --primary-color: #3730a3;
-            --primary-light: #4f46e5;
-            --primary-dark: #312e81;
-            --accent-color: #10b981;
-            --bg-primary: #fefefe;
-            --text-primary: #1e293b;
+        .theme-green-teal { 
+            --primary-start: #38b2ac; --primary-end: #319795; 
+            --secondary-start: #38b2ac; --secondary-end: #319795; 
+            --accent-color: #319795; 
         }
-        
-        .theme-emerald {
-            --primary-color: #059669;
-            --primary-light: #10b981;
-            --primary-dark: #047857;
-            --accent-color: #8b5cf6;
-            --bg-primary: #ffffff;
-            --text-primary: #1e293b;
+        .theme-orange-red { 
+            --primary-start: #ed8936; --primary-end: #dd6b20; 
+            --secondary-start: #ed8936; --secondary-end: #dd6b20; 
+            --accent-color: #dd6b20; 
         }
-        
-        .theme-dark {
-            --primary-color: #8b5cf6;
-            --primary-light: #a78bfa;
-            --primary-dark: #7c3aed;
-            --accent-color: #f59e0b;
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --card-bg: rgba(30, 41, 59, 0.95);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-tertiary: #94a3b8;
-            --card-border: rgba(51, 65, 85, 0.6);
+        .theme-dark { 
+            --primary-start: #2d3748; --primary-end: #1a202c; 
+            --secondary-start: #4a5568; --secondary-end: #2d3748; 
+            --accent-color: #4299e1;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --border-color: #4a5568;
+            --hover-color: rgba(66, 153, 225, 0.1);
+            --active-color: rgba(66, 153, 225, 0.2);
         }
 
-        /* ==================== 全局样式 ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -114,18 +85,12 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft JhengHei', 'Segoe UI', 'Inter', system-ui, sans-serif;
-            background: linear-gradient(135deg, 
-                var(--bg-secondary) 0%, 
-                var(--bg-primary) 50%, 
-                var(--bg-secondary) 100%);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Microsoft JhengHei', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: var(--text-color);
             min-height: 100vh;
             line-height: 1.6;
             transition: var(--transition-normal);
-            background-attachment: fixed;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
@@ -136,49 +101,34 @@
 
         /* ==================== 导航栏 ==================== */
         header {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.95);
             padding: var(--spacing-lg) var(--spacing-xl);
-            border-radius: var(--radius-xl);
+            border-radius: var(--border-radius-xl);
             margin-bottom: var(--spacing-xl);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(10px);
+            border: none;
+            box-shadow: var(--shadow-md);
             position: relative;
             z-index: 100;
-            transition: var(--transition-normal);
         }
 
         .logo {
-            font-size: 1.75rem;
+            font-size: 28px;
             font-weight: 800;
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.025em;
         }
 
         .logo i {
-            font-size: 2rem;
-            color: var(--primary-color);
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo-subtitle {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-left: var(--spacing-sm);
-            opacity: 0.8;
+            font-size: 32px;
+            color: var(--primary-start);
         }
 
         nav {
@@ -187,82 +137,45 @@
             align-items: center;
         }
 
-        /* ==================== 按钮样式 ==================== */
         .btn {
-            background: var(--gradient-primary);
-            border: none;
-            color: white;
-            padding: var(--spacing-sm) var(--spacing-lg);
-            border-radius: var(--radius-lg);
+            background: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 14px;
             cursor: pointer;
-            transition: all var(--transition-normal);
-            display: inline-flex;
+            transition: var(--transition-normal);
+            display: flex;
             align-items: center;
             gap: var(--spacing-sm);
             text-decoration: none;
             box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-            min-height: 44px;
             min-width: 44px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            min-height: 44px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            filter: brightness(1.1);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn i {
-            font-size: 1rem;
+            box-shadow: var(--shadow-md);
         }
 
         .btn.active {
-            background: var(--primary-dark);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: var(--btn-active);
         }
 
         .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            border: 2px solid var(--btn-secondary-border);
         }
 
         .btn-secondary:hover {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             color: white;
         }
 
-        .btn-accent {
-            background: var(--gradient-accent);
-        }
-
-        .btn-success {
-            background: var(--gradient-success);
-        }
-
-        /* ==================== 用户信息 ==================== */
         .user-info {
             display: flex;
             align-items: center;
@@ -274,42 +187,39 @@
             align-items: center;
             gap: var(--spacing-sm);
             padding: var(--spacing-sm) var(--spacing-lg);
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             color: white;
-            border-radius: var(--radius-lg);
+            border-radius: var(--border-radius-lg);
             cursor: pointer;
             font-weight: 600;
             box-shadow: var(--shadow-sm);
             transition: var(--transition-normal);
-            border: 2px solid transparent;
         }
 
         .login-status:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
-            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .user-avatar {
             width: 44px;
             height: 44px;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid var(--bg-primary);
+            border: 2px solid white;
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition-normal);
             color: white;
-            box-shadow: var(--shadow-md);
-            font-size: 1.125rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .user-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-lg);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
         }
 
         /* ==================== 内容区域 ==================== */
@@ -320,30 +230,20 @@
         }
 
         .side-nav {
-            width: 280px;
+            width: 260px;
             background: var(--card-bg);
-            border-radius: var(--radius-xl);
+            border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-lg);
+            border: none;
+            box-shadow: var(--shadow-md);
             height: fit-content;
             flex-shrink: 0;
             position: sticky;
             top: var(--spacing-xl);
-            backdrop-filter: blur(10px);
-            transition: var(--transition-normal);
         }
 
         .nav-section {
             margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .nav-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
         }
 
         .nav-section h3 {
@@ -351,17 +251,16 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            font-size: 0.875rem;
+            font-size: 15px;
             color: var(--text-secondary);
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
         }
 
         .nav-section h3 i {
-            color: var(--primary-color);
+            color: var(--accent-color);
             width: 20px;
-            font-size: 1rem;
         }
 
         .nav-btn-list {
@@ -370,205 +269,141 @@
             gap: var(--spacing-sm);
         }
 
-        .nav-btn-list .btn {
-            justify-content: flex-start;
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-md);
-            background: transparent;
-            color: var(--text-primary);
-            box-shadow: none;
-            border: 1px solid transparent;
-        }
-
-        .nav-btn-list .btn:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateX(4px);
-        }
-
-        .nav-btn-list .btn.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: transparent;
-        }
-
         .main-panel {
             flex: 1;
             background: var(--card-bg);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-lg);
+            border-radius: var(--border-radius-xl);
+            border: none;
+            box-shadow: var(--shadow-md);
             min-height: 600px;
             overflow: hidden;
             position: relative;
-            backdrop-filter: blur(10px);
-            transition: var(--transition-normal);
         }
 
         .panel-header {
             padding: var(--spacing-xl);
-            border-bottom: 1px solid var(--card-border);
-            background: linear-gradient(
-                to right,
-                rgba(var(--primary-color-rgb), 0.05),
-                rgba(var(--primary-color-rgb), 0.02)
-            );
-            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .panel-header h2 {
-            font-size: 1.75rem;
+            font-size: 24px;
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            color: var(--text-primary);
-            font-weight: 700;
+            color: var(--text-color);
         }
 
         .panel-header h2 i {
-            color: var(--primary-color);
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 1.5rem;
+            color: var(--accent-color);
         }
 
         .panel-content {
             padding: var(--spacing-xl);
         }
 
-        /* ==================== 学科选择器 ==================== */
+        /* ==================== 知识点系统 ==================== */
         .subject-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-xl);
         }
 
         .subject-card {
-            background: var(--bg-primary);
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-lg);
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
             padding: var(--spacing-lg);
             cursor: pointer;
-            transition: all var(--transition-normal);
+            transition: var(--transition-normal);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            min-height: 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow-sm);
-            height: 120px;
-        }
-
-        .subject-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
-            transform: scaleX(0);
-            transition: transform var(--transition-normal);
         }
 
         .subject-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-color);
-        }
-
-        .subject-card:hover::before {
-            transform: scaleX(1);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-color);
         }
 
         .subject-card.selected {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1),
-                        var(--shadow-md);
-            background: linear-gradient(
-                135deg,
-                rgba(var(--primary-color-rgb), 0.05),
-                rgba(var(--primary-color-rgb), 0.02)
-            );
-        }
-
-        .subject-card.selected::before {
-            transform: scaleX(1);
+            background: var(--hover-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
         .subject-icon {
-            font-size: 2rem;
+            font-size: 32px;
             margin-bottom: var(--spacing-sm);
-            color: var(--primary-color);
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent-color);
         }
 
         .subject-name {
             font-weight: 700;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.3;
         }
 
-        /* ==================== 标签筛选器 ==================== */
+        .subject-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--hover-color);
+            border-radius: var(--border-radius-lg);
+        }
+
+        /* 标签系统样式 */
         .tag-filters {
             display: flex;
             flex-wrap: wrap;
             gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-xl);
-            padding: var(--spacing-lg);
-            background: linear-gradient(
-                135deg,
-                rgba(var(--primary-color-rgb), 0.03),
-                rgba(var(--primary-color-rgb), 0.01)
-            );
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--card-border);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--hover-color);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
         }
 
         .tag-filter-btn {
-            background: var(--bg-primary);
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: var(--spacing-sm) var(--spacing-lg);
-            font-size: 0.875rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: var(--transition-fast);
         }
 
         .tag-filter-btn:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-1px);
+            background: var(--hover-color);
+            border-color: var(--accent-color);
         }
 
         .tag-filter-btn.active {
-            background: var(--gradient-primary);
+            background: var(--accent-color);
             color: white;
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-sm);
+            border-color: var(--accent-color);
         }
 
-        /* ==================== 知识点卡片 ==================== */
         .knowledge-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: var(--spacing-lg);
-            max-height: 600px;
+            gap: var(--spacing-xl);
+            max-height: 500px;
             overflow-y: auto;
-            padding: var(--spacing-sm);
+            padding: var(--spacing-md);
         }
 
         .knowledge-grid::-webkit-scrollbar {
@@ -576,57 +411,30 @@
         }
 
         .knowledge-grid::-webkit-scrollbar-track {
-            background: rgba(var(--text-secondary-rgb), 0.05);
-            border-radius: var(--radius-sm);
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius-sm);
         }
 
         .knowledge-grid::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: var(--radius-sm);
-        }
-
-        .knowledge-grid::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
+            background: var(--accent-color);
+            border-radius: var(--border-radius-sm);
         }
 
         .knowledge-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
             padding: var(--spacing-xl);
-            transition: all var(--transition-normal);
+            transition: var(--transition-normal);
             position: relative;
             cursor: pointer;
             box-shadow: var(--shadow-sm);
-            overflow: hidden;
-        }
-
-        .knowledge-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity var(--transition-normal);
-            z-index: 0;
         }
 
         .knowledge-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
-            border-color: var(--primary-color);
-        }
-
-        .knowledge-card:hover::before {
-            opacity: 0.02;
-        }
-
-        .knowledge-card > * {
-            position: relative;
-            z-index: 1;
+            border-color: var(--accent-color);
         }
 
         .knowledge-tags {
@@ -637,24 +445,22 @@
         }
 
         .knowledge-tag {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             border: none;
             border-radius: 50px;
             padding: var(--spacing-xs) var(--spacing-md);
-            font-size: 0.75rem;
+            font-size: 12px;
             font-weight: 600;
             color: white;
-            box-shadow: var(--shadow-sm);
         }
 
-        /* ==================== 留言板 ==================== */
+        /* ==================== 留言板样式 ==================== */
         .message-board {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
             padding: var(--spacing-xl);
             margin-top: var(--spacing-xl);
             box-shadow: var(--shadow-sm);
-            border: 1px solid var(--card-border);
         }
 
         .message-input-group {
@@ -666,46 +472,33 @@
         .message-input {
             flex: 1;
             padding: var(--spacing-md) var(--spacing-lg);
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            transition: all var(--transition-normal);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 15px;
+            transition: var(--transition-normal);
         }
 
         .message-input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-        }
-
-        .message-input::placeholder {
-            color: var(--text-tertiary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
         .messages-container {
             max-height: 400px;
             overflow-y: auto;
             padding: var(--spacing-md);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--card-border);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--border-radius-md);
         }
 
         .message-item {
-            background: var(--bg-primary);
+            background: white;
             padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
+            border-radius: var(--border-radius-md);
             margin-bottom: var(--spacing-md);
             box-shadow: var(--shadow-sm);
-            border-left: 4px solid var(--primary-color);
-            transition: var(--transition-normal);
-        }
-
-        .message-item:hover {
-            transform: translateX(2px);
-            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--accent-color);
         }
 
         .message-header {
@@ -717,56 +510,26 @@
 
         .message-user {
             font-weight: 700;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
+            color: var(--accent-color);
         }
 
         .message-time {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         .message-content {
-            color: var(--text-primary);
+            color: var(--text-color);
             line-height: 1.6;
-            font-size: 0.875rem;
         }
 
-        /* ==================== 账户卡片 ==================== */
+        /* ==================== 我的账户 ==================== */
         .account-card {
-            background: linear-gradient(
-                135deg,
-                rgba(var(--primary-color-rgb), 0.08),
-                rgba(var(--primary-color-rgb), 0.03)
-            );
-            border-radius: var(--radius-xl);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
             margin-bottom: var(--spacing-xl);
-            border: 2px solid var(--primary-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .account-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle,
-                rgba(var(--primary-color-rgb), 0.1) 0%,
-                transparent 70%
-            );
-            z-index: 0;
-        }
-
-        .account-card > * {
-            position: relative;
-            z-index: 1;
+            border: 2px solid var(--accent-color);
         }
 
         .account-header {
@@ -775,23 +538,22 @@
             gap: var(--spacing-xl);
             margin-bottom: var(--spacing-xl);
             padding-bottom: var(--spacing-xl);
-            border-bottom: 2px solid var(--card-border);
+            border-bottom: 2px solid var(--border-color);
         }
 
         .account-avatar {
             width: 100px;
             height: 100px;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 4px solid var(--bg-primary);
-            font-size: 2.5rem;
+            border: 4px solid white;
+            font-size: 40px;
             font-weight: 700;
             color: white;
             box-shadow: var(--shadow-lg);
-            flex-shrink: 0;
         }
 
         .account-details {
@@ -799,27 +561,27 @@
         }
 
         .account-username {
-            font-size: 1.75rem;
+            font-size: 28px;
             font-weight: 800;
             margin-bottom: var(--spacing-xs);
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .account-email {
-            font-size: 1rem;
+            font-size: 16px;
             color: var(--text-secondary);
             margin-bottom: var(--spacing-md);
         }
 
         .account-role {
             display: inline-block;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             padding: var(--spacing-sm) var(--spacing-lg);
-            border-radius: var(--radius-lg);
-            font-size: 0.875rem;
+            border-radius: var(--border-radius-lg);
+            font-size: 14px;
             font-weight: 700;
             color: white;
             box-shadow: var(--shadow-sm);
@@ -833,39 +595,35 @@
         }
 
         .stat-card {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
+            background: white;
+            border-radius: var(--border-radius-lg);
             padding: var(--spacing-xl);
             text-align: center;
             box-shadow: var(--shadow-md);
             transition: var(--transition-normal);
-            border: 1px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
-            border-color: var(--primary-color);
         }
 
         .stat-number {
-            font-size: 2.25rem;
+            font-size: 36px;
             font-weight: 800;
             margin-bottom: var(--spacing-xs);
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.5px;
         }
 
         .account-actions {
@@ -875,7 +633,7 @@
             justify-content: center;
         }
 
-        /* ==================== 模态框 ==================== */
+        /* ==================== 模态框系统 ==================== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -884,12 +642,11 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(10px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             animation: fadeIn 0.3s ease;
-            padding: var(--spacing-lg);
         }
 
         .modal-overlay.active {
@@ -902,27 +659,19 @@
         }
 
         .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--radius-xl);
+            background: white;
+            border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
-            width: 100%;
+            width: 90%;
             max-width: 400px;
-            box-shadow: var(--shadow-xl);
-            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
             position: relative;
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(10px);
         }
 
         @keyframes slideUp {
-            from { 
-                transform: translateY(20px) scale(0.95); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateY(0) scale(1); 
-                opacity: 1; 
-            }
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-header {
@@ -931,9 +680,9 @@
         }
 
         .modal-header h2 {
-            font-size: 1.75rem;
+            font-size: 28px;
             font-weight: 800;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -942,7 +691,7 @@
 
         .modal-header p {
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 14px;
         }
 
         .modal-input-group {
@@ -955,65 +704,54 @@
             left: var(--spacing-lg);
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-tertiary);
-            font-size: 1rem;
+            color: var(--text-secondary);
         }
 
         .modal-input {
             width: 100%;
-            padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) 3rem;
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            transition: all var(--transition-normal);
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) 45px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 15px;
+            transition: var(--transition-normal);
         }
 
         .modal-input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-        }
-
-        .modal-input::placeholder {
-            color: var(--text-tertiary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
         .modal-btn {
             width: 100%;
             padding: var(--spacing-md);
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             color: white;
             border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
+            border-radius: var(--border-radius-md);
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all var(--transition-normal);
+            transition: var(--transition-normal);
             margin-top: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
         }
 
         .modal-btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            filter: brightness(1.1);
+            box-shadow: var(--shadow-md);
         }
 
         .modal-switch {
             text-align: center;
             margin-top: var(--spacing-lg);
             color: var(--text-secondary);
-            font-size: 0.875rem;
         }
 
         .modal-switch a {
-            color: var(--primary-color);
+            color: var(--accent-color);
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition-fast);
         }
 
         .modal-switch a:hover {
@@ -1024,9 +762,9 @@
             position: absolute;
             top: var(--spacing-md);
             right: var(--spacing-md);
-            background: var(--bg-secondary);
+            background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 24px;
             color: var(--text-secondary);
             cursor: pointer;
             width: 32px;
@@ -1035,14 +773,12 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all var(--transition-fast);
-            z-index: 100;
+            transition: var(--transition-normal);
         }
 
         .close-modal:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            transform: rotate(90deg);
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-color);
         }
 
         /* ==================== 通知系统 ==================== */
@@ -1050,28 +786,20 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             color: white;
             padding: var(--spacing-md) var(--spacing-xl);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-xl);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-lg);
             z-index: 10000;
-            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRight 0.3s ease;
             max-width: 300px;
             font-weight: 600;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         @keyframes slideInRight {
-            from { 
-                transform: translateX(100%) translateY(-20px); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateX(0) translateY(0); 
-                opacity: 1; 
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         /* ==================== 响应式设计 ==================== */
@@ -1086,15 +814,11 @@
             }
             
             .subject-selector {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
             
             .account-stats {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .knowledge-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             }
         }
 
@@ -1108,7 +832,6 @@
             nav {
                 flex-wrap: wrap;
                 justify-content: center;
-                width: 100%;
             }
             
             .account-stats {
@@ -1122,201 +845,40 @@
             .user-info {
                 flex-direction: column;
                 gap: var(--spacing-md);
-                width: 100%;
-            }
-            
-            .message-input-group {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                padding: var(--spacing-lg);
             }
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: var(--spacing-md);
-            }
-            
-            .subject-selector {
-                grid-template-columns: 1fr;
-            }
-            
-            .tag-filters {
-                justify-content: center;
-            }
-            
-            .account-header {
-                flex-direction: column;
-                text-align: center;
-                gap: var(--spacing-lg);
-            }
-            
-            .account-avatar {
-                margin: 0 auto;
-            }
-        }
-
-        /* ==================== 辅助类 ==================== */
         .hidden {
             display: none !important;
         }
         
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .slide-up {
-            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
         /* 主题选项样式 */
         .theme-option {
-            background: var(--bg-primary);
-            border: 2px solid var(--card-border);
-            border-radius: var(--radius-lg);
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
             padding: var(--spacing-lg);
             cursor: pointer;
-            transition: all var(--transition-normal);
+            transition: var(--transition-normal);
             box-shadow: var(--shadow-sm);
-            text-align: center;
-            overflow: hidden;
-            position: relative;
         }
         
         .theme-option:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
-            border-color: var(--primary-color);
+            border-color: var(--accent-color);
         }
         
         .theme-option.active {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1),
-                        var(--shadow-md);
-        }
-        
-        .theme-option .theme-preview {
-            width: 100%;
-            height: 120px;
-            border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-md);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .theme-option .theme-name {
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-            color: var(--text-primary);
-        }
-        
-        .theme-option .theme-description {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-        
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* 空状态样式 */
-        .empty-state {
-            text-align: center;
-            padding: var(--spacing-2xl);
-            color: var(--text-secondary);
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.5;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.25rem;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-        }
-        
-        .empty-state p {
-            font-size: 0.875rem;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        /* 分隔线 */
-        .divider {
-            height: 1px;
-            background: linear-gradient(
-                to right,
-                transparent,
-                var(--card-border),
-                transparent
-            );
-            margin: var(--spacing-xl) 0;
-        }
-
-        /* 工具提示 */
-        .tooltip {
-            position: relative;
-            cursor: help;
-        }
-        
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--text-primary);
-            color: white;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 1000;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .tooltip:hover::before {
-            content: '';
-            position: absolute;
-            bottom: calc(100% - 4px);
-            left: 50%;
-            transform: translateX(-50%);
-            border: 4px solid transparent;
-            border-top-color: var(--text-primary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
     </style>
 </head>
-<body class="theme-blue">
+<body class="theme-blue-purple">
     <!-- 登录模态框 -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="DSEHub.closeModal()">&times;</button>
             <div class="modal-header">
                 <h2><i class="fas fa-sign-in-alt"></i> 登录 DSE Hub</h2>
                 <p>输入您的账户信息</p>
@@ -1343,11 +905,11 @@
     <!-- 注册模态框 -->
     <div id="registerModal" class="modal-overlay hidden">
         <div class="modal-content">
-            <button class="close-modal" onclick="DSEHub.closeModal()">&times;</button>
             <div class="modal-header">
                 <h2><i class="fas fa-user-plus"></i> 注册新账号</h2>
                 <p>创建您的学习账户</p>
             </div>
+            <button class="close-modal" onclick="DSEHub.closeModal()">&times;</button>
             <div class="modal-form">
                 <div class="modal-input-group">
                     <i class="fas fa-user"></i>
@@ -1378,12 +940,9 @@
     <!-- 主页面容器 -->
     <div class="container">
         <header>
-            <div>
-                <div class="logo">
-                    <i class="fas fa-graduation-cap"></i>
-                    DSE HUB
-                </div>
-                <div class="logo-subtitle">香港中学文凭考试学习平台</div>
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                DSE HUB
             </div>
             <nav>
                 <button class="btn active" onclick="DSEHub.showPanel('knowledge')">
@@ -1467,9 +1026,8 @@
                             <button class="btn btn-secondary active" onclick="DSEHub.filterSubjects('all', this)">
                                 <i class="fas fa-globe"></i> 全部
                             </button>
-                            <input type="text" class="message-input" placeholder="搜索知识点..." 
-                                   oninput="DSEHub.searchKnowledge(this.value)" 
-                                   style="width: 200px; margin-left: auto;">
+                            <input type="text" class="form-input" placeholder="搜索知识点..." 
+                                   oninput="DSEHub.searchKnowledge(this.value)" style="width: 200px; margin-left: auto;">
                         </div>
                         <div class="knowledge-grid" id="knowledgeGrid"></div>
                     </div>
@@ -1483,15 +1041,14 @@
                     <div class="panel-content">
                         <div class="message-board">
                             <div class="message-input-group">
-                                <input type="text" id="messageInput" class="message-input" placeholder="输入你的留言..." 
-                                       onkeypress="if(event.key==='Enter') DSEHub.sendMessage()">
+                                <input type="text" id="messageInput" class="message-input" placeholder="输入你的留言..." onkeypress="if(event.key==='Enter') DSEHub.sendMessage()">
                                 <button class="btn" onclick="DSEHub.sendMessage()">
                                     <i class="fas fa-paper-plane"></i> 发送
                                 </button>
                             </div>
                             <div class="messages-container" id="messagesContainer">
-                                <div class="empty-state">
-                                    <i class="fas fa-comment-slash"></i>
+                                <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary);">
+                                    <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
                                     <h3>暂无留言</h3>
                                     <p>快来发表第一条留言吧！</p>
                                 </div>
@@ -1536,9 +1093,6 @@
                             </div>
                             
                             <div class="account-actions">
-                                <button class="btn btn-accent" onclick="DSEHub.showPanel('settings')">
-                                    <i class="fas fa-palette"></i> 主题设置
-                                </button>
                                 <button class="btn" onclick="DSEHub.logout()">
                                     <i class="fas fa-sign-out-alt"></i> 退出登录
                                 </button>
@@ -1554,25 +1108,25 @@
                     </div>
                     <div class="panel-content">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl);" id="themeGrid">
-                            <div class="theme-option active" onclick="DSEHub.changeTheme('theme-blue')">
-                                <div class="theme-preview" style="background: linear-gradient(135deg, #4f46e5, #6366f1);"></div>
-                                <div class="theme-name">蓝色主题</div>
-                                <div class="theme-description">专业蓝色渐变主题，适合专注学习</div>
+                            <div class="theme-option active" onclick="DSEHub.changeTheme('theme-blue-purple')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">蓝-紫主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">现代蓝色渐变主题</div>
                             </div>
-                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-indigo')">
-                                <div class="theme-preview" style="background: linear-gradient(135deg, #3730a3, #4f46e5);"></div>
-                                <div class="theme-name">靛蓝主题</div>
-                                <div class="theme-description">深色靛蓝主题，护眼舒适</div>
+                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-green-teal')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #38b2ac, #319795); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">绿-青主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">清新绿色渐变主题</div>
                             </div>
-                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-emerald')">
-                                <div class="theme-preview" style="background: linear-gradient(135deg, #059669, #10b981);"></div>
-                                <div class="theme-name">翡翠主题</div>
-                                <div class="theme-description">清新绿色主题，缓解视觉疲劳</div>
+                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-orange-red')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #ed8936, #dd6b20); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">橙-红主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">活力橙色渐变主题</div>
                             </div>
                             <div class="theme-option" onclick="DSEHub.changeTheme('theme-dark')">
-                                <div class="theme-preview" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);"></div>
-                                <div class="theme-name">深色主题</div>
-                                <div class="theme-description">夜间模式，保护视力</div>
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #2d3748, #1a202c); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">深色主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">夜间模式深色主题</div>
                             </div>
                         </div>
                     </div>
@@ -1584,10 +1138,10 @@
                         <h2><i class="fas fa-trophy"></i> 排行榜</h2>
                     </div>
                     <div class="panel-content">
-                        <div class="empty-state">
-                            <i class="fas fa-chart-bar"></i>
-                            <h3>排行榜功能开发中</h3>
-                            <p>即将展示用户积分和游戏成绩排名</p>
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-chart-bar" style="font-size: 64px; margin-bottom: var(--spacing-md); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm); font-size: 24px;">排行榜功能开发中</h3>
+                            <p style="color: var(--text-secondary); font-size: 16px;">即将展示用户积分和游戏成绩排名</p>
                         </div>
                     </div>
                 </div>
@@ -1597,29 +1151,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 颜色RGB值计算
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-        }
-
-        // 应用颜色变量到CSS
-        function applyColorVariables(color) {
-            const rgb = hexToRgb(color);
-            if (rgb) {
-                document.documentElement.style.setProperty('--primary-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
-            }
-        }
-
         const DSEHub = {
             supabase: null,
             currentUser: null,
             userProfile: null,
-            currentTheme: 'theme-blue',
+            currentTheme: 'theme-blue-purple',
             selectedSubjects: new Set(['all']),
             currentFilter: 'all',
             currentTagFilter: 'all',
@@ -1628,21 +1164,21 @@
 
             // 完整学科列表
             allSubjects: [
-                { id: 'chi', name: '中国语文', icon: 'fas fa-language', color: '#e53e3e' },
-                { id: 'eng', name: '英国语文', icon: 'fas fa-language', color: '#3182ce' },
-                { id: 'math', name: '数学', icon: 'fas fa-calculator', color: '#805ad5' },
-                { id: 'm1', name: '数学延伸单元一', icon: 'fas fa-chart-line', color: '#d69e2e' },
-                { id: 'm2', name: '数学延伸单元二', icon: 'fas fa-chart-bar', color: '#38a169' },
-                { id: 'phy', name: '物理', icon: 'fas fa-atom', color: '#4299e1' },
-                { id: 'chem', name: '化学', icon: 'fas fa-flask', color: '#ed8936' },
-                { id: 'bio', name: '生物', icon: 'fas fa-dna', color: '#48bb78' },
-                { id: 'econ', name: '经济', icon: 'fas fa-chart-line', color: '#ed64a6' },
-                { id: 'ls', name: '通识教育', icon: 'fas fa-globe-asia', color: '#667eea' },
-                { id: 'geo', name: '地理', icon: 'fas fa-mountain', color: '#38b2ac' },
-                { id: 'chi-hist', name: '中国历史', icon: 'fas fa-landmark', color: '#e53e3e' },
-                { id: 'hist', name: '历史', icon: 'fas fa-history', color: '#718096' },
-                { id: 'ba', name: '企业会计与财务概论', icon: 'fas fa-business-time', color: '#d69e2e' },
-                { id: 'ict', name: '信息及通讯科技', icon: 'fas fa-laptop-code', color: '#4fd1c7' }
+                { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
+                { id: 'eng', name: '英国语文', icon: 'fas fa-language' },
+                { id: 'math', name: '数学', icon: 'fas fa-calculator' },
+                { id: 'm1', name: '数学延伸单元一', icon: 'fas fa-chart-line' },
+                { id: 'm2', name: '数学延伸单元二', icon: 'fas fa-chart-bar' },
+                { id: 'phy', name: '物理', icon: 'fas fa-atom' },
+                { id: 'chem', name: '化学', icon: 'fas fa-flask' },
+                { id: 'bio', name: '生物', icon: 'fas fa-dna' },
+                { id: 'econ', name: '经济', icon: 'fas fa-chart-line' },
+                { id: 'ls', name: '通识教育', icon: 'fas fa-globe-asia' },
+                { id: 'geo', name: '地理', icon: 'fas fa-mountain' },
+                { id: 'chi-hist', name: '中国历史', icon: 'fas fa-landmark' },
+                { id: 'hist', name: '历史', icon: 'fas fa-history' },
+                { id: 'ba', name: '企业会计与财务概论', icon: 'fas fa-business-time' },
+                { id: 'ict', name: '信息及通讯科技', icon: 'fas fa-laptop-code' }
             ],
 
             // 知识点数据
@@ -1716,9 +1252,6 @@
                 this.initMessageBoard();
                 this.showPanel('knowledge');
                 this.checkExistingSession();
-                
-                // 初始化颜色变量
-                applyColorVariables('#4f46e5');
             },
 
             // Supabase初始化
@@ -1745,7 +1278,7 @@
                         };
                         
                         await this.loadUserProfile();
-                        await this.loadUserTheme();
+                        await this.loadUserTheme(); // 加载用户主题
                         this.loginSuccess();
                     }
                 } catch (err) {
@@ -1799,6 +1332,7 @@
             saveUserTheme: async function(themeId) {
                 if (!this.currentUser) return;
                 
+                // 从 theme-blue-purple 提取 blue-purple
                 const themeColor = themeId.replace('theme-', '');
                 
                 try {
@@ -1847,11 +1381,6 @@
                     return;
                 }
                 
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<div class="loading"></div>';
-                btn.disabled = true;
-                
                 try {
                     const { data, error } = await this.supabase.auth.signInWithPassword({
                         email: email,
@@ -1871,14 +1400,11 @@
                         };
                         
                         await this.loadUserProfile();
-                        await this.loadUserTheme();
+                        await this.loadUserTheme(); // 加载用户主题
                         this.loginSuccess();
                     }
                 } catch (err) {
                     this.showNotification('登录时发生错误');
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
                 }
             },
 
@@ -1916,11 +1442,6 @@
                     return;
                 }
                 
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<div class="loading"></div>';
-                btn.disabled = true;
-                
                 try {
                     const { data: authData, error: authError } = await this.supabase.auth.signUp({
                         email: email,
@@ -1933,6 +1454,7 @@
                     }
                     
                     if (authData.user) {
+                        // 创建用户资料
                         const { error: profileError } = await this.supabase
                             .from('profiles')
                             .insert([
@@ -1945,7 +1467,7 @@
                                     high_score: 0,
                                     duel_wins: 0,
                                     role: 'user',
-                                    theme_color: 'blue',
+                                    theme_color: 'blue-purple',
                                     created_at: new Date().toISOString()
                                 }
                             ]);
@@ -1959,9 +1481,6 @@
                     }
                 } catch (err) {
                     this.showNotification('注册时发生错误');
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
                 }
             },
 
@@ -1986,6 +1505,7 @@
             updateUserUI: function() {
                 const loginStatus = document.getElementById('loginStatus');
                 const userAvatar = document.getElementById('userAvatar');
+                const adminNavBtn = document.getElementById('adminNavBtn');
                 
                 if (this.isLoggedIn && this.currentUser) {
                     loginStatus.innerHTML = `
@@ -1998,11 +1518,18 @@
                     loginStatus.onclick = () => this.showPanel('myAccount');
                     userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
                     userAvatar.onclick = () => this.showPanel('myAccount');
+                    
+                    if (this.isAdmin) {
+                        adminNavBtn.style.display = 'flex';
+                    } else {
+                        adminNavBtn.style.display = 'none';
+                    }
                 } else {
                     loginStatus.innerHTML = '<i class="fas fa-user"></i><span>登录/注册</span>';
                     loginStatus.onclick = () => this.showLoginModal();
                     userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                     userAvatar.onclick = () => this.showLoginModal();
+                    adminNavBtn.style.display = 'none';
                 }
             },
 
@@ -2014,13 +1541,27 @@
                 const notification = document.createElement('div');
                 notification.className = 'notification';
                 notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+                    color: white;
+                    padding: var(--spacing-md) var(--spacing-xl);
+                    border-radius: var(--border-radius-md);
+                    box-shadow: var(--shadow-lg);
+                    z-index: 10000;
+                    animation: slideInRight 0.3s ease;
+                    max-width: 300px;
+                    font-weight: 600;
+                `;
                 
                 document.body.appendChild(notification);
                 
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.style.opacity = '0';
-                        notification.style.transform = 'translateX(100%) translateY(-20px)';
+                        notification.style.transform = 'translateX(100%)';
                         setTimeout(() => notification.remove(), 300);
                     }
                 }, duration);
@@ -2028,7 +1569,7 @@
 
             // ==================== 知识点系统 ====================
             initSubjects: function() {
-                this.renderSubjectSelector('subjectSelector', this.selectedSubjects);
+                this.renderSubjectSelector('subjectSelector', this.selectedSubjects, 'knowledge');
             },
 
             renderSubjectSelector: function(containerId, selectedSet) {
@@ -2091,6 +1632,7 @@
             filterByTag: function(tag) {
                 this.currentTagFilter = tag;
                 
+                // 更新标签按钮状态
                 document.querySelectorAll('.tag-filter-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -2102,6 +1644,7 @@
             filterSubjects: function(filter, button) {
                 this.currentFilter = filter;
                 
+                // 更新按钮状态
                 document.querySelectorAll('.subject-controls .btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -2113,12 +1656,14 @@
             filterKnowledge: function() {
                 let filteredData = this.knowledgeData;
                 
+                // 学科筛选
                 if (!this.selectedSubjects.has('all') && this.selectedSubjects.size > 0) {
                     filteredData = filteredData.filter(item => 
                         this.selectedSubjects.has(item.subject)
                     );
                 }
                 
+                // 标签筛选
                 if (this.currentTagFilter !== 'all') {
                     filteredData = filteredData.filter(item => 
                         item.tags && item.tags.includes(this.currentTagFilter)
@@ -2155,10 +1700,10 @@
                 
                 if (data.length === 0) {
                     container.innerHTML = `
-                        <div class="empty-state" style="grid-column: 1 / -1;">
-                            <i class="fas fa-search"></i>
-                            <h3>未找到相关知识点</h3>
-                            <p>请尝试选择其他学科、标签或搜索其他关键词</p>
+                        <div style="text-align: center; padding: var(--spacing-xl); grid-column: 1 / -1;">
+                            <i class="fas fa-search" style="font-size: 64px; margin-bottom: var(--spacing-md); color: var(--text-secondary);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px;">未找到相关知识点</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px;">请尝试选择其他学科、标签或搜索其他关键词</p>
                         </div>
                     `;
                     return;
@@ -2234,8 +1779,8 @@
                 
                 if (this.messages.length === 0) {
                     container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-comment-slash"></i>
+                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary);">
+                            <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
                             <h3>暂无留言</h3>
                             <p>快来发表第一条留言吧！</p>
                         </div>
@@ -2261,19 +1806,23 @@
 
             // ==================== 面板管理 ====================
             showPanel: function(panelId) {
+                // 隐藏所有面板
                 document.querySelectorAll('.main-panel > div').forEach(panel => {
                     panel.classList.add('hidden');
                 });
                 
+                // 显示目标面板
                 const targetPanel = document.getElementById(panelId + 'Panel');
                 if (targetPanel) {
                     targetPanel.classList.remove('hidden');
                 }
                 
+                // 更新导航按钮状态
                 document.querySelectorAll('.side-nav .btn, nav .btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 
+                // 特殊处理
                 if (panelId === 'knowledge' || panelId === 'messageBoard') {
                     const targetNavBtn = document.querySelector(`nav .btn[onclick*="${panelId}"]`);
                     if (targetNavBtn) targetNavBtn.classList.add('active');
@@ -2283,199 +1832,90 @@
                 if (targetSideBtn) targetSideBtn.classList.add('active');
                 
                 if (panelId === 'myAccount' && this.isLoggedIn) {
-                    thisactive');
-                
-                if (panelId === 'myAccount' && this.isLoggedIn) {
                     this.updateAccountUI();
                 }
             },
 
-            // ==================== .updateAccountUI();
-                }
-            },
-
-主题系统            // ====================  ====================
+            // ==================== 主题系统 ====================
             initThemes: function() {
-                //主题系统 ====================
-            initThemes: function() {
-                // 主题选项已在HTML中 主题选项已在HTML中硬编码
+                // 主题选项已在HTML中硬编码，无需动态生成
             },
 
-           硬编码
-            },
-
-            changeTheme changeTheme: function(theme: function(themeId, showNotificationId, showNotification = true) {
-                const = true) {
-                const event = window.event;
- event = window.event;
-                document                document.body.classList.remove(this.currentTheme.body.classList.remove(this.currentTheme);
-               );
-                this.currentTheme = themeId this.currentTheme = themeId;
-                document.body.classList.add;
-                document.body.classList.add(theme(themeId);
+            changeTheme: function(themeId, showNotification = true) {
+                document.body.classList.remove(this.currentTheme);
+                this.currentTheme = themeId;
+                document.body.classList.add(themeId);
                 
-                // Id);
-                
-                // 更新主题更新主题选项状态
-                document.querySelector选项状态
-                document.querySelectorAll('.theme-option').forEach(All('.theme-option').forEach(option => {
-                    optionoption => {
-                    option.classList.remove.classList.remove('active');
-                });
-('active');
+                // 更新主题选项状态
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
                 });
                 
-                               
-                const clicked const clickedOption = event ? event.targetOption = event ? event.target.closest('.theme.closest('.theme-option-option') : null;
-                if (click') : null;
-                if (clickedOptionedOption) {
+                const clickedOption = event ? event.target.closest('.theme-option') : null;
+                if (clickedOption) {
                     clickedOption.classList.add('active');
-) {
-                    clickedOption.classList.add('active');
-                }                } else {
-                    const themeOptions = document else {
+                } else {
+                    // 如果是程序设置的，找到对应的选项
                     const themeOptions = document.querySelectorAll('.theme-option');
-                   .querySelectorAll('.theme-option');
-                    themeOptions.forEach(option => themeOptions.forEach(option => {
-                        if (option.onclick && {
-                        if (option.onclick && option.onclick.toString().includes(theme option.onclick.toString().includes(themeId)) {
-                            option.classListId)) {
+                    themeOptions.forEach(option => {
+                        if (option.onclick && option.onclick.toString().includes(themeId)) {
                             option.classList.add('active');
                         }
-.add('active');
-                        }
-                    });
                     });
                 }
                 
-                //                 }
+                // 保存到数据库
+                this.saveUserTheme(themeId);
                 
-                // 保存到保存到数据库
-数据库
-                this                this.saveUserTheme(themeId);
-                
-.saveUserTheme(themeId);
-                
-                //                // 更新颜色变量
-                更新颜色变量
-                const theme const themeColors = {
-                    'Colors = {
-                    'themetheme-blue': '#4f46-blue': '#4f46e5e5',
-                    'theme-indigo',
-                    'theme-indigo': '#3730a3',
-                   ': '#3730a3',
-                    'theme-emerald 'theme-emerald': '#': '#059669',
-                    'theme-dark':059669',
-                    'theme-dark': '#8b5cf6'
-                '#8b5cf6'
-                };
-                
-                if (themeColors };
-                
-                if (themeColors[themeId]) {
-[themeId]) {
-                    apply                    applyColorVariables(themeColorsColorVariables(themeColors[themeId[themeId]);
-                }
-                
-                if]);
-                }
-                
-                if (show (showNotification) {
-                    const themeNotification) {
+                if (showNotification) {
                     const themeNames = {
-                        'themeNames = {
-                        'theme-blue':-blue': '蓝色主题',
-                        ' '蓝色主题',
-                        'theme-indtheme-indigo':igo': '靛蓝 '靛蓝主题',
-                        'theme-emerald':主题',
-                        'theme-emerald': '翡翠 '翡翠主题',
-                        'theme-dark': '深色主题'
-主题',
+                        'theme-blue-purple': '蓝-紫主题',
+                        'theme-green-teal': '绿-青主题',
+                        'theme-orange-red': '橙-红主题',
                         'theme-dark': '深色主题'
                     };
                     
-                    this.showNotification(`                    };
-                    
-                    this.showNotification(`已切换至${themeNames已切换至${themeNames[theme[themeId]}`);
-                }
-           Id]}`);
+                    this.showNotification(`已切换至${themeNames[themeId]}`);
                 }
             },
 
-            // ==================== 模态 },
-
-            // ==================== 模态框管理 =框管理 ====================
-           ===================
-            showLoginModal: function showLoginModal: function() {
-                document() {
-                document.getElementById('loginModal.getElementById('loginModal').class').classList.add('active');
-               List.add('active');
-                document.getElementById document.getElementById('registerModal').classList('registerModal').classList.remove('.remove('active');
+            // ==================== 模态框管理 ====================
+            showLoginModal: function() {
+                document.getElementById('loginModal').classList.add('active');
+                document.getElementById('registerModal').classList.remove('active');
             },
 
-active');
+            showRegister: function() {
+                document.getElementById('loginModal').classList.remove('active');
+                document.getElementById('registerModal').classList.add('active');
             },
 
-            show            showRegister: function()Register: function() {
-                document.getElementById {
-                document.getElementById('loginModal').classList.remove('('loginModal').classList.remove('active');
-                documentactive');
-                document.getElementById('registerModal').classList.add('.getElementById('registerModal').classList.add('activeactive');
-            },
-
-           ');
-            },
-
-            showLogin: function showLogin: function() {
-                this.showLogin() {
+            showLogin: function() {
                 this.showLoginModal();
-Modal();
             },
-
-            closeModal:            },
 
             closeModal: function() {
-                document.getElementById('login function() {
-                document.getElementById('loginModal').classListModal').classList.remove('.remove('active');
-                document.getElementById('active');
-                document.getElementById('registerModalregisterModal').classList.remove('active').classList.remove('active');
-           ');
+                document.getElementById('loginModal').classList.remove('active');
+                document.getElementById('registerModal').classList.remove('active');
             }
-        };
-
-        // 初始化应用 }
         };
 
         // 初始化应用
-        document.addEventListener('DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
-            D', function() {
             DSEHub.init();
         });
 
-        //SEHub.init();
-        });
-
-        // 模态框点击 模态框点击外部关闭外部关闭
-        window.addEventListener('click
-        window.addEventListener('click', function', function(event) {
-            const login(event) {
-            const loginModal =Modal = document.getElementById('loginModal');
- document.getElementById('loginModal');
-            const registerModal =            const registerModal = document.getElementById(' document.getElementById('registerModal');
+        // 模态框点击外部关闭
+        window.addEventListener('click', function(event) {
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
             
-            ifregisterModal');
-            
-            if (event (event.target === loginModal.target === loginModal || event.target || event.target === registerModal) {
-                D === registerModal) {
-                DSEHub.closeModalSEHub.closeModal();
-           ();
+            if (event.target === loginModal || event.target === registerModal) {
+                DSEHub.closeModal();
             }
         });
     </script>
-</ }
-        });
-    </script>
 </body>
-body>
 </html>
+
+
