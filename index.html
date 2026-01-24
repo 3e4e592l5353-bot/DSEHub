@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSE Hub - 投稿中心</title>
+    <title>DSE Hub - 主站</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-start: #f093fb;
-            --primary-end: #f5576c;
-            --secondary-start: #f093fb;
-            --secondary-end: #f5576c;
-            --accent-color: #e668b9;
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --secondary-start: #667eea;
+            --secondary-end: #764ba2;
+            --accent-color: #5a67d8;
             
             --card-bg: rgba(255, 255, 255, 0.95);
             --text-color: #333333;
             --text-secondary: #666666;
             --border-color: rgba(0, 0, 0, 0.1);
-            --hover-color: rgba(240, 147, 251, 0.1);
-            --active-color: rgba(240, 147, 251, 0.2);
+            --hover-color: rgba(102, 126, 234, 0.1);
+            --active-color: rgba(102, 126, 234, 0.2);
             
             --btn-bg: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             --btn-text: #ffffff;
             --btn-border: transparent;
-            --btn-hover: linear-gradient(135deg, #e668b9, #db3069);
-            --btn-active: linear-gradient(135deg, #d459a8, #c52a5a);
+            --btn-hover: linear-gradient(135deg, #5a67d8, #6b46c1);
+            --btn-active: linear-gradient(135deg, #4c51bf, #553c9a);
             
             --btn-secondary-bg: #ffffff;
-            --btn-secondary-text: #e668b9;
-            --btn-secondary-border: #e668b9;
+            --btn-secondary-text: #667eea;
+            --btn-secondary-border: #667eea;
             
             --spacing-xs: 4px;
             --spacing-sm: 8px;
@@ -48,6 +48,34 @@
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        /* ==================== 主题系统 ==================== */
+        .theme-blue-purple { 
+            --primary-start: #667eea; --primary-end: #764ba2; 
+            --secondary-start: #667eea; --secondary-end: #764ba2; 
+            --accent-color: #5a67d8; 
+        }
+        .theme-green-teal { 
+            --primary-start: #38b2ac; --primary-end: #319795; 
+            --secondary-start: #38b2ac; --secondary-end: #319795; 
+            --accent-color: #319795; 
+        }
+        .theme-orange-red { 
+            --primary-start: #ed8936; --primary-end: #dd6b20; 
+            --secondary-start: #ed8936; --secondary-end: #dd6b20; 
+            --accent-color: #dd6b20; 
+        }
+        .theme-dark { 
+            --primary-start: #2d3748; --primary-end: #1a202c; 
+            --secondary-start: #4a5568; --secondary-end: #2d3748; 
+            --accent-color: #4299e1;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --border-color: #4a5568;
+            --hover-color: rgba(66, 153, 225, 0.1);
+            --active-color: rgba(66, 153, 225, 0.2);
         }
 
         * {
@@ -103,10 +131,10 @@
             color: var(--primary-start);
         }
 
-        .logo-subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-left: var(--spacing-sm);
+        nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
         }
 
         .btn {
@@ -146,14 +174,6 @@
         .btn-secondary:hover {
             background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             color: white;
-        }
-
-        .btn-main-site {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .btn-main-site:hover {
-            background: linear-gradient(135deg, #5a67d8, #6b46c1);
         }
 
         .user-info {
@@ -202,14 +222,15 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* ==================== 投稿系统 ==================== */
-        .submission-container {
+        /* ==================== 内容区域 ==================== */
+        .content-area {
             display: flex;
             gap: var(--spacing-xl);
+            position: relative;
         }
 
-        .submission-nav {
-            width: 280px;
+        .side-nav {
+            width: 260px;
             background: var(--card-bg);
             border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
@@ -219,17 +240,6 @@
             flex-shrink: 0;
             position: sticky;
             top: var(--spacing-xl);
-        }
-
-        .submission-main {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: var(--border-radius-xl);
-            border: none;
-            box-shadow: var(--shadow-md);
-            min-height: 600px;
-            overflow: hidden;
-            position: relative;
         }
 
         .nav-section {
@@ -259,6 +269,17 @@
             gap: var(--spacing-sm);
         }
 
+        .main-panel {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            border: none;
+            box-shadow: var(--shadow-md);
+            min-height: 600px;
+            overflow: hidden;
+            position: relative;
+        }
+
         .panel-header {
             padding: var(--spacing-xl);
             border-bottom: 1px solid var(--border-color);
@@ -281,85 +302,7 @@
             padding: var(--spacing-xl);
         }
 
-        /* 表单样式 */
-        .form-group {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: var(--spacing-sm);
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .form-group label i {
-            color: var(--accent-color);
-            width: 20px;
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-md) var(--spacing-lg);
-            color: var(--text-color);
-            font-size: 15px;
-            transition: var(--transition-normal);
-            font-family: inherit;
-        }
-
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(230, 104, 185, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 200px;
-            resize: vertical;
-            line-height: 1.6;
-        }
-
-        /* 投稿类型切换 */
-        .submission-type-selector {
-            display: flex;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-xl);
-            background: var(--hover-color);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius-lg);
-        }
-
-        .submission-type-btn {
-            flex: 1;
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            padding: var(--spacing-lg);
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition-normal);
-            font-weight: 600;
-        }
-
-        .submission-type-btn:hover {
-            border-color: var(--accent-color);
-            transform: translateY(-2px);
-        }
-
-        .submission-type-btn.selected {
-            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
-            color: white;
-            border-color: transparent;
-        }
-
-        /* 学科选择器 */
+        /* ==================== 知识点系统 ==================== */
         .subject-selector {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -393,7 +336,7 @@
         .subject-card.selected {
             background: var(--hover-color);
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(230, 104, 185, 0.1);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
         .subject-icon {
@@ -408,165 +351,289 @@
             line-height: 1.3;
         }
 
-        /* 游戏题目表单 */
-        .game-form {
-            display: none;
-        }
-
-        .game-form.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .match-pair {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .game-type-form {
-            display: none;
-        }
-
-        .game-type-form.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .form-actions {
+        .subject-controls {
             display: flex;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-xl);
-            padding-top: var(--spacing-xl);
-            border-top: 1px solid var(--border-color);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--hover-color);
+            border-radius: var(--border-radius-lg);
         }
 
-        /* 我的投稿 */
-        .submissions-list {
+        /* 标签系统样式 */
+        .tag-filters {
             display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--hover-color);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
         }
 
-        .submission-item {
+        .tag-filter-btn {
             background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .tag-filter-btn:hover {
+            background: var(--hover-color);
+            border-color: var(--accent-color);
+        }
+
+        .tag-filter-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            max-height: 500px;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+
+        .knowledge-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .knowledge-grid::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .knowledge-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .knowledge-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius-lg);
             padding: var(--spacing-xl);
-            border: 1px solid var(--border-color);
+            transition: var(--transition-normal);
+            position: relative;
+            cursor: pointer;
             box-shadow: var(--shadow-sm);
+        }
+
+        .knowledge-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-color);
+        }
+
+        .knowledge-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin: var(--spacing-md) 0;
+        }
+
+        .knowledge-tag {
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+            border: none;
+            border-radius: 50px;
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* ==================== 留言板样式 ==================== */
+        .message-board {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-input-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .message-input {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 15px;
             transition: var(--transition-normal);
         }
 
-        .submission-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .message-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
-        .submission-header {
+        .messages-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: var(--border-radius-md);
+        }
+
+        .message-item {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .message-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .submission-title {
-            font-size: 18px;
+        .message-user {
             font-weight: 700;
-            color: var(--text-color);
+            color: var(--accent-color);
         }
 
-        .submission-status {
-            padding: var(--spacing-xs) var(--spacing-md);
-            border-radius: var(--border-radius-sm);
+        .message-time {
             font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .submission-meta {
-            display: flex;
-            gap: var(--spacing-lg);
-            font-size: 14px;
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-md);
         }
 
-        .submission-content {
+        .message-content {
             color: var(--text-color);
             line-height: 1.6;
         }
 
-        /* 指导面板 */
-        .guide-panel {
-            background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1));
+        /* ==================== 我的账户 ==================== */
+        .account-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
             border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
             margin-bottom: var(--spacing-xl);
             border: 2px solid var(--accent-color);
         }
 
-        .guide-step {
+        .account-header {
             display: flex;
-            gap: var(--spacing-lg);
+            align-items: center;
+            gap: var(--spacing-xl);
             margin-bottom: var(--spacing-xl);
-            align-items: flex-start;
+            padding-bottom: var(--spacing-xl);
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .step-number {
-            width: 36px;
-            height: 36px;
+        .account-avatar {
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            border: 4px solid white;
+            font-size: 40px;
             font-weight: 700;
-            font-size: 18px;
-            flex-shrink: 0;
+            color: white;
+            box-shadow: var(--shadow-lg);
         }
 
-        .step-content {
+        .account-details {
             flex: 1;
         }
 
-        .step-title {
-            font-weight: 700;
+        .account-username {
+            font-size: 28px;
+            font-weight: 800;
             margin-bottom: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .account-email {
             font-size: 16px;
-        }
-
-        .step-description {
             color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.5;
+            margin-bottom: var(--spacing-md);
         }
 
-        /* 模态框系统 */
+        .account-role {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .account-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: var(--spacing-xs);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .account-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            justify-content: center;
+        }
+
+        /* ==================== 模态框系统 ==================== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -584,6 +651,11 @@
 
         .modal-overlay.active {
             display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -617,6 +689,11 @@
             margin-bottom: var(--spacing-sm);
         }
 
+        .modal-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
         .modal-input-group {
             position: relative;
             margin-bottom: var(--spacing-lg);
@@ -642,7 +719,7 @@
         .modal-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(230, 104, 185, 0.1);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
 
         .modal-btn {
@@ -670,6 +747,17 @@
             color: var(--text-secondary);
         }
 
+        .modal-switch a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-switch a:hover {
+            text-decoration: underline;
+        }
+
         .close-modal {
             position: absolute;
             top: var(--spacing-md);
@@ -693,7 +781,7 @@
             color: var(--text-color);
         }
 
-        /* 通知系统 */
+        /* ==================== 通知系统 ==================== */
         .notification {
             position: fixed;
             top: 20px;
@@ -714,19 +802,23 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* 响应式设计 */
+        /* ==================== 响应式设计 ==================== */
         @media (max-width: 1024px) {
-            .submission-container {
+            .content-area {
                 flex-direction: column;
             }
             
-            .submission-nav {
+            .side-nav {
                 width: 100%;
                 position: static;
             }
             
             .subject-selector {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            .account-stats {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -737,26 +829,40 @@
                 text-align: center;
             }
             
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .account-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .knowledge-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .user-info {
                 flex-direction: column;
                 gap: var(--spacing-md);
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
-            
-            .match-pair {
-                grid-template-columns: 1fr;
             }
         }
 
         .hidden {
             display: none !important;
         }
+        
+        /* 投稿按钮样式 */
+        .btn-submission {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        
+        .btn-submission:hover {
+            background: linear-gradient(135deg, #e668b9, #db3069);
+        }
     </style>
 </head>
-<body>
+<body class="theme-blue-purple">
     <!-- 登录模态框 -->
     <div id="loginModal" class="modal-overlay">
         <div class="modal-content">
@@ -773,11 +879,11 @@
                     <i class="fas fa-lock"></i>
                     <input type="password" id="loginPassword" class="modal-input" placeholder="请输入密码" required>
                 </div>
-                <button class="modal-btn" onclick="SubmissionSystem.login()">
+                <button class="modal-btn" onclick="DSEHub.login()">
                     <i class="fas fa-sign-in-alt"></i> 登录
                 </button>
                 <div class="modal-switch">
-                    还没有账号？ <a onclick="SubmissionSystem.showRegister()">立即注册</a>
+                    还没有账号？ <a onclick="DSEHub.showRegister()">立即注册</a>
                 </div>
             </div>
         </div>
@@ -790,7 +896,7 @@
                 <h2><i class="fas fa-user-plus"></i> 注册新账号</h2>
                 <p>创建您的学习账户</p>
             </div>
-            <button class="close-modal" onclick="SubmissionSystem.closeModal()">&times;</button>
+            <button class="close-modal" onclick="DSEHub.closeModal()">&times;</button>
             <div class="modal-form">
                 <div class="modal-input-group">
                     <i class="fas fa-user"></i>
@@ -808,11 +914,11 @@
                     <i class="fas fa-lock"></i>
                     <input type="password" id="registerConfirmPassword" class="modal-input" placeholder="请再次输入密码" required>
                 </div>
-                <button class="modal-btn" onclick="SubmissionSystem.register()">
+                <button class="modal-btn" onclick="DSEHub.register()">
                     <i class="fas fa-check"></i> 注册
                 </button>
                 <div class="modal-switch">
-                    已有账号？ <a onclick="SubmissionSystem.showLogin()">立即登录</a>
+                    已有账号？ <a onclick="DSEHub.showLogin()">立即登录</a>
                 </div>
             </div>
         </div>
@@ -822,352 +928,116 @@
     <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-upload"></i>
-                DSE HUB 投稿中心
-                <span class="logo-subtitle">分享知识，共同进步</span>
+                <i class="fas fa-graduation-cap"></i>
+                DSE HUB
             </div>
             <nav>
-                <button class="btn btn-main-site" onclick="window.location.href='index.html'">
-                    <i class="fas fa-home"></i> 返回主站
+                <button class="btn active" onclick="DSEHub.showPanel('knowledge')">
+                    <i class="fas fa-brain"></i> 知识点
+                </button>
+                <button class="btn" onclick="DSEHub.showPanel('messageBoard')">
+                    <i class="fas fa-comments"></i> 留言板
+                </button>
+                <button class="btn" onclick="window.location.href='gaming.html'">
+                    <i class="fas fa-gamepad"></i> 游戏区
+                </button>
+                <button class="btn btn-submission" onclick="window.open('submission.html', '_blank')">
+                    <i class="fas fa-upload"></i> 投稿中心
+                </button>
+                <button class="btn" onclick="window.location.href='admin.html'" id="adminNavBtn" style="display: none;">
+                    <i class="fas fa-user-shield"></i> 管理
                 </button>
             </nav>
             <div class="user-info">
-                <div id="loginStatus" class="login-status" onclick="SubmissionSystem.showLoginModal()">
+                <div id="loginStatus" class="login-status" onclick="DSEHub.showLoginModal()">
                     <i class="fas fa-user"></i>
                     <span>登录/注册</span>
                 </div>
-                <div class="user-avatar" id="userAvatar" onclick="SubmissionSystem.showPanel('mySubmissions')">
+                <div class="user-avatar" id="userAvatar" onclick="DSEHub.showPanel('myAccount')">
                     <i class="fas fa-user"></i>
                 </div>
             </div>
         </header>
 
-        <div class="submission-container">
+        <div class="content-area">
             <!-- 左侧导航 -->
-            <div class="submission-nav">
+            <div class="side-nav">
                 <div class="nav-section">
-                    <h3><i class="fas fa-paper-plane"></i> 投稿功能</h3>
+                    <h3><i class="fas fa-book"></i> 学习功能</h3>
                     <div class="nav-btn-list">
-                        <button class="btn active" onclick="SubmissionSystem.showPanel('newSubmission')">
-                            <i class="fas fa-edit"></i> 新建投稿
+                        <button class="btn active" onclick="DSEHub.showPanel('knowledge')">
+                            <i class="fas fa-brain"></i> 知识点
                         </button>
-                        <button class="btn" onclick="SubmissionSystem.showPanel('mySubmissions')">
-                            <i class="fas fa-list"></i> 我的投稿
+                        <button class="btn" onclick="DSEHub.showPanel('leaderboard')">
+                            <i class="fas fa-trophy"></i> 排行榜
+                        </button>
+                        <button class="btn" onclick="window.open('submission.html', '_blank')">
+                            <i class="fas fa-upload"></i> 投稿中心
                         </button>
                     </div>
                 </div>
                 
                 <div class="nav-section">
-                    <h3><i class="fas fa-info-circle"></i> 投稿指南</h3>
+                    <h3><i class="fas fa-cog"></i> 系统设置</h3>
                     <div class="nav-btn-list">
-                        <button class="btn" onclick="SubmissionSystem.showPanel('guide')">
-                            <i class="fas fa-graduation-cap"></i> 投稿指导
-                        </button>
-                        <button class="btn" onclick="SubmissionSystem.showPanel('rules')">
-                            <i class="fas fa-scroll"></i> 投稿规则
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="nav-section">
-                    <h3><i class="fas fa-user"></i> 账户</h3>
-                    <div class="nav-btn-list">
-                        <button class="btn" onclick="SubmissionSystem.showPanel('account')">
+                        <button class="btn" onclick="DSEHub.showPanel('myAccount')">
                             <i class="fas fa-user-circle"></i> 我的账户
+                        </button>
+                        <button class="btn" onclick="DSEHub.showPanel('settings')">
+                            <i class="fas fa-palette"></i> 主题
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- 主面板 -->
-            <div class="submission-main">
-                <!-- 新建投稿面板 -->
-                <div id="newSubmissionPanel" class="panel-content">
+            <div class="main-panel">
+                <!-- 知识点面板 -->
+                <div id="knowledgePanel" class="panel-content">
                     <div class="panel-header">
-                        <h2><i class="fas fa-edit"></i> 新建投稿</h2>
+                        <h2><i class="fas fa-brain"></i> 知识点展示</h2>
                     </div>
                     <div class="panel-content">
-                        <div class="submission-type-selector">
-                            <div class="submission-type-btn active" onclick="SubmissionSystem.selectSubmissionType('knowledge')">
-                                <i class="fas fa-brain"></i> 知识点投稿
-                            </div>
-                            <div class="submission-type-btn" onclick="SubmissionSystem.selectSubmissionType('game')">
-                                <i class="fas fa-gamepad"></i> 游戏题目投稿
-                            </div>
+                        <div class="subject-selector" id="subjectSelector"></div>
+                        <div class="tag-filters" id="tagFilters">
+                            <div class="tag-filter-btn active" onclick="DSEHub.filterByTag('all')">全部</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('公式')">公式</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('语法')">语法</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('名言金句')">名言金句</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('成语')">成语</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('术语')">术语</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('基础')">基础</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByTag('进阶')">进阶</div>
                         </div>
-
-                        <!-- 知识点投稿表单 -->
-                        <div id="knowledgeForm" class="active">
-                            <div class="form-group">
-                                <label><i class="fas fa-tag"></i> 选择相关学科</label>
-                                <div class="subject-selector" id="submissionSubjectSelector"></div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label><i class="fas fa-tags"></i> 知识点标签（可多选）</label>
-                                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="公式"> 公式
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="语法"> 语法
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="名言金句"> 名言金句
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="成语"> 成语
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="术语"> 术语
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="基础"> 基础
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                        <input type="checkbox" value="进阶"> 进阶
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="knowledgeTitle"><i class="fas fa-heading"></i> 知识点标题</label>
-                                <input type="text" id="knowledgeTitle" class="form-input" placeholder="请输入知识点标题" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="knowledgeContent"><i class="fas fa-file-alt"></i> 知识点内容</label>
-                                <textarea id="knowledgeContent" class="form-textarea" placeholder="请输入知识点详细内容..." required></textarea>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button class="btn" onclick="SubmissionSystem.submitKnowledge()">
-                                    <i class="fas fa-paper-plane"></i> 提交知识点
-                                </button>
-                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearSubmissionForm()">
-                                    <i class="fas fa-eraser"></i> 清空
-                                </button>
-                            </div>
+                        <div class="subject-controls">
+                            <button class="btn btn-secondary active" onclick="DSEHub.filterSubjects('all', this)">
+                                <i class="fas fa-globe"></i> 全部
+                            </button>
+                            <input type="text" class="form-input" placeholder="搜索知识点..." 
+                                   oninput="DSEHub.searchKnowledge(this.value)" style="width: 200px; margin-left: auto;">
                         </div>
-
-                        <!-- 游戏题目投稿表单 -->
-                        <div id="gameForm" class="game-form">
-                            <div class="form-group">
-                                <label><i class="fas fa-gamepad"></i> 选择题型</label>
-                                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
-                                    <select id="gameType" class="form-select" onchange="SubmissionSystem.selectGameType(this.value)">
-                                        <option value="match">连连看</option>
-                                        <option value="true_false">对错判断</option>
-                                        <option value="guess">猜知识点</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- 连连看表单 -->
-                            <div id="matchForm" class="game-type-form active">
-                                <div class="form-group">
-                                    <label for="matchTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="matchTitle" class="form-input" placeholder="例如：数学公式连连看">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label><i class="fas fa-link"></i> 配对项（至少3对）</label>
-                                    <div id="matchPairs">
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项（如：勾股定理）">
-                                            <input type="text" class="form-input match-right" placeholder="右项（如：a²+b²=c²）">
-                                        </div>
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项">
-                                            <input type="text" class="form-input match-right" placeholder="右项">
-                                        </div>
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项">
-                                            <input type="text" class="form-input match-right" placeholder="右项">
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary" onclick="SubmissionSystem.addMatchPair()" style="margin-top: var(--spacing-sm);">
-                                        <i class="fas fa-plus"></i> 添加更多配对
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- 对错判断表单 -->
-                            <div id="trueFalseForm" class="game-type-form">
-                                <div class="form-group">
-                                    <label for="tfTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="tfTitle" class="form-input" placeholder="例如：历史事实判断">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tfStatement"><i class="fas fa-comment"></i> 陈述句</label>
-                                    <textarea id="tfStatement" class="form-textarea" placeholder="请输入需要判断的陈述句..."></textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label><i class="fas fa-check-circle"></i> 正确答案</label>
-                                    <div style="display: flex; gap: var(--spacing-md);">
-                                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                            <input type="radio" name="tfAnswer" value="true"> 正确
-                                        </label>
-                                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                            <input type="radio" name="tfAnswer" value="false"> 错误
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tfExplanation"><i class="fas fa-lightbulb"></i> 解析（可选）</label>
-                                    <textarea id="tfExplanation" class="form-textarea" placeholder="请提供答案解析..."></textarea>
-                                </div>
-                            </div>
-
-                            <!-- 猜知识点表单 -->
-                            <div id="guessForm" class="game-type-form">
-                                <div class="form-group">
-                                    <label for="guessTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="guessTitle" class="form-input" placeholder="例如：根据提示猜物理定律">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessHint"><i class="fas fa-lightbulb"></i> 提示</label>
-                                    <textarea id="guessHint" class="form-textarea" placeholder="请输入提示信息..."></textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessAnswer"><i class="fas fa-check"></i> 正确答案</label>
-                                    <input type="text" id="guessAnswer" class="form-input" placeholder="请输入知识点答案">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessDifficulty"><i class="fas fa-signal"></i> 难度</label>
-                                    <select id="guessDifficulty" class="form-select">
-                                        <option value="easy">简单</option>
-                                        <option value="medium" selected>中等</option>
-                                        <option value="hard">困难</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-actions">
-                                <button class="btn" onclick="SubmissionSystem.submitGameQuestion()">
-                                    <i class="fas fa-paper-plane"></i> 提交游戏题目
-                                </button>
-                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearGameForm()">
-                                    <i class="fas fa-eraser"></i> 清空
-                                </button>
-                            </div>
-                        </div>
+                        <div class="knowledge-grid" id="knowledgeGrid"></div>
                     </div>
                 </div>
 
-                <!-- 我的投稿面板 -->
-                <div id="mySubmissionsPanel" class="panel-content hidden">
+                <!-- 留言板面板 -->
+                <div id="messageBoardPanel" class="panel-content hidden">
                     <div class="panel-header">
-                        <h2><i class="fas fa-list"></i> 我的投稿</h2>
+                        <h2><i class="fas fa-comments"></i> 留言板</h2>
                     </div>
                     <div class="panel-content">
-                        <div id="submissionsList" class="submissions-list">
-                            <!-- 投稿列表将在这里动态生成 -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 投稿指导面板 -->
-                <div id="guidePanel" class="panel-content hidden">
-                    <div class="panel-header">
-                        <h2><i class="fas fa-graduation-cap"></i> 投稿指导</h2>
-                    </div>
-                    <div class="panel-content">
-                        <div class="guide-panel">
-                            <div class="guide-step">
-                                <div class="step-number">1</div>
-                                <div class="step-content">
-                                    <div class="step-title">选择投稿类型</div>
-                                    <div class="step-description">
-                                        根据您想分享的内容选择「知识点投稿」或「游戏题目投稿」。知识点投稿适合分享学习内容，游戏题目投稿适合创建互动学习游戏。
-                                    </div>
-                                </div>
+                        <div class="message-board">
+                            <div class="message-input-group">
+                                <input type="text" id="messageInput" class="message-input" placeholder="输入你的留言..." onkeypress="if(event.key==='Enter') DSEHub.sendMessage()">
+                                <button class="btn" onclick="DSEHub.sendMessage()">
+                                    <i class="fas fa-paper-plane"></i> 发送
+                                </button>
                             </div>
-                            
-                            <div class="guide-step">
-                                <div class="step-number">2</div>
-                                <div class="step-content">
-                                    <div class="step-title">填写详细信息</div>
-                                    <div class="step-description">
-                                        准确填写标题、内容、选择相关学科和标签。清晰的标题和详细的内容有助于其他用户更好地理解和学习。
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="guide-step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">
-                                    <div class="step-title">质量检查</div>
-                                    <div class="step-description">
-                                        提交前请检查内容的准确性、完整性和格式。确保没有拼写错误，内容符合DSE课程标准。
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="guide-step">
-                                <div class="step-number">4</div>
-                                <div class="step-content">
-                                    <div class="step-title">提交审核</div>
-                                    <div class="step-description">
-                                        投稿后，管理员会在24小时内审核您的内容。审核通过后，您的投稿将出现在主站供所有用户学习。
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 投稿规则面板 -->
-                <div id="rulesPanel" class="panel-content hidden">
-                    <div class="panel-header">
-                        <h2><i class="fas fa-scroll"></i> 投稿规则</h2>
-                    </div>
-                    <div class="panel-content">
-                        <div style="background: white; border-radius: var(--border-radius-lg); padding: var(--spacing-xl);">
-                            <div style="margin-bottom: var(--spacing-xl);">
-                                <h3 style="color: var(--accent-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
-                                    <i class="fas fa-check-circle"></i> 内容要求
-                                </h3>
-                                <ul style="padding-left: var(--spacing-xl); line-height: 1.8; color: var(--text-color);">
-                                    <li>所有投稿必须与DSE课程内容相关</li>
-                                    <li>内容必须准确无误，来源可靠</li>
-                                    <li>禁止抄袭，必须注明引用来源</li>
-                                    <li>语言清晰简洁，易于理解</li>
-                                    <li>格式规范，排版整齐</li>
-                                </ul>
-                            </div>
-                            
-                            <div style="margin-bottom: var(--spacing-xl);">
-                                <h3 style="color: var(--accent-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
-                                    <i class="fas fa-times-circle"></i> 禁止内容
-                                </h3>
-                                <ul style="padding-left: var(--spacing-xl); line-height: 1.8; color: var(--text-color);">
-                                    <li>违反法律法规的内容</li>
-                                    <li>人身攻击或侮辱性语言</li>
-                                    <li>广告或商业推广内容</li>
-                                    <li>误导性或不实信息</li>
-                                    <li>侵犯他人知识产权的内容</li>
-                                </ul>
-                            </div>
-                            
-                            <div>
-                                <h3 style="color: var(--accent-color); margin-bottom: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm);">
-                                    <i class="fas fa-star"></i> 奖励机制
-                                </h3>
-                                <div style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1)); padding: var(--spacing-lg); border-radius: var(--border-radius-md);">
-                                    <p style="margin-bottom: var(--spacing-sm);">高质量投稿将获得：</p>
-                                    <ul style="padding-left: var(--spacing-lg); line-height: 1.8; color: var(--text-color);">
-                                        <li>学习积分奖励</li>
-                                        <li>在排行榜中显示</li>
-                                        <li>优先审核处理</li>
-                                        <li>获得「优质贡献者」徽章</li>
-                                    </ul>
+                            <div class="messages-container" id="messagesContainer">
+                                <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary);">
+                                    <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
+                                    <h3>暂无留言</h3>
+                                    <p>快来发表第一条留言吧！</p>
                                 </div>
                             </div>
                         </div>
@@ -1175,37 +1045,90 @@
                 </div>
 
                 <!-- 我的账户面板 -->
-                <div id="accountPanel" class="panel-content hidden">
+                <div id="myAccountPanel" class="panel-content hidden">
                     <div class="panel-header">
                         <h2><i class="fas fa-user-circle"></i> 我的账户</h2>
                     </div>
                     <div class="panel-content">
-                        <div style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1)); border-radius: var(--border-radius-xl); padding: var(--spacing-xl); margin-bottom: var(--spacing-xl); border: 2px solid var(--accent-color);">
-                            <div style="display: flex; align-items: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-xl); padding-bottom: var(--spacing-xl); border-bottom: 2px solid var(--border-color);">
-                                <div id="accountAvatar" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end)); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; font-size: 40px; font-weight: 700; color: white; box-shadow: var(--shadow-lg);">U</div>
-                                <div style="flex: 1;">
-                                    <div id="accountUsername" style="font-size: 28px; font-weight: 800; margin-bottom: var(--spacing-xs); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">用户名</div>
-                                    <div id="accountEmail" style="font-size: 16px; color: var(--text-secondary); margin-bottom: var(--spacing-md);">user@example.com</div>
-                                    <div id="accountRole" style="display: inline-block; background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end)); padding: var(--spacing-sm) var(--spacing-lg); border-radius: var(--border-radius-lg); font-size: 14px; font-weight: 700; color: white; box-shadow: var(--shadow-sm);">用户</div>
+                        <div class="account-card">
+                            <div class="account-header">
+                                <div class="account-avatar" id="accountAvatar">U</div>
+                                <div class="account-details">
+                                    <div class="account-username" id="accountUsername">用户名</div>
+                                    <div class="account-email" id="accountEmail">user@example.com</div>
+                                    <div class="account-role" id="accountRole">用户</div>
                                 </div>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
-                                <div style="background: white; border-radius: var(--border-radius-lg); padding: var(--spacing-xl); text-align: center; box-shadow: var(--shadow-md);">
-                                    <div id="statSubmissions" style="font-size: 36px; font-weight: 800; margin-bottom: var(--spacing-xs); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0</div>
-                                    <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">投稿数量</div>
+                            <div class="account-stats">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statScore">0</div>
+                                    <div class="stat-label">学习积分</div>
                                 </div>
-                                <div style="background: white; border-radius: var(--border-radius-lg); padding: var(--spacing-xl); text-align: center; box-shadow: var(--shadow-md);">
-                                    <div id="statApproved" style="font-size: 36px; font-weight: 800; margin-bottom: var(--spacing-xs); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">0</div>
-                                    <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">通过审核</div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statGames">0</div>
+                                    <div class="stat-label">游戏次数</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statHighScore">0</div>
+                                    <div class="stat-label">最高分</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statWins">0</div>
+                                    <div class="stat-label">对战胜利</div>
                                 </div>
                             </div>
                             
-                            <div style="display: flex; gap: var(--spacing-md); justify-content: center;">
-                                <button class="btn" onclick="SubmissionSystem.logout()">
+                            <div class="account-actions">
+                                <button class="btn" onclick="DSEHub.logout()">
                                     <i class="fas fa-sign-out-alt"></i> 退出登录
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设置面板 -->
+                <div id="settingsPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-palette"></i> 主题设置</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-xl);" id="themeGrid">
+                            <div class="theme-option active" onclick="DSEHub.changeTheme('theme-blue-purple')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">蓝-紫主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">现代蓝色渐变主题</div>
+                            </div>
+                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-green-teal')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #38b2ac, #319795); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">绿-青主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">清新绿色渐变主题</div>
+                            </div>
+                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-orange-red')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #ed8936, #dd6b20); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">橙-红主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">活力橙色渐变主题</div>
+                            </div>
+                            <div class="theme-option" onclick="DSEHub.changeTheme('theme-dark')">
+                                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #2d3748, #1a202c); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);"></div>
+                                <div style="font-weight: 700; margin-bottom: var(--spacing-xs);">深色主题</div>
+                                <div style="font-size: 13px; color: var(--text-secondary);">夜间模式深色主题</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 排行榜面板 -->
+                <div id="leaderboardPanel" class="panel-content hidden">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-trophy"></i> 排行榜</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div style="text-align: center; padding: var(--spacing-xl);">
+                            <i class="fas fa-chart-bar" style="font-size: 64px; margin-bottom: var(--spacing-md); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm); font-size: 24px;">排行榜功能开发中</h3>
+                            <p style="color: var(--text-secondary); font-size: 16px;">即将展示用户积分和游戏成绩排名</p>
                         </div>
                     </div>
                 </div>
@@ -1215,16 +1138,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SubmissionSystem = {
+        const DSEHub = {
             supabase: null,
             currentUser: null,
             userProfile: null,
+            currentTheme: 'theme-blue-purple',
+            selectedSubjects: new Set(['all']),
+            currentFilter: 'all',
+            currentTagFilter: 'all',
             isLoggedIn: false,
-            currentSubmissionType: 'knowledge',
-            selectedGameType: 'match',
-            userSubmissions: [],
+            isAdmin: false,
 
-            // 学科列表
+            // 完整学科列表
             allSubjects: [
                 { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
                 { id: 'eng', name: '英国语文', icon: 'fas fa-language' },
@@ -1243,11 +1168,76 @@
                 { id: 'ict', name: '信息及通讯科技', icon: 'fas fa-laptop-code' }
             ],
 
+            // 知识点数据
+            knowledgeData: [
+                { 
+                    id: 1, subject: 'math', title: '微积分基础', 
+                    content: '微分的基本概念，包括导数的定义、计算法则和应用。导数描述了函数在某一点的变化率，是微积分的核心概念之一。',
+                    tags: ['公式', '基础'],
+                    created_at: '2024-01-15'
+                },
+                { 
+                    id: 2, subject: 'phy', title: '牛顿运动定律', 
+                    content: '第一定律（惯性定律）：物体在不受外力作用时，会保持静止或匀速直线运动状态。第二定律（F=ma）：物体的加速度与作用力成正比，与质量成反比。第三定律：作用力与反作用力大小相等、方向相反。',
+                    tags: ['公式', '术语', '基础'],
+                    created_at: '2024-01-14'
+                },
+                { 
+                    id: 3, subject: 'chi', title: '古诗词鉴赏名句', 
+                    content: '「落霞与孤鹜齐飞，秋水共长天一色」—— 王勃《滕王阁序》。这句诗描绘了壮丽的秋日景色，运用了对偶和夸张的修辞手法，展现了作者广阔的胸怀和超凡的想象力。',
+                    tags: ['名言金句', '成语', '进阶'],
+                    created_at: '2024-01-13'
+                },
+                { 
+                    id: 4, subject: 'chem', title: '化学反应速率', 
+                    content: '影响化学反应速率的因素：温度、浓度、压力、催化剂、表面积等。温度每升高10°C，反应速率约增加2-4倍。',
+                    tags: ['公式', '基础'],
+                    created_at: '2024-01-12'
+                },
+                { 
+                    id: 5, subject: 'bio', title: '细胞结构', 
+                    content: '真核细胞的主要结构：细胞膜、细胞核、线粒体、内质网、高尔基体、核糖体等。线粒体是细胞的「动力工厂」，负责产生ATP。',
+                    tags: ['术语', '基础'],
+                    created_at: '2024-01-11'
+                },
+                { 
+                    id: 6, subject: 'econ', title: '需求与供应', 
+                    content: '需求定律：价格上升，需求量下降；价格下降，需求量上升。供应定律：价格上升，供应量上升；价格下降，供应量下降。市场均衡发生在需求曲线与供应曲线相交处。',
+                    tags: ['公式', '基础'],
+                    created_at: '2024-01-10'
+                }
+            ],
+
+            // 留言数据
+            messages: [
+                {
+                    id: 1,
+                    username: '小明',
+                    content: '有没有人一起复习数学微积分？',
+                    created_at: '2024-01-15 14:30'
+                },
+                {
+                    id: 2,
+                    username: '小花',
+                    content: '物理的牛顿定律这部分好难理解啊，求大神指点！',
+                    created_at: '2024-01-15 13:45'
+                },
+                {
+                    id: 3,
+                    username: '学霸张',
+                    content: '分享一个学习技巧：每天坚持做10道不同类型的题目，效果很好！',
+                    created_at: '2024-01-15 12:20'
+                }
+            ],
+
             // 初始化
             init: function() {
                 this.initSupabase();
+                this.initThemes();
                 this.initSubjects();
-                this.showPanel('newSubmission');
+                this.initKnowledgeGrid();
+                this.initMessageBoard();
+                this.showPanel('knowledge');
                 this.checkExistingSession();
             },
 
@@ -1276,7 +1266,6 @@
                         
                         await this.loadUserProfile();
                         this.loginSuccess();
-                        await this.loadUserSubmissions();
                     }
                 } catch (err) {
                     console.log('无登录会话');
@@ -1298,6 +1287,7 @@
                     
                     if (data) {
                         this.userProfile = data;
+                        this.isAdmin = data.is_admin === true;
                         this.updateAccountUI();
                     }
                 } catch (err) {
@@ -1305,32 +1295,26 @@
                 }
             },
 
-            // 加载用户投稿
-            loadUserSubmissions: async function() {
+            // 更新账户UI
+            updateAccountUI: function() {
                 if (!this.currentUser) return;
                 
-                try {
-                    const { data, error } = await this.supabase
-                        .from('submissions')
-                        .select('*')
-                        .eq('user_id', this.currentUser.id)
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) throw error;
-                    
-                    this.userSubmissions = data || [];
-                    this.renderSubmissionsList();
-                    
-                    // 更新统计数据
-                    const totalSubmissions = this.userSubmissions.length;
-                    const approvedSubmissions = this.userSubmissions.filter(s => s.status === 'approved').length;
-                    
-                    document.getElementById('statSubmissions').textContent = totalSubmissions;
-                    document.getElementById('statApproved').textContent = approvedSubmissions;
-                    
-                } catch (err) {
-                    console.error('加载投稿列表出错:', err);
-                }
+                const profile = this.userProfile || {
+                    username: this.currentUser.username,
+                    score: 0,
+                    games_played: 0,
+                    high_score: 0,
+                    duel_wins: 0
+                };
+                
+                document.getElementById('accountAvatar').textContent = profile.username.charAt(0).toUpperCase();
+                document.getElementById('accountUsername').textContent = profile.username;
+                document.getElementById('accountEmail').textContent = this.currentUser.email;
+                document.getElementById('accountRole').textContent = this.isAdmin ? '管理员' : '用户';
+                document.getElementById('statScore').textContent = profile.score || 0;
+                document.getElementById('statGames').textContent = profile.games_played || 0;
+                document.getElementById('statHighScore').textContent = profile.high_score || 0;
+                document.getElementById('statWins').textContent = profile.duel_wins || 0;
             },
 
             // 登录
@@ -1363,7 +1347,6 @@
                         
                         await this.loadUserProfile();
                         this.loginSuccess();
-                        await this.loadUserSubmissions();
                     }
                 } catch (err) {
                     this.showNotification('登录时发生错误');
@@ -1376,6 +1359,10 @@
                 this.isLoggedIn = true;
                 this.updateUserUI();
                 this.showNotification(`欢迎回来，${this.currentUser.username}！`);
+                
+                if (this.isAdmin) {
+                    document.getElementById('adminNavBtn').style.display = 'flex';
+                }
             },
 
             // 注册
@@ -1448,11 +1435,11 @@
                     this.currentUser = null;
                     this.userProfile = null;
                     this.isLoggedIn = false;
-                    this.userSubmissions = [];
+                    this.isAdmin = false;
                     
                     this.updateUserUI();
                     this.showNotification('已退出登录');
-                    this.showPanel('newSubmission');
+                    this.showPanel('knowledge');
                 } catch (err) {
                     console.error('退出登录错误:', err);
                 }
@@ -1462,6 +1449,7 @@
             updateUserUI: function() {
                 const loginStatus = document.getElementById('loginStatus');
                 const userAvatar = document.getElementById('userAvatar');
+                const adminNavBtn = document.getElementById('adminNavBtn');
                 
                 if (this.isLoggedIn && this.currentUser) {
                     loginStatus.innerHTML = `
@@ -1471,477 +1459,25 @@
                             <div style="font-size: 12px; opacity: 0.8;">已登录</div>
                         </div>
                     `;
-                    loginStatus.onclick = () => this.showPanel('account');
+                    loginStatus.onclick = () => this.showPanel('myAccount');
                     userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
-                    userAvatar.onclick = () => this.showPanel('account');
+                    userAvatar.onclick = () => this.showPanel('myAccount');
+                    
+                    if (this.isAdmin) {
+                        adminNavBtn.style.display = 'flex';
+                    } else {
+                        adminNavBtn.style.display = 'none';
+                    }
                 } else {
                     loginStatus.innerHTML = '<i class="fas fa-user"></i><span>登录/注册</span>';
                     loginStatus.onclick = () => this.showLoginModal();
                     userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                     userAvatar.onclick = () => this.showLoginModal();
+                    adminNavBtn.style.display = 'none';
                 }
             },
 
-            // 更新账户UI
-            updateAccountUI: function() {
-                if (!this.currentUser) return;
-                
-                const profile = this.userProfile || {
-                    username: this.currentUser.username,
-                    email: this.currentUser.email
-                };
-                
-                document.getElementById('accountAvatar').textContent = profile.username.charAt(0).toUpperCase();
-                document.getElementById('accountUsername').textContent = profile.username;
-                document.getElementById('accountEmail').textContent = profile.email;
-                document.getElementById('accountRole').textContent = profile.role === 'admin' ? '管理员' : '用户';
-            },
-
-            // ==================== 投稿功能 ====================
-            initSubjects: function() {
-                this.renderSubjectSelector();
-            },
-
-            renderSubjectSelector: function() {
-                const container = document.getElementById('submissionSubjectSelector');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                
-                // 只显示主要学科
-                const mainSubjects = this.allSubjects.slice(0, 7);
-                
-                mainSubjects.forEach(subject => {
-                    const isSelected = subject.id === 'math'; // 默认选中数学
-                    const card = this.createSubjectCard(subject.id, subject.name, subject.icon, isSelected);
-                    container.appendChild(card);
-                });
-            },
-
-            createSubjectCard: function(id, name, icon, isSelected) {
-                const card = document.createElement('div');
-                card.className = `subject-card ${isSelected ? 'selected' : ''}`;
-                card.dataset.subjectId = id;
-                
-                card.innerHTML = `
-                    <div class="subject-icon"><i class="${icon}"></i></div>
-                    <div class="subject-name">${name}</div>
-                `;
-                
-                card.onclick = () => {
-                    this.toggleSubjectSelection(id, card);
-                };
-                
-                return card;
-            },
-
-            toggleSubjectSelection: function(subjectId, card) {
-                if (card.classList.contains('selected')) {
-                    card.classList.remove('selected');
-                } else {
-                    card.classList.add('selected');
-                }
-            },
-
-            // 选择投稿类型
-            selectSubmissionType: function(type) {
-                this.currentSubmissionType = type;
-                
-                // 更新按钮状态
-                document.querySelectorAll('.submission-type-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                event.target.classList.add('selected');
-                
-                // 显示对应的表单
-                document.getElementById('knowledgeForm').classList.remove('active');
-                document.getElementById('gameForm').classList.remove('active');
-                
-                if (type === 'knowledge') {
-                    document.getElementById('knowledgeForm').classList.add('active');
-                } else {
-                    document.getElementById('gameForm').classList.add('active');
-                }
-            },
-
-            // 选择游戏类型
-            selectGameType: function(type) {
-                this.selectedGameType = type;
-                
-                // 显示对应的表单
-                document.querySelectorAll('.game-type-form').forEach(form => {
-                    form.classList.remove('active');
-                });
-                document.getElementById(type + 'Form').classList.add('active');
-            },
-
-            // 添加配对项
-            addMatchPair: function() {
-                const container = document.getElementById('matchPairs');
-                const newPair = document.createElement('div');
-                newPair.className = 'match-pair';
-                newPair.innerHTML = `
-                    <input type="text" class="form-input match-left" placeholder="左项">
-                    <input type="text" class="form-input match-right" placeholder="右项">
-                `;
-                container.appendChild(newPair);
-            },
-
-            // 提交知识点
-            submitKnowledge: async function() {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录后再提交投稿');
-                    this.showLoginModal();
-                    return;
-                }
-                
-                const title = document.getElementById('knowledgeTitle').value.trim();
-                const content = document.getElementById('knowledgeContent').value.trim();
-                
-                if (!title || !content) {
-                    this.showNotification('请填写标题和内容');
-                    return;
-                }
-                
-                if (title.length < 5) {
-                    this.showNotification('标题至少需要5个字符');
-                    return;
-                }
-                
-                if (content.length < 20) {
-                    this.showNotification('内容至少需要20个字符');
-                    return;
-                }
-                
-                // 获取选中的学科
-                const selectedCards = document.querySelectorAll('#submissionSubjectSelector .subject-card.selected');
-                if (selectedCards.length === 0) {
-                    this.showNotification('请至少选择一个学科');
-                    return;
-                }
-                
-                const selectedSubjects = Array.from(selectedCards).map(card => card.dataset.subjectId).join(',');
-                
-                // 获取选中的标签
-                const selectedTags = [];
-                document.querySelectorAll('#knowledgeForm input[type="checkbox"]:checked').forEach(cb => {
-                    selectedTags.push(cb.value);
-                });
-                
-                try {
-                    // 保存到数据库
-                    const { data, error } = await this.supabase
-                        .from('submissions')
-                        .insert([
-                            {
-                                subject: selectedSubjects,
-                                title: title,
-                                content: content,
-                                tags: selectedTags,
-                                status: 'pending',
-                                user_id: this.currentUser.id,
-                                author_name: this.currentUser.username,
-                                like_count: 0,
-                                view_count: 0,
-                                created_at: new Date().toISOString(),
-                                updated_at: new Date().toISOString()
-                            }
-                        ])
-                        .select();
-                    
-                    if (error) {
-                        this.showNotification('提交失败: ' + error.message);
-                        return;
-                    }
-                    
-                    this.showNotification('知识点投稿提交成功！等待管理员审核。');
-                    this.clearSubmissionForm();
-                    
-                    // 添加到本地列表
-                    if (data && data[0]) {
-                        this.userSubmissions.unshift(data[0]);
-                        this.renderSubmissionsList();
-                        this.updateStats();
-                    }
-                    
-                } catch (err) {
-                    console.error('投稿提交错误:', err);
-                    this.showNotification('投稿提交时发生错误');
-                }
-            },
-
-            // 提交游戏题目
-            submitGameQuestion: async function() {
-                if (!this.isLoggedIn) {
-                    this.showNotification('请先登录后再提交题目');
-                    this.showLoginModal();
-                    return;
-                }
-                
-                if (!this.selectedGameType) {
-                    this.showNotification('请先选择题型');
-                    return;
-                }
-                
-                let gameData = {};
-                let title = '';
-                
-                try {
-                    switch(this.selectedGameType) {
-                        case 'match':
-                            title = document.getElementById('matchTitle').value.trim();
-                            const leftItems = Array.from(document.querySelectorAll('.match-left')).map(input => input.value.trim());
-                            const rightItems = Array.from(document.querySelectorAll('.match-right')).map(input => input.value.trim());
-                            
-                            if (!title) {
-                                this.showNotification('请填写题目标题');
-                                return;
-                            }
-                            
-                            if (leftItems.some(v => !v) || rightItems.some(v => !v)) {
-                                this.showNotification('请填写所有配对项');
-                                return;
-                            }
-                            
-                            if (leftItems.length < 3) {
-                                this.showNotification('至少需要3对配对项');
-                                return;
-                            }
-                            
-                            gameData = {
-                                type: 'match',
-                                title: title,
-                                items: leftItems.map((left, i) => ({ left, right: rightItems[i] }))
-                            };
-                            break;
-                            
-                        case 'true_false':
-                            title = document.getElementById('tfTitle').value.trim();
-                            const statement = document.getElementById('tfStatement').value.trim();
-                            const answer = document.querySelector('input[name="tfAnswer"]:checked');
-                            const explanation = document.getElementById('tfExplanation').value.trim();
-                            
-                            if (!title || !statement || !answer) {
-                                this.showNotification('请填写所有必填项');
-                                return;
-                            }
-                            
-                            gameData = {
-                                type: 'true_false',
-                                title: title,
-                                statement: statement,
-                                answer: answer.value === 'true',
-                                explanation: explanation || ''
-                            };
-                            break;
-                            
-                        case 'guess':
-                            title = document.getElementById('guessTitle').value.trim();
-                            const hint = document.getElementById('guessHint').value.trim();
-                            const guessAnswer = document.getElementById('guessAnswer').value.trim();
-                            const difficulty = document.getElementById('guessDifficulty').value;
-                            
-                            if (!title || !hint || !guessAnswer) {
-                                this.showNotification('请填写所有必填项');
-                                return;
-                            }
-                            
-                            gameData = {
-                                type: 'guess',
-                                title: title,
-                                hint: hint,
-                                answer: guessAnswer,
-                                difficulty: difficulty
-                            };
-                            break;
-                    }
-                    
-                    // 保存到数据库
-                    const { data, error } = await this.supabase
-                        .from('submissions')
-                        .insert([
-                            {
-                                subject: 'game',
-                                title: title,
-                                content: JSON.stringify(gameData),
-                                game_type: this.selectedGameType,
-                                status: 'pending',
-                                user_id: this.currentUser.id,
-                                author_name: this.currentUser.username,
-                                like_count: 0,
-                                view_count: 0,
-                                created_at: new Date().toISOString(),
-                                updated_at: new Date().toISOString()
-                            }
-                        ])
-                        .select();
-                    
-                    if (error) {
-                        this.showNotification('提交失败: ' + error.message);
-                        return;
-                    }
-                    
-                    this.showNotification('游戏题目投稿成功！等待管理员审核。');
-                    this.clearGameForm();
-                    
-                    // 添加到本地列表
-                    if (data && data[0]) {
-                        this.userSubmissions.unshift(data[0]);
-                        this.renderSubmissionsList();
-                        this.updateStats();
-                    }
-                    
-                } catch (err) {
-                    console.error('提交游戏题目错误:', err);
-                    this.showNotification('提交时发生错误');
-                }
-            },
-
-            // 清空知识点表单
-            clearSubmissionForm: function() {
-                document.getElementById('knowledgeTitle').value = '';
-                document.getElementById('knowledgeContent').value = '';
-                
-                // 清除学科选择
-                document.querySelectorAll('#submissionSubjectSelector .subject-card').forEach(card => {
-                    card.classList.remove('selected');
-                });
-                // 默认选中数学
-                const mathCard = document.querySelector('#submissionSubjectSelector [data-subject-id="math"]');
-                if (mathCard) mathCard.classList.add('selected');
-                
-                // 清除标签选择
-                document.querySelectorAll('#knowledgeForm input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
-            },
-
-            // 清空游戏表单
-            clearGameForm: function() {
-                // 重置所有表单
-                document.querySelectorAll('#gameForm input, #gameForm textarea, #gameForm select').forEach(el => {
-                    if (el.type === 'radio' || el.type === 'checkbox') {
-                        el.checked = false;
-                    } else {
-                        el.value = '';
-                    }
-                });
-                
-                // 重置配对项
-                const matchPairs = document.getElementById('matchPairs');
-                matchPairs.innerHTML = `
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项（如：勾股定理）">
-                        <input type="text" class="form-input match-right" placeholder="右项（如：a²+b²=c²）">
-                    </div>
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项">
-                        <input type="text" class="form-input match-right" placeholder="右项">
-                    </div>
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项">
-                        <input type="text" class="form-input match-right" placeholder="右项">
-                    </div>
-                `;
-                
-                // 重置选择
-                this.selectedGameType = 'match';
-                document.getElementById('gameType').value = 'match';
-                document.querySelectorAll('.game-type-form').forEach(form => {
-                    form.classList.remove('active');
-                });
-                document.getElementById('matchForm').classList.add('active');
-            },
-
-            // 渲染投稿列表
-            renderSubmissionsList: function() {
-                const container = document.getElementById('submissionsList');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                
-                if (this.userSubmissions.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary);">
-                            <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
-                            <h3>暂无投稿</h3>
-                            <p>快来创建你的第一个投稿吧！</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                this.userSubmissions.forEach(submission => {
-                    const item = document.createElement('div');
-                    item.className = 'submission-item';
-                    
-                    const statusClass = `status-${submission.status}`;
-                    const statusText = submission.status === 'pending' ? '审核中' : 
-                                      submission.status === 'approved' ? '已通过' : '已拒绝';
-                    
-                    const subjectName = this.allSubjects.find(s => s.id === submission.subject)?.name || submission.subject;
-                    
-                    item.innerHTML = `
-                        <div class="submission-header">
-                            <div class="submission-title">${submission.title}</div>
-                            <div class="submission-status ${statusClass}">${statusText}</div>
-                        </div>
-                        <div class="submission-meta">
-                            <div><i class="fas fa-book"></i> ${subjectName}</div>
-                            <div><i class="far fa-calendar"></i> ${new Date(submission.created_at).toLocaleDateString('zh-HK')}</div>
-                            <div><i class="fas fa-eye"></i> ${submission.view_count || 0} 浏览</div>
-                            <div><i class="fas fa-heart"></i> ${submission.like_count || 0} 点赞</div>
-                        </div>
-                        <div class="submission-content">
-                            ${submission.content.length > 200 ? submission.content.substring(0, 200) + '...' : submission.content}
-                        </div>
-                    `;
-                    
-                    container.appendChild(item);
-                });
-            },
-
-            // 更新统计数据
-            updateStats: function() {
-                const totalSubmissions = this.userSubmissions.length;
-                const approvedSubmissions = this.userSubmissions.filter(s => s.status === 'approved').length;
-                
-                document.getElementById('statSubmissions').textContent = totalSubmissions;
-                document.getElementById('statApproved').textContent = approvedSubmissions;
-            },
-
-            // ==================== 面板管理 ====================
-            showPanel: function(panelId) {
-                // 隐藏所有面板
-                document.querySelectorAll('.submission-main > div').forEach(panel => {
-                    panel.classList.add('hidden');
-                });
-                
-                // 显示目标面板
-                const targetPanel = document.getElementById(panelId + 'Panel');
-                if (targetPanel) {
-                    targetPanel.classList.remove('hidden');
-                }
-                
-                // 更新导航按钮状态
-                document.querySelectorAll('.submission-nav .btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                const targetNavBtn = document.querySelector(`.submission-nav .btn[onclick*="${panelId}"]`);
-                if (targetNavBtn) targetNavBtn.classList.add('active');
-                
-                // 加载数据
-                if (panelId === 'mySubmissions' && this.isLoggedIn) {
-                    this.loadUserSubmissions();
-                }
-                
-                if (panelId === 'account' && this.isLoggedIn) {
-                    this.updateAccountUI();
-                }
-            },
-
-            // ==================== 通知系统 ====================
+            // 显示通知
             showNotification: function(message, duration = 3000) {
                 const existing = document.querySelector('.notification');
                 if (existing) existing.remove();
@@ -1975,6 +1511,301 @@
                 }, duration);
             },
 
+            // ==================== 知识点系统 ====================
+            initSubjects: function() {
+                this.renderSubjectSelector('subjectSelector', this.selectedSubjects, 'knowledge');
+            },
+
+            renderSubjectSelector: function(containerId, selectedSet) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                const allCard = this.createSubjectCard('all', '全部学科', 'fas fa-layer-group', selectedSet.has('all'));
+                container.appendChild(allCard);
+                
+                this.allSubjects.forEach(subject => {
+                    const isSelected = selectedSet.has('all') || selectedSet.has(subject.id);
+                    const card = this.createSubjectCard(subject.id, subject.name, subject.icon, isSelected);
+                    container.appendChild(card);
+                });
+            },
+
+            createSubjectCard: function(id, name, icon, isSelected) {
+                const card = document.createElement('div');
+                card.className = `subject-card ${isSelected ? 'selected' : ''}`;
+                card.dataset.subjectId = id;
+                
+                card.innerHTML = `
+                    <div class="subject-icon"><i class="${icon}"></i></div>
+                    <div class="subject-name">${name}</div>
+                `;
+                
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    this.handleKnowledgeSubjectSelect(id);
+                };
+                
+                return card;
+            },
+
+            handleKnowledgeSubjectSelect: function(subjectId) {
+                if (subjectId === 'all') {
+                    if (this.selectedSubjects.has('all')) {
+                        this.selectedSubjects.clear();
+                    } else {
+                        this.selectedSubjects.clear();
+                        this.selectedSubjects.add('all');
+                        this.allSubjects.forEach(s => this.selectedSubjects.add(s.id));
+                    }
+                } else {
+                    if (this.selectedSubjects.has(subjectId)) {
+                        this.selectedSubjects.delete(subjectId);
+                        this.selectedSubjects.delete('all');
+                    } else {
+                        this.selectedSubjects.add(subjectId);
+                    }
+                }
+                
+                this.renderSubjectSelector('subjectSelector', this.selectedSubjects);
+                this.filterKnowledge();
+            },
+
+            // 标签筛选
+            filterByTag: function(tag) {
+                this.currentTagFilter = tag;
+                
+                // 更新标签按钮状态
+                document.querySelectorAll('.tag-filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                this.filterKnowledge();
+            },
+
+            filterSubjects: function(filter, button) {
+                this.currentFilter = filter;
+                
+                // 更新按钮状态
+                document.querySelectorAll('.subject-controls .btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                
+                this.filterKnowledge();
+            },
+
+            filterKnowledge: function() {
+                let filteredData = this.knowledgeData;
+                
+                // 学科筛选
+                if (!this.selectedSubjects.has('all') && this.selectedSubjects.size > 0) {
+                    filteredData = filteredData.filter(item => 
+                        this.selectedSubjects.has(item.subject)
+                    );
+                }
+                
+                // 标签筛选
+                if (this.currentTagFilter !== 'all') {
+                    filteredData = filteredData.filter(item => 
+                        item.tags && item.tags.includes(this.currentTagFilter)
+                    );
+                }
+                
+                this.renderKnowledgeCards(filteredData);
+            },
+
+            searchKnowledge: function(keyword) {
+                if (!keyword.trim()) {
+                    this.filterKnowledge();
+                    return;
+                }
+                
+                const filteredData = this.knowledgeData.filter(item => 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.content.toLowerCase().includes(keyword.toLowerCase()) ||
+                    (item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase())))
+                );
+                
+                this.renderKnowledgeCards(filteredData);
+            },
+
+            initKnowledgeGrid: function() {
+                this.renderKnowledgeCards(this.knowledgeData);
+            },
+
+            renderKnowledgeCards: function(data) {
+                const container = document.getElementById('knowledgeGrid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); grid-column: 1 / -1;">
+                            <i class="fas fa-search" style="font-size: 64px; margin-bottom: var(--spacing-md); color: var(--text-secondary);"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm); font-size: 20px;">未找到相关知识点</h3>
+                            <p style="color: var(--text-secondary); font-size: 14px;">请尝试选择其他学科、标签或搜索其他关键词</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                data.forEach(item => {
+                    const subject = this.allSubjects.find(s => s.id === item.subject) || { name: item.subject };
+                    
+                    const card = document.createElement('div');
+                    card.className = 'knowledge-card';
+                    
+                    const tagsHTML = item.tags ? `
+                        <div class="knowledge-tags">
+                            ${item.tags.map(tag => `<span class="knowledge-tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : '';
+                    
+                    card.innerHTML = `
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: var(--spacing-xs); font-weight: 600;">
+                            <i class="${this.allSubjects.find(s => s.id === item.subject)?.icon || 'fas fa-book'}"></i> ${subject.name}
+                        </div>
+                        <div style="font-weight: 800; font-size: 18px; margin-bottom: var(--spacing-sm); line-height: 1.3;">${item.title}</div>
+                        ${tagsHTML}
+                        <div style="font-size: 15px; color: var(--text-color); line-height: 1.6; margin: var(--spacing-md) 0;">${item.content}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: var(--spacing-md);">
+                            <i class="far fa-calendar"></i> ${item.created_at}
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            },
+
+            // ==================== 留言板系统 ====================
+            initMessageBoard: function() {
+                this.renderMessages();
+            },
+
+            sendMessage: function() {
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录后才能留言');
+                    this.showLoginModal();
+                    return;
+                }
+                
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (!message) {
+                    this.showNotification('请输入留言内容');
+                    return;
+                }
+                
+                const newMessage = {
+                    id: this.messages.length + 1,
+                    username: this.currentUser.username,
+                    content: message,
+                    created_at: new Date().toLocaleString('zh-HK')
+                };
+                
+                this.messages.unshift(newMessage);
+                this.renderMessages();
+                
+                input.value = '';
+                this.showNotification('留言发送成功！');
+            },
+
+            renderMessages: function() {
+                const container = document.getElementById('messagesContainer');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (this.messages.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary);">
+                            <i class="fas fa-comment-slash" style="font-size: 48px; margin-bottom: var(--spacing-md);"></i>
+                            <h3>暂无留言</h3>
+                            <p>快来发表第一条留言吧！</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                this.messages.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message-item';
+                    messageElement.innerHTML = `
+                        <div class="message-header">
+                            <div class="message-user">
+                                <i class="fas fa-user-circle"></i> ${message.username}
+                            </div>
+                            <div class="message-time">${message.created_at}</div>
+                        </div>
+                        <div class="message-content">${message.content}</div>
+                    `;
+                    container.appendChild(messageElement);
+                });
+            },
+
+            // ==================== 面板管理 ====================
+            showPanel: function(panelId) {
+                // 隐藏所有面板
+                document.querySelectorAll('.main-panel > div').forEach(panel => {
+                    panel.classList.add('hidden');
+                });
+                
+                // 显示目标面板
+                const targetPanel = document.getElementById(panelId + 'Panel');
+                if (targetPanel) {
+                    targetPanel.classList.remove('hidden');
+                }
+                
+                // 更新导航按钮状态
+                document.querySelectorAll('.side-nav .btn, nav .btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // 特殊处理
+                if (panelId === 'knowledge' || panelId === 'messageBoard') {
+                    const targetNavBtn = document.querySelector(`nav .btn[onclick*="${panelId}"]`);
+                    if (targetNavBtn) targetNavBtn.classList.add('active');
+                }
+                
+                const targetSideBtn = document.querySelector(`.side-nav .btn[onclick*="${panelId}"]`);
+                if (targetSideBtn) targetSideBtn.classList.add('active');
+                
+                if (panelId === 'myAccount' && this.isLoggedIn) {
+                    this.updateAccountUI();
+                }
+            },
+
+            // ==================== 主题系统 ====================
+            initThemes: function() {
+                // 主题选项已在HTML中硬编码，无需动态生成
+            },
+
+            changeTheme: function(themeId) {
+                document.body.classList.remove(this.currentTheme);
+                this.currentTheme = themeId;
+                document.body.classList.add(themeId);
+                
+                // 更新主题选项状态
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                event.target.closest('.theme-option').classList.add('active');
+                
+                const themeNames = {
+                    'theme-blue-purple': '蓝-紫主题',
+                    'theme-green-teal': '绿-青主题',
+                    'theme-orange-red': '橙-红主题',
+                    'theme-dark': '深色主题'
+                };
+                
+                this.showNotification(`已切换至${themeNames[themeId]}`);
+            },
+
             // ==================== 模态框管理 ====================
             showLoginModal: function() {
                 document.getElementById('loginModal').classList.add('active');
@@ -1996,9 +1827,35 @@
             }
         };
 
-        // 初始化投稿系统
+        // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
-            SubmissionSystem.init();
+            DSEHub.init();
+            
+            // 为主题选项添加样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .theme-option {
+                    background: white;
+                    border: 2px solid var(--border-color);
+                    border-radius: var(--border-radius-lg);
+                    padding: var(--spacing-lg);
+                    cursor: pointer;
+                    transition: var(--transition-normal);
+                    box-shadow: var(--shadow-sm);
+                }
+                
+                .theme-option:hover {
+                    transform: translateY(-4px);
+                    box-shadow: var(--shadow-lg);
+                    border-color: var(--accent-color);
+                }
+                
+                .theme-option.active {
+                    border-color: var(--accent-color);
+                    box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+                }
+            `;
+            document.head.appendChild(style);
         });
 
         // 模态框点击外部关闭
@@ -2007,7 +1864,7 @@
             const registerModal = document.getElementById('registerModal');
             
             if (event.target === loginModal || event.target === registerModal) {
-                SubmissionSystem.closeModal();
+                DSEHub.closeModal();
             }
         });
     </script>
