@@ -759,12 +759,21 @@
                         <option value="CHI">中国语文</option>
                         <option value="ENG">英国语文</option>
                         <option value="MATH">数学</option>
+                        <option value="LS">通识教育</option>
                         <option value="PHY">物理</option>
                         <option value="CHEM">化学</option>
                         <option value="BIO">生物</option>
-                        <option value="LS">通识教育</option>
-                        <option value="ECON">经济</option>
+                        <option value="CHIST">中国历史</option>
+                        <option value="HIST">历史</option>
                         <option value="GEOG">地理</option>
+                        <option value="ECON">经济</option>
+                        <option value="CIT">资讯及通讯科技</option>
+                        <option value="BAFS">企业、会计与财务概论</option>
+                        <option value="M1">数学延伸单元一</option>
+                        <option value="M2">数学延伸单元二</option>
+                        <option value="MUSIC">音乐</option>
+                        <option value="VA">视觉艺术</option>
+                        <option value="PE">体育</option>
                     </select>
                 </div>
             </div>
@@ -790,8 +799,8 @@
                     <span class="filter-chip" onclick="filterByDifficulty(2)">中级</span>
                     <span class="filter-chip active" onclick="filterByDifficulty('all')">全部</span>
                     <span class="filter-chip" onclick="filterByDifficulty(3)">高级</span>
-                    <span class="filter-chip" onclick="showRecent()">最新</span>
-                    <span class="filter-chip" onclick="showPopular()">热门</span>
+                    <span class="filter-chip" onclick="filterByDifficulty(4)">精通</span>
+                    <span class="filter-chip" onclick="filterByDifficulty(5)">专家</span>
                 </div>
             </div>
 
@@ -905,27 +914,40 @@
         let chatMessages = [];
         let userFavorites = new Set();
 
-        // ===== 科目映射 =====
+        // ===== 完整的科目映射 =====
         const SUBJECT_MAP = {
-            'CHI': { name: '中国语文', color: '#ef4444' },
-            'ENG': { name: '英国语文', color: '#3b82f6' },
-            'MATH': { name: '数学', color: '#10b981' },
-            'PHY': { name: '物理', color: '#ec4899' },
-            'CHEM': { name: '化学', color: '#f59e0b' },
-            'BIO': { name: '生物', color: '#84cc16' },
-            'LS': { name: '通识教育', color: '#8b5cf6' },
-            'ECON': { name: '经济', color: '#7c3aed' },
-            'GEOG': { name: '地理', color: '#059669' }
+            // 必修科目
+            'CHI': { name: '中国语文', color: '#ef4444', icon: 'fa-language' },
+            'ENG': { name: '英国语文', color: '#3b82f6', icon: 'fa-font' },
+            'MATH': { name: '数学', color: '#10b981', icon: 'fa-calculator' },
+            'LS': { name: '通识教育', color: '#8b5cf6', icon: 'fa-globe-asia' },
+            
+            // 理科科目
+            'PHY': { name: '物理', color: '#ec4899', icon: 'fa-atom' },
+            'CHEM': { name: '化学', color: '#f59e0b', icon: 'fa-flask' },
+            'BIO': { name: '生物', color: '#84cc16', icon: 'fa-dna' },
+            'M1': { name: '数学延伸单元一', color: '#06b6d4', icon: 'fa-sigma' },
+            'M2': { name: '数学延伸单元二', color: '#8b5cf6', icon: 'fa-infinity' },
+            
+            // 文科科目
+            'CHIST': { name: '中国历史', color: '#dc2626', icon: 'fa-scroll' },
+            'HIST': { name: '历史', color: '#d97706', icon: 'fa-landmark' },
+            'GEOG': { name: '地理', color: '#059669', icon: 'fa-mountain' },
+            'ECON': { name: '经济', color: '#7c3aed', icon: 'fa-chart-pie' },
+            'BAFS': { name: '企业、会计与财务概论', color: '#0ea5e9', icon: 'fa-business-time' },
+            'CIT': { name: '资讯及通讯科技', color: '#6366f1', icon: 'fa-laptop-code' },
+            
+            // 其他科目
+            'MUSIC': { name: '音乐', color: '#f43f5e', icon: 'fa-music' },
+            'VA': { name: '视觉艺术', color: '#f59e0b', icon: 'fa-palette' },
+            'PE': { name: '体育', color: '#10b981', icon: 'fa-running' }
         };
 
         // ===== 初始化 =====
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 初始化Supabase
-                if (window.supabase && window.supabase.createClient) {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    console.log('Supabase初始化成功');
-                }
+                // 初始化Supabase（带有错误处理）
+                initSupabase();
                 
                 // 检查用户会话
                 await checkUserSession();
@@ -945,105 +967,232 @@
                 
             } catch (error) {
                 console.error('初始化失败:', error);
-                showNotification('系统初始化失败，使用本地数据', 'warning');
+                showNotification('使用本地数据模式', 'warning');
                 loadLocalData();
             }
         });
 
-        // ===== 用户会话管理 =====
-        async function checkUserSession() {
-            const sessionToken = getCookie('cross_site_session');
-            
-            if (sessionToken && supabaseClient) {
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('cross_site_sessions')
-                        .select('*, profiles(*)')
-                        .eq('session_token', sessionToken)
-                        .gt('expires_at', new Date().toISOString())
-                        .single();
-                    
-                    if (data && !error && data.profiles) {
-                        currentUser = {
-                            id: data.user_id,
-                            ...data.profiles
-                        };
-                        console.log('用户已登录:', currentUser.username);
-                        
-                        // 加载用户收藏
-                        await loadUserFavorites();
-                        
-                        // 更新聊天区显示用户名
-                        const chatInput = document.getElementById('chatInput');
-                        if (chatInput) {
-                            chatInput.placeholder = `${currentUser.username}，输入消息...`;
+        // ===== 智能Supabase初始化 =====
+        function initSupabase() {
+            try {
+                if (window.supabase && window.supabase.createClient) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                        auth: {
+                            persistSession: true,
+                            autoRefreshToken: true
+                        },
+                        global: {
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                                'Content-Type': 'application/json'
+                            }
                         }
-                        
-                        showNotification(`欢迎回来，${currentUser.username}!`, 'success');
-                    }
-                } catch (error) {
-                    console.error('会话检查失败:', error);
+                    });
+                    
+                    // 测试连接
+                    testSupabaseConnection();
+                } else {
+                    throw new Error('Supabase库加载失败');
                 }
+            } catch (error) {
+                console.warn('Supabase初始化失败，使用本地模式:', error);
+                supabaseClient = null;
             }
         }
 
-        async function loadUserFavorites() {
-            if (!currentUser || !supabaseClient) return;
+        async function testSupabaseConnection() {
+            if (!supabaseClient) return;
             
             try {
+                // 尝试一个简单的查询来测试权限
                 const { data, error } = await supabaseClient
-                    .from('bookmarks')
-                    .select('submission_id')
-                    .eq('user_id', currentUser.id);
+                    .from('profiles')
+                    .select('count')
+                    .limit(1);
                 
-                if (!error && data) {
-                    userFavorites = new Set(data.map(item => item.submission_id));
+                if (error) {
+                    console.warn('Supabase权限测试失败，使用本地模式:', error);
+                    supabaseClient = null;
+                } else {
+                    console.log('Supabase连接成功');
                 }
             } catch (error) {
-                console.error('加载收藏失败:', error);
+                console.warn('Supabase连接测试失败:', error);
+                supabaseClient = null;
+            }
+        }
+
+        // ===== 用户会话管理 =====
+        async function checkUserSession() {
+            // 首先检查本地存储的会话
+            const localUser = localStorage.getItem('dsehub_current_user');
+            if (localUser) {
+                try {
+                    currentUser = JSON.parse(localUser);
+                    console.log('从本地加载用户:', currentUser.username);
+                    
+                    // 加载本地收藏
+                    const localFavorites = localStorage.getItem(`dsehub_favorites_${currentUser.id}`);
+                    if (localFavorites) {
+                        userFavorites = new Set(JSON.parse(localFavorites));
+                    }
+                    
+                    return;
+                } catch (e) {
+                    console.warn('本地用户数据解析失败');
+                }
+            }
+            
+            // 尝试Supabase会话
+            if (supabaseClient) {
+                try {
+                    const { data: { session }, error } = await supabaseClient.auth.getSession();
+                    
+                    if (!error && session) {
+                        const { data: profile, error: profileError } = await supabaseClient
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', session.user.id)
+                            .single();
+                        
+                        if (!profileError && profile) {
+                            currentUser = {
+                                id: session.user.id,
+                                ...profile
+                            };
+                            
+                            // 保存到本地存储
+                            localStorage.setItem('dsehub_current_user', JSON.stringify(currentUser));
+                            
+                            // 加载收藏
+                            await loadUserFavorites();
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Supabase会话检查失败:', error);
+                }
+            }
+            
+            // 如果没有用户，创建匿名用户
+            if (!currentUser) {
+                createAnonymousUser();
+            }
+        }
+
+        function createAnonymousUser() {
+            const anonymousId = 'anonymous_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            currentUser = {
+                id: anonymousId,
+                username: '访客用户',
+                email: null,
+                is_admin: false,
+                score: 0,
+                games_played: 0,
+                high_score: 0,
+                duel_wins: 0,
+                duel_losses: 0,
+                created_at: new Date().toISOString()
+            };
+            
+            localStorage.setItem('dsehub_current_user', JSON.stringify(currentUser));
+            console.log('创建匿名用户:', anonymousId);
+        }
+
+        async function loadUserFavorites() {
+            if (!currentUser) return;
+            
+            // 先尝试Supabase
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('bookmarks')
+                        .select('submission_id')
+                        .eq('user_id', currentUser.id);
+                    
+                    if (!error && data) {
+                        userFavorites = new Set(data.map(item => item.submission_id));
+                        // 保存到本地
+                        localStorage.setItem(`dsehub_favorites_${currentUser.id}`, JSON.stringify([...userFavorites]));
+                        return;
+                    }
+                } catch (error) {
+                    console.warn('从Supabase加载收藏失败:', error);
+                }
+            }
+            
+            // 降级到本地存储
+            const localFavorites = localStorage.getItem(`dsehub_favorites_${currentUser.id}`);
+            if (localFavorites) {
+                userFavorites = new Set(JSON.parse(localFavorites));
             }
         }
 
         // ===== 知识库功能 =====
         async function loadKnowledgeCards() {
             try {
-                let query = supabaseClient
-                    .from('knowledge_points')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                // 应用筛选
-                if (currentSubject) {
-                    query = query.eq('subject', currentSubject);
+                // 优先使用本地数据
+                const localData = localStorage.getItem('dsehub_knowledge_points');
+                if (localData) {
+                    knowledgePoints = JSON.parse(localData);
+                    renderKnowledgeCards();
+                    return;
                 }
                 
-                if (currentDifficulty !== 'all') {
-                    query = query.eq('difficulty', parseInt(currentDifficulty));
+                // 尝试从Supabase加载
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('knowledge_points')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        console.warn('从Supabase加载数据失败:', error);
+                        throw error;
+                    }
+                    
+                    knowledgePoints = data || [];
+                    
+                    // 保存到本地存储
+                    localStorage.setItem('dsehub_knowledge_points', JSON.stringify(knowledgePoints));
+                } else {
+                    throw new Error('无可用数据源');
                 }
                 
-                const { data, error } = await query;
-                
-                if (error) throw error;
-                
-                knowledgePoints = data || [];
                 renderKnowledgeCards();
                 
             } catch (error) {
-                console.error('加载知识卡片失败:', error);
-                throw error;
+                console.warn('加载知识卡片失败，使用本地测试数据:', error);
+                // 降级到本地测试数据
+                generateLocalKnowledgeData();
+                renderKnowledgeCards();
             }
         }
 
         function renderKnowledgeCards() {
             const container = document.getElementById('knowledgeCards');
             
-            if (!knowledgePoints || knowledgePoints.length === 0) {
+            // 应用筛选
+            let filteredPoints = [...knowledgePoints];
+            
+            if (currentSubject) {
+                filteredPoints = filteredPoints.filter(k => k.subject === currentSubject);
+            }
+            
+            if (currentDifficulty !== 'all') {
+                filteredPoints = filteredPoints.filter(k => k.difficulty === parseInt(currentDifficulty));
+            }
+            
+            if (filteredPoints.length === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
                         <i class="fas fa-book" style="font-size: 3rem; margin-bottom: 20px;"></i>
                         <p>暂无相关知识点</p>
                         <button class="action-btn primary" onclick="resetFilters()" style="margin-top: 16px;">
                             <i class="fas fa-redo"></i> 重置筛选
+                        </button>
+                        <button class="action-btn" onclick="addTestData()" style="margin-top: 16px; margin-left: 8px;">
+                            <i class="fas fa-plus"></i> 添加测试数据
                         </button>
                     </div>
                 `;
@@ -1052,8 +1201,12 @@
             
             container.innerHTML = '';
             
-            knowledgePoints.forEach((card, index) => {
-                const subject = SUBJECT_MAP[card.subject] || { name: card.subject, color: '#6366f1' };
+            filteredPoints.forEach((card) => {
+                const subject = SUBJECT_MAP[card.subject] || { 
+                    name: card.subject, 
+                    color: '#6366f1',
+                    icon: 'fa-book'
+                };
                 const isFavorited = userFavorites.has(card.id);
                 
                 const cardElement = document.createElement('div');
@@ -1061,12 +1214,15 @@
                 cardElement.innerHTML = `
                     <div class="card-header">
                         <div style="flex: 1;">
-                            <span class="subject-badge" style="background: ${subject.color}">${subject.name}</span>
+                            <span class="subject-badge" style="background: ${subject.color}">
+                                <i class="fas ${subject.icon}"></i> ${subject.name}
+                            </span>
                             <h3 class="card-title">${card.title || '未命名知识点'}</h3>
                             <p class="card-preview">${getContentPreview(card)}</p>
                             <div class="card-meta">
                                 <span><i class="fas fa-signal"></i> 难度: ${'★'.repeat(card.difficulty || 1)}</span>
                                 <span><i class="far fa-clock"></i> ${formatDate(card.created_at)}</span>
+                                <span><i class="fas fa-layer-group"></i> ${card.category_group || '未分类'}</span>
                             </div>
                         </div>
                     </div>
@@ -1100,13 +1256,17 @@
             let content = card.content;
             let keyPoints = [];
             let examples = [];
+            let relatedTopics = [];
             
             try {
-                if (content && typeof content === 'string' && content.includes('{')) {
-                    const parsed = JSON.parse(content);
-                    if (parsed.key_points) keyPoints = parsed.key_points;
-                    if (parsed.examples) examples = parsed.examples;
-                    if (parsed.description) content = parsed.description;
+                if (content && typeof content === 'string') {
+                    if (content.startsWith('{') || content.includes('key_points')) {
+                        const parsed = JSON.parse(content);
+                        if (parsed.key_points) keyPoints = parsed.key_points;
+                        if (parsed.examples) examples = parsed.examples;
+                        if (parsed.related_topics) relatedTopics = parsed.related_topics;
+                        if (parsed.description) content = parsed.description;
+                    }
                 }
             } catch (e) {
                 // 保持原内容
@@ -1116,10 +1276,12 @@
             document.getElementById('detailTitle').textContent = card.title;
             document.getElementById('detailContent').innerHTML = `
                 <div style="margin-bottom: 24px;">
-                    <span class="subject-badge" style="background: ${subject.color}">${subject.name}</span>
+                    <span class="subject-badge" style="background: ${subject.color}">
+                        <i class="fas ${SUBJECT_MAP[card.subject]?.icon || 'fa-book'}"></i> ${subject.name}
+                    </span>
                     <div style="margin-top: 16px; color: var(--text-secondary);">
                         <p><strong>难度:</strong> ${'★'.repeat(card.difficulty || 1)}</p>
-                        <p><strong>创建时间:</strong> ${new Date(card.created_at).toLocaleString()}</p>
+                        <p><strong>创建时间:</strong> ${new Date(card.created_at).toLocaleString('zh-HK')}</p>
                         ${card.category_group ? `<p><strong>分类:</strong> ${card.category_group}</p>` : ''}
                     </div>
                 </div>
@@ -1128,7 +1290,7 @@
                     <h3 style="color: var(--primary-color); margin-bottom: 12px;">
                         <i class="fas fa-align-left"></i> 内容概述
                     </h3>
-                    <div style="background: var(--bg-hover); padding: 16px; border-radius: var(--radius);">
+                    <div style="background: var(--bg-hover); padding: 16px; border-radius: var(--radius); line-height: 1.6;">
                         ${content || '暂无详细内容'}
                     </div>
                 </div>
@@ -1141,7 +1303,7 @@
                     <div style="display: grid; gap: 8px;">
                         ${keyPoints.map((kp, i) => `
                             <div style="padding: 12px; background: var(--bg-hover); border-radius: var(--radius); border-left: 3px solid var(--primary-color);">
-                                <strong>${i + 1}.</strong> ${kp}
+                                <strong style="color: var(--primary-color);">${i + 1}.</strong> ${kp}
                             </div>
                         `).join('')}
                     </div>
@@ -1155,14 +1317,38 @@
                     <div style="display: grid; gap: 12px;">
                         ${examples.map((example, i) => `
                             <div style="padding: 16px; background: var(--bg-hover); border-radius: var(--radius); border: 1px solid var(--primary-color);">
-                                <strong>示例 ${i + 1}:</strong> ${example.question || '题目'}
+                                <strong style="color: var(--primary-color);">示例 ${i + 1}:</strong> ${example.question || '题目'}
                                 ${example.answer ? `<div style="margin-top: 8px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius);">
-                                    <strong>解答:</strong> ${example.answer}
+                                    <strong style="color: var(--primary-color);">解答:</strong> ${example.answer}
                                 </div>` : ''}
                             </div>
                         `).join('')}
                     </div>
                 </div>` : ''}
+                
+                ${relatedTopics.length > 0 ? `
+                <div style="margin-bottom: 24px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 12px;">
+                        <i class="fas fa-tags"></i> 相关主题
+                    </h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        ${relatedTopics.map(topic => `
+                            <span style="padding: 6px 12px; background: var(--primary-color); color: white; border-radius: 20px; font-size: 0.875rem;">
+                                ${topic}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>` : ''}
+                
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="action-btn primary" onclick="toggleFavorite('${card.id}')">
+                        <i class="${userFavorites.has(card.id) ? 'fas' : 'far'} fa-star"></i> 
+                        ${userFavorites.has(card.id) ? '取消收藏' : '收藏此知识点'}
+                    </button>
+                    <button class="action-btn" onclick="shareCard('${card.id}', '${card.title}')">
+                        <i class="fas fa-share-alt"></i> 分享
+                    </button>
+                </div>
             `;
             
             document.getElementById('detailModal').style.display = 'flex';
@@ -1173,7 +1359,7 @@
         }
 
         // ===== 收藏功能 =====
-        async function toggleFavorite(knowledgeId, button) {
+        async function toggleFavorite(knowledgeId, button = null) {
             if (!currentUser) {
                 showNotification('请先登录以收藏内容', 'warning');
                 return;
@@ -1182,46 +1368,52 @@
             try {
                 const isCurrentlyFavorited = userFavorites.has(knowledgeId);
                 
-                if (supabaseClient) {
-                    if (isCurrentlyFavorited) {
-                        // 取消收藏
-                        const { error } = await supabaseClient
-                            .from('bookmarks')
-                            .delete()
-                            .eq('user_id', currentUser.id)
-                            .eq('submission_id', knowledgeId);
-                        
-                        if (error) throw error;
-                        userFavorites.delete(knowledgeId);
-                    } else {
-                        // 添加收藏
-                        const { error } = await supabaseClient
-                            .from('bookmarks')
-                            .insert({
-                                user_id: currentUser.id,
-                                submission_id: knowledgeId,
-                                notes: '',
-                                created_at: new Date().toISOString()
-                            });
-                        
-                        if (error) throw error;
-                        userFavorites.add(knowledgeId);
+                if (isCurrentlyFavorited) {
+                    userFavorites.delete(knowledgeId);
+                } else {
+                    userFavorites.add(knowledgeId);
+                }
+                
+                // 保存到本地存储
+                localStorage.setItem(`dsehub_favorites_${currentUser.id}`, JSON.stringify([...userFavorites]));
+                
+                // 尝试保存到Supabase
+                if (supabaseClient && currentUser.id && !currentUser.id.startsWith('anonymous_')) {
+                    try {
+                        if (isCurrentlyFavorited) {
+                            await supabaseClient
+                                .from('bookmarks')
+                                .delete()
+                                .eq('user_id', currentUser.id)
+                                .eq('submission_id', knowledgeId);
+                        } else {
+                            await supabaseClient
+                                .from('bookmarks')
+                                .insert({
+                                    user_id: currentUser.id,
+                                    submission_id: knowledgeId,
+                                    notes: '',
+                                    created_at: new Date().toISOString()
+                                });
+                        }
+                    } catch (error) {
+                        console.warn('Supabase收藏操作失败:', error);
                     }
                 }
                 
                 // 更新按钮状态
                 if (button) {
                     const icon = button.querySelector('i');
-                    const text = button.querySelector('span') || button;
+                    const text = button.textContent || button.innerText;
                     
                     if (isCurrentlyFavorited) {
                         icon.className = 'far fa-star';
                         button.classList.remove('primary');
-                        text.textContent = '收藏';
+                        button.innerHTML = '<i class="far fa-star"></i> 收藏';
                     } else {
                         icon.className = 'fas fa-star';
                         button.classList.add('primary');
-                        text.textContent = '已收藏';
+                        button.innerHTML = '<i class="fas fa-star"></i> 已收藏';
                     }
                 }
                 
@@ -1238,65 +1430,95 @@
             const card = knowledgePoints.find(k => k.id === knowledgeId);
             if (!card) return;
             
+            const shareUrl = window.location.href.split('#')[0] + `#knowledge-${knowledgeId}`;
+            const subjectName = SUBJECT_MAP[card.subject]?.name || card.subject;
+            
             const shareData = {
-                title: `${card.title} - DSEhub知识点`,
-                text: `我发现一个不错的DSE学习知识点：${card.title}\n\n${getContentPreview(card)}\n\n`,
-                url: window.location.href
+                title: `${title} - DSEhub ${subjectName}知识点`,
+                text: `我发现一个不错的DSE ${subjectName} 学习知识点：${title}\n\n${getContentPreview(card)}\n\n来自DSEhub学习平台`,
+                url: shareUrl
             };
             
-            if (navigator.share && navigator.canShare(shareData)) {
+            if (navigator.share) {
                 try {
                     await navigator.share(shareData);
-                    showNotification('分享成功', 'success');
                 } catch (error) {
                     if (error.name !== 'AbortError') {
-                        copyToClipboard(`${shareData.title}\n${shareData.text}${shareData.url}`);
+                        copyToClipboard(`${shareData.title}\n\n${shareData.text}\n\n链接: ${shareUrl}`);
                     }
                 }
             } else {
-                copyToClipboard(`${shareData.title}\n${shareData.text}${shareData.url}`);
+                copyToClipboard(`${shareData.title}\n\n${shareData.text}\n\n链接: ${shareUrl}`);
             }
         }
 
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('链接已复制到剪贴板', 'success');
-            }).catch(() => {
-                // 降级方案
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('内容已复制到剪贴板', 'success');
+                } else {
+                    throw new Error('复制失败');
+                }
+            } catch (err) {
+                // 尝试使用现代API
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('内容已复制到剪贴板', 'success');
+                }).catch(() => {
+                    showNotification('复制失败，请手动复制', 'error');
+                });
+            } finally {
                 document.body.removeChild(textArea);
-                showNotification('链接已复制到剪贴板', 'success');
-            });
+            }
         }
 
         // ===== 聊天功能 =====
         async function loadChatMessages() {
             try {
-                if (!supabaseClient) return;
+                // 先检查本地存储
+                const localChat = localStorage.getItem('dsehub_chat_messages');
+                if (localChat) {
+                    chatMessages = JSON.parse(localChat);
+                    renderChatMessages();
+                }
                 
-                const { data, error } = await supabaseClient
-                    .from('chat_messages')
-                    .select('*')
-                    .order('created_at', { ascending: true })
-                    .limit(50);
-                
-                if (error) throw error;
-                
-                chatMessages = data || [];
-                renderChatMessages();
+                // 尝试从Supabase加载
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('chat_messages')
+                        .select('*')
+                        .order('created_at', { ascending: true })
+                        .limit(50);
+                    
+                    if (!error && data) {
+                        chatMessages = data;
+                        // 更新本地存储
+                        localStorage.setItem('dsehub_chat_messages', JSON.stringify(chatMessages));
+                        renderChatMessages();
+                    }
+                }
                 
             } catch (error) {
-                console.error('加载聊天消息失败:', error);
-                throw error;
+                console.warn('加载聊天消息失败:', error);
+                // 使用本地测试数据
+                if (!chatMessages || chatMessages.length === 0) {
+                    generateLocalChatData();
+                    renderChatMessages();
+                }
             }
         }
 
         function renderChatMessages() {
             const container = document.getElementById('chatMessages');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             if (!chatMessages || chatMessages.length === 0) {
@@ -1332,78 +1554,76 @@
                 return;
             }
             
-            if (!currentUser) {
-                showNotification('请先登录', 'warning');
-                return;
+            const newMessage = {
+                id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                user_id: currentUser.id,
+                username: currentUser.username || '访客用户',
+                content: content,
+                created_at: new Date().toISOString()
+            };
+            
+            // 添加到本地消息列表
+            chatMessages.push(newMessage);
+            
+            // 保存到本地存储
+            localStorage.setItem('dsehub_chat_messages', JSON.stringify(chatMessages));
+            
+            // 尝试保存到Supabase
+            if (supabaseClient && currentUser.id && !currentUser.id.startsWith('anonymous_')) {
+                try {
+                    await supabaseClient
+                        .from('chat_messages')
+                        .insert({
+                            user_id: currentUser.id,
+                            username: currentUser.username,
+                            content: content,
+                            created_at: new Date().toISOString()
+                        });
+                } catch (error) {
+                    console.warn('保存消息到Supabase失败:', error);
+                }
             }
             
-            try {
-                const newMessage = {
-                    user_id: currentUser.id,
-                    username: currentUser.username || '匿名用户',
-                    content: content,
-                    created_at: new Date().toISOString()
-                };
-                
-                if (supabaseClient) {
-                    const { error } = await supabaseClient
-                        .from('chat_messages')
-                        .insert(newMessage);
-                    
-                    if (error) throw error;
-                } else {
-                    // 本地存储
-                    chatMessages.push(newMessage);
-                    localStorage.setItem('chat_messages', JSON.stringify(chatMessages));
-                    
-                    // 实时更新显示
-                    renderChatMessages();
-                }
-                
-                // 清空输入框
-                input.value = '';
-                input.style.height = 'auto';
-                
-                // 显示成功提示
-                showNotification('消息发送成功', 'success');
-                
-            } catch (error) {
-                console.error('发送消息失败:', error);
-                showNotification('发送失败', 'error');
-            }
+            // 清空输入框
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // 重新渲染消息
+            renderChatMessages();
+            
+            showNotification('消息发送成功', 'success');
         }
 
         // ===== 实时订阅 =====
         function setupRealtimeSubscription() {
             if (!supabaseClient) return;
             
-            // 订阅聊天消息
-            supabaseClient
-                .channel('chat-messages')
-                .on('postgres_changes', 
-                    { event: 'INSERT', schema: 'public', table: 'chat_messages' },
-                    async (payload) => {
-                        console.log('收到新消息:', payload.new);
-                        
-                        // 如果当前显示聊天区，更新消息
-                        if (currentSection === 'chat') {
-                            await loadChatMessages();
+            try {
+                // 订阅聊天消息
+                supabaseClient
+                    .channel('public:chat_messages')
+                    .on('postgres_changes', 
+                        { event: 'INSERT', schema: 'public', table: 'chat_messages' },
+                        (payload) => {
+                            console.log('收到新消息:', payload.new);
+                            
+                            // 添加到本地消息列表
+                            chatMessages.push(payload.new);
+                            
+                            // 更新本地存储
+                            localStorage.setItem('dsehub_chat_messages', JSON.stringify(chatMessages));
+                            
+                            // 如果当前显示聊天区，重新渲染
+                            if (currentSection === 'chat') {
+                                renderChatMessages();
+                            }
                         }
-                    }
-                )
-                .subscribe();
-            
-            // 订阅知识更新
-            supabaseClient
-                .channel('knowledge-updates')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'knowledge_points' },
-                    async (payload) => {
-                        console.log('知识更新:', payload);
-                        await loadKnowledgeCards();
-                    }
-                )
-                .subscribe();
+                    )
+                    .subscribe();
+                    
+            } catch (error) {
+                console.warn('实时订阅设置失败:', error);
+            }
         }
 
         // ===== 主题功能 =====
@@ -1519,7 +1739,7 @@
         // ===== 筛选功能 =====
         function filterBySubject(subject) {
             currentSubject = subject;
-            loadKnowledgeCards().catch(() => loadLocalData());
+            renderKnowledgeCards();
             
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.classList.remove('active');
@@ -1529,7 +1749,7 @@
 
         function filterByDifficulty(difficulty) {
             currentDifficulty = difficulty;
-            loadKnowledgeCards().catch(() => loadLocalData());
+            renderKnowledgeCards();
             
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.classList.remove('active');
@@ -1541,58 +1761,30 @@
             }
         }
 
-        async function searchKnowledge() {
+        function searchKnowledge() {
             const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
             
             if (!searchTerm) {
-                await loadKnowledgeCards();
+                renderKnowledgeCards();
                 return;
             }
             
-            try {
-                if (supabaseClient) {
-                    const { data, error } = await supabaseClient
-                        .from('knowledge_points')
-                        .select('*')
-                        .or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`)
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) throw error;
-                    
-                    knowledgePoints = data || [];
-                    renderKnowledgeCards();
-                } else {
-                    // 本地搜索
-                    const filtered = knowledgePoints.filter(k => 
-                        (k.title && k.title.toLowerCase().includes(searchTerm)) ||
-                        (k.content && k.content.toLowerCase().includes(searchTerm))
-                    );
-                    
-                    knowledgePoints = filtered;
-                    renderKnowledgeCards();
-                }
+            const filtered = knowledgePoints.filter(k => {
+                const title = k.title ? k.title.toLowerCase() : '';
+                const content = getContentPreview(k).toLowerCase();
+                const subjectName = SUBJECT_MAP[k.subject]?.name.toLowerCase() || '';
                 
-            } catch (error) {
-                console.error('搜索失败:', error);
-                showNotification('搜索失败', 'error');
-            }
-        }
-
-        function showRecent() {
-            // 按时间排序
-            knowledgePoints.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            renderKnowledgeCards();
+                return title.includes(searchTerm) || 
+                       content.includes(searchTerm) || 
+                       subjectName.includes(searchTerm);
+            });
             
-            updateFilterChips('showRecent');
-        }
-
-        function showPopular() {
-            // 这里可以添加基于收藏数或浏览量的排序逻辑
-            // 暂时按难度排序
-            knowledgePoints.sort((a, b) => (b.difficulty || 0) - (a.difficulty || 0));
-            renderKnowledgeCards();
+            const container = document.getElementById('knowledgeCards');
+            const originalPoints = [...knowledgePoints];
             
-            updateFilterChips('showPopular');
+            knowledgePoints = filtered;
+            renderKnowledgeCards();
+            knowledgePoints = originalPoints;
         }
 
         function resetFilters() {
@@ -1602,23 +1794,12 @@
             currentSubject = '';
             currentDifficulty = 'all';
             
-            loadKnowledgeCards().catch(() => loadLocalData());
+            renderKnowledgeCards();
             
-            updateFilterChips('reset');
-        }
-
-        function updateFilterChips(activeFilter) {
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.classList.remove('active');
             });
-            
-            if (activeFilter === 'showRecent') {
-                document.querySelector('.filter-chip[onclick="showRecent()"]').classList.add('active');
-            } else if (activeFilter === 'showPopular') {
-                document.querySelector('.filter-chip[onclick="showPopular()"]').classList.add('active');
-            } else {
-                document.querySelector('.filter-chip[onclick="filterByDifficulty(\'all\')"]').classList.add('active');
-            }
+            document.querySelector('.filter-chip[onclick="filterByDifficulty(\'all\')"]').classList.add('active');
         }
 
         // ===== 网站跳转 =====
@@ -1647,13 +1828,6 @@
         }
 
         // ===== 工具函数 =====
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
-
         function formatDate(dateString) {
             try {
                 const date = new Date(dateString);
@@ -1669,8 +1843,10 @@
                 
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                 if (days < 7) return `${days}天前`;
+                if (days < 30) return `${Math.floor(days / 7)}周前`;
                 
                 return date.toLocaleDateString('zh-HK', {
+                    year: 'numeric',
                     month: 'short',
                     day: 'numeric'
                 });
@@ -1682,6 +1858,15 @@
         function formatTime(dateString) {
             try {
                 const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / (1000 * 60));
+                
+                if (minutes < 60) {
+                    if (minutes === 0) return '刚刚';
+                    return `${minutes}分钟前`;
+                }
+                
                 return date.toLocaleTimeString('zh-HK', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -1696,7 +1881,7 @@
                 let content = card.content;
                 
                 if (content && typeof content === 'string') {
-                    if (content.includes('{')) {
+                    if (content.startsWith('{') || content.includes('description')) {
                         try {
                             const parsed = JSON.parse(content);
                             if (parsed.description) return parsed.description;
@@ -1720,6 +1905,7 @@
 
         function initChatInput() {
             const input = document.getElementById('chatInput');
+            if (!input) return;
             
             input.addEventListener('input', function() {
                 this.style.height = 'auto';
@@ -1735,7 +1921,11 @@
         }
 
         function showNotification(message, type = 'info') {
-            // 创建通知元素
+            // 移除旧的通知
+            const oldNotifications = document.querySelectorAll('.notification');
+            oldNotifications.forEach(n => n.remove());
+            
+            // 创建新通知
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.textContent = message;
@@ -1774,126 +1964,110 @@
         `;
         document.head.appendChild(style);
 
-        // ===== 本地数据 =====
-        function loadLocalData() {
-            // 测试知识数据
-            knowledgePoints = [
-                {
-                    id: '1',
-                    title: 'DSE中文：阅读理解技巧',
-                    subject: 'CHI',
-                    category_group: '卷一：阅读能力',
-                    difficulty: 3,
-                    content: JSON.stringify({
-                        description: '掌握记叙文、描写文、说明文、议论文四种文体的阅读策略，包括快速浏览、精读分析、主旨归纳等方法。重点学习如何识别文章结构，分析作者意图，理解深层含义。',
-                        key_points: [
-                            '记叙文六要素：时间、地点、人物、起因、经过、结果',
-                            '描写手法分析：比喻、拟人、夸张、对比等修辞手法的作用',
-                            '论证方法识别：举例论证、道理论证、对比论证、比喻论证',
-                            '主旨归纳技巧：关注首尾段落，寻找重复出现的词语和概念'
-                        ],
-                        examples: [
-                            {
-                                question: '文中第三段运用了什么描写手法？有什么作用？',
-                                answer: '运用了比喻和拟人手法，生动形象地表现了人物的内心世界，增强文章的感染力。'
-                            },
-                            {
-                                question: '作者在文中表达了怎样的中心思想？',
-                                answer: '通过……表达了……的思想感情，启示我们要……'
-                            }
-                        ]
-                    }),
-                    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    id: '2',
-                    title: '数学：二次函数图像与性质',
-                    subject: 'MATH',
-                    category_group: '代数',
-                    difficulty: 4,
-                    content: JSON.stringify({
-                        description: '理解二次函数y=ax²+bx+c的图像特征，包括顶点坐标、对称轴方程、开口方向、最值问题等。掌握通过函数表达式分析图像性质，解决实际应用问题。',
-                        key_points: [
-                            '顶点公式(-b/2a, f(-b/2a))',
-                            '判别式Δ=b²-4ac判断根的情况',
-                            '图像变换规律：平移、伸缩、翻转',
-                            '最值求解方法：配方法、公式法、图像法'
-                        ],
-                        examples: [
-                            {
-                                question: '求函数y=2x²-4x+1的顶点坐标和对称轴',
-                                answer: '顶点(1, -1)，对称轴x=1'
-                            },
-                            {
-                                question: '已知二次函数图像经过(1,0)、(3,0)和(0,3)，求函数表达式',
-                                answer: 'y=x²-4x+3'
-                            }
-                        ]
-                    }),
-                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    id: '3',
-                    title: '物理：牛顿运动定律',
-                    subject: 'PHY',
-                    category_group: '力学',
-                    difficulty: 3,
-                    content: JSON.stringify({
-                        description: '掌握牛顿三定律的内容和应用，包括惯性、加速度、作用力与反作用力。学习如何分析物体受力，建立运动方程，解决力学问题。',
-                        key_points: [
-                            '第一定律：惯性定律 - 物体保持静止或匀速直线运动',
-                            '第二定律：F=ma - 加速度与合外力成正比',
-                            '第三定律：作用与反作用 - 大小相等，方向相反',
-                            '受力分析：重力、弹力、摩擦力、浮力等'
-                        ],
-                        examples: [
-                            {
-                                question: '质量为2kg的物体受到10N的力，求加速度',
-                                answer: 'a = F/m = 10/2 = 5 m/s²'
-                            },
-                            {
-                                question: '一个物体在水平面上做匀速直线运动，摩擦力是多少？',
-                                answer: '摩擦力等于推动力，因为没有加速度'
-                            }
-                        ]
-                    }),
-                    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-                }
-            ];
+        // ===== 本地数据生成 =====
+        function generateLocalKnowledgeData() {
+            const subjects = Object.keys(SUBJECT_MAP);
+            const categories = ['基础知识', '进阶技巧', '考试策略', '真题解析', '难点突破'];
             
-            // 测试聊天数据
+            knowledgePoints = [];
+            
+            subjects.forEach((subject, index) => {
+                for (let i = 1; i <= 3; i++) {
+                    const difficulty = Math.floor(Math.random() * 5) + 1;
+                    const category = categories[Math.floor(Math.random() * categories.length)];
+                    
+                    const subjectInfo = SUBJECT_MAP[subject];
+                    const contentData = {
+                        description: `这是${subjectInfo.name}的${category}内容，涵盖该科目的重要知识点和考试技巧。`,
+                        key_points: [
+                            `重点一：${subjectInfo.name}的基础概念`,
+                            `重点二：常见题型解析`,
+                            `重点三：答题技巧与时间管理`,
+                            `重点四：历年真题趋势分析`
+                        ],
+                        examples: [
+                            {
+                                question: `请分析${subjectInfo.name}中的一个典型问题？`,
+                                answer: `这是该问题的标准解答步骤和分析思路。`
+                            }
+                        ],
+                        related_topics: [category, 'DSE考试', '学习技巧']
+                    };
+                    
+                    knowledgePoints.push({
+                        id: `local_${subject}_${index}_${i}`,
+                        title: `${subjectInfo.name} - ${category}`,
+                        subject: subject,
+                        category_group: category,
+                        difficulty: difficulty,
+                        content: JSON.stringify(contentData),
+                        created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                }
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('dsehub_knowledge_points', JSON.stringify(knowledgePoints));
+        }
+
+        function generateLocalChatData() {
             chatMessages = [
                 {
+                    id: 'chat_1',
                     username: '张同学',
-                    content: '大家好！有没有人分享下中文阅读技巧？',
+                    content: '大家好！这个平台的知识点整理得很全面啊！',
+                    created_at: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 'chat_2',
+                    username: '李老师',
+                    content: '是的，我们尽量覆盖所有DSE科目，有什么建议欢迎提出！',
                     created_at: new Date(Date.now() - 1800000).toISOString()
                 },
                 {
-                    username: '李老师',
-                    content: '关注段落首尾句，抓住中心思想是关键。建议多练习历年真题，熟悉题型。',
-                    created_at: new Date(Date.now() - 1200000).toISOString()
-                },
-                {
+                    id: 'chat_3',
                     username: '王学长',
-                    content: '多做题，积累经验很重要！我推荐《DSE中文阅读精解》这本书。',
+                    content: '数学的二次函数部分讲得很清楚，对我帮助很大！',
                     created_at: new Date(Date.now() - 600000).toISOString()
                 }
             ];
             
+            localStorage.setItem('dsehub_chat_messages', JSON.stringify(chatMessages));
+        }
+
+        function loadLocalData() {
+            generateLocalKnowledgeData();
+            generateLocalChatData();
             renderKnowledgeCards();
             renderChatMessages();
         }
 
-        // 初始化聊天输入高度
-        document.addEventListener('DOMContentLoaded', () => {
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput) {
-                chatInput.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-                });
-            }
-        });
+        function addTestData() {
+            const newData = {
+                id: 'test_' + Date.now(),
+                title: '测试知识点 - ' + new Date().toLocaleTimeString(),
+                subject: 'CHI',
+                category_group: '测试分类',
+                difficulty: 3,
+                content: JSON.stringify({
+                    description: '这是一个测试知识点，用于演示平台功能。',
+                    key_points: ['测试重点一', '测试重点二', '测试重点三'],
+                    examples: [
+                        {
+                            question: '测试题目示例',
+                            answer: '测试答案示例'
+                        }
+                    ]
+                }),
+                created_at: new Date().toISOString()
+            };
+            
+            knowledgePoints.unshift(newData);
+            localStorage.setItem('dsehub_knowledge_points', JSON.stringify(knowledgePoints));
+            renderKnowledgeCards();
+            
+            showNotification('测试数据添加成功！', 'success');
+        }
     </script>
 </body>
 </html>
