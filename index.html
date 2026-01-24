@@ -452,6 +452,7 @@
             line-height: 1.3;
         }
 
+        /* 移除subject-controls，因为不再需要"全部"按钮 */
         .subject-controls {
             display: flex;
             gap: var(--spacing-sm);
@@ -462,6 +463,7 @@
             background: var(--accent-light);
             border-radius: var(--border-radius-lg);
             border: 1px solid var(--border-color);
+            display: none; /* 隐藏整个控件组 */
         }
 
         /* 标签系统样式 */
@@ -500,6 +502,52 @@
             color: white;
             border-color: var(--accent-color);
             box-shadow: var(--shadow-sm);
+        }
+
+        /* 搜索框美化 */
+        .search-container {
+            display: flex;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-xl) var(--spacing-md) 50px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            font-size: 15px;
+            transition: all var(--transition-normal);
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
+            pointer-events: none;
+            transition: color var(--transition-normal);
+        }
+
+        .search-input:focus + .search-icon {
+            color: var(--accent-color);
         }
 
         .knowledge-grid {
@@ -589,16 +637,19 @@
             transition: all var(--transition-normal);
             background: var(--card-bg);
             color: var(--text-color);
+            box-shadow: var(--shadow-sm);
         }
 
         .message-input::placeholder {
             color: var(--text-muted);
+            font-style: italic;
         }
 
         .message-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px var(--accent-light);
+            box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-md);
+            transform: translateY(-1px);
         }
 
         .messages-container {
@@ -833,6 +884,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-secondary);
+            transition: color var(--transition-normal);
         }
 
         .modal-input {
@@ -844,16 +896,22 @@
             transition: all var(--transition-normal);
             background: var(--card-bg);
             color: var(--text-color);
+            box-shadow: var(--shadow-sm);
         }
 
         .modal-input::placeholder {
             color: var(--text-muted);
+            font-style: italic;
         }
 
         .modal-input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px var(--accent-light);
+            box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-md);
+        }
+
+        .modal-input:focus + i {
+            color: var(--accent-color);
         }
 
         .modal-btn {
@@ -1050,15 +1108,14 @@
                 height: 36px;
             }
             
-            .subject-controls {
-                flex-direction: column;
-                align-items: stretch;
+            .search-input {
+                padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) 45px;
+                font-size: 14px;
             }
             
-            .subject-controls input[type="text"] {
-                width: 100%;
-                margin-left: 0 !important;
-                margin-top: var(--spacing-sm);
+            .search-icon {
+                left: var(--spacing-md);
+                font-size: 14px;
             }
         }
 
@@ -1131,6 +1188,16 @@
             
             .stat-number {
                 font-size: 28px;
+            }
+            
+            .search-input {
+                padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) 40px;
+                font-size: 13px;
+            }
+            
+            .search-icon {
+                left: var(--spacing-sm);
+                font-size: 13px;
             }
         }
 
@@ -1313,12 +1380,10 @@
                             <div class="tag-filter-btn" onclick="DSEHub.filterByTag('基础')">基础</div>
                             <div class="tag-filter-btn" onclick="DSEHub.filterByTag('进阶')">进阶</div>
                         </div>
-                        <div class="subject-controls">
-                            <button class="btn btn-secondary active" onclick="DSEHub.filterSubjects('all', this)">
-                                <i class="fas fa-globe"></i> 全部
-                            </button>
-                            <input type="text" class="form-input" placeholder="搜索知识点..." 
-                                   oninput="DSEHub.searchKnowledge(this.value)" style="width: 200px; margin-left: auto;">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="搜索知识点..." 
+                                   oninput="DSEHub.searchKnowledge(this.value)">
                         </div>
                         <div class="knowledge-grid" id="knowledgeGrid"></div>
                     </div>
@@ -1542,39 +1607,20 @@
                 this.initKnowledgeGrid();
                 this.initMessageBoard();
                 this.showPanel('knowledge');
-                this.checkExistingSession();
+                // 移除自动登录检查
             },
 
-            // Supabase初始化
+            // Supabase初始化 - 关闭持久会话
             initSupabase: function() {
                 const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
                 const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
                 
                 this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                    auth: { autoRefreshToken: true, persistSession: true }
-                });
-            },
-
-            // 检查会话
-            checkExistingSession: async function() {
-                try {
-                    const { data, error } = await this.supabase.auth.getSession();
-                    if (error) throw error;
-                    
-                    if (data.session) {
-                        this.currentUser = {
-                            id: data.session.user.id,
-                            email: data.session.user.email,
-                            username: data.session.user.email.split('@')[0]
-                        };
-                        
-                        await this.loadUserProfile();
-                        await this.loadUserTheme(); // 加载用户主题
-                        this.loginSuccess();
+                    auth: { 
+                        autoRefreshToken: false,  // 关闭自动刷新令牌
+                        persistSession: false     // 关闭持久会话
                     }
-                } catch (err) {
-                    console.log('无登录会话');
-                }
+                });
             },
 
             // 加载用户资料
@@ -1933,17 +1979,23 @@
                 this.filterKnowledge();
             },
 
-            filterSubjects: function(filter, button) {
-                this.currentFilter = filter;
+            // 搜索知识点
+            searchKnowledge: function(keyword) {
+                if (!keyword.trim()) {
+                    this.filterKnowledge();
+                    return;
+                }
                 
-                // 更新按钮状态
-                document.querySelectorAll('.subject-controls .btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                button.classList.add('active');
+                const filteredData = this.knowledgeData.filter(item => 
+                    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
+                    item.content.toLowerCase().includes(keyword.toLowerCase()) ||
+                    (item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase())))
+                );
                 
-                this.filterKnowledge();
+                this.renderKnowledgeCards(filteredData);
             },
+
+            // 移除了filterSubjects函数，因为不再需要"全部"按钮
 
             filterKnowledge: function() {
                 let filteredData = this.knowledgeData;
@@ -1961,21 +2013,6 @@
                         item.tags && item.tags.includes(this.currentTagFilter)
                     );
                 }
-                
-                this.renderKnowledgeCards(filteredData);
-            },
-
-            searchKnowledge: function(keyword) {
-                if (!keyword.trim()) {
-                    this.filterKnowledge();
-                    return;
-                }
-                
-                const filteredData = this.knowledgeData.filter(item => 
-                    item.title.toLowerCase().includes(keyword.toLowerCase()) ||
-                    item.content.toLowerCase().includes(keyword.toLowerCase()) ||
-                    (item.tags && item.tags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase())))
-                );
                 
                 this.renderKnowledgeCards(filteredData);
             },
@@ -2214,4 +2251,3 @@
     </script>
 </body>
 </html>
-
