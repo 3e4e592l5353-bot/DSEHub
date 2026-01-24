@@ -1,104 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh-HK" data-theme="light" data-aurora="active">
+<html lang="zh-HK" data-theme="dark" data-aurora="active">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSEhub · 香港DSE科目知识库</title>
+    <title>DSEhub · 香港DSE综合知识库</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== 极光风CSS变量 ===== */
         :root {
-            /* 极光主色调 */
-            --aurora-primary: #8b5cf6;
-            --aurora-secondary: #ec4899;
-            --aurora-accent: #3b82f6;
-            --aurora-green: #10b981;
+            /* 极光主色 - 简化版 */
+            --aurora-primary: #6366f1;
+            --aurora-secondary: #8b5cf6;
+            --aurora-accent: #ec4899;
             --aurora-cyan: #06d6a0;
-            --aurora-yellow: #fbbf24;
             
-            /* Mac风格功能分区 */
-            --mac-bg-primary: #0f0f1a;
-            --mac-bg-secondary: #1a1a2e;
-            --mac-bg-sidebar: #0a0a15;
-            --mac-bg-card: #1a1a2e;
-            --mac-bg-hover: #2d2d44;
-            --mac-bg-toolbar: rgba(26, 26, 46, 0.9);
+            /* 背景色 - 深色主题更适合极光 */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --bg-sidebar: #0f172a;
+            --bg-toolbar: rgba(30, 41, 59, 0.9);
             
-            /* 文字色彩 */
-            --mac-text-primary: #e2e8f0;
-            --mac-text-secondary: #94a3b8;
-            --mac-text-muted: #64748b;
-            --mac-text-light: #f1f5f9;
+            /* 文字颜色 */
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
             
-            /* 极光渐变 */
+            /* 极光渐变 - 简化版 */
             --aurora-gradient: linear-gradient(135deg, 
-                var(--aurora-secondary) 0%, 
-                var(--aurora-primary) 25%, 
-                var(--aurora-accent) 50%, 
-                var(--aurora-cyan) 75%, 
-                var(--aurora-green) 100%);
+                var(--aurora-primary) 0%, 
+                var(--aurora-secondary) 50%, 
+                var(--aurora-accent) 100%);
             
             --aurora-subtle: linear-gradient(135deg, 
-                rgba(236, 72, 153, 0.15) 0%, 
-                rgba(139, 92, 246, 0.15) 25%, 
-                rgba(59, 130, 246, 0.15) 50%, 
-                rgba(6, 214, 160, 0.15) 75%, 
-                rgba(16, 185, 129, 0.15) 100%);
+                rgba(99, 102, 241, 0.1) 0%, 
+                rgba(139, 92, 246, 0.1) 50%, 
+                rgba(236, 72, 153, 0.1) 100%);
             
-            /* 发光效果 */
-            --aurora-glow: 0 0 20px rgba(139, 92, 246, 0.5),
-                          0 0 40px rgba(236, 72, 153, 0.3),
-                          0 0 60px rgba(59, 130, 246, 0.2);
+            /* 布局 */
+            --sidebar-width: 280px;
+            --radius: 12px;
+            --radius-lg: 16px;
             
-            /* Mac布局 */
-            --mac-sidebar-width: 280px;
-            --mac-header-height: 60px;
-            --mac-radius: 12px;
-            --mac-radius-lg: 16px;
-            --mac-radius-xl: 20px;
-            
-            /* 过渡效果 */
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-aurora: all 0.6s ease;
+            /* 过渡 */
+            --transition: all 0.3s ease;
         }
 
         [data-theme="light"] {
-            --mac-bg-primary: #f0f2ff;
-            --mac-bg-secondary: #ffffff;
-            --mac-bg-sidebar: #ffffff;
-            --mac-bg-card: #ffffff;
-            --mac-bg-hover: #f8fafc;
-            --mac-bg-toolbar: rgba(255, 255, 255, 0.9);
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --bg-toolbar: rgba(255, 255, 255, 0.9);
             
-            --mac-text-primary: #1e293b;
-            --mac-text-secondary: #475569;
-            --mac-text-muted: #64748b;
-            --mac-text-light: #1e293b;
-        }
-
-        /* 极光主题变体 */
-        [data-aurora-variant="northern"] {
-            --aurora-primary: #3b82f6;
-            --aurora-secondary: #8b5cf6;
-            --aurora-accent: #ec4899;
-            --aurora-green: #10b981;
-            --aurora-cyan: #22d3ee;
-        }
-
-        [data-aurora-variant="aurora"] {
-            --aurora-primary: #06d6a0;
-            --aurora-secondary: #3b82f6;
-            --aurora-accent: #8b5cf6;
-            --aurora-green: #84cc16;
-            --aurora-cyan: #22d3ee;
-        }
-
-        [data-aurora-variant="cosmic"] {
-            --aurora-primary: #d946ef;
-            --aurora-secondary: #8b5cf6;
-            --aurora-accent: #3b82f6;
-            --aurora-green: #10b981;
-            --aurora-cyan: #06d6a0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
         }
 
         * {
@@ -107,114 +66,108 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', 'PingFang SC', sans-serif;
-            background: var(--mac-bg-primary);
-            color: var(--mac-text-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* 极光背景效果 */
-        .aurora-bg {
+        /* ===== 极光背景 ===== */
+        .aurora-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .aurora-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            animation: auroraFloat 20s ease-in-out infinite;
+        }
+
+        .aurora-layer:nth-child(1) {
+            background: linear-gradient(45deg, var(--aurora-primary), var(--aurora-cyan));
+            animation-delay: 0s;
+            filter: blur(40px);
+        }
+
+        .aurora-layer:nth-child(2) {
+            background: linear-gradient(135deg, var(--aurora-secondary), var(--aurora-accent));
+            animation-delay: -5s;
+            filter: blur(60px);
+        }
+
+        .aurora-layer:nth-child(3) {
+            background: linear-gradient(225deg, var(--aurora-accent), var(--aurora-primary));
+            animation-delay: -10s;
+            filter: blur(80px);
+        }
+
+        @keyframes auroraFloat {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0.1;
+            }
+            25% {
+                transform: translate(20px, 20px) rotate(5deg);
+                opacity: 0.15;
+            }
+            50% {
+                transform: translate(-20px, 40px) rotate(-5deg);
+                opacity: 0.2;
+            }
+            75% {
+                transform: translate(40px, -20px) rotate(10deg);
+                opacity: 0.15;
+            }
+        }
+
+        /* ===== 顶部导航栏 ===== */
+        .top-nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: var(--aurora-subtle);
-            z-index: -1;
-            pointer-events: none;
-            animation: auroraFlow 20s ease-in-out infinite alternate;
-        }
-
-        @keyframes auroraFlow {
-            0% { background-position: 0% 0%; filter: hue-rotate(0deg); }
-            25% { background-position: 100% 25%; }
-            50% { background-position: 50% 100%; }
-            75% { background-position: 100% 75%; }
-            100% { background-position: 0% 100%; filter: hue-rotate(30deg); }
-        }
-
-        /* ===== Mac风格布局 ===== */
-        .app-container {
+            height: 60px;
+            background: var(--bg-toolbar);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
             display: flex;
-            min-height: 100vh;
-        }
-
-        /* 侧边栏 - 科目导航 */
-        .sidebar {
-            width: var(--mac-sidebar-width);
-            background: var(--mac-bg-sidebar);
-            border-right: 1px solid rgba(139, 92, 246, 0.2);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            overflow-y: auto;
-            z-index: 40;
-            transition: var(--transition-smooth);
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            right: -50%;
-            bottom: -50%;
-            background: var(--aurora-gradient);
-            opacity: 0.1;
-            animation: rotateGradient 30s linear infinite;
-        }
-
-        @keyframes rotateGradient {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            color: white;
             text-decoration: none;
-            position: relative;
-            z-index: 1;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background: var(--aurora-gradient);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: var(--aurora-glow);
-            animation: pulseGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: var(--aurora-glow); }
-            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.7),
-                             0 0 60px rgba(236, 72, 153, 0.5),
-                             0 0 90px rgba(59, 130, 246, 0.3); }
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .logo-text {
@@ -223,313 +176,115 @@
             background: var(--aurora-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
         }
 
-        /* 科目分类 */
-        .subject-category {
-            padding: 20px 24px;
-            position: relative;
-        }
-
-        .category-title {
+        .nav-links {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--aurora-primary);
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
-            padding: 8px 12px;
-            background: rgba(139, 92, 246, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid var(--aurora-primary);
+            gap: 8px;
         }
 
-        .subject-list {
-            list-style: none;
-        }
-
-        .subject-item {
-            margin-bottom: 8px;
-        }
-
-        .subject-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--mac-text-secondary);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .subject-link:hover {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--mac-text-primary);
-            transform: translateX(5px);
-        }
-
-        .subject-link.active {
-            background: rgba(139, 92, 246, 0.2);
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        .subject-link.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--aurora-gradient);
-        }
-
-        .subject-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            background: var(--aurora-subtle);
-            color: var(--aurora-primary);
-        }
-
-        .subject-name {
-            flex: 1;
-            font-size: 0.95rem;
-        }
-
-        .subject-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: var(--aurora-subtle);
-            color: var(--aurora-primary);
-        }
-
-        /* 主题切换面板 */
-        .theme-panel {
-            position: fixed;
-            top: 50%;
-            right: -300px;
-            transform: translateY(-50%);
-            background: var(--mac-bg-card);
-            border-radius: var(--mac-radius-lg) 0 0 var(--mac-radius-lg);
-            padding: 24px;
-            width: 300px;
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-right: none;
-            z-index: 100;
-            transition: var(--transition-smooth);
-            backdrop-filter: blur(20px);
-        }
-
-        .theme-panel.active {
-            right: 0;
-        }
-
-        .theme-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        }
-
-        .theme-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            background: var(--aurora-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .close-panel {
-            background: none;
-            border: none;
-            color: var(--mac-text-muted);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: var(--transition-smooth);
-        }
-
-        .close-panel:hover {
-            color: var(--aurora-primary);
-            transform: rotate(90deg);
-        }
-
-        .theme-options {
-            margin-bottom: 24px;
-        }
-
-        .theme-group {
-            margin-bottom: 20px;
-        }
-
-        .theme-label {
-            display: block;
-            margin-bottom: 12px;
-            color: var(--mac-text-secondary);
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .color-picker-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .color-option {
-            display: flex;
-            flex-direction: column;
+        .nav-btn {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px;
-            background: var(--mac-bg-hover);
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            border: 2px solid transparent;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
         }
 
-        .color-option:hover {
-            transform: translateY(-4px);
-            background: var(--mac-bg-secondary);
-        }
-
-        .color-option.active {
+        .nav-btn:hover {
+            background: var(--bg-hover);
             border-color: var(--aurora-primary);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
         }
 
-        .color-preview {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--color-1) 0%, var(--color-2) 50%, var(--color-3) 100%);
+        .nav-btn.active {
+            background: var(--aurora-gradient);
+            color: white;
+            border: none;
         }
 
-        .color-name {
-            font-size: 0.75rem;
-            color: var(--mac-text-muted);
-            text-align: center;
+        /* ===== 主内容区域 ===== */
+        .main-content {
+            margin-top: 80px;
+            padding: 24px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .color-controls {
+        /* ===== 搜索和筛选区 ===== */
+        .search-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
             display: flex;
             gap: 12px;
             margin-bottom: 20px;
         }
 
-        .color-input {
+        .search-input {
             flex: 1;
-            padding: 8px 12px;
-            background: var(--mac-bg-hover);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 6px;
-            color: var(--mac-text-primary);
-            font-size: 0.875rem;
+            padding: 12px 20px;
+            background: var(--bg-hover);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
         }
 
-        .theme-btn {
-            padding: 8px 16px;
+        .search-input:focus {
+            outline: none;
+            border-color: var(--aurora-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .search-btn {
+            padding: 12px 32px;
             background: var(--aurora-gradient);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             color: white;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
+            font-size: 1rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .theme-btn:hover {
+        .search-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
         }
 
-        /* 主内容区域 */
-        .main-content {
-            flex: 1;
-            margin-left: var(--mac-sidebar-width);
-            padding: 20px;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* 顶部工具栏 - Mac风格 */
-        .toolbar {
-            background: var(--mac-bg-toolbar);
-            backdrop-filter: blur(20px);
-            border-radius: var(--mac-radius-lg);
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .toolbar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--aurora-gradient);
-        }
-
-        .toolbar-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .toolbar-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        /* 筛选器 */
-        .filters {
+        .filters-row {
             display: flex;
             gap: 16px;
-            margin-bottom: 24px;
-            padding: 20px;
-            background: var(--mac-bg-card);
-            border-radius: var(--mac-radius-lg);
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            flex-wrap: wrap;
         }
 
         .filter-group {
             flex: 1;
+            min-width: 200px;
         }
 
         .filter-label {
             display: block;
             margin-bottom: 8px;
-            color: var(--mac-text-secondary);
+            color: var(--text-secondary);
             font-size: 0.875rem;
             font-weight: 600;
         }
@@ -537,313 +292,206 @@
         .filter-select {
             width: 100%;
             padding: 10px 12px;
-            background: var(--mac-bg-hover);
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: var(--bg-hover);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             border-radius: 8px;
-            color: var(--mac-text-primary);
+            color: var(--text-primary);
             font-size: 0.875rem;
             cursor: pointer;
-            transition: var(--transition-smooth);
+            transition: var(--transition);
         }
 
         .filter-select:hover {
             border-color: var(--aurora-primary);
         }
 
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--aurora-primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
-
-        /* 知识库网格 */
-        .knowledge-grid {
+        /* ===== 快速操作按钮 ===== */
+        .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        /* 知识点卡片 - 可展开设计 */
-        .knowledge-card {
-            background: var(--mac-bg-card);
-            border-radius: var(--mac-radius-lg);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            overflow: hidden;
-            transition: var(--transition-smooth);
-            position: relative;
-        }
-
-        .knowledge-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-                        0 0 30px rgba(139, 92, 246, 0.2);
-            border-color: var(--aurora-primary);
-        }
-
-        .knowledge-card.expanded {
-            grid-column: 1 / -1;
-        }
-
-        .knowledge-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--aurora-gradient);
-            opacity: 0;
-            transition: var(--transition-smooth);
-        }
-
-        .knowledge-card:hover::before,
-        .knowledge-card.expanded::before {
-            opacity: 1;
-        }
-
-        .card-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--mac-bg-hover);
-        }
-
-        .subject-badge-large {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--aurora-gradient);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin: 12px 0 8px;
-            color: var(--mac-text-primary);
-        }
-
-        .card-meta {
-            display: flex;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 16px;
-            color: var(--mac-text-muted);
-            font-size: 0.875rem;
-        }
-
-        .expand-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: var(--aurora-subtle);
-            color: var(--aurora-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-smooth);
-        }
-
-        .expand-btn:hover {
-            background: var(--aurora-gradient);
-            color: white;
-            transform: rotate(180deg);
-        }
-
-        /* 卡片内容区域 */
-        .card-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .knowledge-card.expanded .card-content {
-            max-height: 2000px;
-            padding: 24px;
-        }
-
-        /* 章节导航 */
-        .chapter-nav {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .chapter-tag {
-            padding: 6px 16px;
-            background: var(--aurora-subtle);
-            border-radius: 20px;
-            font-size: 0.875rem;
-            color: var(--aurora-primary);
-            text-decoration: none;
-            transition: var(--transition-smooth);
-            border: 1px solid transparent;
-        }
-
-        .chapter-tag:hover {
-            background: var(--aurora-gradient);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        /* 知识点详情 */
-        .knowledge-detail {
-            margin-top: 20px;
-        }
-
-        .detail-section {
             margin-bottom: 24px;
         }
 
-        .section-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--aurora-primary);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+        .quick-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .key-points {
-            display: grid;
             gap: 12px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: var(--transition);
         }
 
-        .key-point {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            background: var(--aurora-subtle);
-            border-radius: 8px;
-            border-left: 4px solid var(--aurora-primary);
-            transition: var(--transition-smooth);
+        .quick-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--aurora-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
         }
 
-        .key-point:hover {
-            transform: translateX(5px);
-            background: var(--mac-bg-hover);
-        }
-
-        .key-point-number {
-            width: 28px;
-            height: 28px;
+        .quick-icon {
+            width: 48px;
+            height: 48px;
             background: var(--aurora-gradient);
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
             color: white;
-            font-weight: 700;
-            font-size: 0.875rem;
-            flex-shrink: 0;
         }
 
-        /* 示例题目 */
-        .examples-grid {
+        .quick-text h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .quick-text p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== 知识点列表 ===== */
+        .knowledge-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stats-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--aurora-subtle);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--aurora-primary);
+        }
+
+        .stats-text h3 {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .stats-text p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .knowledge-list {
             display: grid;
             gap: 16px;
         }
 
-        .example-card {
-            padding: 20px;
-            background: var(--aurora-subtle);
-            border-radius: 12px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            transition: var(--transition-smooth);
+        .knowledge-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            overflow: hidden;
+            transition: var(--transition);
         }
 
-        .example-card:hover {
+        .knowledge-item:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+            border-color: var(--aurora-primary);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.2);
         }
 
-        .example-question {
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--mac-text-primary);
-        }
-
-        .example-answer {
-            padding: 12px;
-            background: var(--mac-bg-hover);
-            border-radius: 8px;
-            color: var(--mac-text-secondary);
-            border-left: 4px solid var(--aurora-primary);
-        }
-
-        /* 相关资源 */
-        .resources {
+        .item-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
-        .resource-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+        .subject-tag {
+            padding: 4px 12px;
             background: var(--aurora-subtle);
             border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--aurora-primary);
-            text-decoration: none;
+        }
+
+        .difficulty-tag {
+            padding: 4px 12px;
+            background: var(--bg-hover);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .item-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .item-preview {
+            color: var(--text-secondary);
             font-size: 0.875rem;
-            transition: var(--transition-smooth);
-            border: 1px solid transparent;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .resource-link:hover {
-            background: var(--aurora-gradient);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        /* 底部操作栏 */
-        .card-actions {
+        .item-meta {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-top: 1px solid rgba(139, 92, 246, 0.2);
-            background: var(--mac-bg-hover);
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .action-btn {
+            padding: 8px 16px;
+            background: var(--bg-hover);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--mac-bg-primary);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 8px;
-            color: var(--mac-text-primary);
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: var(--transition-smooth);
+            gap: 6px;
         }
 
         .action-btn:hover {
             background: var(--aurora-subtle);
             border-color: var(--aurora-primary);
-            transform: translateY(-2px);
         }
 
         .action-btn.primary {
@@ -853,393 +501,307 @@
         }
 
         .action-btn.primary:hover {
-            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        /* 主题切换按钮 */
-        .theme-toggle {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            background: var(--aurora-gradient);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            transition: var(--transition-smooth);
-            border: none;
+        .item-content {
+            padding: 20px;
+            background: var(--bg-hover);
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
         }
 
-        .theme-toggle:hover {
-            transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4),
-                        0 0 30px rgba(139, 92, 246, 0.5);
+        .content-section {
+            margin-bottom: 20px;
         }
 
-        .theme-settings-btn {
-            position: fixed;
-            bottom: 90px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            background: var(--aurora-gradient);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            transition: var(--transition-smooth);
-            border: none;
-        }
-
-        .theme-settings-btn:hover {
-            transform: rotate(15deg) scale(1.1);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        /* 留言板转移按钮 */
-        .forum-transfer {
-            position: fixed;
-            bottom: 156px;
-            right: 24px;
-            padding: 12px 20px;
-            background: var(--aurora-gradient);
-            color: white;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            transition: var(--transition-smooth);
-            border: none;
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--aurora-primary);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .key-points {
+            display: grid;
+            gap: 8px;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            border-left: 3px solid var(--aurora-primary);
+        }
+
+        .example-card {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 12px;
+        }
+
+        .example-question {
             font-weight: 600;
-            backdrop-filter: blur(10px);
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
-        .forum-transfer:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4),
-                        0 0 30px rgba(139, 92, 246, 0.5);
+        .example-answer {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding-left: 8px;
+            border-left: 2px solid var(--aurora-primary);
         }
 
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            .knowledge-grid {
-                grid-template-columns: 1fr;
+        /* ===== 分页 ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            padding: 20px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--aurora-primary);
+        }
+
+        .page-btn.active {
+            background: var(--aurora-gradient);
+            color: white;
+            border: none;
+        }
+
+        .page-info {
+            margin: 0 16px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ===== 浮动按钮 ===== */
+        .floating-buttons {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .floating-btn {
+            width: 56px;
+            height: 56px;
+            background: var(--aurora-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .floating-btn.forum {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+
+        .floating-btn.game {
+            background: linear-gradient(135deg, #10b981, #06d6a0);
+        }
+
+        .floating-btn.submit {
+            background: linear-gradient(135deg, #f59e0b, #ec4899);
+        }
+
+        .floating-btn.note {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+        }
+
+        /* ===== 网站变量 ===== */
+        .site-variables {
+            display: none;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 12px;
             }
             
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
+            .nav-links {
+                display: none;
             }
             
             .main-content {
-                margin-left: 0;
+                padding: 16px;
             }
             
-            .theme-panel {
-                width: 280px;
-                right: -280px;
+            .search-box {
+                flex-direction: column;
             }
             
-            .theme-panel.active {
-                right: 0;
+            .filters-row {
+                flex-direction: column;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .knowledge-stats {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+            
+            .item-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .item-actions {
+                align-self: stretch;
+                justify-content: flex-end;
+            }
+            
+            .floating-buttons {
+                bottom: 16px;
+                right: 16px;
             }
         }
 
-        /* 动画效果 */
-        @keyframes auroraGlow {
-            0%, 100% { 
-                filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+        /* ===== 通知 ===== */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border-left: 4px solid var(--aurora-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
-            50% { 
-                filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8));
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
-        }
-
-        .aurora-glow {
-            animation: auroraGlow 3s ease-in-out infinite;
-        }
-
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--mac-bg-card);
-            border-radius: var(--mac-radius-lg);
-            border: 2px dashed rgba(139, 92, 246, 0.3);
-            margin: 20px 0;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            color: var(--aurora-primary);
-            margin-bottom: 20px;
-            animation: auroraGlow 3s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
     <!-- 极光背景 -->
-    <div class="aurora-bg"></div>
+    <div class="aurora-background">
+        <div class="aurora-layer"></div>
+        <div class="aurora-layer"></div>
+        <div class="aurora-layer"></div>
+    </div>
 
-    <!-- 应用容器 -->
-    <div class="app-container">
-        <!-- 侧边栏 - 科目导航 -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <a href="#" class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="logo-text">DSEhub</div>
-                </a>
-                <div style="color: rgba(255,255,255,0.7); font-size: 0.875rem; margin-top: 8px;">
-                    香港文凭考试知识库
-                </div>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
             </div>
+            <div class="logo-text">DSEhub</div>
+        </a>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-btn active">
+                <i class="fas fa-book"></i> 知识库
+            </a>
+            <a href="#game-center" class="nav-btn">
+                <i class="fas fa-gamepad"></i> 游戏中心
+            </a>
+            <a href="#submit-center" class="nav-btn">
+                <i class="fas fa-paper-plane"></i> 投稿中心
+            </a>
+            <a href="#note-zone" class="nav-btn">
+                <i class="fas fa-sticky-note"></i> 笔记专区
+            </a>
+        </div>
+    </nav>
 
-            <!-- 必修科目 -->
-            <div class="subject-category">
-                <div class="category-title">
-                    <i class="fas fa-star"></i>
-                    <span>必修科目</span>
-                </div>
-                <ul class="subject-list">
-                    <li class="subject-item">
-                        <a href="#" class="subject-link active" data-subject="CHI">
-                            <div class="subject-icon">
-                                <i class="fas fa-language"></i>
-                            </div>
-                            <div class="subject-name">中国语文</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="ENG">
-                            <div class="subject-icon">
-                                <i class="fas fa-font"></i>
-                            </div>
-                            <div class="subject-name">英国语文</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="MATH">
-                            <div class="subject-icon">
-                                <i class="fas fa-calculator"></i>
-                            </div>
-                            <div class="subject-name">数学</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="LS">
-                            <div class="subject-icon">
-                                <i class="fas fa-globe-asia"></i>
-                            </div>
-                            <div class="subject-name">通识教育</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="CIT">
-                            <div class="subject-icon">
-                                <i class="fas fa-laptop-code"></i>
-                            </div>
-                            <div class="subject-name">资讯及通讯科技</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                </ul>
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 搜索和筛选区 -->
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput" 
+                       placeholder="搜索知识点、科目、关键词..."
+                       onkeypress="if(event.key === 'Enter') searchKnowledge()">
+                <button class="search-btn" onclick="searchKnowledge()">
+                    <i class="fas fa-search"></i> 搜索
+                </button>
             </div>
-
-            <!-- 理科科目 -->
-            <div class="subject-category">
-                <div class="category-title">
-                    <i class="fas fa-atom"></i>
-                    <span>理科科目</span>
+            
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">科目</label>
+                    <select class="filter-select" id="subjectFilter">
+                        <option value="">全部科目</option>
+                        <option value="CHI">中国语文</option>
+                        <option value="ENG">英国语文</option>
+                        <option value="MATH">数学</option>
+                        <option value="LS">通识教育</option>
+                        <option value="PHY">物理</option>
+                        <option value="CHEM">化学</option>
+                        <option value="BIO">生物</option>
+                        <option value="CHIST">中国历史</option>
+                        <option value="HIST">历史</option>
+                        <option value="GEOG">地理</option>
+                        <option value="ECON">经济</option>
+                        <option value="CIT">资讯科技</option>
+                        <option value="BAFS">企会财</option>
+                        <option value="M1">数学M1</option>
+                        <option value="M2">数学M2</option>
+                        <option value="MUSIC">音乐</option>
+                        <option value="VA">视觉艺术</option>
+                    </select>
                 </div>
-                <ul class="subject-list">
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="PHY">
-                            <div class="subject-icon">
-                                <i class="fas fa-atom"></i>
-                            </div>
-                            <div class="subject-name">物理</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="CHEM">
-                            <div class="subject-icon">
-                                <i class="fas fa-flask"></i>
-                            </div>
-                            <div class="subject-name">化学</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="BIO">
-                            <div class="subject-icon">
-                                <i class="fas fa-dna"></i>
-                            </div>
-                            <div class="subject-name">生物</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="M1">
-                            <div class="subject-icon">
-                                <i class="fas fa-sigma"></i>
-                            </div>
-                            <div class="subject-name">数学延伸单元一</div>
-                            <div class="subject-badge">M1</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="M2">
-                            <div class="subject-icon">
-                                <i class="fas fa-infinity"></i>
-                            </div>
-                            <div class="subject-name">数学延伸单元二</div>
-                            <div class="subject-badge">M2</div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- 文科科目 -->
-            <div class="subject-category">
-                <div class="category-title">
-                    <i class="fas fa-landmark"></i>
-                    <span>文科科目</span>
-                </div>
-                <ul class="subject-list">
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="CHIST">
-                            <div class="subject-icon">
-                                <i class="fas fa-scroll"></i>
-                            </div>
-                            <div class="subject-name">中国历史</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="HIST">
-                            <div class="subject-icon">
-                                <i class="fas fa-landmark"></i>
-                            </div>
-                            <div class="subject-name">历史</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="GEOG">
-                            <div class="subject-icon">
-                                <i class="fas fa-mountain"></i>
-                            </div>
-                            <div class="subject-name">地理</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="ECON">
-                            <div class="subject-icon">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                            <div class="subject-name">经济</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="BAFS">
-                            <div class="subject-icon">
-                                <i class="fas fa-business-time"></i>
-                            </div>
-                            <div class="subject-name">企业、会计与财务概论</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- 其他科目 -->
-            <div class="subject-category">
-                <div class="category-title">
-                    <i class="fas fa-palette"></i>
-                    <span>其他科目</span>
-                </div>
-                <ul class="subject-list">
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="MUSIC">
-                            <div class="subject-icon">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <div class="subject-name">音乐</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="VA">
-                            <div class="subject-icon">
-                                <i class="fas fa-palette"></i>
-                            </div>
-                            <div class="subject-name">视觉艺术</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                    <li class="subject-item">
-                        <a href="#" class="subject-link" data-subject="PE">
-                            <div class="subject-icon">
-                                <i class="fas fa-running"></i>
-                            </div>
-                            <div class="subject-name">体育</div>
-                            <div class="subject-badge">DSE</div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <!-- 主内容区域 -->
-        <main class="main-content">
-            <!-- 工具栏 -->
-            <div class="toolbar">
-                <div class="toolbar-title">
-                    <i class="fas fa-book-open aurora-glow"></i>
-                    <span id="subjectTitle">中国语文 · 知识点库</span>
-                </div>
-                <div class="toolbar-actions">
-                    <button class="action-btn" onclick="showSearch()">
-                        <i class="fas fa-search"></i> 搜索知识点
-                    </button>
-                    <button class="action-btn" onclick="toggleFilters()">
-                        <i class="fas fa-filter"></i> 筛选
-                    </button>
-                    <button class="action-btn primary" onclick="addKnowledgePoint()">
-                        <i class="fas fa-plus"></i> 添加知识点
-                    </button>
-                </div>
-            </div>
-
-            <!-- 筛选器 -->
-            <div class="filters" id="filtersPanel" style="display: none;">
+                
                 <div class="filter-group">
                     <label class="filter-label">难度</label>
                     <select class="filter-select" id="difficultyFilter">
@@ -1251,158 +813,185 @@
                         <option value="5">★★★★★ 专家</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">章节</label>
-                    <select class="filter-select" id="chapterFilter">
-                        <option value="">全部章节</option>
-                        <option value="卷一">卷一：阅读能力</option>
-                        <option value="卷二">卷二：写作能力</option>
-                        <option value="卷三">卷三：聆听能力</option>
-                        <option value="卷四">卷四：说话能力</option>
-                    </select>
-                </div>
+                
                 <div class="filter-group">
                     <label class="filter-label">排序</label>
                     <select class="filter-select" id="sortFilter">
-                        <option value="created_at_desc">最新优先</option>
-                        <option value="created_at_asc">最旧优先</option>
-                        <option value="difficulty_asc">难度从低到高</option>
+                        <option value="recent">最新优先</option>
+                        <option value="difficulty">难度从低到高</option>
                         <option value="difficulty_desc">难度从高到低</option>
+                        <option value="popular">最多收藏</option>
                     </select>
                 </div>
+                
                 <div class="filter-group">
-                    <label class="filter-label">状态</label>
-                    <select class="filter-select" id="statusFilter">
-                        <option value="">全部</option>
-                        <option value="learned">已学习</option>
-                        <option value="unlearned">未学习</option>
-                        <option value="favorite">已收藏</option>
+                    <label class="filter-label">每页显示</label>
+                    <select class="filter-select" id="perPageFilter">
+                        <option value="10">10条</option>
+                        <option value="20">20条</option>
+                        <option value="50">50条</option>
                     </select>
                 </div>
             </div>
+        </section>
 
-            <!-- 知识点网格 -->
-            <div class="knowledge-grid" id="knowledgeGrid">
-                <!-- 知识点卡片将通过JavaScript动态加载 -->
-            </div>
+        <!-- 快速操作按钮 -->
+        <div class="quick-actions">
+            <a href="#" class="quick-btn" onclick="goToGameCenter()">
+                <div class="quick-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="quick-text">
+                    <h3>游戏中心</h3>
+                    <p>趣味学习，挑战答题</p>
+                </div>
+            </a>
+            
+            <a href="#" class="quick-btn" onclick="goToSubmitCenter()">
+                <div class="quick-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="quick-text">
+                    <h3>投稿中心</h3>
+                    <p>分享你的学习成果</p>
+                </div>
+            </a>
+            
+            <a href="#" class="quick-btn" onclick="goToNoteZone()">
+                <div class="quick-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <div class="quick-text">
+                    <h3>笔记专区</h3>
+                    <p>整理个人学习笔记</p>
+                </div>
+            </a>
+        </div>
 
-            <!-- 空状态提示 -->
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <div class="empty-state-icon">
+        <!-- 知识点统计 -->
+        <div class="knowledge-stats">
+            <div class="stats-item">
+                <div class="stats-icon">
                     <i class="fas fa-book"></i>
                 </div>
-                <h3 style="margin-bottom: 12px; color: var(--mac-text-primary);">暂无知识点</h3>
-                <p style="color: var(--mac-text-muted); margin-bottom: 24px;">
-                    当前科目还没有知识点内容，点击"添加知识点"开始创建
-                </p>
-                <button class="action-btn primary" onclick="addKnowledgePoint()">
-                    <i class="fas fa-plus"></i> 创建第一个知识点
-                </button>
+                <div class="stats-text">
+                    <h3 id="totalCount">128</h3>
+                    <p>总知识点</p>
+                </div>
             </div>
-        </main>
-    </div>
+            
+            <div class="stats-item">
+                <div class="stats-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="stats-text">
+                    <h3 id="subjectCount">18</h3>
+                    <p>覆盖科目</p>
+                </div>
+            </div>
+            
+            <div class="stats-item">
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-text">
+                    <h3 id="contributors">24</h3>
+                    <p>贡献者</p>
+                </div>
+            </div>
+        </div>
 
-    <!-- 主题设置面板 -->
-    <div class="theme-panel" id="themePanel">
-        <div class="theme-header">
-            <div class="theme-title">极光主题设置</div>
-            <button class="close-panel" onclick="toggleThemePanel()">
-                <i class="fas fa-times"></i>
+        <!-- 知识点列表 -->
+        <div class="knowledge-list" id="knowledgeList">
+            <!-- 知识点项目会动态加载 -->
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination" id="pagination">
+            <button class="page-btn" onclick="changePage(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="page-info" id="pageInfo">第 1 页 / 共 5 页</span>
+            <button class="page-btn" onclick="changePage(1)">
+                <i class="fas fa-chevron-right"></i>
             </button>
         </div>
-        
-        <div class="theme-options">
-            <div class="theme-group">
-                <label class="theme-label">预设主题</label>
-                <div class="color-picker-grid">
-                    <div class="color-option active" data-variant="aurora" onclick="setAuroraVariant('aurora')">
-                        <div class="color-preview" style="--color-1: #8b5cf6; --color-2: #ec4899; --color-3: #3b82f6;"></div>
-                        <div class="color-name">极光紫</div>
-                    </div>
-                    <div class="color-option" data-variant="northern" onclick="setAuroraVariant('northern')">
-                        <div class="color-preview" style="--color-1: #3b82f6; --color-2: #8b5cf6; --color-3: #ec4899;"></div>
-                        <div class="color-name">北极光</div>
-                    </div>
-                    <div class="color-option" data-variant="cosmic" onclick="setAuroraVariant('cosmic')">
-                        <div class="color-preview" style="--color-1: #d946ef; --color-2: #8b5cf6; --color-3: #3b82f6;"></div>
-                        <div class="color-name">宇宙星云</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="theme-group">
-                <label class="theme-label">自定义颜色</label>
-                <div class="color-controls">
-                    <input type="color" id="color1" class="color-input" value="#8b5cf6">
-                    <input type="color" id="color2" class="color-input" value="#ec4899">
-                    <input type="color" id="color3" class="color-input" value="#3b82f6">
-                </div>
-                <button class="theme-btn" onclick="applyCustomColors()">
-                    <i class="fas fa-palette"></i> 应用自定义
-                </button>
-            </div>
-            
-            <div class="theme-group">
-                <label class="theme-label">动态效果</label>
-                <div style="display: flex; gap: 12px; margin-top: 12px;">
-                    <button class="action-btn" onclick="toggleAuroraEffect()" id="auroraBtn">
-                        <i class="fas fa-wind"></i> 极光流动
-                    </button>
-                    <button class="action-btn" onclick="toggleGlowEffect()" id="glowBtn">
-                        <i class="fas fa-sparkles"></i> 发光效果
-                    </button>
-                </div>
-            </div>
-        </div>
+    </main>
+
+    <!-- 浮动按钮 -->
+    <div class="floating-buttons">
+        <button class="floating-btn forum" onclick="goToForum()" title="前往留言板">
+            <i class="fas fa-comments"></i>
+        </button>
+        <button class="floating-btn game" onclick="goToGameCenter()" title="游戏中心">
+            <i class="fas fa-gamepad"></i>
+        </button>
+        <button class="floating-btn submit" onclick="goToSubmitCenter()" title="投稿中心">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+        <button class="floating-btn note" onclick="goToNoteZone()" title="笔记专区">
+            <i class="fas fa-sticky-note"></i>
+        </button>
     </div>
 
-    <!-- 控制按钮 -->
-    <button class="forum-transfer" onclick="goToForum()">
-        <i class="fas fa-comments"></i> 前往留言板
-    </button>
-    
-    <button class="theme-settings-btn" onclick="toggleThemePanel()">
-        <i class="fas fa-palette"></i>
-    </button>
-    
-    <button class="theme-toggle" onclick="toggleDarkMode()">
-        <i class="fas fa-moon" id="themeIcon"></i>
-    </button>
+    <!-- 网站变量 - 您需要在这里填写具体的URL -->
+    <div class="site-variables">
+        <!-- 
+            请在这里设置您的网站URL：
+            1. forumUrl: 留言板网址
+            2. gameCenterUrl: 游戏中心网址  
+            3. submitCenterUrl: 投稿中心网址
+            4. noteZoneUrl: 笔记专区网址
+        -->
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ===== 配置 =====
+        // ===== 网站URL配置 =====
+        // 请在这里填写您的网站URL
+        const SITE_URLS = {
+            forum: 'https://您的论坛网站.com',  // 留言板URL
+            gameCenter: 'https://您的游戏中心.com',  // 游戏中心URL
+            submitCenter: 'https://您的投稿中心.com',  // 投稿中心URL
+            noteZone: 'https://您的笔记专区.com'  // 笔记专区URL
+        };
+
+        // ===== Supabase配置 =====
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
         // ===== 全局状态 =====
         let currentUser = null;
-        let currentSubject = 'CHI';
         let supabaseClient = null;
-        let expandedCardId = null;
-        let auroraActive = true;
-        let glowActive = true;
-        
-        // ===== 科目配置 =====
-        const subjects = {
-            'CHI': { name: '中国语文', icon: 'fa-language' },
-            'ENG': { name: '英国语文', icon: 'fa-font' },
-            'MATH': { name: '数学', icon: 'fa-calculator' },
-            'LS': { name: '通识教育', icon: 'fa-globe-asia' },
-            'PHY': { name: '物理', icon: 'fa-atom' },
-            'CHEM': { name: '化学', icon: 'fa-flask' },
-            'BIO': { name: '生物', icon: 'fa-dna' },
-            'CHIST': { name: '中国历史', icon: 'fa-scroll' },
-            'HIST': { name: '历史', icon: 'fa-landmark' },
-            'GEOG': { name: '地理', icon: 'fa-mountain' },
-            'ECON': { name: '经济', icon: 'fa-chart-pie' },
-            'CIT': { name: '资讯及通讯科技', icon: 'fa-laptop-code' },
-            'BAFS': { name: '企业、会计与财务概论', icon: 'fa-business-time' },
-            'M1': { name: '数学延伸单元一', icon: 'fa-sigma' },
-            'M2': { name: '数学延伸单元二', icon: 'fa-infinity' },
-            'MUSIC': { name: '音乐', icon: 'fa-music' },
-            'VA': { name: '视觉艺术', icon: 'fa-palette' },
-            'PE': { name: '体育', icon: 'fa-running' }
+        let currentPage = 1;
+        let totalPages = 1;
+        let perPage = 10;
+        let currentFilters = {
+            subject: '',
+            difficulty: '',
+            search: '',
+            sort: 'recent'
+        };
+
+        // ===== 科目映射 =====
+        const SUBJECT_MAP = {
+            'CHI': '中国语文',
+            'ENG': '英国语文',
+            'MATH': '数学',
+            'LS': '通识教育',
+            'PHY': '物理',
+            'CHEM': '化学',
+            'BIO': '生物',
+            'CHIST': '中国历史',
+            'HIST': '历史',
+            'GEOG': '地理',
+            'ECON': '经济',
+            'CIT': '资讯及通讯科技',
+            'BAFS': '企业、会计与财务概论',
+            'M1': '数学延伸单元一',
+            'M2': '数学延伸单元二',
+            'MUSIC': '音乐',
+            'VA': '视觉艺术'
         };
 
         // ===== 初始化 =====
@@ -1414,31 +1003,26 @@
                     console.log('Supabase初始化成功');
                 } else {
                     console.error('Supabase库加载失败');
-                    return;
+                    // 使用模拟数据
                 }
                 
                 // 检查用户会话
                 await checkUserSession();
                 
-                // 初始化事件监听器
-                initEventListeners();
+                // 初始化筛选器事件
+                initFilters();
                 
-                // 加载当前科目的知识点
-                loadKnowledgePoints();
+                // 加载知识列表
+                loadKnowledgeList();
                 
-                // 加载主题设置
-                loadThemeSettings();
-                
-                // 设置自动刷新
-                setInterval(() => {
-                    if (document.querySelector('.knowledge-card.expanded')) {
-                        loadKnowledgePoints();
-                    }
-                }, 30000);
+                // 更新统计信息
+                updateStats();
                 
             } catch (error) {
                 console.error('初始化失败:', error);
                 showNotification('系统初始化失败', 'error');
+                // 显示测试数据
+                showTestData();
             }
         });
 
@@ -1461,8 +1045,9 @@
                             ...data.profiles
                         };
                         console.log('用户已登录:', currentUser.username);
-                    } else {
-                        deleteCookie('cross_site_session');
+                        
+                        // 显示用户相关的个性化内容
+                        document.getElementById('contributors').textContent = '25';
                     }
                 } catch (error) {
                     console.error('会话检查失败:', error);
@@ -1470,186 +1055,219 @@
             }
         }
 
-        // ===== 知识点管理 =====
-        async function loadKnowledgePoints() {
+        // ===== 筛选器初始化 =====
+        function initFilters() {
+            // 筛选器变化监听
+            document.getElementById('subjectFilter').addEventListener('change', (e) => {
+                currentFilters.subject = e.target.value;
+                currentPage = 1;
+                loadKnowledgeList();
+            });
+            
+            document.getElementById('difficultyFilter').addEventListener('change', (e) => {
+                currentFilters.difficulty = e.target.value;
+                currentPage = 1;
+                loadKnowledgeList();
+            });
+            
+            document.getElementById('sortFilter').addEventListener('change', (e) => {
+                currentFilters.sort = e.target.value;
+                currentPage = 1;
+                loadKnowledgeList();
+            });
+            
+            document.getElementById('perPageFilter').addEventListener('change', (e) => {
+                perPage = parseInt(e.target.value);
+                currentPage = 1;
+                loadKnowledgeList();
+            });
+        }
+
+        // ===== 搜索功能 =====
+        function searchKnowledge() {
+            const searchInput = document.getElementById('searchInput');
+            currentFilters.search = searchInput.value.trim();
+            currentPage = 1;
+            loadKnowledgeList();
+        }
+
+        // ===== 加载知识列表 =====
+        async function loadKnowledgeList() {
             if (!supabaseClient) {
-                console.error('Supabase客户端未初始化');
+                // 如果没有Supabase连接，显示测试数据
                 showTestData();
                 return;
             }
             
             try {
-                const { data, error } = await supabaseClient
+                let query = supabaseClient
                     .from('knowledge_points')
-                    .select('*')
-                    .eq('subject', currentSubject)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
+                    .select('*', { count: 'exact' });
+                
+                // 应用筛选条件
+                if (currentFilters.subject) {
+                    query = query.eq('subject', currentFilters.subject);
+                }
+                
+                if (currentFilters.difficulty) {
+                    query = query.eq('difficulty', parseInt(currentFilters.difficulty));
+                }
+                
+                if (currentFilters.search) {
+                    query = query.or(`title.ilike.%${currentFilters.search}%,content.ilike.%${currentFilters.search}%`);
+                }
+                
+                // 应用排序
+                switch(currentFilters.sort) {
+                    case 'recent':
+                        query = query.order('created_at', { ascending: false });
+                        break;
+                    case 'difficulty':
+                        query = query.order('difficulty', { ascending: true });
+                        break;
+                    case 'difficulty_desc':
+                        query = query.order('difficulty', { ascending: false });
+                        break;
+                    case 'popular':
+                        // 这里可能需要一个收藏数字段
+                        query = query.order('created_at', { ascending: false });
+                        break;
+                }
+                
+                // 分页
+                const from = (currentPage - 1) * perPage;
+                const to = from + perPage - 1;
+                query = query.range(from, to);
+                
+                const { data, error, count } = await query;
                 
                 if (error) {
-                    console.error('加载知识点失败:', error);
+                    console.error('加载知识列表失败:', error);
                     showTestData();
                     return;
                 }
                 
-                if (data && data.length > 0) {
-                    renderKnowledgePoints(data);
-                } else {
-                    showEmptyState();
-                }
+                // 计算总页数
+                totalPages = Math.ceil(count / perPage);
+                
+                // 渲染列表
+                renderKnowledgeList(data || []);
+                
+                // 更新分页信息
+                updatePagination();
+                
+                // 更新统计
+                updateStats();
                 
             } catch (error) {
-                console.error('加载知识点异常:', error);
+                console.error('加载知识列表异常:', error);
                 showTestData();
             }
         }
 
-        function renderKnowledgePoints(knowledgePoints) {
-            const container = document.getElementById('knowledgeGrid');
-            const emptyState = document.getElementById('emptyState');
+        function renderKnowledgeList(knowledgePoints) {
+            const container = document.getElementById('knowledgeList');
             
             if (!knowledgePoints || knowledgePoints.length === 0) {
-                showEmptyState();
+                container.innerHTML = `
+                    <div class="knowledge-item" style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 style="margin-bottom: 12px; color: var(--text-primary);">暂无相关知识点</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">
+                            尝试使用其他关键词搜索或筛选条件
+                        </p>
+                        <button class="action-btn primary" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> 重置筛选
+                        </button>
+                    </div>
+                `;
                 return;
             }
             
-            emptyState.style.display = 'none';
             container.innerHTML = '';
             
             knowledgePoints.forEach((point, index) => {
-                const subject = subjects[point.subject] || subjects.CHI;
-                const isExpanded = expandedCardId === point.id;
+                const subjectName = SUBJECT_MAP[point.subject] || point.subject;
                 
-                // 解析JSON字段
+                // 解析内容
                 let keyPoints = [];
                 let examples = [];
-                let relatedTopics = [];
                 
                 try {
                     if (point.content) {
-                        const contentData = JSON.parse(point.content);
+                        const contentData = typeof point.content === 'string' ? JSON.parse(point.content) : point.content;
                         keyPoints = contentData.key_points || ['暂无关键点'];
                         examples = contentData.examples || [{ question: '暂无示例题目', answer: '暂无答案' }];
-                        relatedTopics = contentData.related_topics || [];
                     }
                 } catch (e) {
-                    // 如果不是JSON，使用默认值
                     keyPoints = ['暂无关键点'];
                     examples = [{ question: '暂无示例题目', answer: '暂无答案' }];
-                    relatedTopics = [];
                 }
                 
-                const card = document.createElement('div');
-                card.className = `knowledge-card ${isExpanded ? 'expanded' : ''}`;
-                card.id = `knowledge-${point.id}`;
+                const item = document.createElement('div');
+                item.className = 'knowledge-item';
                 
-                card.innerHTML = `
-                    <div class="card-header" onclick="toggleCardExpand(${point.id})">
-                        <div>
-                            <div class="subject-badge-large">
-                                <i class="fas ${subject.icon}"></i>
-                                <span>${subject.name}</span>
+                item.innerHTML = `
+                    <div class="item-header">
+                        <div style="flex: 1;">
+                            <div class="item-tags">
+                                <span class="subject-tag">${subjectName}</span>
+                                <span class="difficulty-tag">难度: ${'★'.repeat(point.difficulty || 1)}</span>
                             </div>
-                            <h3 class="card-title">${point.title || '未命名知识点'}</h3>
-                            <div class="card-meta">
+                            <h3 class="item-title">${point.title || '未命名知识点'}</h3>
+                            <p class="item-preview">${getContentPreview(point.content)}</p>
+                            <div class="item-meta">
+                                <span><i class="far fa-calendar"></i> ${formatDate(point.created_at)}</span>
                                 <span><i class="fas fa-layer-group"></i> ${point.category_group || '未分类'}</span>
-                                <span><i class="fas fa-signal"></i> 难度: ${'★'.repeat(point.difficulty || 1)}</span>
-                                <span><i class="far fa-clock"></i> ${formatDate(point.created_at)}</span>
                             </div>
                         </div>
-                        <button class="expand-btn">
-                            <i class="fas fa-chevron-${isExpanded ? 'up' : 'down'}"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="card-content">
-                        <!-- 章节导航 -->
-                        ${relatedTopics.length > 0 ? `
-                        <div class="chapter-nav">
-                            ${relatedTopics.map(topic => 
-                                `<a href="#" class="chapter-tag">${topic}</a>`
-                            ).join('')}
-                        </div>` : ''}
-                        
-                        <!-- 主要内容 -->
-                        <div class="knowledge-detail">
-                            <div class="detail-section">
-                                <div class="section-title">
-                                    <i class="fas fa-align-left"></i>
-                                    <span>内容概要</span>
-                                </div>
-                                <p>${point.content && typeof point.content === 'string' && !point.content.startsWith('{') 
-                                    ? point.content 
-                                    : '暂无详细内容'}</p>
-                            </div>
-                            
-                            <!-- 关键点 -->
-                            <div class="detail-section">
-                                <div class="section-title">
-                                    <i class="fas fa-key"></i>
-                                    <span>关键知识点</span>
-                                </div>
-                                <div class="key-points">
-                                    ${keyPoints.map((kp, i) => `
-                                        <div class="key-point">
-                                            <div class="key-point-number">${i + 1}</div>
-                                            <div>${kp}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <!-- 示例 -->
-                            <div class="detail-section">
-                                <div class="section-title">
-                                    <i class="fas fa-question-circle"></i>
-                                    <span>示例题目</span>
-                                </div>
-                                <div class="examples-grid">
-                                    ${examples.map((example, i) => `
-                                        <div class="example-card">
-                                            <div class="example-question">
-                                                <strong>示例 ${i + 1}:</strong> ${example.question || '题目'}
-                                            </div>
-                                            <div class="example-answer">
-                                                <strong>解答:</strong> ${example.answer || '答案'}
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <!-- 相关资源 -->
-                            <div class="detail-section">
-                                <div class="section-title">
-                                    <i class="fas fa-link"></i>
-                                    <span>相关资源</span>
-                                </div>
-                                <div class="resources">
-                                    <a href="#" class="resource-link" onclick="searchVideo('${point.title}')">
-                                        <i class="fas fa-video"></i> 教学视频
-                                    </a>
-                                    <a href="#" class="resource-link" onclick="searchPDF('${point.title}')">
-                                        <i class="fas fa-file-pdf"></i> PDF讲义
-                                    </a>
-                                    <a href="#" class="resource-link" onclick="searchExercises('${point.title}')">
-                                        <i class="fas fa-clipboard-check"></i> 练习题目
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-actions">
-                        <div>
-                            <button class="action-btn" onclick="markAsLearned(${point.id})">
-                                <i class="fas fa-check"></i> 标记为已学
+                        <div class="item-actions">
+                            <button class="action-btn" onclick="toggleDetails(${index})">
+                                <i class="fas fa-chevron-down"></i> 详情
                             </button>
                             <button class="action-btn" onclick="addToFavorites(${point.id})">
-                                <i class="fas fa-star"></i> 收藏
+                                <i class="far fa-star"></i> 收藏
                             </button>
                         </div>
-                        <div>
+                    </div>
+                    
+                    <div class="item-content" id="details-${index}" style="display: none;">
+                        <div class="content-section">
+                            <div class="section-title">
+                                <i class="fas fa-key"></i>
+                                <span>关键知识点</span>
+                            </div>
+                            <div class="key-points">
+                                ${keyPoints.map((kp, i) => `
+                                    <div class="key-point">
+                                        <span style="color: var(--aurora-primary); font-weight: 600;">${i + 1}.</span>
+                                        <span>${kp}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        ${examples.length > 0 ? `
+                        <div class="content-section">
+                            <div class="section-title">
+                                <i class="fas fa-question-circle"></i>
+                                <span>示例题目</span>
+                            </div>
+                            ${examples.map((example, i) => `
+                                <div class="example-card">
+                                    <div class="example-question">
+                                        <strong>示例 ${i + 1}:</strong> ${example.question || '题目'}
+                                    </div>
+                                    <div class="example-answer">
+                                        ${example.answer || '答案'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>` : ''}
+                        
+                        <div style="display: flex; gap: 12px; margin-top: 20px;">
                             <button class="action-btn" onclick="shareKnowledge(${point.id})">
                                 <i class="fas fa-share-alt"></i> 分享
                             </button>
@@ -1660,280 +1278,112 @@
                     </div>
                 `;
                 
-                container.appendChild(card);
+                container.appendChild(item);
             });
         }
 
-        function showTestData() {
-            const testData = [
-                {
-                    id: 1,
-                    title: 'DSE中文：阅读理解技巧',
-                    subject: 'CHI',
-                    category_group: '卷一：阅读能力',
-                    difficulty: 3,
-                    content: JSON.stringify({
-                        key_points: ['记叙文六要素', '描写手法分析', '论证方法识别', '主旨归纳技巧'],
-                        examples: [
-                            { question: '文中第三段运用了什么描写手法？有什么作用？', answer: '运用了比喻和拟人手法，生动形象地表现了人物的内心世界。' },
-                            { question: '作者在文中表达了怎样的中心思想？', answer: '通过……表达了……的思想感情。' }
-                        ],
-                        related_topics: ['文体分析', '阅读策略', '答题技巧']
-                    }),
-                    created_at: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    title: '数学：二次函数图像与性质',
-                    subject: 'MATH',
-                    category_group: '代数',
-                    difficulty: 4,
-                    content: JSON.stringify({
-                        key_points: ['顶点公式(-b/2a, f(-b/2a))', '判别式Δ=b²-4ac', '图像变换规律', '最值求解方法'],
-                        examples: [
-                            { question: '求函数y=2x²-4x+1的顶点坐标和对称轴', answer: '顶点(1, -1)，对称轴x=1' },
-                            { question: '已知二次函数图像经过(1,0)、(3,0)和(0,3)，求函数表达式', answer: 'y=x²-4x+3' }
-                        ],
-                        related_topics: ['函数图像', '代数运算', '最值问题']
-                    }),
-                    created_at: new Date().toISOString()
+        function toggleDetails(index) {
+            const details = document.getElementById(`details-${index}`);
+            const isVisible = details.style.display !== 'none';
+            
+            details.style.display = isVisible ? 'none' : 'block';
+            
+            // 更新按钮图标
+            const buttons = document.querySelectorAll(`[onclick="toggleDetails(${index})"]`);
+            buttons.forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.className = isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
                 }
-            ];
-            
-            renderKnowledgePoints(testData);
+                btn.innerHTML = `<i class="${isVisible ? 'fas fa-chevron-down' : 'fas fa-chevron-up'}"></i> ${isVisible ? '详情' : '收起'}`;
+            });
         }
 
-        function showEmptyState() {
-            document.getElementById('knowledgeGrid').innerHTML = '';
-            document.getElementById('emptyState').style.display = 'block';
-        }
-
-        // ===== 交互功能 =====
-        function toggleCardExpand(cardId) {
-            const card = document.getElementById(`knowledge-${cardId}`);
-            if (!card) return;
+        // ===== 分页功能 =====
+        function changePage(delta) {
+            const newPage = currentPage + delta;
             
-            const isExpanded = card.classList.contains('expanded');
-            
-            // 关闭当前展开的卡片
-            if (expandedCardId && expandedCardId !== cardId) {
-                const prevCard = document.getElementById(`knowledge-${expandedCardId}`);
-                if (prevCard) {
-                    prevCard.classList.remove('expanded');
-                    const prevBtn = prevCard.querySelector('.expand-btn i');
-                    prevBtn.className = 'fas fa-chevron-down';
-                }
-            }
-            
-            // 切换当前卡片状态
-            card.classList.toggle('expanded');
-            const expandBtn = card.querySelector('.expand-btn i');
-            
-            if (isExpanded) {
-                expandBtn.className = 'fas fa-chevron-down';
-                expandedCardId = null;
-            } else {
-                expandBtn.className = 'fas fa-chevron-up';
-                expandedCardId = cardId;
-            }
-        }
-
-        function switchSubject(subjectCode) {
-            currentSubject = subjectCode;
-            const subject = subjects[subjectCode];
-            
-            if (!subject) {
-                console.error('科目不存在:', subjectCode);
+            if (newPage < 1 || newPage > totalPages) {
                 return;
             }
             
-            // 更新工具栏标题
-            document.getElementById('subjectTitle').textContent = `${subject.name} · 知识点库`;
+            currentPage = newPage;
+            loadKnowledgeList();
             
-            // 更新侧边栏激活状态
-            document.querySelectorAll('.subject-link').forEach(link => {
-                link.classList.toggle('active', link.dataset.subject === subjectCode);
-            });
-            
-            // 加载新科目的知识点
-            loadKnowledgePoints();
-            
-            // 收起所有卡片
-            if (expandedCardId) {
-                const card = document.getElementById(`knowledge-${expandedCardId}`);
-                if (card) {
-                    card.classList.remove('expanded');
-                    const expandBtn = card.querySelector('.expand-btn i');
-                    expandBtn.className = 'fas fa-chevron-down';
-                    expandedCardId = null;
-                }
-            }
-            
-            // 更新筛选器选项
-            updateFilterOptions(subjectCode);
-            
-            showNotification(`切换到${subject.name}`, 'info');
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function updateFilterOptions(subjectCode) {
-            // 根据科目更新章节选项
-            const chapterFilter = document.getElementById('chapterFilter');
-            if (chapterFilter) {
-                let options = '<option value="">全部章节</option>';
+        function updatePagination() {
+            const pageInfo = document.getElementById('pageInfo');
+            pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+        }
+
+        // ===== 统计信息 =====
+        async function updateStats() {
+            if (!supabaseClient) return;
+            
+            try {
+                // 获取总知识点数
+                const { count: total } = await supabaseClient
+                    .from('knowledge_points')
+                    .select('*', { count: 'exact', head: true });
                 
-                switch(subjectCode) {
-                    case 'CHI':
-                        options += `
-                            <option value="卷一">卷一：阅读能力</option>
-                            <option value="卷二">卷二：写作能力</option>
-                            <option value="卷三">卷三：聆听能力</option>
-                            <option value="卷四">卷四：说话能力</option>
-                        `;
-                        break;
-                    case 'MATH':
-                        options += `
-                            <option value="代数">代数</option>
-                            <option value="几何">几何</option>
-                            <option value="概率统计">概率统计</option>
-                            <option value="微积分">微积分</option>
-                        `;
-                        break;
-                    case 'ENG':
-                        options += `
-                            <option value="Reading">Reading</option>
-                            <option value="Writing">Writing</option>
-                            <option value="Listening">Listening</option>
-                            <option value="Speaking">Speaking</option>
-                        `;
-                        break;
-                    default:
-                        options += `
-                            <option value="基础知识">基础知识</option>
-                            <option value="进阶内容">进阶内容</option>
-                            <option value="应用技巧">应用技巧</option>
-                            <option value="考试策略">考试策略</option>
-                        `;
-                }
+                // 获取科目数
+                const { data: subjects } = await supabaseClient
+                    .from('knowledge_points')
+                    .select('subject')
+                    .limit(1000);
                 
-                chapterFilter.innerHTML = options;
+                const uniqueSubjects = new Set(subjects?.map(s => s.subject) || []);
+                
+                // 更新显示
+                document.getElementById('totalCount').textContent = total || '128';
+                document.getElementById('subjectCount').textContent = uniqueSubjects.size || '18';
+                
+            } catch (error) {
+                console.error('更新统计信息失败:', error);
             }
         }
 
-        function toggleFilters() {
-            const panel = document.getElementById('filtersPanel');
-            panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
-        }
-
-        // ===== 主题功能 =====
-        function toggleThemePanel() {
-            const panel = document.getElementById('themePanel');
-            panel.classList.toggle('active');
-        }
-
-        function setAuroraVariant(variant) {
-            document.documentElement.setAttribute('data-aurora-variant', variant);
+        // ===== 网站跳转功能 =====
+        function goToForum() {
+            // 保存当前会话到本地存储
+            const sessionToken = getCookie('cross_site_session');
+            if (sessionToken) {
+                localStorage.setItem('forum_session_token', sessionToken);
+            }
             
-            // 更新按钮状态
-            document.querySelectorAll('.color-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.variant === variant);
-            });
-            
-            saveThemeSetting('auroraVariant', variant);
-        }
-
-        function applyCustomColors() {
-            const color1 = document.getElementById('color1').value;
-            const color2 = document.getElementById('color2').value;
-            const color3 = document.getElementById('color3').value;
-            
-            const style = document.createElement('style');
-            style.id = 'custom-colors';
-            style.textContent = `
-                [data-aurora-variant="custom"] {
-                    --aurora-primary: ${color1};
-                    --aurora-secondary: ${color2};
-                    --aurora-accent: ${color3};
-                }
-            `;
-            
-            // 移除旧的样式
-            const oldStyle = document.getElementById('custom-colors');
-            if (oldStyle) oldStyle.remove();
-            
-            document.head.appendChild(style);
-            document.documentElement.setAttribute('data-aurora-variant', 'custom');
-            
-            saveThemeSetting('customColors', [color1, color2, color3]);
-        }
-
-        function toggleAuroraEffect() {
-            auroraActive = !auroraActive;
-            const bg = document.querySelector('.aurora-bg');
-            const btn = document.getElementById('auroraBtn');
-            
-            if (auroraActive) {
-                bg.style.display = 'block';
-                btn.innerHTML = '<i class="fas fa-wind"></i> 极光流动';
+            // 跳转到留言板
+            if (SITE_URLS.forum.startsWith('http')) {
+                window.location.href = SITE_URLS.forum;
             } else {
-                bg.style.display = 'none';
-                btn.innerHTML = '<i class="fas fa-wind"></i> 启用极光';
+                showNotification('请先设置留言板URL', 'warning');
             }
-            
-            saveThemeSetting('auroraActive', auroraActive);
         }
 
-        function toggleGlowEffect() {
-            glowActive = !glowActive;
-            const btn = document.getElementById('glowBtn');
-            
-            if (glowActive) {
-                document.documentElement.setAttribute('data-aurora', 'active');
-                btn.innerHTML = '<i class="fas fa-sparkles"></i> 发光效果';
+        function goToGameCenter() {
+            if (SITE_URLS.gameCenter.startsWith('http')) {
+                window.location.href = SITE_URLS.gameCenter;
             } else {
-                document.documentElement.setAttribute('data-aurora', 'inactive');
-                btn.innerHTML = '<i class="fas fa-sparkles"></i> 启用发光';
-            }
-            
-            saveThemeSetting('glowActive', glowActive);
-        }
-
-        function toggleDarkMode() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            const themeIcon = document.getElementById('themeIcon');
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            
-            saveThemeSetting('theme', newTheme);
-        }
-
-        function loadThemeSettings() {
-            const settings = JSON.parse(localStorage.getItem('dsehub_theme_settings') || '{}');
-            
-            if (settings.theme) {
-                document.documentElement.setAttribute('data-theme', settings.theme);
-                document.getElementById('themeIcon').className = settings.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            }
-            
-            if (settings.auroraVariant) {
-                setAuroraVariant(settings.auroraVariant);
-            }
-            
-            auroraActive = settings.auroraActive !== false;
-            glowActive = settings.glowActive !== false;
-            
-            if (settings.customColors) {
-                document.getElementById('color1').value = settings.customColors[0];
-                document.getElementById('color2').value = settings.customColors[1];
-                document.getElementById('color3').value = settings.customColors[2];
+                showNotification('请先设置游戏中心URL', 'warning');
             }
         }
 
-        function saveThemeSetting(key, value) {
-            let settings = JSON.parse(localStorage.getItem('dsehub_theme_settings') || '{}');
-            settings[key] = value;
-            localStorage.setItem('dsehub_theme_settings', JSON.stringify(settings));
+        function goToSubmitCenter() {
+            if (SITE_URLS.submitCenter.startsWith('http')) {
+                window.location.href = SITE_URLS.submitCenter;
+            } else {
+                showNotification('请先设置投稿中心URL', 'warning');
+            }
+        }
+
+        function goToNoteZone() {
+            if (SITE_URLS.noteZone.startsWith('http')) {
+                window.location.href = SITE_URLS.noteZone;
+            } else {
+                showNotification('请先设置笔记专区URL', 'warning');
+            }
         }
 
         // ===== 工具函数 =====
@@ -1944,196 +1394,181 @@
             return null;
         }
 
-        function setCookie(name, value, days) {
-            const expires = new Date();
-            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
-        }
-
-        function deleteCookie(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-        }
-
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('zh-HK', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diff = now - date;
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                
+                if (days === 0) return '今天';
+                if (days === 1) return '昨天';
+                if (days < 7) return `${days}天前`;
+                if (days < 30) return `${Math.floor(days / 7)}周前`;
+                
+                return date.toLocaleDateString('zh-HK', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function getContentPreview(content) {
+            try {
+                if (!content) return '暂无内容描述';
+                
+                // 如果是JSON，提取描述
+                if (content.startsWith('{')) {
+                    const data = JSON.parse(content);
+                    if (data.description) return data.description;
+                    if (data.key_points && data.key_points[0]) return data.key_points[0];
+                }
+                
+                // 如果是普通文本，截取前100字符
+                if (content.length > 100) {
+                    return content.substring(0, 100) + '...';
+                }
+                
+                return content;
+            } catch (e) {
+                return content ? content.substring(0, 100) + '...' : '暂无内容描述';
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('subjectFilter').value = '';
+            document.getElementById('difficultyFilter').value = '';
+            document.getElementById('sortFilter').value = 'recent';
+            
+            currentFilters = {
+                subject: '',
+                difficulty: '',
+                search: '',
+                sort: 'recent'
+            };
+            
+            currentPage = 1;
+            loadKnowledgeList();
         }
 
         function showNotification(message, type = 'info') {
-            // 创建通知元素
+            // 移除旧的通知
+            const oldNotification = document.querySelector('.notification');
+            if (oldNotification) oldNotification.remove();
+            
+            // 创建新通知
             const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
+            notification.className = 'notification';
             notification.textContent = message;
             
-            // 样式
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 24px;
-                border-radius: 8px;
-                background: var(--aurora-subtle);
-                border: 1px solid var(--aurora-primary);
-                color: var(--mac-text-primary);
-                box-shadow: var(--aurora-glow);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                backdrop-filter: blur(10px);
-            `;
+            // 设置颜色
+            if (type === 'error') {
+                notification.style.borderLeftColor = '#ef4444';
+            } else if (type === 'success') {
+                notification.style.borderLeftColor = '#10b981';
+            } else if (type === 'warning') {
+                notification.style.borderLeftColor = '#f59e0b';
+            }
             
             document.body.appendChild(notification);
             
+            // 3秒后自动移除
             setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
+                notification.style.animation = 'slideIn 0.3s ease reverse';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
-        // ===== 事件监听器初始化 =====
-        function initEventListeners() {
-            // 科目切换
-            document.querySelectorAll('.subject-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const subjectCode = link.dataset.subject;
-                    switchSubject(subjectCode);
-                });
-            });
-            
-            // 筛选器变化
-            document.querySelectorAll('.filter-select').forEach(select => {
-                select.addEventListener('change', applyFilters);
-            });
-            
-            // 加载保存的主题
-            loadThemeSettings();
-            
-            // 添加键盘快捷键
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === 'k') {
-                    e.preventDefault();
-                    showSearch();
+        // ===== 测试数据 =====
+        function showTestData() {
+            const testData = [
+                {
+                    id: 1,
+                    title: 'DSE中文：阅读理解技巧',
+                    subject: 'CHI',
+                    category_group: '卷一：阅读能力',
+                    difficulty: 3,
+                    content: JSON.stringify({
+                        description: '掌握记叙文、描写文、说明文、议论文四种文体的阅读策略',
+                        key_points: ['记叙文六要素', '描写手法分析', '论证方法识别', '主旨归纳技巧'],
+                        examples: [
+                            { question: '文中第三段运用了什么描写手法？有什么作用？', answer: '运用了比喻和拟人手法，生动形象地表现了人物的内心世界。' }
+                        ]
+                    }),
+                    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 2,
+                    title: '数学：二次函数图像与性质',
+                    subject: 'MATH',
+                    category_group: '代数',
+                    difficulty: 4,
+                    content: JSON.stringify({
+                        description: '理解二次函数y=ax²+bx+c的图像特征，包括顶点坐标、对称轴方程、开口方向等',
+                        key_points: ['顶点公式(-b/2a, f(-b/2a))', '判别式Δ=b²-4ac', '图像变换规律'],
+                        examples: [
+                            { question: '求函数y=2x²-4x+1的顶点坐标和对称轴', answer: '顶点(1, -1)，对称轴x=1' }
+                        ]
+                    }),
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 3,
+                    title: '物理：牛顿运动定律',
+                    subject: 'PHY',
+                    category_group: '力学',
+                    difficulty: 3,
+                    content: JSON.stringify({
+                        description: '掌握牛顿三定律的内容和应用，包括惯性、加速度、作用力与反作用力',
+                        key_points: ['第一定律：惯性定律', '第二定律：F=ma', '第三定律：作用与反作用'],
+                        examples: [
+                            { question: '质量为2kg的物体受到10N的力，求加速度', answer: 'a = F/m = 10/2 = 5 m/s²' }
+                        ]
+                    }),
+                    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
                 }
-                if (e.key === 'Escape' && expandedCardId) {
-                    toggleCardExpand(expandedCardId);
-                }
-                if (e.key === 'Escape') {
-                    const panel = document.getElementById('themePanel');
-                    if (panel.classList.contains('active')) {
-                        toggleThemePanel();
-                    }
-                }
-            });
-        }
-
-        // ===== 其他功能函数 =====
-        function applyFilters() {
-            // 这里可以添加筛选逻辑
-            showNotification('筛选条件已应用', 'info');
-        }
-
-        function showSearch() {
-            const searchTerm = prompt('请输入搜索关键词：');
-            if (searchTerm) {
-                showNotification(`搜索: ${searchTerm}`, 'info');
-                // 这里可以添加搜索逻辑
-            }
-        }
-
-        function addKnowledgePoint() {
-            if (!currentUser) {
-                showNotification('请先登录以添加知识点', 'warning');
-                return;
-            }
+            ];
             
-            // 这里可以打开添加知识点的模态框
-            showNotification('打开添加知识点界面', 'info');
-        }
-
-        function goToForum() {
-            // 保存当前会话
-            const sessionToken = getCookie('cross_site_session');
-            if (sessionToken) {
-                localStorage.setItem('forum_session', sessionToken);
-            }
+            renderKnowledgeList(testData);
             
-            // 跳转到留言板
-            window.location.href = '/forum.html';
+            // 更新分页信息
+            document.getElementById('pageInfo').textContent = '第 1 页 / 共 1 页';
         }
 
-        function searchVideo(title) {
-            const query = encodeURIComponent(`${title} DSE 教学视频`);
-            window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-        }
-
-        function searchPDF(title) {
-            const query = encodeURIComponent(`${title} DSE PDF`);
-            window.open(`https://www.google.com/search?q=${query}`, '_blank');
-        }
-
-        function searchExercises(title) {
-            const query = encodeURIComponent(`${title} DSE 练习题`);
-            window.open(`https://www.google.com/search?q=${query}`, '_blank');
-        }
-
-        // 占位功能函数
-        function markAsLearned(knowledgeId) {
-            if (!currentUser) {
-                showNotification('请先登录', 'warning');
-                return;
-            }
-            showNotification('已标记为已学', 'success');
-        }
-
+        // ===== 占位功能函数 =====
         function addToFavorites(knowledgeId) {
             if (!currentUser) {
-                showNotification('请先登录', 'warning');
+                showNotification('请先登录以收藏内容', 'warning');
                 return;
             }
-            showNotification('已添加到收藏', 'success');
+            showNotification('已添加到收藏夹', 'success');
         }
 
         function shareKnowledge(knowledgeId) {
-            const card = document.getElementById(`knowledge-${knowledgeId}`);
-            const title = card?.querySelector('.card-title')?.textContent || 'DSE知识点';
-            
+            const shareUrl = `${window.location.origin}/knowledge/${knowledgeId}`;
             if (navigator.share) {
                 navigator.share({
-                    title: `DSEhub知识点: ${title}`,
-                    text: `分享一个DSE学习知识点：${title}`,
-                    url: window.location.href
+                    title: 'DSEhub知识分享',
+                    text: '我发现一个不错的DSE学习资料，分享给你！',
+                    url: shareUrl
                 });
             } else {
-                navigator.clipboard.writeText(`${title} - ${window.location.href}`);
+                navigator.clipboard.writeText(shareUrl);
                 showNotification('链接已复制到剪贴板', 'success');
             }
         }
 
         function editKnowledge(knowledgeId) {
             if (!currentUser) {
-                showNotification('请先登录', 'warning');
+                showNotification('请先登录以编辑内容', 'warning');
                 return;
             }
-            showNotification('进入编辑模式', 'info');
+            showNotification('即将打开编辑界面...', 'info');
         }
-
-        // ===== 添加动画样式 =====
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
