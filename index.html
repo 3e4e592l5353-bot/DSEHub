@@ -852,13 +852,26 @@
             display: none !important;
         }
         
-        /* 投稿按钮样式 */
-        .btn-submission {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+        /* 主题选项样式 */
+        .theme-option {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-sm);
         }
         
-        .btn-submission:hover {
-            background: linear-gradient(135deg, #e668b9, #db3069);
+        .theme-option:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-color);
+        }
+        
+        .theme-option.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
         }
     </style>
 </head>
@@ -941,7 +954,7 @@
                 <button class="btn" onclick="window.location.href='gaming.html'">
                     <i class="fas fa-gamepad"></i> 游戏区
                 </button>
-                <button class="btn btn-submission" onclick="window.open('submission.html', '_blank')">
+                <button class="btn" onclick="window.open('submission.html', '_blank')">
                     <i class="fas fa-upload"></i> 投稿中心
                 </button>
                 <button class="btn" onclick="window.location.href='admin.html'" id="adminNavBtn" style="display: none;">
@@ -1265,6 +1278,7 @@
                         };
                         
                         await this.loadUserProfile();
+                        await this.loadUserTheme(); // 加载用户主题
                         this.loginSuccess();
                     }
                 } catch (err) {
@@ -1292,6 +1306,46 @@
                     }
                 } catch (err) {
                     console.error('加载用户资料出错:', err);
+                }
+            },
+
+            // 加载用户主题设置
+            loadUserTheme: async function() {
+                if (!this.currentUser) return;
+                
+                try {
+                    const { data, error } = await this.supabase
+                        .from('profiles')
+                        .select('theme_color')
+                        .eq('auth_id', this.currentUser.id)
+                        .single();
+                    
+                    if (!error && data && data.theme_color) {
+                        this.changeTheme('theme-' + data.theme_color, false);
+                    }
+                } catch (err) {
+                    console.error('加载主题设置出错:', err);
+                }
+            },
+
+            // 保存用户主题设置
+            saveUserTheme: async function(themeId) {
+                if (!this.currentUser) return;
+                
+                // 从 theme-blue-purple 提取 blue-purple
+                const themeColor = themeId.replace('theme-', '');
+                
+                try {
+                    const { error } = await this.supabase
+                        .from('profiles')
+                        .update({ theme_color: themeColor })
+                        .eq('auth_id', this.currentUser.id);
+                    
+                    if (error) {
+                        console.error('保存主题设置出错:', error);
+                    }
+                } catch (err) {
+                    console.error('保存主题设置出错:', err);
                 }
             },
 
@@ -1346,6 +1400,7 @@
                         };
                         
                         await this.loadUserProfile();
+                        await this.loadUserTheme(); // 加载用户主题
                         this.loginSuccess();
                     }
                 } catch (err) {
@@ -1412,6 +1467,7 @@
                                     high_score: 0,
                                     duel_wins: 0,
                                     role: 'user',
+                                    theme_color: 'blue-purple',
                                     created_at: new Date().toISOString()
                                 }
                             ]);
@@ -1785,7 +1841,7 @@
                 // 主题选项已在HTML中硬编码，无需动态生成
             },
 
-            changeTheme: function(themeId) {
+            changeTheme: function(themeId, showNotification = true) {
                 document.body.classList.remove(this.currentTheme);
                 this.currentTheme = themeId;
                 document.body.classList.add(themeId);
@@ -1794,16 +1850,33 @@
                 document.querySelectorAll('.theme-option').forEach(option => {
                     option.classList.remove('active');
                 });
-                event.target.closest('.theme-option').classList.add('active');
                 
-                const themeNames = {
-                    'theme-blue-purple': '蓝-紫主题',
-                    'theme-green-teal': '绿-青主题',
-                    'theme-orange-red': '橙-红主题',
-                    'theme-dark': '深色主题'
-                };
+                const clickedOption = event ? event.target.closest('.theme-option') : null;
+                if (clickedOption) {
+                    clickedOption.classList.add('active');
+                } else {
+                    // 如果是程序设置的，找到对应的选项
+                    const themeOptions = document.querySelectorAll('.theme-option');
+                    themeOptions.forEach(option => {
+                        if (option.onclick && option.onclick.toString().includes(themeId)) {
+                            option.classList.add('active');
+                        }
+                    });
+                }
                 
-                this.showNotification(`已切换至${themeNames[themeId]}`);
+                // 保存到数据库
+                this.saveUserTheme(themeId);
+                
+                if (showNotification) {
+                    const themeNames = {
+                        'theme-blue-purple': '蓝-紫主题',
+                        'theme-green-teal': '绿-青主题',
+                        'theme-orange-red': '橙-红主题',
+                        'theme-dark': '深色主题'
+                    };
+                    
+                    this.showNotification(`已切换至${themeNames[themeId]}`);
+                }
             },
 
             // ==================== 模态框管理 ====================
@@ -1830,32 +1903,6 @@
         // 初始化应用
         document.addEventListener('DOMContentLoaded', function() {
             DSEHub.init();
-            
-            // 为主题选项添加样式
-            const style = document.createElement('style');
-            style.textContent = `
-                .theme-option {
-                    background: white;
-                    border: 2px solid var(--border-color);
-                    border-radius: var(--border-radius-lg);
-                    padding: var(--spacing-lg);
-                    cursor: pointer;
-                    transition: var(--transition-normal);
-                    box-shadow: var(--shadow-sm);
-                }
-                
-                .theme-option:hover {
-                    transform: translateY(-4px);
-                    box-shadow: var(--shadow-lg);
-                    border-color: var(--accent-color);
-                }
-                
-                .theme-option.active {
-                    border-color: var(--accent-color);
-                    box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
-                }
-            `;
-            document.head.appendChild(style);
         });
 
         // 模态框点击外部关闭
@@ -1870,4 +1917,3 @@
     </script>
 </body>
 </html>
-
