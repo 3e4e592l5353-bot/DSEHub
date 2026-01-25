@@ -1877,12 +1877,13 @@
             let html = '';
             filteredSubmissions.forEach(submission => {
                 // 修正的状态映射
+                // 修正的状态映射 - 确保完全统一
                 let statusClass = '';
                 let statusText = '';
                 switch(submission.status) {
                     case 'pending_review':
                         statusClass = 'status-pending';
-                        statusText = '等待审核'; // 统一使用"等待审核"
+                        statusText = '等待审核'; // 确保这里只有中文
                         break;
                     case 'approved':
                         statusClass = 'status-approved';
@@ -1894,7 +1895,12 @@
                         break;
                     default:
                         statusClass = 'status-pending';
-                        statusText = submission.status;
+                        // 如果是其他状态，也转换为中文
+                        if (submission.status === 'pending') {
+                            statusText = '等待审核';
+                        } else {
+                            statusText = submission.status;
+                        }
                 }
                 
                 // 科目名称
@@ -2143,4 +2149,5 @@
     </script>
 </body>
 </html>
+
 
