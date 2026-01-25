@@ -924,8 +924,11 @@
                     // 获取用户统计数据
                     fetchUserStats(userData.id);
                     
-                    // 加载知识点数据
-                    loadKnowledgePoints();
+                    // 加载知识点数据 - 使用新的函数
+                    setTimeout(() => {
+                        loadKnowledgePoints(); // 或者使用 loadKnowledgePointsBackup()
+                    }, 500);
+                    
                     return;
                 }
             } catch (e) {
@@ -991,42 +994,99 @@
             });
         }
 
-        // 替换原来的 loadKnowledgePoints 函数
+        // 在 loadKnowledgePoints 函数之前添加 getMockKnowledge 函数
+        function getMockKnowledge() {
+            return [
+                { id: 1, title: '勾股定理', subject: 'math' },
+                { id: 2, title: '二次公式', subject: 'math' },
+                { id: 3, title: '牛顿第二定律', subject: 'physics' },
+                { id: 4, title: '元素周期表', subject: 'chemistry' },
+                { id: 5, title: '成语典故', subject: 'chinese' },
+                { id: 6, title: '基础语法', subject: 'english' },
+                { id: 7, title: '相对论', subject: 'physics' },
+                { id: 8, title: '光合作用', subject: 'biology' },
+                { id: 9, title: '唐诗宋词', subject: 'chinese_literature' },
+                { id: 10, title: '微积分', subject: 'math' },
+                { id: 11, title: '三角函数', subject: 'math' },
+                { id: 12, title: '概率统计', subject: 'math' },
+                { id: 13, title: '力学基础', subject: 'physics' },
+                { id: 14, title: '化学方程式', subject: 'chemistry' },
+                { id: 15, title: '细胞结构', subject: 'biology' }
+            ];
+        }
+        
+        // 在 loadKnowledgePoints 函数之前添加 getMockKnowledge 函数
+        function getMockKnowledge() {
+            return [
+                { id: 1, title: '勾股定理', subject: 'math' },
+                { id: 2, title: '二次公式', subject: 'math' },
+                { id: 3, title: '牛顿第二定律', subject: 'physics' },
+                { id: 4, title: '元素周期表', subject: 'chemistry' },
+                { id: 5, title: '成语典故', subject: 'chinese' },
+                { id: 6, title: '基础语法', subject: 'english' },
+                { id: 7, title: '相对论', subject: 'physics' },
+                { id: 8, title: '光合作用', subject: 'biology' },
+                { id: 9, title: '唐诗宋词', subject: 'chinese_literature' },
+                { id: 10, title: '微积分', subject: 'math' },
+                { id: 11, title: '三角函数', subject: 'math' },
+                { id: 12, title: '概率统计', subject: 'math' },
+                { id: 13, title: '力学基础', subject: 'physics' },
+                { id: 14, title: '化学方程式', subject: 'chemistry' },
+                { id: 15, title: '细胞结构', subject: 'biology' }
+            ];
+        }
+        
+        // 然后替换原来的 loadKnowledgePoints 函数为这个：
         async function loadKnowledgePoints() {
             try {
-                // 修正API请求：使用正确的查询参数格式
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,subject&status=eq.approved&category=eq.knowledge`, {
+                console.log('正在尝试加载知识点...');
+                
+                // 方法1：尝试最简单的查询，先获取所有数据
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 
                 if (response.ok) {
-                    const submissions = await response.json();
-                    if (submissions && submissions.length > 0) {
-                        // 限制最多显示50个
-                        const limitedSubmissions = submissions.slice(0, 50);
-                        availableKnowledge = limitedSubmissions.map(item => ({
+                    const allSubmissions = await response.json();
+                    console.log('获取到所有投稿:', allSubmissions.length, '条');
+                    
+                    // 在客户端进行过滤
+                    const approvedKnowledge = allSubmissions
+                        .filter(item => 
+                            item && 
+                            item.status === 'approved' && 
+                            item.category === 'knowledge' &&
+                            item.title && 
+                            item.subject
+                        )
+                        .slice(0, 30) // 限制显示数量
+                        .map(item => ({
                             id: item.id,
                             title: item.title,
                             subject: item.subject
                         }));
-                        console.log('加载知识点成功:', availableKnowledge.length, '条');
+                    
+                    if (approvedKnowledge.length > 0) {
+                        availableKnowledge = approvedKnowledge;
+                        console.log('过滤后知识点:', availableKnowledge.length, '条');
                     } else {
-                        console.log('没有已审核的知识点');
-                        availableKnowledge = getMockKnowledge(); // 使用模拟数据
+                        console.log('没有已审核的知识点，使用模拟数据');
+                        availableKnowledge = getMockKnowledge();
                     }
                 } else {
-                    console.warn('无法从API加载知识点，使用模拟数据');
-                    availableKnowledge = getMockKnowledge(); // 使用模拟数据
+                    console.warn('API请求失败，状态码:', response.status);
+                    availableKnowledge = getMockKnowledge();
                 }
             } catch (error) {
-                console.log('加载知识点失败，使用模拟数据:', error);
-                availableKnowledge = getMockKnowledge(); // 使用模拟数据
+                console.log('加载知识点失败:', error);
+                availableKnowledge = getMockKnowledge();
             }
             
-            // 初始显示知识点
+            // 显示知识点
             displayKnowledge(availableKnowledge);
         }
 
@@ -1422,5 +1482,6 @@
     </script>
 </body>
 </html>
+
 
 
