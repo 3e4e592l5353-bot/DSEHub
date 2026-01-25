@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿中心 - DSEHub</title>
     <style>
+        /* 继承账号的主题色 */
         :root {
             --primary-start: #667eea;
             --primary-end: #764ba2;
@@ -31,6 +32,40 @@
             --warning-color: #ed8936;
             --error-color: #f56565;
             --info-color: #4299e1;
+            
+            --title-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 主题色覆盖 - 从localStorage继承账号设置 */
+        .theme-blue-purple {
+            --primary-start: #667eea !important;
+            --primary-end: #764ba2 !important;
+            --accent-color: #5a67d8 !important;
+            --accent-light: rgba(90, 103, 216, 0.1) !important;
+        }
+        
+        .theme-green-teal {
+            --primary-start: #48bb78 !important;
+            --primary-end: #319795 !important;
+            --accent-color: #38a169 !important;
+            --accent-light: rgba(56, 161, 105, 0.1) !important;
+        }
+        
+        .theme-orange-red {
+            --primary-start: #ff8c00 !important;
+            --primary-end: #ff4500 !important;
+            --accent-color: #ff4500 !important;
+            --accent-light: rgba(255, 69, 0, 0.1) !important;
+        }
+        
+        .theme-dark {
+            --primary-start: #4a5568 !important;
+            --primary-end: #2d3748 !important;
+            --accent-color: #4299e1 !important;
+            --accent-light: rgba(66, 153, 225, 0.15) !important;
+            --card-bg: #2d3748 !important;
+            --title-bg: rgba(45, 55, 72, 0.9) !important;
+            --text-color: #e2e8f0 !important;
         }
 
         * {
@@ -41,14 +76,32 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            /* 极光背景效果 */
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            /* 使用您指定的极光颜色 */
+            background: linear-gradient(-45deg, #667eea, #764ba2, #48bb78, #319795, #ff8c00, #ff4500);
             background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            animation: gradientBG 20s ease infinite;
             color: var(--text-color);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+
+        /* 添加极光覆盖层增强效果 */
+        .aurora-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(72, 187, 120, 0.4) 0%, transparent 50%);
+            animation: auroraFloat 15s ease-in-out infinite alternate;
         }
 
         @keyframes gradientBG {
@@ -57,12 +110,19 @@
             100% { background-position: 0% 50%; }
         }
 
+        @keyframes auroraFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        /* 头部样式 */
+        /* 标题样式 - 白色圆角矩形背景 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -82,6 +142,13 @@
             font-size: 2.5rem;
             font-weight: 700;
             line-height: 1.2;
+            position: relative;
+            padding: 15px 30px;
+            background-color: var(--title-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .nav-buttons {
@@ -104,12 +171,15 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-btn:hover {
             background: var(--btn-hover);
             transform: translateY(-2px);
             box-shadow: 0 10px 20px var(--card-shadow);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         /* 用户信息卡片 */
@@ -142,6 +212,7 @@
             padding: 15px;
             border-radius: 12px;
             border-left: 4px solid var(--accent-color);
+            backdrop-filter: blur(5px);
         }
 
         .stat-label {
@@ -168,6 +239,8 @@
             border-radius: 15px;
             box-shadow: 0 5px 20px var(--card-shadow);
             flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
         }
 
         .type-btn {
@@ -218,6 +291,10 @@
             align-items: center;
             gap: 10px;
             line-height: 1.4;
+            padding: 10px 20px;
+            background: var(--title-bg);
+            border-radius: 15px;
+            border-left: 5px solid var(--accent-color);
         }
 
         .form-group {
@@ -230,6 +307,7 @@
             font-weight: 600;
             color: var(--text-color);
             line-height: 1.4;
+            padding-left: 5px;
         }
 
         .form-control {
@@ -255,12 +333,24 @@
             line-height: 1.5;
         }
 
-        /* 科目选择网格 */
+        /* 科目选择网格 - 核心科目排版到一起 */
         .subject-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 10px;
+        }
+
+        .core-subjects {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--accent-light);
+            border-radius: 15px;
+            border: 2px dashed var(--accent-color);
         }
 
         .subject-option {
@@ -280,12 +370,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .subject-option:hover {
             border-color: var(--accent-color);
             background: var(--accent-light);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--card-shadow);
         }
 
         .subject-option.selected {
@@ -389,12 +482,15 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .submit-btn:hover {
             background: var(--btn-hover);
             transform: translateY(-2px);
             box-shadow: 0 10px 30px var(--card-shadow);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .submit-btn:active {
@@ -472,6 +568,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .core-subjects {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .game-type-grid {
                 grid-template-columns: 1fr;
             }
@@ -483,6 +583,10 @@
 
         @media (max-width: 480px) {
             .subject-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .core-subjects {
                 grid-template-columns: 1fr;
             }
             
@@ -522,6 +626,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .message.success {
@@ -583,10 +689,30 @@
             transform: translateY(-50%);
             color: var(--text-muted);
         }
+
+        /* 科目分组标题 */
+        .subject-group-title {
+            grid-column: 1 / -1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin: 20px 0 10px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subject-group-title i {
+            font-size: 1.2rem;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="aurora-overlay"></div>
+    
     <div class="container">
         <!-- 头部导航 -->
         <div class="header">
@@ -839,36 +965,28 @@
         // 2. knowledge_points表的category_group字段（用于已审核通过的知识点分类）
         // 3. 独立的tags表可用于存储所有标签，但需要关联其他表使用
 
-        // 精简的DSE科目列表（只保留您指定的）
-        const dseSubjects = [
-            // 核心科目
+        // 精简的DSE科目列表（核心科目单独分组）
+        const coreSubjects = [
             { id: 'chinese', name: '中国语文', type: 'core' },
             { id: 'english', name: '英国语文', type: 'core' },
             { id: 'math', name: '数学', type: 'core' },
+            { id: 'ls', name: '公民与社会发展', type: 'core' }
+        ];
+
+        const electiveSubjects = [
             { id: 'math_extended1', name: '数学延伸单元一', type: 'elective' },
             { id: 'math_extended2', name: '数学延伸单元二', type: 'elective' },
-            { id: 'ls', name: '公民与社会发展', type: 'core' },
-            
-            // 理科
             { id: 'biology', name: '生物', type: 'elective' },
             { id: 'chemistry', name: '化学', type: 'elective' },
             { id: 'physics', name: '物理', type: 'elective' },
-            
-            // 文科
             { id: 'chinese_history', name: '中国历史', type: 'elective' },
             { id: 'history', name: '历史', type: 'elective' },
             { id: 'geography', name: '地理', type: 'elective' },
             { id: 'economics', name: '经济', type: 'elective' },
-            
-            // 语文延伸
             { id: 'chinese_literature', name: '中国文学', type: 'elective' },
             { id: 'english_literature', name: '英国文学', type: 'elective' },
-            
-            // 商业
             { id: 'bafs', name: '企业、会计与财务概论', type: 'elective' },
             { id: 'ict', name: '资讯及通讯技术', type: 'elective' },
-            
-            // 其他选修（您指定的）
             { id: 'ers', name: '伦理与宗教', type: 'elective' },
             { id: 'th', name: '旅游与款待', type: 'elective' },
             { id: 'da', name: '设计与应用', type: 'elective' },
@@ -916,6 +1034,7 @@
         // 用户数据
         let currentUser = null;
         let availableKnowledge = [];
+        let userTheme = 'theme-blue-purple'; // 默认主题
 
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
@@ -926,31 +1045,45 @@
         });
 
         function initializePage() {
+            // 继承账号的主题色
+            loadUserTheme();
+            
             // 初始化科目选择 - 知识点投稿
             const subjectGrid = document.getElementById('subjectSelection');
-            dseSubjects.forEach(subject => {
-                const subjectEl = document.createElement('div');
-                subjectEl.className = `subject-option ${subject.type}`;
-                subjectEl.dataset.id = subject.id;
-                subjectEl.dataset.type = subject.type;
-                subjectEl.textContent = subject.name;
-                subjectEl.onclick = () => toggleSelection(subjectEl);
+            
+            // 添加核心科目分组
+            const coreGroup = document.createElement('div');
+            coreGroup.className = 'core-subjects';
+            coreSubjects.forEach(subject => {
+                const subjectEl = createSubjectOption(subject);
+                coreGroup.appendChild(subjectEl);
+            });
+            subjectGrid.appendChild(coreGroup);
+            
+            // 添加选修科目分组标题
+            const electiveTitle = document.createElement('div');
+            electiveTitle.className = 'subject-group-title';
+            electiveTitle.innerHTML = '<i class="fas fa-star"></i> 选修科目';
+            subjectGrid.appendChild(electiveTitle);
+            
+            // 添加选修科目
+            electiveSubjects.forEach(subject => {
+                const subjectEl = createSubjectOption(subject);
                 subjectGrid.appendChild(subjectEl);
             });
 
             // 初始化科目选择 - 游戏投稿
             const gameSubjectTags = document.getElementById('gameSubjectTags');
-            dseSubjects.forEach(subject => {
-                const tagBtn = document.createElement('button');
-                tagBtn.type = 'button';
-                tagBtn.className = 'tag-btn';
-                tagBtn.dataset.id = subject.id;
-                tagBtn.textContent = subject.name;
-                tagBtn.onclick = () => {
-                    document.querySelectorAll('#gameSubjectTags .tag-btn').forEach(btn => btn.classList.remove('selected'));
-                    tagBtn.classList.add('selected');
-                    document.getElementById('gameSubject').value = subject.id;
-                };
+            
+            // 先添加核心科目
+            coreSubjects.forEach(subject => {
+                const tagBtn = createSubjectTag(subject);
+                gameSubjectTags.appendChild(tagBtn);
+            });
+            
+            // 再添加选修科目
+            electiveSubjects.forEach(subject => {
+                const tagBtn = createSubjectTag(subject);
                 gameSubjectTags.appendChild(tagBtn);
             });
 
@@ -998,56 +1131,92 @@
             });
         }
 
+        function createSubjectOption(subject) {
+            const subjectEl = document.createElement('div');
+            subjectEl.className = `subject-option ${subject.type}`;
+            subjectEl.dataset.id = subject.id;
+            subjectEl.dataset.type = subject.type;
+            subjectEl.textContent = subject.name;
+            subjectEl.onclick = () => toggleSelection(subjectEl);
+            return subjectEl;
+        }
+
+        function createSubjectTag(subject) {
+            const tagBtn = document.createElement('button');
+            tagBtn.type = 'button';
+            tagBtn.className = 'tag-btn';
+            tagBtn.dataset.id = subject.id;
+            tagBtn.textContent = subject.name;
+            tagBtn.onclick = () => {
+                document.querySelectorAll('#gameSubjectTags .tag-btn').forEach(btn => btn.classList.remove('selected'));
+                tagBtn.classList.add('selected');
+                document.getElementById('gameSubject').value = subject.id;
+            };
+            return tagBtn;
+        }
+
+        function loadUserTheme() {
+            // 从localStorage获取用户主题设置
+            try {
+                const userData = JSON.parse(localStorage.getItem('dsehub_user') || '{}');
+                if (userData.theme_color) {
+                    userTheme = userData.theme_color;
+                } else if (userData.theme) {
+                    // 兼容旧版本
+                    userTheme = userData.theme;
+                }
+                
+                // 应用主题
+                document.body.classList.add(userTheme);
+                
+                // 更新CSS变量
+                updateThemeVariables();
+            } catch (error) {
+                console.log('无法加载用户主题设置:', error);
+            }
+        }
+
+        function updateThemeVariables() {
+            // 根据主题更新CSS变量
+            const root = document.documentElement;
+            
+            if (userTheme === 'theme-dark') {
+                root.style.setProperty('--title-bg', 'rgba(45, 55, 72, 0.9)');
+                root.style.setProperty('--text-color', '#e2e8f0');
+                root.style.setProperty('--card-bg', '#2d3748');
+            } else {
+                root.style.setProperty('--title-bg', 'rgba(255, 255, 255, 0.9)');
+                root.style.setProperty('--text-color', '#2d3748');
+                root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.98)');
+            }
+        }
+
         async function loadKnowledgePoints() {
             try {
                 console.log('正在加载知识点...');
                 
-                // 尝试从submissions表加载已审核通过的知识点
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,category,difficulty,subject&status=eq.approved&category=eq.knowledge&order=created_at.desc&limit=100`, {
+                // 尝试从knowledge_points表加载
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/knowledge_points?select=id,title,subject,category_group,difficulty&order=created_at.desc&limit=100`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
                     }
                 });
                 
                 if (response.ok) {
-                    const submissions = await response.json();
-                    availableKnowledge = submissions.map(item => ({
+                    const knowledgePoints = await response.json();
+                    availableKnowledge = knowledgePoints.map(item => ({
                         id: item.id,
                         title: item.title,
                         subject: item.subject,
-                        category: item.category,
+                        category: item.category_group,
                         difficulty: item.difficulty,
-                        source: 'submission'
+                        source: 'knowledge_point'
                     }));
-                    console.log('从submissions表加载知识点成功:', availableKnowledge.length, '条记录');
+                    console.log('从knowledge_points表加载知识点成功:', availableKnowledge.length, '条记录');
                 } else {
-                    console.warn('无法从submissions表加载知识点，尝试从knowledge_points表加载');
-                    
-                    // 尝试从knowledge_points表加载
-                    const kpResponse = await fetch(`${SUPABASE_URL}/rest/v1/knowledge_points?select=id,title,subject,category_group,difficulty&order=created_at.desc&limit=100`, {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    if (kpResponse.ok) {
-                        const knowledgePoints = await kpResponse.json();
-                        availableKnowledge = knowledgePoints.map(item => ({
-                            id: item.id,
-                            title: item.title,
-                            subject: item.subject,
-                            category: item.category_group,
-                            difficulty: item.difficulty,
-                            source: 'knowledge_point'
-                        }));
-                        console.log('从knowledge_points表加载知识点成功:', availableKnowledge.length, '条记录');
-                    } else {
-                        throw new Error('无法加载知识点数据');
-                    }
+                    console.warn('无法从knowledge_points表加载知识点，使用模拟数据');
+                    availableKnowledge = getMockKnowledge();
                 }
                 
                 // 初始显示所有知识点
@@ -1055,17 +1224,24 @@
                 
             } catch (error) {
                 console.error('加载知识点失败:', error);
-                // 使用模拟数据
-                availableKnowledge = [
-                    { id: 1, title: '勾股定理', subject: '数学', difficulty: '基础', category: '公式', source: 'mock' },
-                    { id: 2, title: '二次公式', subject: '数学', difficulty: '进阶', category: '公式', source: 'mock' },
-                    { id: 3, title: '牛顿第二定律', subject: '物理', difficulty: '基础', category: '公式', source: 'mock' },
-                    { id: 4, title: '元素周期表', subject: '化学', difficulty: '基础', category: '术语', source: 'mock' },
-                    { id: 5, title: '成语典故', subject: '中国语文', difficulty: '基础', category: '成语', source: 'mock' },
-                    { id: 6, title: '基础语法', subject: '英国语文', difficulty: '基础', category: '语法', source: 'mock' }
-                ];
+                availableKnowledge = getMockKnowledge();
                 displayKnowledgeList(availableKnowledge);
             }
+        }
+
+        function getMockKnowledge() {
+            return [
+                { id: 1, title: '勾股定理', subject: '数学', difficulty: '基础', category: '公式', source: 'mock' },
+                { id: 2, title: '二次公式', subject: '数学', difficulty: '进阶', category: '公式', source: 'mock' },
+                { id: 3, title: '牛顿第二定律', subject: '物理', difficulty: '基础', category: '公式', source: 'mock' },
+                { id: 4, title: '元素周期表', subject: '化学', difficulty: '基础', category: '术语', source: 'mock' },
+                { id: 5, title: '成语典故', subject: '中国语文', difficulty: '基础', category: '成语', source: 'mock' },
+                { id: 6, title: '基础语法', subject: '英国语文', difficulty: '基础', category: '语法', source: 'mock' },
+                { id: 7, title: '相对论', subject: '物理', difficulty: '进阶', category: '公式', source: 'mock' },
+                { id: 8, title: '光合作用', subject: '生物', difficulty: '基础', category: '术语', source: 'mock' },
+                { id: 9, title: '唐诗宋词', subject: '中国文学', difficulty: '基础', category: '名言金句', source: 'mock' },
+                { id: 10, title: '微积分', subject: '数学', difficulty: '进阶', category: '公式', source: 'mock' }
+            ];
         }
 
         function displayKnowledgeList(knowledgeArray) {
@@ -1231,6 +1407,13 @@
         function updateUserDisplay(user) {
             document.getElementById('username').textContent = user.username || '用户';
             document.getElementById('userEmail').textContent = user.email || '';
+            
+            // 更新主题
+            if (user.theme_color || user.theme) {
+                userTheme = user.theme_color || user.theme;
+                document.body.className = userTheme;
+                updateThemeVariables();
+            }
         }
 
         function updateStatsDisplay(stats) {
