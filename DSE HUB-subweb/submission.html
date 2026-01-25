@@ -370,6 +370,11 @@
             cursor: pointer;
             transition: var(--transition-normal);
             font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
         }
 
         .submission-type-btn:hover {
@@ -432,19 +437,149 @@
             line-height: 1.3;
         }
 
-        /* 游戏题目表单 */
-        .game-form {
+        /* 游戏类型标识 */
+        .game-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .game-type-match { background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); color: white; }
+        .game-type-true-false { background: linear-gradient(135deg, #48bb78, #38a169); color: white; }
+        .game-type-guess { background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; }
+        .game-type-quiz { background: linear-gradient(135deg, #9f7aea, #805ad5); color: white; }
+
+        /* 难度标识 */
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-easy { background: #c6f6d5; color: #22543d; }
+        .difficulty-medium { background: #fed7d7; color: #742a2a; }
+        .difficulty-hard { background: #e9d8fd; color: #44337a; }
+
+        /* 知识点搜索 */
+        .knowledge-search-container {
+            position: relative;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
             display: none;
         }
 
-        .game-form.active {
+        .search-results.active {
             display: block;
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .search-result-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .search-result-item:hover {
+            background: var(--hover-color);
+        }
+
+        .search-result-item.selected {
+            background: linear-gradient(135deg, var(--accent-light), transparent);
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* 游戏类型选择器 */
+        .game-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+        }
+
+        .game-type-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: var(--transition-normal);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+        }
+
+        .game-type-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-color);
+        }
+
+        .game-type-card.selected {
+            background: linear-gradient(135deg, var(--accent-light), transparent);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .game-type-icon {
+            font-size: 32px;
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .game-type-name {
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .game-type-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* 游戏配置面板 */
+        .game-config-panel {
+            background: linear-gradient(135deg, var(--accent-light), transparent);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .question-form {
+            display: none;
+        }
+
+        .question-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .selected-knowledge {
+            margin-top: var(--spacing-md);
         }
 
         .match-pair {
@@ -452,15 +587,6 @@
             grid-template-columns: 1fr 1fr;
             gap: var(--spacing-md);
             margin-bottom: var(--spacing-md);
-        }
-
-        .game-type-form {
-            display: none;
-        }
-
-        .game-type-form.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
         }
 
         .form-actions {
@@ -503,6 +629,9 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
         }
 
         .submission-status {
@@ -619,6 +748,11 @@
             box-shadow: var(--shadow-lg);
             animation: slideUp 0.3s ease;
             position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes slideUp {
@@ -752,6 +886,10 @@
             .subject-selector {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             }
+            
+            .game-type-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 768px) {
@@ -771,6 +909,10 @@
             }
             
             .match-pair {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-type-selector {
                 grid-template-columns: 1fr;
             }
         }
@@ -911,12 +1053,14 @@
                         <h2><i class="fas fa-edit"></i> 新建投稿</h2>
                     </div>
                     <div class="panel-content">
+                        <!-- 投稿类型选择器 -->
                         <div class="submission-type-selector">
                             <div class="submission-type-btn active" onclick="SubmissionSystem.selectSubmissionType('knowledge')">
                                 <i class="fas fa-brain"></i> 知识点投稿
                             </div>
-                            <div class="submission-type-btn" onclick="SubmissionSystem.selectSubmissionType('game')">
-                                <i class="fas fa-gamepad"></i> 游戏题目投稿
+                            <div class="submission-type-btn" onclick="SubmissionSystem.selectSubmissionType('question')">
+                                <i class="fas fa-question-circle"></i> 题目投稿
+                                <span class="game-type-badge">包含小游戏</span>
                             </div>
                         </div>
 
@@ -968,116 +1112,81 @@
                                 <button class="btn" onclick="SubmissionSystem.submitKnowledge()">
                                     <i class="fas fa-paper-plane"></i> 提交知识点
                                 </button>
-                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearSubmissionForm()">
+                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearKnowledgeForm()">
                                     <i class="fas fa-eraser"></i> 清空
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 游戏题目投稿表单 -->
-                        <div id="gameForm" class="game-form">
+                        <!-- 题目投稿表单 -->
+                        <div id="questionForm" class="question-form">
+                            <!-- 知识点选择 -->
                             <div class="form-group">
-                                <label><i class="fas fa-gamepad"></i> 选择题型</label>
-                                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-sm);">
-                                    <select id="gameType" class="form-select" onchange="SubmissionSystem.selectGameType(this.value)">
-                                        <option value="match">连连看</option>
-                                        <option value="true_false">对错判断</option>
-                                        <option value="guess">猜知识点</option>
-                                    </select>
+                                <label><i class="fas fa-search"></i> 选择对应知识点</label>
+                                <div class="knowledge-search-container">
+                                    <input type="text" id="knowledgeSearch" class="form-input" 
+                                           placeholder="搜索知识点..." 
+                                           onkeyup="SubmissionSystem.searchKnowledge(this.value)">
+                                    <div id="knowledgeSearchResults" class="search-results"></div>
                                 </div>
+                                <div id="selectedKnowledge" class="selected-knowledge"></div>
                             </div>
-
-                            <!-- 连连看表单 -->
-                            <div id="matchForm" class="game-type-form active">
-                                <div class="form-group">
-                                    <label for="matchTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="matchTitle" class="form-input" placeholder="例如：数学公式连连看">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label><i class="fas fa-link"></i> 配对项（至少3对）</label>
-                                    <div id="matchPairs">
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项（如：勾股定理）">
-                                            <input type="text" class="form-input match-right" placeholder="右项（如：a²+b²=c²）">
+                            
+                            <!-- 题目基本信息 -->
+                            <div class="form-group">
+                                <label for="questionTitle"><i class="fas fa-heading"></i> 题目标题</label>
+                                <input type="text" id="questionTitle" class="form-input" 
+                                       placeholder="例如：勾股定理应用题">
+                            </div>
+                            
+                            <!-- 游戏类型选择 -->
+                            <div class="form-group">
+                                <label><i class="fas fa-gamepad"></i> 选择小游戏类型</label>
+                                <div class="game-type-selector">
+                                    <div class="game-type-card" onclick="SubmissionSystem.selectGameType('match', this)">
+                                        <div class="game-type-icon">
+                                            <i class="fas fa-link"></i>
                                         </div>
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项">
-                                            <input type="text" class="form-input match-right" placeholder="右项">
-                                        </div>
-                                        <div class="match-pair">
-                                            <input type="text" class="form-input match-left" placeholder="左项">
-                                            <input type="text" class="form-input match-right" placeholder="右项">
-                                        </div>
+                                        <div class="game-type-name">连连看</div>
+                                        <div class="game-type-desc">匹配相关概念</div>
                                     </div>
-                                    <button type="button" class="btn btn-secondary" onclick="SubmissionSystem.addMatchPair()" style="margin-top: var(--spacing-sm);">
-                                        <i class="fas fa-plus"></i> 添加更多配对
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- 对错判断表单 -->
-                            <div id="trueFalseForm" class="game-type-form">
-                                <div class="form-group">
-                                    <label for="tfTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="tfTitle" class="form-input" placeholder="例如：历史事实判断">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tfStatement"><i class="fas fa-comment"></i> 陈述句</label>
-                                    <textarea id="tfStatement" class="form-textarea" placeholder="请输入需要判断的陈述句..."></textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label><i class="fas fa-check-circle"></i> 正确答案</label>
-                                    <div style="display: flex; gap: var(--spacing-md);">
-                                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                            <input type="radio" name="tfAnswer" value="true"> 正确
-                                        </label>
-                                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
-                                            <input type="radio" name="tfAnswer" value="false"> 错误
-                                        </label>
+                                    
+                                    <div class="game-type-card" onclick="SubmissionSystem.selectGameType('true_false', this)">
+                                        <div class="game-type-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="game-type-name">对错判断</div>
+                                        <div class="game-type-desc">判断陈述正误</div>
+                                    </div>
+                                    
+                                    <div class="game-type-card" onclick="SubmissionSystem.selectGameType('quiz', this)">
+                                        <div class="game-type-icon">
+                                            <i class="fas fa-question"></i>
+                                        </div>
+                                        <div class="game-type-name">选择题</div>
+                                        <div class="game-type-desc">四选一题目</div>
+                                    </div>
+                                    
+                                    <div class="game-type-card" onclick="SubmissionSystem.selectGameType('guess', this)">
+                                        <div class="game-type-icon">
+                                            <i class="fas fa-lightbulb"></i>
+                                        </div>
+                                        <div class="game-type-name">猜知识点</div>
+                                        <div class="game-type-desc">根据提示猜答案</div>
                                     </div>
                                 </div>
-                                
-                                <div class="form-group">
-                                    <label for="tfExplanation"><i class="fas fa-lightbulb"></i> 解析（可选）</label>
-                                    <textarea id="tfExplanation" class="form-textarea" placeholder="请提供答案解析..."></textarea>
-                                </div>
                             </div>
-
-                            <!-- 猜知识点表单 -->
-                            <div id="guessForm" class="game-type-form">
-                                <div class="form-group">
-                                    <label for="guessTitle"><i class="fas fa-heading"></i> 题目标题</label>
-                                    <input type="text" id="guessTitle" class="form-input" placeholder="例如：根据提示猜物理定律">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessHint"><i class="fas fa-lightbulb"></i> 提示</label>
-                                    <textarea id="guessHint" class="form-textarea" placeholder="请输入提示信息..."></textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessAnswer"><i class="fas fa-check"></i> 正确答案</label>
-                                    <input type="text" id="guessAnswer" class="form-input" placeholder="请输入知识点答案">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="guessDifficulty"><i class="fas fa-signal"></i> 难度</label>
-                                    <select id="guessDifficulty" class="form-select">
-                                        <option value="easy">简单</option>
-                                        <option value="medium" selected>中等</option>
-                                        <option value="hard">困难</option>
-                                    </select>
-                                </div>
+                            
+                            <!-- 游戏配置面板 -->
+                            <div id="gameConfigPanel" class="game-config-panel">
+                                <!-- 不同游戏类型的表单会动态加载到这里 -->
                             </div>
-
+                            
                             <div class="form-actions">
-                                <button class="btn" onclick="SubmissionSystem.submitGameQuestion()">
-                                    <i class="fas fa-paper-plane"></i> 提交游戏题目
+                                <button class="btn" onclick="SubmissionSystem.submitQuestion()">
+                                    <i class="fas fa-paper-plane"></i> 提交题目
                                 </button>
-                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearGameForm()">
+                                <button class="btn btn-secondary" onclick="SubmissionSystem.clearQuestionForm()">
                                     <i class="fas fa-eraser"></i> 清空
                                 </button>
                             </div>
@@ -1109,7 +1218,7 @@
                                 <div class="step-content">
                                     <div class="step-title">选择投稿类型</div>
                                     <div class="step-description">
-                                        根据您想分享的内容选择「知识点投稿」或「游戏题目投稿」。知识点投稿适合分享学习内容，游戏题目投稿适合创建互动学习游戏。
+                                        根据您想分享的内容选择「知识点投稿」或「题目投稿」。知识点投稿适合分享学习内容，题目投稿适合创建互动学习游戏。
                                     </div>
                                 </div>
                             </div>
@@ -1119,7 +1228,7 @@
                                 <div class="step-content">
                                     <div class="step-title">填写详细信息</div>
                                     <div class="step-description">
-                                        准确填写标题、内容、选择相关学科和标签。清晰的标题和详细的内容有助于其他用户更好地理解和学习。
+                                        准确填写标题、内容、选择相关学科和知识点。清晰的标题和详细的内容有助于其他用户更好地理解和学习。
                                     </div>
                                 </div>
                             </div>
@@ -1245,8 +1354,11 @@
             userProfile: null,
             isLoggedIn: false,
             currentSubmissionType: 'knowledge',
-            selectedGameType: 'match',
+            selectedGameType: null,
             userSubmissions: [],
+            knowledgeCategories: [],
+            selectedKnowledge: null,
+            currentGameType: null,
 
             // 学科列表
             allSubjects: [
@@ -1271,6 +1383,7 @@
             init: function() {
                 this.initSupabase();
                 this.initSubjects();
+                this.initKnowledgeCategories();
                 this.showPanel('newSubmission');
                 this.checkExistingSession();
             },
@@ -1283,6 +1396,22 @@
                 this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
                     auth: { autoRefreshToken: true, persistSession: true }
                 });
+            },
+
+            // 初始化知识点分类
+            initKnowledgeCategories: async function() {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('knowledge_categories')
+                        .select('*')
+                        .order('subject', { ascending: true });
+                    
+                    if (!error) {
+                        this.knowledgeCategories = data || [];
+                    }
+                } catch (err) {
+                    console.error('加载知识点分类失败:', err);
+                }
             },
 
             // 检查会话
@@ -1299,7 +1428,7 @@
                         };
                         
                         await this.loadUserProfile();
-                        await this.loadUserTheme(); // 加载用户主题
+                        await this.loadUserTheme();
                         this.loginSuccess();
                         await this.loadUserSubmissions();
                     }
@@ -1342,9 +1471,7 @@
                         .single();
                     
                     if (!error && data && data.theme_color) {
-                        // 移除所有主题类
                         document.body.classList.remove('theme-blue-purple', 'theme-green-teal', 'theme-orange-red', 'theme-dark');
-                        // 添加用户主题类
                         document.body.classList.add('theme-' + data.theme_color);
                     }
                 } catch (err) {
@@ -1356,7 +1483,6 @@
             saveUserTheme: async function(themeId) {
                 if (!this.currentUser) return;
                 
-                // 从 theme-blue-purple 提取 blue-purple
                 const themeColor = themeId.replace('theme-', '');
                 
                 try {
@@ -1389,7 +1515,6 @@
                     this.userSubmissions = data || [];
                     this.renderSubmissionsList();
                     
-                    // 更新统计数据
                     const totalSubmissions = this.userSubmissions.length;
                     const approvedSubmissions = this.userSubmissions.filter(s => s.status === 'approved').length;
                     
@@ -1430,7 +1555,7 @@
                         };
                         
                         await this.loadUserProfile();
-                        await this.loadUserTheme(); // 加载用户主题
+                        await this.loadUserTheme();
                         this.loginSuccess();
                         await this.loadUserSubmissions();
                     }
@@ -1481,7 +1606,6 @@
                     }
                     
                     if (authData.user) {
-                        // 创建用户资料
                         const { error: profileError } = await this.supabase
                             .from('profiles')
                             .insert([
@@ -1578,11 +1702,10 @@
                 
                 container.innerHTML = '';
                 
-                // 只显示主要学科
                 const mainSubjects = this.allSubjects.slice(0, 7);
                 
                 mainSubjects.forEach(subject => {
-                    const isSelected = subject.id === 'math'; // 默认选中数学
+                    const isSelected = subject.id === 'math';
                     const card = this.createSubjectCard(subject.id, subject.name, subject.icon, isSelected);
                     container.appendChild(card);
                 });
@@ -1617,32 +1740,205 @@
             selectSubmissionType: function(type) {
                 this.currentSubmissionType = type;
                 
-                // 更新按钮状态
                 document.querySelectorAll('.submission-type-btn').forEach(btn => {
                     btn.classList.remove('selected');
                 });
-                event.target.classList.add('selected');
+                event.currentTarget.classList.add('selected');
                 
-                // 显示对应的表单
                 document.getElementById('knowledgeForm').classList.remove('active');
-                document.getElementById('gameForm').classList.remove('active');
+                document.getElementById('questionForm').classList.remove('active');
                 
                 if (type === 'knowledge') {
                     document.getElementById('knowledgeForm').classList.add('active');
                 } else {
-                    document.getElementById('gameForm').classList.add('active');
+                    document.getElementById('questionForm').classList.add('active');
                 }
             },
 
-            // 选择游戏类型
-            selectGameType: function(type) {
-                this.selectedGameType = type;
+            // 搜索知识点
+            searchKnowledge: function(searchTerm) {
+                const resultsContainer = document.getElementById('knowledgeSearchResults');
                 
-                // 显示对应的表单
-                document.querySelectorAll('.game-type-form').forEach(form => {
-                    form.classList.remove('active');
+                if (!searchTerm || searchTerm.length < 2) {
+                    resultsContainer.classList.remove('active');
+                    return;
+                }
+                
+                const filtered = this.knowledgeCategories.filter(category => 
+                    category.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    category.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    category.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                
+                if (filtered.length > 0) {
+                    resultsContainer.innerHTML = filtered.map(category => `
+                        <div class="search-result-item" onclick="SubmissionSystem.selectKnowledge('${category.id}', this)">
+                            <div style="font-weight: 600;">${category.title}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                                ${this.allSubjects.find(s => s.id === category.subject)?.name || category.subject}
+                                • ${category.category_group}
+                            </div>
+                        </div>
+                    `).join('');
+                    resultsContainer.classList.add('active');
+                } else {
+                    resultsContainer.classList.remove('active');
+                }
+            },
+
+            // 选择知识点
+            selectKnowledge: function(categoryId, element) {
+                const category = this.knowledgeCategories.find(c => c.id === categoryId);
+                if (!category) return;
+                
+                this.selectedKnowledge = category;
+                
+                document.getElementById('knowledgeSearchResults').classList.remove('active');
+                document.getElementById('knowledgeSearch').value = '';
+                
+                const selectedContainer = document.getElementById('selectedKnowledge');
+                selectedContainer.innerHTML = `
+                    <div class="card-game" style="margin-top: 8px;">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); 
+                                border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700;">${category.title}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">
+                                    学科：${this.allSubjects.find(s => s.id === category.subject)?.name || category.subject}
+                                </div>
+                            </div>
+                            <button onclick="SubmissionSystem.removeSelectedKnowledge()" 
+                                    style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            // 移除选中的知识点
+            removeSelectedKnowledge: function() {
+                this.selectedKnowledge = null;
+                document.getElementById('selectedKnowledge').innerHTML = '';
+            },
+
+            // 选择游戏类型
+            selectGameType: function(gameType, element) {
+                this.currentGameType = gameType;
+                
+                document.querySelectorAll('.game-type-card').forEach(card => {
+                    card.classList.remove('selected');
                 });
-                document.getElementById(type + 'Form').classList.add('active');
+                element.classList.add('selected');
+                
+                this.loadGameConfigForm(gameType);
+            },
+
+            // 加载游戏配置表单
+            loadGameConfigForm: function(gameType) {
+                const configPanel = document.getElementById('gameConfigPanel');
+                
+                switch(gameType) {
+                    case 'match':
+                        configPanel.innerHTML = `
+                            <div style="margin-bottom: var(--spacing-lg);">
+                                <label style="font-weight: 600; margin-bottom: var(--spacing-sm); display: block;">
+                                    <i class="fas fa-link"></i> 连连看配对项（至少3对）
+                                </label>
+                                <div id="matchPairs">
+                                    ${[1,2,3].map(i => `
+                                        <div class="match-pair" style="margin-bottom: var(--spacing-sm);">
+                                            <input type="text" class="form-input match-left" 
+                                                   placeholder="左项（如：牛顿第一定律）" style="margin-right: 8px;">
+                                            <input type="text" class="form-input match-right" 
+                                                   placeholder="右项（如：惯性定律）">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button type="button" class="btn btn-secondary" onclick="SubmissionSystem.addMatchPair()" 
+                                        style="margin-top: var(--spacing-sm);">
+                                    <i class="fas fa-plus"></i> 添加配对
+                                </button>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'quiz':
+                        configPanel.innerHTML = `
+                            <div class="form-group">
+                                <label><i class="fas fa-question"></i> 问题描述</label>
+                                <textarea id="quizQuestion" class="form-textarea" placeholder="请输入问题..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-list-ol"></i> 选择题选项</label>
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                    ${['A', 'B', 'C', 'D'].map(option => `
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                            <div style="width: 24px; text-align: center; font-weight: 700;">${option}</div>
+                                            <input type="text" class="form-input" id="quizOption${option}" 
+                                                   placeholder="选项 ${option}">
+                                            <input type="radio" name="quizAnswer" value="${option}" style="margin-left: auto;">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="quizExplanation"><i class="fas fa-lightbulb"></i> 答案解析</label>
+                                <textarea id="quizExplanation" class="form-textarea" placeholder="请提供答案解析..."></textarea>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'true_false':
+                        configPanel.innerHTML = `
+                            <div class="form-group">
+                                <label><i class="fas fa-comment"></i> 陈述句</label>
+                                <textarea id="tfStatement" class="form-textarea" placeholder="请输入需要判断的陈述句..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-check-circle"></i> 正确答案</label>
+                                <div style="display: flex; gap: var(--spacing-md);">
+                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); 
+                                           background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
+                                        <input type="radio" name="tfAnswer" value="true"> 正确
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); 
+                                           background: white; border: 2px solid var(--border-color); border-radius: var(--border-radius-md); cursor: pointer;">
+                                        <input type="radio" name="tfAnswer" value="false"> 错误
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tfExplanation"><i class="fas fa-lightbulb"></i> 解析（可选）</label>
+                                <textarea id="tfExplanation" class="form-textarea" placeholder="请提供答案解析..."></textarea>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'guess':
+                        configPanel.innerHTML = `
+                            <div class="form-group">
+                                <label for="guessHint"><i class="fas fa-lightbulb"></i> 提示</label>
+                                <textarea id="guessHint" class="form-textarea" placeholder="请输入提示信息..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="guessAnswer"><i class="fas fa-check"></i> 正确答案</label>
+                                <input type="text" id="guessAnswer" class="form-input" placeholder="请输入知识点答案">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-signal"></i> 难度</label>
+                                <select id="guessDifficulty" class="form-select">
+                                    <option value="easy">简单</option>
+                                    <option value="medium" selected>中等</option>
+                                    <option value="hard">困难</option>
+                                </select>
+                            </div>
+                        `;
+                        break;
+                }
             },
 
             // 添加配对项
@@ -1650,14 +1946,17 @@
                 const container = document.getElementById('matchPairs');
                 const newPair = document.createElement('div');
                 newPair.className = 'match-pair';
+                newPair.style.marginBottom = 'var(--spacing-sm)';
                 newPair.innerHTML = `
-                    <input type="text" class="form-input match-left" placeholder="左项">
-                    <input type="text" class="form-input match-right" placeholder="右项">
+                    <input type="text" class="form-input match-left" 
+                           placeholder="左项（如：牛顿第一定律）" style="margin-right: 8px;">
+                    <input type="text" class="form-input match-right" 
+                           placeholder="右项（如：惯性定律）">
                 `;
                 container.appendChild(newPair);
             },
 
-            // 提交知识点
+            // 提交知识点投稿
             submitKnowledge: async function() {
                 if (!this.isLoggedIn) {
                     this.showNotification('请先登录后再提交投稿');
@@ -1683,7 +1982,6 @@
                     return;
                 }
                 
-                // 获取选中的学科
                 const selectedCards = document.querySelectorAll('#submissionSubjectSelector .subject-card.selected');
                 if (selectedCards.length === 0) {
                     this.showNotification('请至少选择一个学科');
@@ -1692,14 +1990,12 @@
                 
                 const selectedSubjects = Array.from(selectedCards).map(card => card.dataset.subjectId).join(',');
                 
-                // 获取选中的标签
                 const selectedTags = [];
                 document.querySelectorAll('#knowledgeForm input[type="checkbox"]:checked').forEach(cb => {
                     selectedTags.push(cb.value);
                 });
                 
                 try {
-                    // 保存到数据库
                     const { data, error } = await this.supabase
                         .from('submissions')
                         .insert([
@@ -1725,9 +2021,8 @@
                     }
                     
                     this.showNotification('知识点投稿提交成功！等待管理员审核。');
-                    this.clearSubmissionForm();
+                    this.clearKnowledgeForm();
                     
-                    // 添加到本地列表
                     if (data && data[0]) {
                         this.userSubmissions.unshift(data[0]);
                         this.renderSubmissionsList();
@@ -1740,104 +2035,108 @@
                 }
             },
 
-            // 提交游戏题目
-            submitGameQuestion: async function() {
+            // 提交题目投稿
+            submitQuestion: async function() {
                 if (!this.isLoggedIn) {
-                    this.showNotification('请先登录后再提交题目');
+                    this.showNotification('请先登录后再提交投稿');
                     this.showLoginModal();
                     return;
                 }
                 
-                if (!this.selectedGameType) {
-                    this.showNotification('请先选择题型');
+                if (!this.selectedKnowledge) {
+                    this.showNotification('请先选择一个知识点');
                     return;
                 }
                 
-                let gameData = {};
-                let title = '';
+                if (!this.currentGameType) {
+                    this.showNotification('请选择一个小游戏类型');
+                    return;
+                }
+                
+                const title = document.getElementById('questionTitle').value.trim();
+                if (!title) {
+                    this.showNotification('请输入题目标题');
+                    return;
+                }
                 
                 try {
-                    switch(this.selectedGameType) {
+                    let questionData = {
+                        game_type: this.currentGameType,
+                        knowledge_id: this.selectedKnowledge.id,
+                        difficulty: document.getElementById('guessDifficulty')?.value || 'medium'
+                    };
+                    
+                    switch(this.currentGameType) {
                         case 'match':
-                            title = document.getElementById('matchTitle').value.trim();
                             const leftItems = Array.from(document.querySelectorAll('.match-left')).map(input => input.value.trim());
                             const rightItems = Array.from(document.querySelectorAll('.match-right')).map(input => input.value.trim());
-                            
-                            if (!title) {
-                                this.showNotification('请填写题目标题');
-                                return;
-                            }
                             
                             if (leftItems.some(v => !v) || rightItems.some(v => !v)) {
                                 this.showNotification('请填写所有配对项');
                                 return;
                             }
                             
-                            if (leftItems.length < 3) {
-                                this.showNotification('至少需要3对配对项');
+                            questionData.pairs = leftItems.map((left, i) => ({ left, right: rightItems[i] }));
+                            break;
+                            
+                        case 'quiz':
+                            const question = document.getElementById('quizQuestion').value.trim();
+                            const options = ['A', 'B', 'C', 'D'].map(opt => 
+                                document.getElementById(`quizOption${opt}`).value.trim()
+                            );
+                            const answer = document.querySelector('input[name="quizAnswer"]:checked')?.value;
+                            
+                            if (!question || options.some(opt => !opt) || !answer) {
+                                this.showNotification('请填写所有必填项');
                                 return;
                             }
                             
-                            gameData = {
-                                type: 'match',
-                                title: title,
-                                items: leftItems.map((left, i) => ({ left, right: rightItems[i] }))
-                            };
+                            questionData.question = question;
+                            questionData.options = options;
+                            questionData.answer = answer;
+                            questionData.explanation = document.getElementById('quizExplanation').value.trim();
                             break;
                             
                         case 'true_false':
-                            title = document.getElementById('tfTitle').value.trim();
                             const statement = document.getElementById('tfStatement').value.trim();
-                            const answer = document.querySelector('input[name="tfAnswer"]:checked');
-                            const explanation = document.getElementById('tfExplanation').value.trim();
+                            const tfAnswer = document.querySelector('input[name="tfAnswer"]:checked')?.value;
                             
-                            if (!title || !statement || !answer) {
+                            if (!statement || !tfAnswer) {
                                 this.showNotification('请填写所有必填项');
                                 return;
                             }
                             
-                            gameData = {
-                                type: 'true_false',
-                                title: title,
-                                statement: statement,
-                                answer: answer.value === 'true',
-                                explanation: explanation || ''
-                            };
+                            questionData.statement = statement;
+                            questionData.answer = tfAnswer === 'true';
+                            questionData.explanation = document.getElementById('tfExplanation').value.trim();
                             break;
                             
                         case 'guess':
-                            title = document.getElementById('guessTitle').value.trim();
                             const hint = document.getElementById('guessHint').value.trim();
                             const guessAnswer = document.getElementById('guessAnswer').value.trim();
-                            const difficulty = document.getElementById('guessDifficulty').value;
                             
-                            if (!title || !hint || !guessAnswer) {
+                            if (!hint || !guessAnswer) {
                                 this.showNotification('请填写所有必填项');
                                 return;
                             }
                             
-                            gameData = {
-                                type: 'guess',
-                                title: title,
-                                hint: hint,
-                                answer: guessAnswer,
-                                difficulty: difficulty
-                            };
+                            questionData.hint = hint;
+                            questionData.answer = guessAnswer;
                             break;
                     }
                     
-                    // 保存到数据库
                     const { data, error } = await this.supabase
                         .from('submissions')
                         .insert([
                             {
-                                subject: 'game',
+                                subject: this.selectedKnowledge.subject,
                                 title: title,
-                                content: JSON.stringify(gameData),
-                                game_type: this.selectedGameType,
+                                content: JSON.stringify(questionData),
+                                game_type: this.currentGameType,
                                 status: 'pending',
                                 user_id: this.currentUser.id,
                                 author_name: this.currentUser.username,
+                                knowledge_id: this.selectedKnowledge.id,
                                 like_count: 0,
                                 view_count: 0,
                                 created_at: new Date().toISOString(),
@@ -1851,10 +2150,9 @@
                         return;
                     }
                     
-                    this.showNotification('游戏题目投稿成功！等待管理员审核。');
-                    this.clearGameForm();
+                    this.showNotification('题目投稿提交成功！等待管理员审核。');
+                    this.clearQuestionForm();
                     
-                    // 添加到本地列表
                     if (data && data[0]) {
                         this.userSubmissions.unshift(data[0]);
                         this.renderSubmissionsList();
@@ -1862,65 +2160,44 @@
                     }
                     
                 } catch (err) {
-                    console.error('提交游戏题目错误:', err);
+                    console.error('提交题目错误:', err);
                     this.showNotification('提交时发生错误');
                 }
             },
 
             // 清空知识点表单
-            clearSubmissionForm: function() {
+            clearKnowledgeForm: function() {
                 document.getElementById('knowledgeTitle').value = '';
                 document.getElementById('knowledgeContent').value = '';
                 
-                // 清除学科选择
                 document.querySelectorAll('#submissionSubjectSelector .subject-card').forEach(card => {
                     card.classList.remove('selected');
                 });
-                // 默认选中数学
                 const mathCard = document.querySelector('#submissionSubjectSelector [data-subject-id="math"]');
                 if (mathCard) mathCard.classList.add('selected');
                 
-                // 清除标签选择
                 document.querySelectorAll('#knowledgeForm input[type="checkbox"]').forEach(cb => {
                     cb.checked = false;
                 });
             },
 
-            // 清空游戏表单
-            clearGameForm: function() {
-                // 重置所有表单
-                document.querySelectorAll('#gameForm input, #gameForm textarea, #gameForm select').forEach(el => {
-                    if (el.type === 'radio' || el.type === 'checkbox') {
-                        el.checked = false;
-                    } else {
-                        el.value = '';
-                    }
+            // 清空题目表单
+            clearQuestionForm: function() {
+                this.selectedKnowledge = null;
+                this.currentGameType = null;
+                
+                document.getElementById('questionTitle').value = '';
+                document.getElementById('knowledgeSearch').value = '';
+                document.getElementById('selectedKnowledge').innerHTML = '';
+                
+                document.querySelectorAll('.game-type-card').forEach(card => {
+                    card.classList.remove('selected');
                 });
                 
-                // 重置配对项
-                const matchPairs = document.getElementById('matchPairs');
-                matchPairs.innerHTML = `
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项（如：勾股定理）">
-                        <input type="text" class="form-input match-right" placeholder="右项（如：a²+b²=c²）">
-                    </div>
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项">
-                        <input type="text" class="form-input match-right" placeholder="右项">
-                    </div>
-                    <div class="match-pair">
-                        <input type="text" class="form-input match-left" placeholder="左项">
-                        <input type="text" class="form-input match-right" placeholder="右项">
-                    </div>
-                `;
+                document.getElementById('gameConfigPanel').innerHTML = '';
                 
-                // 重置选择
-                this.selectedGameType = 'match';
-                document.getElementById('gameType').value = 'match';
-                document.querySelectorAll('.game-type-form').forEach(form => {
-                    form.classList.remove('active');
-                });
-                document.getElementById('matchForm').classList.add('active');
+                const searchResults = document.getElementById('knowledgeSearchResults');
+                if (searchResults) searchResults.classList.remove('active');
             },
 
             // 渲染投稿列表
@@ -1945,30 +2222,81 @@
                     const item = document.createElement('div');
                     item.className = 'submission-item';
                     
+                    const isQuestion = submission.game_type && submission.content;
+                    const typeText = isQuestion ? '题目' : '知识点';
+                    const gameTypeBadge = isQuestion ? 
+                        `<span class="game-type-badge game-type-${submission.game_type}">
+                            ${this.getGameTypeName(submission.game_type)}
+                        </span>` : '';
+                    
+                    const typeIcon = isQuestion ? 'fa-question-circle' : 'fa-brain';
+                    
                     const statusClass = `status-${submission.status}`;
                     const statusText = submission.status === 'pending' ? '审核中' : 
                                       submission.status === 'approved' ? '已通过' : '已拒绝';
                     
                     const subjectName = this.allSubjects.find(s => s.id === submission.subject)?.name || submission.subject;
                     
+                    let content = submission.content;
+                    if (isQuestion && submission.content) {
+                        try {
+                            const gameData = JSON.parse(submission.content);
+                            content = this.formatGameData(gameData);
+                        } catch (e) {
+                            content = submission.content;
+                        }
+                    }
+                    
                     item.innerHTML = `
                         <div class="submission-header">
-                            <div class="submission-title">${submission.title}</div>
+                            <div class="submission-title">
+                                <i class="fas ${typeIcon}"></i>
+                                ${submission.title}
+                                ${gameTypeBadge}
+                            </div>
                             <div class="submission-status ${statusClass}">${statusText}</div>
                         </div>
                         <div class="submission-meta">
                             <div><i class="fas fa-book"></i> ${subjectName}</div>
+                            <div><i class="fas ${isQuestion ? 'fa-gamepad' : 'fa-brain'}"></i> ${typeText}</div>
                             <div><i class="far fa-calendar"></i> ${new Date(submission.created_at).toLocaleDateString('zh-HK')}</div>
-                            <div><i class="fas fa-eye"></i> ${submission.view_count || 0} 浏览</div>
-                            <div><i class="fas fa-heart"></i> ${submission.like_count || 0} 点赞</div>
                         </div>
                         <div class="submission-content">
-                            ${submission.content.length > 200 ? submission.content.substring(0, 200) + '...' : submission.content}
+                            ${content}
                         </div>
                     `;
                     
                     container.appendChild(item);
                 });
+            },
+
+            // 获取游戏类型名称
+            getGameTypeName: function(gameType) {
+                const names = {
+                    'match': '连连看',
+                    'quiz': '选择题',
+                    'true_false': '对错判断',
+                    'guess': '猜知识点'
+                };
+                return names[gameType] || gameType;
+            },
+
+            // 格式化游戏数据用于显示
+            formatGameData: function(gameData) {
+                if (!gameData) return '';
+                
+                switch(gameData.game_type) {
+                    case 'match':
+                        return `<div>连连看配对：${gameData.pairs?.length || 0} 对</div>`;
+                    case 'quiz':
+                        return `<div>选择题：${gameData.question?.substring(0, 100)}...</div>`;
+                    case 'true_false':
+                        return `<div>判断：${gameData.statement?.substring(0, 100)}...</div>`;
+                    case 'guess':
+                        return `<div>猜知识点：${gameData.hint?.substring(0, 100)}...</div>`;
+                    default:
+                        return '';
+                }
             },
 
             // 更新统计数据
@@ -1982,18 +2310,15 @@
 
             // ==================== 面板管理 ====================
             showPanel: function(panelId) {
-                // 隐藏所有面板
                 document.querySelectorAll('.submission-main > div').forEach(panel => {
                     panel.classList.add('hidden');
                 });
                 
-                // 显示目标面板
                 const targetPanel = document.getElementById(panelId + 'Panel');
                 if (targetPanel) {
                     targetPanel.classList.remove('hidden');
                 }
                 
-                // 更新导航按钮状态
                 document.querySelectorAll('.submission-nav .btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -2001,7 +2326,6 @@
                 const targetNavBtn = document.querySelector(`.submission-nav .btn[onclick*="${panelId}"]`);
                 if (targetNavBtn) targetNavBtn.classList.add('active');
                 
-                // 加载数据
                 if (panelId === 'mySubmissions' && this.isLoggedIn) {
                     this.loadUserSubmissions();
                 }
