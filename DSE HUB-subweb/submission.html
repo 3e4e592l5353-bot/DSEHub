@@ -890,7 +890,7 @@
                         <div class="stat-value" id="approvedCount">0</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">等待审核</div>
+                        <div class="stat-label">等待审核</div> <!-- 修改这里 -->
                         <div class="stat-value" id="pendingCount">0</div>
                     </div>
                     <div class="stat-item">
@@ -1314,21 +1314,29 @@
                     const approved = userSubmissions.filter(s => s.status === 'approved').length;
                     const pending = userSubmissions.filter(s => s.status === 'pending_review').length;
                     
-                    // 加载游戏题目统计
-                    const questionsResponse = await fetch(
-                        `${SUPABASE_URL}/rest/v1/questions?author_id=eq.${currentUser.id}&select=id`,
-                        {
-                            headers: {
-                                'apikey': SUPABASE_KEY,
-                                'Authorization': `Bearer ${SUPABASE_KEY}`
-                            }
-                        }
-                    );
-                    
+                    // 尝试加载游戏题目统计，如果表不存在则忽略
                     let questionCount = 0;
-                    if (questionsResponse.ok) {
-                        const questions = await questionsResponse.json();
-                        questionCount = questions ? questions.length : 0;
+                    try {
+                        const questionsResponse = await fetch(
+                            `${SUPABASE_URL}/rest/v1/questions?author_id=eq.${currentUser.id}&select=id`,
+                            {
+                                headers: {
+                                    'apikey': SUPABASE_KEY,
+                                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                                }
+                            }
+                        );
+                        
+                        if (questionsResponse.ok) {
+                            const questions = await questionsResponse.json();
+                            questionCount = questions ? questions.length : 0;
+                        }
+                    } catch (questionsError) {
+                        console.log('questions表可能不存在，跳过:', questionsError);
+                        // 如果questions表不存在，可以尝试从submissions表计算
+                        questionCount = userSubmissions.filter(s => 
+                            s.category === 'game' && s.status === 'approved'
+                        ).length;
                     }
                     
                     // 更新显示
@@ -1339,6 +1347,11 @@
                 }
             } catch (error) {
                 console.log('加载用户统计失败:', error);
+                // 设置默认值
+                document.getElementById('submissionCount').textContent = '0';
+                document.getElementById('approvedCount').textContent = '0';
+                document.getElementById('pendingCount').textContent = '0';
+                document.getElementById('questionCount').textContent = '0';
             }
         }
 
@@ -1863,21 +1876,21 @@
             
             let html = '';
             filteredSubmissions.forEach(submission => {
-                // 状态标签
+                // 修正的状态映射
                 let statusClass = '';
                 let statusText = '';
                 switch(submission.status) {
                     case 'pending_review':
                         statusClass = 'status-pending';
-                        statusText = '等待审核';
+                        statusText = '等待审核'; // 统一使用"等待审核"
                         break;
                     case 'approved':
                         statusClass = 'status-approved';
-                        statusText = '审核通过';
+                        statusText = '已通过';
                         break;
                     case 'rejected':
                         statusClass = 'status-rejected';
-                        statusText = '审核拒绝';
+                        statusText = '已拒绝';
                         break;
                     default:
                         statusClass = 'status-pending';
@@ -1887,25 +1900,49 @@
                 // 科目名称
                 const subjectName = subjects.find(s => s.id === submission.subject)?.name || submission.subject || '未分类';
                 
-                // 游戏类型
-                const gameTypeText = submission.game_type === 'matching' ? '连连看' :
-                                   submission.game_type === 'true_false' ? '对错判断' :
-                                   submission.game_type === 'guess' ? '猜知识点' : '';
-                
-                // 难度
-                const difficultyText = submission.difficulty === 'easy' ? '简单' :
-                                     submission.difficulty === 'medium' ? '中等' :
-                                     submission.difficulty === 'hard' ? '困难' : '';
+                // 游戏类型显示
+                let gameInfo = '';
+                if (submission.category === 'game') {
+                    const gameTypeText = submission.game_type === 'matching' ? '连连看' :
+                                       submission.game_type === 'true_false' ? '对错判断' :
+                                       submission.game_type === 'guess' ? '猜知识点' : '';
+                    
+                    const difficultyText = submission.difficulty === 'easy' ? '简单' :
+                                         submission.difficulty === 'medium' ? '中等' :
+                                         submission.difficulty === 'hard' ? '困难' : '';
+                    
+                    gameInfo = `<span><i class="fas fa-gamepad"></i> ${gameTypeText}</span>
+                                ${submission.difficulty ? `<span><i class="fas fa-chart-line"></i> ${difficultyText}</span>` : ''}`;
+                }
                 
                 // 标签显示
                 const tags = submission.tags ? submission.tags.split(',') : [];
-                const tagsHtml = tags.map(tagId => {
-                    const tag = tags.find(t => t.id === tagId) || { name: tagId };
-                    return `<span class="history-tag">${tag.name}</span>`;
-                }).join('');
+                const tagNames = tags.map(tagId => {
+                    const tag = tags.find(t => t.id === tagId);
+                    return tag ? tag.name : tagId;
+                });
+                
+                const tagsHtml = tagNames.map(tagName => 
+                    `<span class="history-tag">${tagName}</span>`
+                ).join('');
                 
                 // 内容预览
                 let contentPreview = submission.content || '';
+                if (submission.category === 'game') {
+                    try {
+                        const gameData = JSON.parse(contentPreview);
+                        if (submission.game_type === 'matching') {
+                            contentPreview = '配对游戏：' + (gameData.examples || '');
+                        } else if (submission.game_type === 'true_false') {
+                            contentPreview = gameData.question || '判断题';
+                        } else if (submission.game_type === 'guess') {
+                            contentPreview = gameData.description || '描述题';
+                        }
+                    } catch (e) {
+                        contentPreview = '游戏题目';
+                    }
+                }
+                
                 if (contentPreview.length > 100) {
                     contentPreview = contentPreview.substring(0, 100) + '...';
                 }
@@ -1919,8 +1956,7 @@
                         <div class="history-meta">
                             <span><i class="fas fa-book"></i> ${subjectName}</span>
                             <span><i class="fas fa-tag"></i> ${submission.category === 'knowledge' ? '知识点' : '小游戏'}</span>
-                            ${submission.game_type ? `<span><i class="fas fa-gamepad"></i> ${gameTypeText}</span>` : ''}
-                            ${submission.difficulty ? `<span><i class="fas fa-chart-line"></i> ${difficultyText}</span>` : ''}
+                            ${gameInfo}
                         </div>
                         <div class="history-content">${contentPreview}</div>
                         <div class="history-footer">
@@ -2107,3 +2143,4 @@
     </script>
 </body>
 </html>
+
