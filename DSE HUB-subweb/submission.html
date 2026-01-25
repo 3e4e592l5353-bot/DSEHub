@@ -991,10 +991,11 @@
             });
         }
 
+        // 替换原来的 loadKnowledgePoints 函数
         async function loadKnowledgePoints() {
             try {
-                // 从Supabase加载已审核的知识点
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,subject&status=eq.approved&category=eq.knowledge&order=created_at.desc&limit=50`, {
+                // 修正API请求：使用正确的查询参数格式
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,subject&status=eq.approved&category=eq.knowledge`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -1003,17 +1004,26 @@
                 
                 if (response.ok) {
                     const submissions = await response.json();
-                    if (submissions.length > 0) {
-                        availableKnowledge = submissions.map(item => ({
+                    if (submissions && submissions.length > 0) {
+                        // 限制最多显示50个
+                        const limitedSubmissions = submissions.slice(0, 50);
+                        availableKnowledge = limitedSubmissions.map(item => ({
                             id: item.id,
                             title: item.title,
                             subject: item.subject
                         }));
                         console.log('加载知识点成功:', availableKnowledge.length, '条');
+                    } else {
+                        console.log('没有已审核的知识点');
+                        availableKnowledge = getMockKnowledge(); // 使用模拟数据
                     }
+                } else {
+                    console.warn('无法从API加载知识点，使用模拟数据');
+                    availableKnowledge = getMockKnowledge(); // 使用模拟数据
                 }
             } catch (error) {
                 console.log('加载知识点失败，使用模拟数据:', error);
+                availableKnowledge = getMockKnowledge(); // 使用模拟数据
             }
             
             // 初始显示知识点
@@ -1412,4 +1422,5 @@
     </script>
 </body>
 </html>
+
 
