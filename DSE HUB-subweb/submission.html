@@ -13,13 +13,14 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(-45deg, #667eea, #764ba2, #48bb78, #319795, #ff8c00, #ff4500);
+            background: linear-gradient(-45deg, var(--primary-start), var(--primary-end));
             background-size: 400% 400%;
-            animation: gradientBG 20s ease infinite;
-            color: #2d3748;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         @keyframes gradientBG {
@@ -28,8 +29,68 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* 蓝紫色主题 */
+        .theme-blue-purple {
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-color: #5a67d8;
+            --accent-light: rgba(90, 103, 216, 0.1);
+            --accent-dark: #4c51bf;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: rgba(102, 126, 234, 0.15);
+            --border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        /* 绿青色主题 */
+        .theme-green-teal {
+            --primary-start: #48bb78;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: rgba(72, 187, 120, 0.15);
+            --border-color: rgba(72, 187, 120, 0.2);
+        }
+
+        /* 橙红色主题 */
+        .theme-orange-red {
+            --primary-start: #ff8c00;
+            --primary-end: #ff4500;
+            --accent-color: #ff4500;
+            --accent-light: rgba(255, 69, 0, 0.1);
+            --accent-dark: #e03e00;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: rgba(255, 140, 0, 0.15);
+            --border-color: rgba(255, 140, 0, 0.2);
+        }
+
+        /* 深色主题 */
+        .theme-dark {
+            --primary-start: #4a5568;
+            --primary-end: #2d3748;
+            --accent-color: #4299e1;
+            --accent-light: rgba(66, 153, 225, 0.15);
+            --accent-dark: #3182ce;
+            --text-color: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --card-bg: rgba(45, 55, 72, 0.95);
+            --card-shadow: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(74, 85, 104, 0.5);
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -38,12 +99,12 @@
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .header h1 {
             color: white;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             margin-bottom: 15px;
@@ -57,10 +118,10 @@
         }
 
         .nav-btn {
-            padding: 8px 20px;
+            padding: 8px 18px;
             border: none;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             font-weight: 600;
             cursor: pointer;
@@ -71,22 +132,22 @@
             gap: 6px;
             white-space: nowrap;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             transform: translateY(-2px);
         }
 
         /* 用户信息卡片 */
         .user-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px var(--card-shadow);
+            border: 1px solid var(--border-color);
         }
 
         .user-info {
@@ -104,71 +165,69 @@
         }
 
         .stat-item {
-            padding: 10px 15px;
-            background: rgba(102, 126, 234, 0.1);
+            padding: 8px 12px;
+            background: var(--accent-light);
             border-radius: 8px;
-            border-left: 3px solid #667eea;
-            min-width: 120px;
+            border-left: 3px solid var(--accent-color);
+            min-width: 110px;
         }
 
         .stat-label {
-            font-size: 0.85rem;
-            color: #718096;
-            margin-bottom: 4px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 3px;
         }
 
         .stat-value {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #667eea;
+            color: var(--accent-color);
         }
 
         /* 投稿类型切换 */
         .submission-type {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            flex-wrap: wrap;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            gap: 8px;
+            margin-bottom: 25px;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--card-shadow);
+            border: 1px solid var(--border-color);
         }
 
         .type-btn {
             flex: 1;
-            min-width: 180px;
+            min-width: 160px;
             padding: 12px;
             border: none;
             background: transparent;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: #718096;
+            color: var(--text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            text-align: center;
         }
 
         .type-btn.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 3px 10px var(--card-shadow);
         }
 
         /* 投稿表单样式 */
         .submission-form {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
+            background: var(--card-bg);
+            border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 30px;
+            box-shadow: 0 4px 20px var(--card-shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
         }
 
         .form-group {
@@ -179,23 +238,24 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #2d3748;
+            color: var(--text-color);
         }
 
         .form-control {
             width: 100%;
-            padding: 10px 14px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light);
         }
 
         .textarea {
@@ -203,37 +263,38 @@
             resize: vertical;
         }
 
-        /* 科目选择 - 小型按钮 */
+        /* 科目选择 */
         .subject-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .subject-btn {
             padding: 6px 12px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            border: 2px solid var(--border-color);
             border-radius: 6px;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             white-space: nowrap;
         }
 
         .subject-btn:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--accent-color);
+            background: var(--accent-light);
         }
 
         .subject-btn.selected {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            border-color: #667eea;
+            border-color: var(--primary-start);
         }
 
-        /* 标签选择 - 小型按钮 */
+        /* 标签选择 */
         .tag-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -241,68 +302,139 @@
         }
 
         .tag-btn {
-            padding: 6px 12px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 5px 10px;
+            border: 2px solid var(--border-color);
             border-radius: 15px;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .tag-btn:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--accent-color);
+            background: var(--accent-light);
         }
 
         .tag-btn.selected {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            border-color: #667eea;
+            border-color: var(--primary-start);
         }
 
         /* 游戏类型选择 */
         .game-type-buttons {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .game-type-btn {
-            padding: 10px 20px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .game-type-btn:hover {
-            border-color: #667eea;
+            border-color: var(--accent-color);
             transform: translateY(-2px);
+            background: var(--accent-light);
         }
 
         .game-type-btn.selected {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            border-color: var(--primary-start);
+            box-shadow: 0 3px 10px var(--card-shadow);
+        }
+
+        /* 知识点选择 */
+        .knowledge-selector {
+            margin-bottom: 15px;
+        }
+
+        .knowledge-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .knowledge-btn {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .knowledge-btn:hover {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+        }
+
+        .knowledge-btn.selected {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            border-color: var(--primary-start);
+        }
+
+        /* 难度选择 */
+        .difficulty-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .difficulty-btn {
+            padding: 6px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .difficulty-btn:hover {
+            border-color: var(--accent-color);
+            background: var(--accent-light);
+        }
+
+        .difficulty-btn.selected {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            border-color: var(--primary-start);
         }
 
         /* 提交按钮 */
         .submit-btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
             border-radius: 8px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -311,13 +443,13 @@
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             
             .user-info {
@@ -331,42 +463,47 @@
             
             .stat-item {
                 flex: 1;
-                min-width: 100px;
+                min-width: 90px;
             }
             
-            .subject-buttons {
-                gap: 6px;
-            }
-            
-            .subject-btn {
-                font-size: 0.85rem;
-                padding: 5px 10px;
-            }
-        }
-
-        @media (max-width: 480px) {
             .game-type-buttons {
                 flex-direction: column;
             }
             
             .game-type-btn {
-                justify-content: center;
+                min-width: 100%;
             }
             
             .type-btn {
+                min-width: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .type-btn {
                 min-width: 100%;
+            }
+            
+            .subject-buttons, .tag-buttons {
+                gap: 6px;
+            }
+            
+            .subject-btn, .tag-btn, .knowledge-btn {
+                font-size: 0.8rem;
+                padding: 5px 8px;
             }
         }
 
         /* 消息样式 */
         .message {
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: white;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
         }
 
         .message.success {
@@ -390,8 +527,8 @@
 
         /* 字数统计 */
         .word-count {
-            font-size: 0.85rem;
-            color: #718096;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             text-align: right;
             margin-top: 5px;
         }
@@ -403,10 +540,42 @@
         .word-count.error {
             color: #f56565;
         }
+
+        /* 搜索框 */
+        .search-box {
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 35px 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* 无知识点提示 */
+        .no-knowledge {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="theme-blue-purple">
     <div class="container">
         <!-- 头部导航 -->
         <div class="header">
@@ -491,7 +660,7 @@
                     <div class="word-count" id="knowledgeWordCount">0/200 字</div>
                 </div>
 
-                <!-- 标题 -->
+                <!-- 名称 -->
                 <div class="form-group">
                     <label class="form-label">知识点名称 *</label>
                     <input type="text" class="form-control" id="knowledgeTitle" 
@@ -514,6 +683,21 @@
                     <div class="game-type-buttons" id="gameTypeSelection">
                         <!-- 游戏类型按钮将通过JavaScript动态生成 -->
                     </div>
+                </div>
+
+                <!-- 知识点选择 -->
+                <div class="form-group knowledge-selector">
+                    <label class="form-label">选择关联知识点（可选）</label>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="knowledgeSearch" 
+                               placeholder="搜索知识点...">
+                        <i class="fas fa-search search-icon"></i>
+                    </div>
+                    <div class="knowledge-buttons" id="knowledgeSelection">
+                        <div class="no-knowledge">输入关键词搜索知识点</div>
+                    </div>
+                    <input type="hidden" id="selectedKnowledgeId">
+                    <input type="hidden" id="selectedKnowledgeTitle">
                 </div>
 
                 <!-- 游戏内容区域 -->
@@ -554,10 +738,10 @@
                 <!-- 难度选择 -->
                 <div class="form-group">
                     <label class="form-label">选择难度 *</label>
-                    <div class="tag-buttons">
-                        <button type="button" class="tag-btn difficulty-btn" data-value="easy">简单</button>
-                        <button type="button" class="tag-btn difficulty-btn" data-value="medium">中等</button>
-                        <button type="button" class="tag-btn difficulty-btn" data-value="hard">困难</button>
+                    <div class="difficulty-buttons">
+                        <button type="button" class="difficulty-btn" data-value="easy">简单</button>
+                        <button type="button" class="difficulty-btn" data-value="medium">中等</button>
+                        <button type="button" class="difficulty-btn" data-value="hard">困难</button>
                     </div>
                     <input type="hidden" id="gameDifficulty" required>
                 </div>
@@ -637,8 +821,19 @@
             }
         ];
 
+        // 默认知识点列表（模拟数据）
+        let availableKnowledge = [
+            { id: 1, title: '勾股定理', subject: 'math' },
+            { id: 2, title: '二次公式', subject: 'math' },
+            { id: 3, title: '牛顿第二定律', subject: 'physics' },
+            { id: 4, title: '元素周期表', subject: 'chemistry' },
+            { id: 5, title: '成语典故', subject: 'chinese' },
+            { id: 6, title: '基础语法', subject: 'english' }
+        ];
+
         // 用户数据
         let currentUser = null;
+        let currentTheme = 'theme-blue-purple'; // 默认主题
 
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
@@ -648,30 +843,17 @@
         });
 
         function initializePage() {
-            // 加载用户主题
-            loadUserTheme();
-            
             // 初始化科目选择
             const subjectSelection = document.getElementById('subjectSelection');
             subjects.forEach(subject => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'subject-btn';
-                btn.dataset.id = subject.id;
-                btn.textContent = subject.name;
-                btn.onclick = () => toggleSelection(btn, subjectSelection);
+                const btn = createButton('subject-btn', subject.id, subject.name, subjectSelection, true);
                 subjectSelection.appendChild(btn);
             });
 
             // 初始化标签选择
             const tagSelection = document.getElementById('tagSelection');
             tags.forEach(tag => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'tag-btn';
-                btn.dataset.id = tag.id;
-                btn.textContent = tag.name;
-                btn.onclick = () => toggleMultiSelection(btn);
+                const btn = createButton('tag-btn', tag.id, tag.name, null, false);
                 tagSelection.appendChild(btn);
             });
 
@@ -691,77 +873,59 @@
                 gameTypeSelection.appendChild(btn);
             });
 
+            // 初始化难度选择
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    document.getElementById('gameDifficulty').value = this.dataset.value;
+                });
+            });
+
             // 字数统计
             document.getElementById('knowledgeContent').addEventListener('input', updateWordCount);
+
+            // 知识点搜索
+            document.getElementById('knowledgeSearch').addEventListener('input', searchKnowledge);
         }
 
-        function loadUserTheme() {
-            // 从localStorage获取用户主题
-            try {
-                const userData = JSON.parse(localStorage.getItem('dsehub_user') || '{}');
-                if (userData.theme_colors) {
-                    // 应用主题颜色
-                    applyThemeColors(userData.theme_colors);
-                } else if (userData.theme_color) {
-                    // 应用预设主题
-                    applyPresetTheme(userData.theme_color);
-                }
-            } catch (error) {
-                console.log('加载主题失败:', error);
-            }
-        }
-
-        function applyThemeColors(colors) {
-            // 直接使用用户保存的颜色
-            const root = document.documentElement;
+        function createButton(className, id, text, container, isSingleSelect) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = className;
+            btn.dataset.id = id;
+            btn.textContent = text;
             
-            if (colors.primary_start && colors.primary_end) {
-                // 更新渐变按钮
-                const btnGradient = `linear-gradient(135deg, ${colors.primary_start}, ${colors.primary_end})`;
-                
-                // 更新CSS
-                document.querySelectorAll('.subject-btn.selected, .tag-btn.selected, .game-type-btn.selected, .type-btn.active, .submit-btn').forEach(btn => {
-                    btn.style.background = btnGradient;
-                });
-                
-                // 更新统计项边框颜色
-                document.querySelectorAll('.stat-item').forEach(item => {
-                    item.style.borderLeftColor = colors.primary_start || colors.accent_color || '#667eea';
-                });
+            if (isSingleSelect) {
+                btn.onclick = () => {
+                    container.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+            } else {
+                btn.onclick = () => {
+                    btn.classList.toggle('selected');
+                };
             }
-        }
-
-        function applyPresetTheme(themeName) {
-            // 应用预设主题
-            const themes = {
-                'theme-blue-purple': { start: '#667eea', end: '#764ba2' },
-                'theme-green-teal': { start: '#48bb78', end: '#319795' },
-                'theme-orange-red': { start: '#ff8c00', end: '#ff4500' },
-                'theme-dark': { start: '#4a5568', end: '#2d3748' }
-            };
             
-            if (themes[themeName]) {
-                const theme = themes[themeName];
-                const btnGradient = `linear-gradient(135deg, ${theme.start}, ${theme.end})`;
-                
-                document.querySelectorAll('.subject-btn.selected, .tag-btn.selected, .game-type-btn.selected, .type-btn.active, .submit-btn').forEach(btn => {
-                    btn.style.background = btnGradient;
-                });
-                
-                document.querySelectorAll('.stat-item').forEach(item => {
-                    item.style.borderLeftColor = theme.start;
-                });
-            }
+            return btn;
         }
 
         function loadUserData() {
-            // 从localStorage获取用户信息
+            // 从localStorage获取用户信息和主题
             try {
                 const userData = JSON.parse(localStorage.getItem('dsehub_user') || '{}');
                 if (userData && userData.id) {
                     currentUser = userData;
                     updateUserDisplay(userData);
+                    
+                    // 加载用户主题
+                    loadUserTheme(userData);
+                    
+                    // 获取用户统计数据
                     fetchUserStats(userData.id);
+                    
+                    // 加载知识点数据
+                    loadKnowledgePoints();
                     return;
                 }
             } catch (e) {
@@ -780,9 +944,20 @@
             });
         }
 
+        function loadUserTheme(userData) {
+            // 从用户数据加载主题
+            if (userData.theme_color) {
+                currentTheme = userData.theme_color;
+                document.body.className = currentTheme;
+                console.log('加载主题:', currentTheme);
+            } else {
+                // 默认使用蓝紫色主题
+                document.body.className = 'theme-blue-purple';
+            }
+        }
+
         async function fetchUserStats(userId) {
             try {
-                // 从profiles表获取用户统计信息
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=score,games_played,high_score,duel_wins&id=eq.${userId}`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -816,6 +991,88 @@
             });
         }
 
+        async function loadKnowledgePoints() {
+            try {
+                // 从Supabase加载已审核的知识点
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,subject&status=eq.approved&category=eq.knowledge&order=created_at.desc&limit=50`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const submissions = await response.json();
+                    if (submissions.length > 0) {
+                        availableKnowledge = submissions.map(item => ({
+                            id: item.id,
+                            title: item.title,
+                            subject: item.subject
+                        }));
+                        console.log('加载知识点成功:', availableKnowledge.length, '条');
+                    }
+                }
+            } catch (error) {
+                console.log('加载知识点失败，使用模拟数据:', error);
+            }
+            
+            // 初始显示知识点
+            displayKnowledge(availableKnowledge);
+        }
+
+        function displayKnowledge(knowledgeList) {
+            const knowledgeSelection = document.getElementById('knowledgeSelection');
+            
+            if (knowledgeList.length === 0) {
+                knowledgeSelection.innerHTML = '<div class="no-knowledge">暂无可用知识点</div>';
+                return;
+            }
+            
+            let html = '';
+            knowledgeList.forEach(item => {
+                const subjectName = subjects.find(s => s.id === item.subject)?.name || item.subject;
+                html += `
+                    <button type="button" class="knowledge-btn" 
+                            data-id="${item.id}" 
+                            data-title="${item.title}"
+                            data-subject="${item.subject}">
+                        ${item.title} <small style="color: var(--text-muted);">(${subjectName})</small>
+                    </button>
+                `;
+            });
+            
+            knowledgeSelection.innerHTML = html;
+            
+            // 添加点击事件
+            knowledgeSelection.querySelectorAll('.knowledge-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.knowledge-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    document.getElementById('selectedKnowledgeId').value = this.dataset.id;
+                    document.getElementById('selectedKnowledgeTitle').value = this.dataset.title;
+                    
+                    console.log('选择知识点:', this.dataset.title, 'ID:', this.dataset.id);
+                });
+            });
+        }
+
+        function searchKnowledge() {
+            const searchTerm = document.getElementById('knowledgeSearch').value.toLowerCase().trim();
+            
+            if (searchTerm.length === 0) {
+                displayKnowledge(availableKnowledge);
+                return;
+            }
+            
+            const filtered = availableKnowledge.filter(item => 
+                item.title.toLowerCase().includes(searchTerm) ||
+                (item.subject && item.subject.toLowerCase().includes(searchTerm))
+            );
+            
+            displayKnowledge(filtered);
+        }
+
         function updateUserDisplay(user) {
             document.getElementById('username').textContent = user.username || '用户';
             document.getElementById('userEmail').textContent = user.email || '';
@@ -843,15 +1100,6 @@
                     document.getElementById('tfAnswer').value = this.dataset.value;
                 });
             });
-            
-            // 难度选择
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                    document.getElementById('gameDifficulty').value = this.dataset.value;
-                });
-            });
         }
 
         function switchType(type) {
@@ -871,19 +1119,6 @@
                 knowledgeForm.style.display = 'none';
                 gameForm.style.display = 'block';
             }
-        }
-
-        function toggleSelection(element, container) {
-            // 单选选择
-            container.querySelectorAll('button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            element.classList.add('selected');
-        }
-
-        function toggleMultiSelection(element) {
-            // 多选选择
-            element.classList.toggle('selected');
         }
 
         function showGameContent(gameType) {
@@ -1018,6 +1253,9 @@
                     });
                     updateWordCount();
                     
+                    // 重新加载知识点列表
+                    loadKnowledgePoints();
+                    
                 } else {
                     throw new Error('投稿失败');
                 }
@@ -1090,15 +1328,20 @@
             
             if (!isValid) return;
             
+            const knowledgeId = document.getElementById('selectedKnowledgeId').value;
+            const knowledgeTitle = document.getElementById('selectedKnowledgeTitle').value;
+            
             const formData = {
-                title: `游戏投稿 - ${selectedGameType.textContent}`, // 使用游戏类型作为标题
+                title: knowledgeTitle || `游戏投稿 - ${selectedGameType.textContent}`,
                 content: JSON.stringify(gameData),
+                example: knowledgeTitle || '',
                 user_id: currentUser.id,
                 author_name: currentUser.username || currentUser.email?.split('@')[0] || '匿名用户',
                 status: 'pending_review',
                 category: 'game',
                 game_type: gameType,
                 difficulty: selectedDifficulty,
+                knowledge_id: knowledgeId || null,
                 question_data: JSON.stringify(gameData),
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
@@ -1127,16 +1370,24 @@
                     
                     // 重置表单
                     e.target.reset();
-                    document.querySelectorAll('.game-type-btn.selected, .difficulty-btn.selected, .tf-answer.selected').forEach(el => {
+                    document.querySelectorAll('.game-type-btn.selected, .difficulty-btn.selected, .tf-answer.selected, .knowledge-btn.selected').forEach(el => {
                         el.classList.remove('selected');
                     });
                     document.getElementById('gameDifficulty').value = '';
                     document.getElementById('tfAnswer').value = '';
+                    document.getElementById('selectedKnowledgeId').value = '';
+                    document.getElementById('selectedKnowledgeTitle').value = '';
                     
                     // 隐藏游戏内容
                     document.querySelectorAll('[id$="Content"]').forEach(el => {
                         el.style.display = 'none';
                     });
+                    
+                    // 清空搜索框
+                    document.getElementById('knowledgeSearch').value = '';
+                    
+                    // 重新显示知识点列表
+                    displayKnowledge(availableKnowledge);
                     
                 } else {
                     throw new Error('投稿失败');
