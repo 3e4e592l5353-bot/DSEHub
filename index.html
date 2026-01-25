@@ -1318,7 +1318,7 @@
                 <button class="btn" onclick="window.open('DSE%20HUB-subweb/submission.html', '_blank')">
                     <i class="fas fa-upload"></i> 投稿中心
                 </button>
-                <button class="btn" onclick="window.open('DSE%20HUB-subweb/admin.html', '_blank')">
+                <button class="btn" id="adminNavBtn" style="display: none;" onclick="window.open('DSE%20HUB-subweb/admin.html', '_blank')">
                     <i class="fas fa-user-shield"></i> 管理
                 </button>
             </nav>
@@ -1624,6 +1624,7 @@
             },
 
             // 加载用户资料
+            // 加载用户资料
             loadUserProfile: async function() {
                 if (!this.currentUser) return;
                 
@@ -1634,15 +1635,49 @@
                         .eq('auth_id', this.currentUser.id)
                         .single();
                     
-                    if (error && error.code !== 'PGRST116') throw error;
-                    
-                    if (data) {
+                    if (error && error.code !== 'PGRST116') {
+                        console.error('数据库查询出错:', error);
+                        // 使用默认值继续
+                        this.userProfile = {
+                            username: this.currentUser.username,
+                            score: 0,
+                            games_played: 0,
+                            high_score: 0,
+                            duel_wins: 0,
+                            is_admin: false
+                        };
+                        this.isAdmin = false;
+                    } else if (data) {
                         this.userProfile = data;
                         this.isAdmin = data.is_admin === true;
-                        this.updateAccountUI();
+                    } else {
+                        // 没有找到资料，使用默认值
+                        this.userProfile = {
+                            username: this.currentUser.username,
+                            score: 0,
+                            games_played: 0,
+                            high_score: 0,
+                            duel_wins: 0,
+                            is_admin: false
+                        };
+                        this.isAdmin = false;
                     }
+                    
+                    this.updateAccountUI();
+                    this.updateUserUI(); // 更新UI以反映管理员状态
                 } catch (err) {
                     console.error('加载用户资料出错:', err);
+                    // 出错时使用默认值
+                    this.userProfile = {
+                        username: this.currentUser.username,
+                        score: 0,
+                        games_played: 0,
+                        high_score: 0,
+                        duel_wins: 0,
+                        is_admin: false
+                    };
+                    this.isAdmin = false;
+                    this.updateAccountUI();
                 }
             },
 
@@ -1710,6 +1745,7 @@
 
             // 登录
             // 登录
+            // 登录
             login: async function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -1737,26 +1773,26 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
-                        // 分别处理可能出错的后续操作
-                        try {
-                            await this.loadUserProfile();
-                        } catch (profileErr) {
-                            console.error('加载用户资料出错:', profileErr);
-                            // 不影响登录成功，继续执行
-                        }
-                        
-                        try {
-                            await this.loadUserTheme(); // 加载用户主题
-                        } catch (themeErr) {
-                            console.error('加载主题设置出错:', themeErr);
-                            // 不影响登录成功，继续执行
-                        }
+                        // 异步加载用户资料，即使出错也不影响登录
+                        setTimeout(async () => {
+                            try {
+                                await this.loadUserProfile();
+                            } catch (err) {
+                                console.error('加载用户资料出错:', err);
+                            }
+                            
+                            try {
+                                await this.loadUserTheme(); // 加载用户主题
+                            } catch (err) {
+                                console.error('加载主题设置出错:', err);
+                            }
+                        }, 100);
                         
                         this.loginSuccess();
                     }
                 } catch (err) {
                     console.error('登录过程中发生错误:', err);
-                    this.showNotification('登录时发生错误');
+                    this.showNotification('登录失败，请检查网络连接或稍后重试');
                 }
             },
 
@@ -1854,6 +1890,7 @@
             },
 
             // 更新用户界面
+            // 更新用户界面
             updateUserUI: function() {
                 const loginStatus = document.getElementById('loginStatus');
                 const userAvatar = document.getElementById('userAvatar');
@@ -1871,9 +1908,9 @@
                     userAvatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
                     userAvatar.onclick = () => this.showPanel('myAccount');
                     
-                    if (this.isAdmin) {
+                    if (this.isAdmin && adminNavBtn) {
                         adminNavBtn.style.display = 'flex';
-                    } else {
+                    } else if (adminNavBtn) {
                         adminNavBtn.style.display = 'none';
                     }
                 } else {
@@ -1881,7 +1918,9 @@
                     loginStatus.onclick = () => this.showLoginModal();
                     userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                     userAvatar.onclick = () => this.showLoginModal();
-                    adminNavBtn.style.display = 'none';
+                    if (adminNavBtn) {
+                        adminNavBtn.style.display = 'none';
+                    }
                 }
             },
 
@@ -2266,4 +2305,5 @@
     </script>
 </body>
 </html>
+
 
