@@ -453,20 +453,6 @@
             line-height: 1.3;
         }
 
-        /* 移除subject-controls，因为不再需要"全部"按钮 */
-        .subject-controls {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-            flex-wrap: wrap;
-            align-items: center;
-            padding: var(--spacing-md);
-            background: var(--accent-light);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
-            display: none; /* 隐藏整个控件组 */
-        }
-
         /* 标签系统样式 */
         .tag-filters {
             display: flex;
@@ -503,6 +489,13 @@
             color: white;
             border-color: var(--accent-color);
             box-shadow: var(--shadow-sm);
+        }
+
+        /* 科目分类筛选 */
+        .category-filters {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
         }
 
         /* 搜索框美化 */
@@ -1371,8 +1364,16 @@
                     </div>
                     <div class="panel-content">
                         <div class="subject-selector" id="subjectSelector"></div>
+                        
+                        <!-- 科目分类筛选 -->
+                        <div class="tag-filters category-filters">
+                            <div class="tag-filter-btn active" onclick="DSEHub.filterByCategory('all')">全部科目</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByCategory('core')">核心科目</div>
+                            <div class="tag-filter-btn" onclick="DSEHub.filterByCategory('elective')">选科科目</div>
+                        </div>
+                        
                         <div class="tag-filters" id="tagFilters">
-                            <div class="tag-filter-btn active" onclick="DSEHub.filterByTag('all')">全部</div>
+                            <div class="tag-filter-btn active" onclick="DSEHub.filterByTag('all')">全部标签</div>
                             <div class="tag-filter-btn" onclick="DSEHub.filterByTag('公式')">公式</div>
                             <div class="tag-filter-btn" onclick="DSEHub.filterByTag('语法')">语法</div>
                             <div class="tag-filter-btn" onclick="DSEHub.filterByTag('名言金句')">名言金句</div>
@@ -1516,26 +1517,48 @@
             selectedSubjects: new Set(['all']),
             currentFilter: 'all',
             currentTagFilter: 'all',
+            currentCategoryFilter: 'all',
             isLoggedIn: false,
             isAdmin: false,
 
-            // 完整学科列表
+            // 完整学科列表（按DSE最新科目分类）
             allSubjects: [
-                { id: 'chi', name: '中国语文', icon: 'fas fa-language' },
-                { id: 'eng', name: '英国语文', icon: 'fas fa-language' },
-                { id: 'math', name: '数学', icon: 'fas fa-calculator' },
-                { id: 'm1', name: '数学延伸单元一', icon: 'fas fa-chart-line' },
-                { id: 'm2', name: '数学延伸单元二', icon: 'fas fa-chart-bar' },
-                { id: 'phy', name: '物理', icon: 'fas fa-atom' },
-                { id: 'chem', name: '化学', icon: 'fas fa-flask' },
-                { id: 'bio', name: '生物', icon: 'fas fa-dna' },
-                { id: 'econ', name: '经济', icon: 'fas fa-chart-line' },
-                { id: 'ls', name: '通识教育', icon: 'fas fa-globe-asia' },
-                { id: 'geo', name: '地理', icon: 'fas fa-mountain' },
-                { id: 'chi-hist', name: '中国历史', icon: 'fas fa-landmark' },
-                { id: 'hist', name: '历史', icon: 'fas fa-history' },
-                { id: 'ba', name: '企业会计与财务概论', icon: 'fas fa-business-time' },
-                { id: 'ict', name: '信息及通讯科技', icon: 'fas fa-laptop-code' }
+                // 核心科目
+                { id: 'chi', name: '中国语文', category: 'core', icon: 'fas fa-language' },
+                { id: 'eng', name: '英国语文', category: 'core', icon: 'fas fa-language' },
+                { id: 'math', name: '数学', category: 'core', icon: 'fas fa-calculator' },
+                { id: 'm1', name: '数学延伸单元一', category: 'core', icon: 'fas fa-chart-line' },
+                { id: 'm2', name: '数学延伸单元二', category: 'core', icon: 'fas fa-chart-bar' },
+                { id: 'csd', name: '公民与社会发展', category: 'core', icon: 'fas fa-users' }, // 取代通识教育
+                
+                // 选科科目 - 理科类
+                { id: 'bio', name: '生物', category: 'elective', icon: 'fas fa-dna' },
+                { id: 'chem', name: '化学', category: 'elective', icon: 'fas fa-flask' },
+                { id: 'phy', name: '物理', category: 'elective', icon: 'fas fa-atom' },
+                
+                // 选科科目 - 文科类
+                { id: 'chi-hist', name: '中国历史', category: 'elective', icon: 'fas fa-landmark' },
+                { id: 'hist', name: '历史', category: 'elective', icon: 'fas fa-history' },
+                { id: 'geo', name: '地理', category: 'elective', icon: 'fas fa-mountain' },
+                { id: 'econ', name: '经济', category: 'elective', icon: 'fas fa-chart-line' },
+                
+                // 选科科目 - 语文类
+                { id: 'chi-lit', name: '中国文学', category: 'elective', icon: 'fas fa-book-open' },
+                { id: 'eng-lit', name: '英语文学', category: 'elective', icon: 'fas fa-book-reader' },
+                
+                // 选科科目 - 商业及计算机类
+                { id: 'bafs', name: '企业、会计与财务概论', category: 'elective', icon: 'fas fa-business-time' },
+                { id: 'ict', name: '资讯及通讯科技', category: 'elective', icon: 'fas fa-laptop-code' },
+                
+                // 选科科目 - 其他类别
+                { id: 'ethics', name: '伦理与宗教', category: 'elective', icon: 'fas fa-hands-praying' },
+                { id: 'th', name: '旅游与款待', category: 'elective', icon: 'fas fa-umbrella-beach' },
+                { id: 'dat', name: '设计与应用科技', category: 'elective', icon: 'fas fa-tools' },
+                { id: 'hmss', name: '健康管理与社会科学', category: 'elective', icon: 'fas fa-heartbeat' },
+                { id: 'tech-living', name: '科技与生活', category: 'elective', icon: 'fas fa-home' },
+                { id: 'music', name: '音乐', category: 'elective', icon: 'fas fa-music' },
+                { id: 'va', name: '视觉艺术', category: 'elective', icon: 'fas fa-palette' },
+                { id: 'pe', name: '体育', category: 'elective', icon: 'fas fa-running' }
             ],
 
             // 知识点数据
@@ -1575,6 +1598,12 @@
                     content: '需求定律：价格上升，需求量下降；价格下降，需求量上升。供应定律：价格上升，供应量上升；价格下降，供应量下降。市场均衡发生在需求曲线与供应曲线相交处。',
                     tags: ['公式', '基础'],
                     created_at: '2024-01-10'
+                },
+                { 
+                    id: 7, subject: 'csd', title: '香港基本法', 
+                    content: '香港特别行政区基本法的主要内容，包括中央与香港的关系、居民的基本权利和义务、政治体制等。',
+                    tags: ['术语', '基础'],
+                    created_at: '2024-01-16'
                 }
             ],
 
@@ -1608,7 +1637,6 @@
                 this.initKnowledgeGrid();
                 this.initMessageBoard();
                 this.showPanel('knowledge');
-                // 移除自动登录检查
             },
 
             // Supabase初始化 - 关闭持久会话
@@ -1618,13 +1646,12 @@
                 
                 this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
                     auth: { 
-                        autoRefreshToken: false,  // 关闭自动刷新令牌
-                        persistSession: false     // 关闭持久会话
+                        autoRefreshToken: false,
+                        persistSession: false
                     }
                 });
             },
 
-            // 加载用户资料
             // 加载用户资料
             loadUserProfile: async function() {
                 if (!this.currentUser) return;
@@ -1638,7 +1665,6 @@
                     
                     if (error && error.code !== 'PGRST116') {
                         console.error('数据库查询出错:', error);
-                        // 使用默认值继续
                         this.userProfile = {
                             username: this.currentUser.username,
                             score: 0,
@@ -1652,7 +1678,6 @@
                         this.userProfile = data;
                         this.isAdmin = data.is_admin === true;
                     } else {
-                        // 没有找到资料，使用默认值
                         this.userProfile = {
                             username: this.currentUser.username,
                             score: 0,
@@ -1665,10 +1690,9 @@
                     }
                     
                     this.updateAccountUI();
-                    this.updateUserUI(); // 更新UI以反映管理员状态
+                    this.updateUserUI();
                 } catch (err) {
                     console.error('加载用户资料出错:', err);
-                    // 出错时使用默认值
                     this.userProfile = {
                         username: this.currentUser.username,
                         score: 0,
@@ -1705,7 +1729,6 @@
             saveUserTheme: async function(themeId) {
                 if (!this.currentUser) return;
                 
-                // 从 theme-blue-purple 提取 blue-purple
                 const themeColor = themeId.replace('theme-', '');
                 
                 try {
@@ -1745,8 +1768,6 @@
             },
 
             // 登录
-            // 登录
-            // 登录
             login: async function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -1774,7 +1795,6 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
-                        // 异步加载用户资料，即使出错也不影响登录
                         setTimeout(async () => {
                             try {
                                 await this.loadUserProfile();
@@ -1783,7 +1803,7 @@
                             }
                             
                             try {
-                                await this.loadUserTheme(); // 加载用户主题
+                                await this.loadUserTheme();
                             } catch (err) {
                                 console.error('加载主题设置出错:', err);
                             }
@@ -1843,7 +1863,6 @@
                     }
                     
                     if (authData.user) {
-                        // 创建用户资料
                         const { error: profileError } = await this.supabase
                             .from('profiles')
                             .insert([
@@ -1890,7 +1909,6 @@
                 }
             },
 
-            // 更新用户界面
             // 更新用户界面
             updateUserUI: function() {
                 const loginStatus = document.getElementById('loginStatus');
@@ -2021,12 +2039,23 @@
                 this.filterKnowledge();
             },
 
+            // 科目分类筛选
+            filterByCategory: function(category) {
+                this.currentCategoryFilter = category;
+                
+                document.querySelectorAll('.category-filters .tag-filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                this.filterKnowledge();
+            },
+
             // 标签筛选
             filterByTag: function(tag) {
                 this.currentTagFilter = tag;
                 
-                // 更新标签按钮状态
-                document.querySelectorAll('.tag-filter-btn').forEach(btn => {
+                document.querySelectorAll('.tag-filters .tag-filter-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 event.target.classList.add('active');
@@ -2050,8 +2079,7 @@
                 this.renderKnowledgeCards(filteredData);
             },
 
-            // 移除了filterSubjects函数，因为不再需要"全部"按钮
-
+            // 综合筛选知识点
             filterKnowledge: function() {
                 let filteredData = this.knowledgeData;
                 
@@ -2067,6 +2095,14 @@
                     filteredData = filteredData.filter(item => 
                         item.tags && item.tags.includes(this.currentTagFilter)
                     );
+                }
+                
+                // 科目分类筛选
+                if (this.currentCategoryFilter !== 'all') {
+                    filteredData = filteredData.filter(item => {
+                        const subjectInfo = this.allSubjects.find(s => s.id === item.subject);
+                        return subjectInfo && subjectInfo.category === this.currentCategoryFilter;
+                    });
                 }
                 
                 this.renderKnowledgeCards(filteredData);
@@ -2094,10 +2130,18 @@
                 }
                 
                 data.forEach(item => {
-                    const subject = this.allSubjects.find(s => s.id === item.subject) || { name: item.subject };
+                    const subjectInfo = this.allSubjects.find(s => s.id === item.subject) || { 
+                        name: item.subject,
+                        category: 'elective',
+                        icon: 'fas fa-book'
+                    };
                     
                     const card = document.createElement('div');
                     card.className = 'knowledge-card';
+                    
+                    const categoryBadge = subjectInfo.category === 'core' ? 
+                        '<span style="background: #ff6b6b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-right: 8px; font-weight: 600;">核心</span>' :
+                        '<span style="background: #4ecdc4; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-right: 8px; font-weight: 600;">选科</span>';
                     
                     const tagsHTML = item.tags ? `
                         <div class="knowledge-tags">
@@ -2106,8 +2150,11 @@
                     ` : '';
                     
                     card.innerHTML = `
-                        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: var(--spacing-xs); font-weight: 600;">
-                            <i class="${this.allSubjects.find(s => s.id === item.subject)?.icon || 'fas fa-book'}"></i> ${subject.name}
+                        <div style="display: flex; align-items: center; margin-bottom: var(--spacing-xs);">
+                            ${categoryBadge}
+                            <span style="font-size: 13px; color: var(--text-secondary); font-weight: 600;">
+                                <i class="${subjectInfo.icon}"></i> ${subjectInfo.name}
+                            </span>
                         </div>
                         <div style="font-weight: 800; font-size: 18px; margin-bottom: var(--spacing-sm); line-height: 1.3; color: var(--text-color);">${item.title}</div>
                         ${tagsHTML}
@@ -2190,23 +2237,19 @@
 
             // ==================== 面板管理 ====================
             showPanel: function(panelId) {
-                // 隐藏所有面板
                 document.querySelectorAll('.main-panel > div').forEach(panel => {
                     panel.classList.add('hidden');
                 });
                 
-                // 显示目标面板
                 const targetPanel = document.getElementById(panelId + 'Panel');
                 if (targetPanel) {
                     targetPanel.classList.remove('hidden');
                 }
                 
-                // 更新导航按钮状态
                 document.querySelectorAll('.side-nav .btn, nav .btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 
-                // 特殊处理
                 if (panelId === 'knowledge') {
                     const targetNavBtn = document.querySelector(`nav .btn[onclick*="${panelId}"]`);
                     if (targetNavBtn) targetNavBtn.classList.add('active');
@@ -2235,7 +2278,6 @@
                 this.currentTheme = themeId;
                 document.body.classList.add(themeId);
                 
-                // 更新主题选项状态
                 document.querySelectorAll('.theme-option').forEach(option => {
                     option.classList.remove('active');
                 });
@@ -2244,7 +2286,6 @@
                 if (clickedOption) {
                     clickedOption.classList.add('active');
                 } else {
-                    // 如果是程序设置的，找到对应的选项
                     const themeOptions = document.querySelectorAll('.theme-option');
                     themeOptions.forEach(option => {
                         if (option.onclick && option.onclick.toString().includes(themeId)) {
@@ -2253,7 +2294,6 @@
                     });
                 }
                 
-                // 保存到数据库
                 this.saveUserTheme(themeId);
                 
                 if (showNotification) {
@@ -2306,7 +2346,4 @@
     </script>
 </body>
 </html>
-
-
-
 
