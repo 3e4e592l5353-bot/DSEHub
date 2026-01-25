@@ -41,11 +41,20 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            /* 极光背景效果 */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             color: var(--text-color);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
@@ -404,46 +413,18 @@
             line-height: 1.5;
         }
 
-        /* 知识点选择器 */
-        .knowledge-selector {
-            position: relative;
-        }
-
-        .knowledge-search {
-            width: 100%;
-            padding: 12px 16px;
-            padding-right: 40px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 1rem;
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .knowledge-list {
-            max-height: 200px;
+        /* 知识点列表样式 */
+        .knowledge-list-container {
+            max-height: 300px;
             overflow-y: auto;
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            margin-top: 5px;
+            margin-top: 10px;
             background: white;
-            display: none;
-            position: absolute;
-            width: 100%;
-            z-index: 1000;
+            padding: 10px;
         }
 
-        .knowledge-list.active {
-            display: block;
-        }
-
-        .knowledge-item {
+        .knowledge-list-item {
             padding: 10px 15px;
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
@@ -451,12 +432,27 @@
             line-height: 1.4;
         }
 
-        .knowledge-item:hover {
+        .knowledge-list-item:hover {
             background: var(--accent-light);
         }
 
-        .knowledge-item:last-child {
+        .knowledge-list-item:last-child {
             border-bottom: none;
+        }
+
+        .knowledge-list-item.selected {
+            background: var(--accent-light);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .knowledge-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .knowledge-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
         }
 
         /* 响应式设计 */
@@ -544,6 +540,48 @@
             background-color: rgba(237, 137, 54, 0.1);
             border-left: 4px solid var(--warning-color);
             color: #c05621;
+        }
+
+        /* 游戏投稿表单优化 */
+        .game-question-field {
+            margin-bottom: 20px;
+        }
+
+        .game-question-field label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .question-title-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            padding-right: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -665,24 +703,32 @@
                 <div class="form-section">
                     <h3><i class="fas fa-gamepad"></i> 游戏基本信息</h3>
                     
-                    <div class="form-group">
-                        <label class="form-label">游戏标题 *</label>
-                        <input type="text" class="form-control" id="gameTitle" placeholder="请输入游戏标题" required>
+                    <div class="form-group game-question-field">
+                        <label class="form-label">游戏题目 *</label>
+                        <input type="text" class="form-control" id="gameQuestion" placeholder="请输入游戏题目内容" required>
+                        <div class="question-title-note">
+                            例如：匹配以下数学公式（连连看）<br>
+                            或：判断以下陈述是否正确（对错判断）<br>
+                            或：根据描述猜出知识点名称（猜知识点）
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">关联知识点</label>
-                        <div class="knowledge-selector">
-                            <input type="text" class="form-control knowledge-search" id="knowledgeSearch" 
-                                   placeholder="搜索或输入知识点标题...">
+                        <label class="form-label">选择关联知识点（可选）</label>
+                        <div class="search-box">
+                            <input type="text" class="search-input" id="knowledgeSearch" 
+                                   placeholder="搜索知识点...">
                             <i class="fas fa-search search-icon"></i>
-                            <div class="knowledge-list" id="knowledgeList">
-                                <!-- 知识点列表将通过JavaScript动态加载 -->
+                        </div>
+                        <div class="knowledge-list-container" id="knowledgeList">
+                            <!-- 知识点列表将通过JavaScript动态加载 -->
+                            <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                                <i class="fas fa-search"></i><br>
+                                输入关键词搜索知识点
                             </div>
                         </div>
-                        <div class="example-hint">
-                            提示：可以选择现有知识点或输入新的知识点标题
-                        </div>
+                        <input type="hidden" id="selectedKnowledgeId">
+                        <input type="hidden" id="selectedKnowledgeTitle">
                     </div>
 
                     <div class="form-group">
@@ -696,11 +742,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">所属科目</label>
+                        <label class="form-label">所属科目 *</label>
                         <div class="tag-options" id="gameSubjectTags">
                             <!-- 游戏科目标签将通过JS生成 -->
                         </div>
-                        <input type="hidden" id="gameSubject">
+                        <input type="hidden" id="gameSubject" required>
                     </div>
                 </div>
 
@@ -715,11 +761,6 @@
                 <div id="matchGameContent" class="form-section" style="display: none;">
                     <h3><i class="fas fa-link"></i> 连连看游戏设置</h3>
                     
-                    <div class="form-group">
-                        <label class="form-label">主题/话题 *</label>
-                        <input type="text" class="form-control" id="matchTopic" placeholder="例如：数学公式配对" required>
-                    </div>
-
                     <div class="form-group">
                         <label class="form-label">配对项目 *</label>
                         <textarea class="form-control textarea" id="matchExamples" 
@@ -774,12 +815,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">正确答案 *</label>
-                        <input type="text" class="form-control" id="guessAnswer" 
-                               placeholder="请输入要猜的知识点名称" required>
-                    </div>
-
-                    <div class="form-group">
                         <label class="form-label">额外提示 (可选)</label>
                         <textarea class="form-control textarea" id="guessHints" 
                                   placeholder="可以提供多个提示，每行一个..."></textarea>
@@ -787,7 +822,7 @@
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> 提交小游戏投稿
+                    <i class="fas fa-paper-plane"></i> 提交游戏题目投稿
                 </button>
             </form>
         </div>
@@ -798,23 +833,26 @@
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
 
-        // 完整的DSE科目列表
+        // 知识点标签储存位置：
+        // 根据您的数据库架构，知识点标签应该储存在：
+        // 1. submissions表的tags字段（用于投稿时的临时标签）
+        // 2. knowledge_points表的category_group字段（用于已审核通过的知识点分类）
+        // 3. 独立的tags表可用于存储所有标签，但需要关联其他表使用
+
+        // 精简的DSE科目列表（只保留您指定的）
         const dseSubjects = [
             // 核心科目
             { id: 'chinese', name: '中国语文', type: 'core' },
             { id: 'english', name: '英国语文', type: 'core' },
             { id: 'math', name: '数学', type: 'core' },
+            { id: 'math_extended1', name: '数学延伸单元一', type: 'elective' },
+            { id: 'math_extended2', name: '数学延伸单元二', type: 'elective' },
             { id: 'ls', name: '公民与社会发展', type: 'core' },
-            
-            // 数学延伸
-            { id: 'm1', name: '数学延伸单元一', type: 'elective' },
-            { id: 'm2', name: '数学延伸单元二', type: 'elective' },
             
             // 理科
             { id: 'biology', name: '生物', type: 'elective' },
             { id: 'chemistry', name: '化学', type: 'elective' },
             { id: 'physics', name: '物理', type: 'elective' },
-            { id: 'combined_science', name: '综合科学', type: 'elective' },
             
             // 文科
             { id: 'chinese_history', name: '中国历史', type: 'elective' },
@@ -830,7 +868,7 @@
             { id: 'bafs', name: '企业、会计与财务概论', type: 'elective' },
             { id: 'ict', name: '资讯及通讯技术', type: 'elective' },
             
-            // 其他选修
+            // 其他选修（您指定的）
             { id: 'ers', name: '伦理与宗教', type: 'elective' },
             { id: 'th', name: '旅游与款待', type: 'elective' },
             { id: 'da', name: '设计与应用', type: 'elective' },
@@ -839,25 +877,18 @@
             { id: 'technology_life', name: '科技与生活', type: 'elective' },
             { id: 'music', name: '音乐', type: 'elective' },
             { id: 'visual_arts', name: '视觉艺术', type: 'elective' },
-            { id: 'pe', name: '体育', type: 'elective' },
-            
-            // 新增科目
-            { id: 'applied_learning', name: '应用学习', type: 'elective' },
-            { id: 'other_languages', name: '其他语言', type: 'elective' }
+            { id: 'pe', name: '体育', type: 'elective' }
         ];
 
-        // 知识点标签
+        // 知识点标签（按照您的要求）
         const categoryTags = [
             { id: 'formula', name: '公式' },
             { id: 'grammar', name: '语法' },
             { id: 'quote', name: '名言金句' },
-            { id: 'idiom', name: '成语术语' },
-            { id: 'concept', name: '概念' },
-            { id: 'theorem', name: '定理' },
-            { id: 'law', name: '定律' },
-            { id: 'method', name: '方法' },
-            { id: 'skill', name: '技巧' },
-            { id: 'case_study', name: '个案研究' }
+            { id: 'idiom', name: '成语' },
+            { id: 'term', name: '术语' },
+            { id: 'basic', name: '基础' },
+            { id: 'advanced', name: '进阶' }
         ];
 
         // 游戏类型
@@ -891,7 +922,7 @@
             initializePage();
             loadUserData();
             setupEventListeners();
-            loadKnowledgeCategories();
+            loadKnowledgePoints();
         });
 
         function initializePage() {
@@ -909,11 +940,7 @@
 
             // 初始化科目选择 - 游戏投稿
             const gameSubjectTags = document.getElementById('gameSubjectTags');
-            // 只显示部分常用科目供游戏投稿选择
-            const gameSubjects = dseSubjects.filter(subject => 
-                ['chinese', 'english', 'math', 'biology', 'chemistry', 'physics', 'history', 'geography', 'economics'].includes(subject.id)
-            );
-            gameSubjects.forEach(subject => {
+            dseSubjects.forEach(subject => {
                 const tagBtn = document.createElement('button');
                 tagBtn.type = 'button';
                 tagBtn.className = 'tag-btn';
@@ -941,7 +968,7 @@
 
             // 初始化难度标签 - 知识点投稿
             const difficultyTagsEl = document.getElementById('difficultyTags');
-            ['基础', '进阶', '专家'].forEach(diff => {
+            ['基础', '进阶'].forEach(diff => {
                 const tagBtn = document.createElement('button');
                 tagBtn.type = 'button';
                 tagBtn.className = 'tag-btn';
@@ -971,124 +998,207 @@
             });
         }
 
-        async function loadKnowledgeCategories() {
+        async function loadKnowledgePoints() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/knowledge_categories?select=*&order=subject.asc`, {
+                console.log('正在加载知识点...');
+                
+                // 尝试从submissions表加载已审核通过的知识点
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions?select=id,title,category,difficulty,subject&status=eq.approved&category=eq.knowledge&order=created_at.desc&limit=100`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 
                 if (response.ok) {
-                    const categories = await response.json();
-                    availableKnowledge = categories;
-                    console.log('加载知识点分类成功:', categories);
+                    const submissions = await response.json();
+                    availableKnowledge = submissions.map(item => ({
+                        id: item.id,
+                        title: item.title,
+                        subject: item.subject,
+                        category: item.category,
+                        difficulty: item.difficulty,
+                        source: 'submission'
+                    }));
+                    console.log('从submissions表加载知识点成功:', availableKnowledge.length, '条记录');
                 } else {
-                    console.warn('无法从Supabase加载知识点分类，使用默认数据');
-                    // 使用模拟数据
-                    availableKnowledge = [
-                        { subject: '数学', title: '勾股定理' },
-                        { subject: '数学', title: '二次公式' },
-                        { subject: '物理', title: '牛顿第二定律' },
-                        { subject: '化学', title: '元素周期表' },
-                        { subject: '中国语文', title: '成语典故' },
-                        { subject: '英国语文', title: '基础语法' }
-                    ];
+                    console.warn('无法从submissions表加载知识点，尝试从knowledge_points表加载');
+                    
+                    // 尝试从knowledge_points表加载
+                    const kpResponse = await fetch(`${SUPABASE_URL}/rest/v1/knowledge_points?select=id,title,subject,category_group,difficulty&order=created_at.desc&limit=100`, {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (kpResponse.ok) {
+                        const knowledgePoints = await kpResponse.json();
+                        availableKnowledge = knowledgePoints.map(item => ({
+                            id: item.id,
+                            title: item.title,
+                            subject: item.subject,
+                            category: item.category_group,
+                            difficulty: item.difficulty,
+                            source: 'knowledge_point'
+                        }));
+                        console.log('从knowledge_points表加载知识点成功:', availableKnowledge.length, '条记录');
+                    } else {
+                        throw new Error('无法加载知识点数据');
+                    }
                 }
+                
+                // 初始显示所有知识点
+                displayKnowledgeList(availableKnowledge);
+                
             } catch (error) {
-                console.error('加载知识点分类失败:', error);
+                console.error('加载知识点失败:', error);
                 // 使用模拟数据
                 availableKnowledge = [
-                    { subject: '数学', title: '勾股定理' },
-                    { subject: '数学', title: '二次公式' },
-                    { subject: '物理', title: '牛顿第二定律' },
-                    { subject: '化学', title: '元素周期表' },
-                    { subject: '中国语文', title: '成语典故' },
-                    { subject: '英国语文', title: '基础语法' }
+                    { id: 1, title: '勾股定理', subject: '数学', difficulty: '基础', category: '公式', source: 'mock' },
+                    { id: 2, title: '二次公式', subject: '数学', difficulty: '进阶', category: '公式', source: 'mock' },
+                    { id: 3, title: '牛顿第二定律', subject: '物理', difficulty: '基础', category: '公式', source: 'mock' },
+                    { id: 4, title: '元素周期表', subject: '化学', difficulty: '基础', category: '术语', source: 'mock' },
+                    { id: 5, title: '成语典故', subject: '中国语文', difficulty: '基础', category: '成语', source: 'mock' },
+                    { id: 6, title: '基础语法', subject: '英国语文', difficulty: '基础', category: '语法', source: 'mock' }
                 ];
+                displayKnowledgeList(availableKnowledge);
             }
         }
 
-        function loadUserData() {
-            // 尝试从多个地方获取用户信息
-            let userData = null;
+        function displayKnowledgeList(knowledgeArray) {
+            const knowledgeList = document.getElementById('knowledgeList');
             
-            // 1. 从localStorage获取
+            if (knowledgeArray.length === 0) {
+                knowledgeList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i><br>
+                        未找到相关知识点
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            knowledgeArray.forEach(item => {
+                html += `
+                    <div class="knowledge-list-item" data-id="${item.id}" data-title="${item.title}" data-subject="${item.subject || ''}">
+                        <div class="knowledge-title">${item.title}</div>
+                        <div class="knowledge-meta">
+                            <span>${item.subject || '未分类'}</span>
+                            ${item.difficulty ? ` • ${item.difficulty}` : ''}
+                            ${item.category ? ` • ${item.category}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            knowledgeList.innerHTML = html;
+            
+            // 添加点击事件
+            knowledgeList.querySelectorAll('.knowledge-list-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除其他选中状态
+                    knowledgeList.querySelectorAll('.knowledge-list-item').forEach(i => {
+                        i.classList.remove('selected');
+                    });
+                    
+                    // 添加当前选中状态
+                    this.classList.add('selected');
+                    
+                    // 设置选中的知识点
+                    const knowledgeId = this.dataset.id;
+                    const knowledgeTitle = this.dataset.title;
+                    const knowledgeSubject = this.dataset.subject;
+                    
+                    document.getElementById('selectedKnowledgeId').value = knowledgeId;
+                    document.getElementById('selectedKnowledgeTitle').value = knowledgeTitle;
+                    
+                    // 自动选择对应的科目
+                    if (knowledgeSubject) {
+                        const subjectBtn = document.querySelector(`#gameSubjectTags .tag-btn[data-id="${knowledgeSubject}"]`);
+                        if (subjectBtn) {
+                            subjectBtn.click();
+                        }
+                    }
+                    
+                    console.log('选中知识点:', knowledgeTitle, 'ID:', knowledgeId);
+                });
+            });
+        }
+
+        function loadUserData() {
+            // 从主站传递的用户信息
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            if (userParam) {
+                try {
+                    const userData = JSON.parse(decodeURIComponent(userParam));
+                    if (userData && userData.id) {
+                        currentUser = userData;
+                        updateUserDisplay(userData);
+                        fetchUserStats(userData.id);
+                        return;
+                    }
+                } catch (e) {
+                    console.log('URL参数中的用户数据格式错误:', e);
+                }
+            }
+            
+            // 尝试从localStorage获取
             try {
                 const storedUser = localStorage.getItem('dsehub_user');
                 if (storedUser) {
-                    userData = JSON.parse(storedUser);
+                    const userData = JSON.parse(storedUser);
+                    if (userData && userData.id) {
+                        currentUser = userData;
+                        updateUserDisplay(userData);
+                        fetchUserStats(userData.id);
+                        return;
+                    }
                 }
             } catch (e) {
                 console.log('无法从localStorage读取用户数据');
             }
             
-            // 2. 从URL参数获取（如果从主站跳转过来）
-            if (!userData) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const userParam = urlParams.get('user');
-                if (userParam) {
-                    try {
-                        userData = JSON.parse(decodeURIComponent(userParam));
-                    } catch (e) {
-                        console.log('URL参数中的用户数据格式错误');
-                    }
-                }
-            }
+            // 未登录状态
+            document.getElementById('username').textContent = '未登录';
+            document.getElementById('userEmail').textContent = '请先登录主站';
             
-            // 3. 从sessionStorage获取
-            if (!userData) {
-                try {
-                    const sessionUser = sessionStorage.getItem('dsehub_user');
-                    if (sessionUser) {
-                        userData = JSON.parse(sessionUser);
-                    }
-                } catch (e) {
-                    console.log('无法从sessionStorage读取用户数据');
-                }
-            }
+            // 创建登录提示
+            const loginMessage = document.createElement('div');
+            loginMessage.className = 'message warning';
+            loginMessage.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>需要登录</strong>
+                    <p>请先登录主站才能使用投稿功能。</p>
+                    <a href="https://3e4e592l5353-bot.github.io/DSEHub/" class="nav-btn" style="padding: 5px 15px; font-size: 0.9rem; margin-top: 5px;">
+                        <i class="fas fa-sign-in-alt"></i> 前往登录
+                    </a>
+                </div>
+            `;
+            document.querySelector('.user-card').appendChild(loginMessage);
             
-            if (userData && userData.id) {
-                currentUser = userData;
-                updateUserDisplay(userData);
-                fetchUserStats(userData.id);
-            } else {
-                // 显示登录提示
-                document.getElementById('username').textContent = '未登录';
-                document.getElementById('userEmail').textContent = '请先登录主站';
-                
-                // 创建登录提示
-                const loginMessage = document.createElement('div');
-                loginMessage.className = 'message warning';
-                loginMessage.innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>需要登录</strong>
-                        <p>请先登录主站才能使用投稿功能。</p>
-                        <a href="https://3e4e592l5353-bot.github.io/DSEHub/" class="nav-btn" style="padding: 5px 15px; font-size: 0.9rem; margin-top: 5px;">
-                            <i class="fas fa-sign-in-alt"></i> 前往登录
-                        </a>
-                    </div>
-                `;
-                document.querySelector('.user-card').appendChild(loginMessage);
-                
-                // 禁用表单
-                document.querySelectorAll('form').forEach(form => {
-                    form.querySelectorAll('input, textarea, button, select').forEach(element => {
-                        element.disabled = true;
-                    });
+            // 禁用表单
+            document.querySelectorAll('form').forEach(form => {
+                form.querySelectorAll('input, textarea, button, select').forEach(element => {
+                    element.disabled = true;
                 });
-            }
+            });
         }
 
         async function fetchUserStats(userId) {
             try {
-                // 尝试从Supabase获取用户数据
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*&id=eq.${userId}`, {
+                // 从profiles表获取用户统计信息
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=score,games_played,high_score,duel_wins&id=eq.${userId}`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 
@@ -1109,7 +1219,7 @@
                 console.log('无法从Supabase获取用户数据:', error);
             }
             
-            // 如果无法从Supabase获取，使用模拟数据
+            // 使用模拟数据
             updateStatsDisplay({
                 score: Math.floor(Math.random() * 1000),
                 games_played: Math.floor(Math.random() * 50),
@@ -1138,7 +1248,18 @@
             document.getElementById('gameSubmissionForm').addEventListener('submit', submitGame);
             
             // 知识点搜索
-            document.getElementById('knowledgeSearch').addEventListener('input', searchKnowledge);
+            document.getElementById('knowledgeSearch').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                if (searchTerm.length === 0) {
+                    displayKnowledgeList(availableKnowledge);
+                } else {
+                    const filtered = availableKnowledge.filter(item => 
+                        item.title && item.title.toLowerCase().includes(searchTerm) ||
+                        item.subject && item.subject.toLowerCase().includes(searchTerm)
+                    );
+                    displayKnowledgeList(filtered);
+                }
+            });
             
             // 对错判断答案选择
             document.querySelectorAll('.tf-answer').forEach(btn => {
@@ -1156,13 +1277,6 @@
                     this.classList.add('selected');
                     document.getElementById('gameDifficulty').value = this.dataset.value;
                 });
-            });
-            
-            // 点击外部关闭知识点列表
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.knowledge-selector')) {
-                    document.getElementById('knowledgeList').classList.remove('active');
-                }
             });
         }
 
@@ -1219,41 +1333,6 @@
             }
         }
 
-        function searchKnowledge() {
-            const searchTerm = document.getElementById('knowledgeSearch').value.toLowerCase();
-            const knowledgeList = document.getElementById('knowledgeList');
-            
-            if (searchTerm.length > 0) {
-                // 从可用知识点中搜索
-                const results = availableKnowledge.filter(item => 
-                    item.title && item.title.toLowerCase().includes(searchTerm)
-                ).slice(0, 10); // 限制显示10个结果
-                
-                knowledgeList.innerHTML = '';
-                results.forEach(result => {
-                    const item = document.createElement('div');
-                    item.className = 'knowledge-item';
-                    item.innerHTML = `
-                        <div><strong>${result.title}</strong></div>
-                        <small style="color: var(--text-secondary);">${result.subject || '未分类'}</small>
-                    `;
-                    item.onclick = () => {
-                        document.getElementById('knowledgeSearch').value = result.title;
-                        knowledgeList.classList.remove('active');
-                    };
-                    knowledgeList.appendChild(item);
-                });
-                
-                if (results.length > 0) {
-                    knowledgeList.classList.add('active');
-                } else {
-                    knowledgeList.classList.remove('active');
-                }
-            } else {
-                knowledgeList.classList.remove('active');
-            }
-        }
-
         function showMessage(type, message, formId) {
             const messageDiv = document.getElementById(formId + 'Message');
             messageDiv.className = `message ${type}`;
@@ -1301,18 +1380,29 @@
                 content: document.getElementById('knowledgeContent').value.trim(),
                 example: document.getElementById('knowledgeExample').value.trim(),
                 user_id: currentUser.id,
-                author_name: currentUser.username,
-                status: 'pending',
+                author_name: currentUser.username || currentUser.email?.split('@')[0] || '匿名用户',
+                status: 'pending_review', // 直接进入审核状态
                 category: 'knowledge',
                 difficulty: selectedDifficulty,
                 tags: selectedTags,
                 subject: selectedSubjects,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             };
             
             // 验证必填项
             if (!formData.title || !formData.content) {
                 showMessage('error', '请填写标题和内容', 'knowledge');
+                return;
+            }
+            
+            if (formData.title.length < 3) {
+                showMessage('error', '标题至少需要3个字符', 'knowledge');
+                return;
+            }
+            
+            if (formData.content.length < 10) {
+                showMessage('error', '内容描述至少需要10个字符', 'knowledge');
                 return;
             }
             
@@ -1323,7 +1413,9 @@
             submitBtn.disabled = true;
             
             try {
-                // 尝试提交到Supabase
+                console.log('提交知识点数据:', formData);
+                
+                // 提交到submissions表，状态为pending_review（等待审核）
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
                     method: 'POST',
                     headers: {
@@ -1337,9 +1429,9 @@
                 
                 if (response.ok) {
                     const result = await response.json();
-                    console.log('投稿成功:', result);
+                    console.log('知识点投稿成功:', result);
                     
-                    showMessage('success', '知识点投稿提交成功！等待审核中...', 'knowledge');
+                    showMessage('success', '知识点投稿提交成功！已进入审核队列，管理员审核通过后将会发布。', 'knowledge');
                     
                     // 重置表单
                     e.target.reset();
@@ -1347,51 +1439,28 @@
                         el.classList.remove('selected');
                     });
                     
-                    // 同时将知识点保存到knowledge_points表（如果需要）
-                    const knowledgeData = {
-                        subject: formData.subject.split(',')[0], // 取第一个科目
-                        category_group: formData.tags || '',
-                        title: formData.title,
-                        content: formData.content,
-                        difficulty: formData.difficulty,
-                        created_at: formData.created_at
-                    };
-                    
-                    try {
-                        await fetch(`${SUPABASE_URL}/rest/v1/knowledge_points`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'apikey': SUPABASE_KEY,
-                                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                'Prefer': 'return=representation'
-                            },
-                            body: JSON.stringify(knowledgeData)
-                        });
-                    } catch (knowledgeError) {
-                        console.warn('无法保存到knowledge_points表:', knowledgeError);
-                    }
-                    
                 } else {
+                    const errorText = await response.text();
+                    console.error('投稿失败响应:', response.status, errorText);
                     throw new Error(`投稿失败: ${response.status}`);
                 }
                 
             } catch (error) {
                 console.error('提交失败:', error);
                 
-                // 如果Supabase提交失败，尝试保存到localStorage作为备份
+                // 如果Supabase提交失败，保存到localStorage
                 try {
-                    const submissions = JSON.parse(localStorage.getItem('pending_submissions') || '[]');
-                    submissions.push({
+                    const pendingSubmissions = JSON.parse(localStorage.getItem('pending_knowledge_submissions') || '[]');
+                    pendingSubmissions.push({
                         ...formData,
                         local_id: Date.now(),
                         timestamp: new Date().toISOString()
                     });
-                    localStorage.setItem('pending_submissions', JSON.stringify(submissions));
+                    localStorage.setItem('pending_knowledge_submissions', JSON.stringify(pendingSubmissions));
                     
-                    showMessage('warning', '投稿已本地保存，网络恢复后将自动同步', 'knowledge');
+                    showMessage('warning', '投稿已本地保存（网络连接问题），请稍后重新提交或等待自动同步', 'knowledge');
                 } catch (localError) {
-                    showMessage('error', '投稿提交失败，请稍后重试', 'knowledge');
+                    showMessage('error', '投稿提交失败，请检查网络连接后重试', 'knowledge');
                 }
             } finally {
                 // 恢复按钮状态
@@ -1422,15 +1491,28 @@
             switch(gameType) {
                 case 'matching':
                     const examples = document.getElementById('matchExamples').value.trim();
-                    const topic = document.getElementById('matchTopic').value.trim();
-                    if (!topic || !examples) {
-                        showMessage('error', '请填写主题和配对项目', 'game');
+                    if (!examples) {
+                        showMessage('error', '请填写配对项目', 'game');
                         isValid = false;
                     } else {
-                        gameData = {
-                            topic: topic,
-                            examples: examples
-                        };
+                        // 验证配对格式
+                        const pairs = examples.split('\n').filter(line => line.trim() !== '');
+                        let hasValidPair = false;
+                        for (const pair of pairs) {
+                            if (pair.includes('//')) {
+                                hasValidPair = true;
+                                break;
+                            }
+                        }
+                        if (!hasValidPair) {
+                            showMessage('error', '请使用正确的格式：项目A // 项目B', 'game');
+                            isValid = false;
+                        } else {
+                            gameData = {
+                                examples: examples,
+                                pair_count: pairs.length
+                            };
+                        }
                     }
                     break;
                     
@@ -1451,14 +1533,12 @@
                     
                 case 'guess':
                     const description = document.getElementById('guessDescription').value.trim();
-                    const guessAnswer = document.getElementById('guessAnswer').value.trim();
-                    if (!description || !guessAnswer) {
-                        showMessage('error', '请填写描述和正确答案', 'game');
+                    if (!description) {
+                        showMessage('error', '请填写描述', 'game');
                         isValid = false;
                     } else {
                         gameData = {
                             description: description,
-                            answer: guessAnswer,
                             hints: document.getElementById('guessHints').value.trim()
                         };
                     }
@@ -1469,31 +1549,42 @@
             
             const difficulty = document.getElementById('gameDifficulty').value;
             const subject = document.getElementById('gameSubject').value;
+            const gameQuestion = document.getElementById('gameQuestion').value.trim();
             
             if (!difficulty) {
                 showMessage('error', '请选择难度级别', 'game');
                 return;
             }
             
-            const formData = {
-                title: document.getElementById('gameTitle').value.trim(),
-                knowledge_title: document.getElementById('knowledgeSearch').value.trim(),
-                difficulty: difficulty,
-                game_type: gameType,
-                game_data: JSON.stringify(gameData),
-                user_id: currentUser.id,
-                author_name: currentUser.username,
-                status: 'pending',
-                category: 'game',
-                subject: subject,
-                created_at: new Date().toISOString()
-            };
-            
-            // 验证必填项
-            if (!formData.title) {
-                showMessage('error', '请填写游戏标题', 'game');
+            if (!subject) {
+                showMessage('error', '请选择所属科目', 'game');
                 return;
             }
+            
+            if (!gameQuestion) {
+                showMessage('error', '请填写游戏题目', 'game');
+                return;
+            }
+            
+            const knowledgeId = document.getElementById('selectedKnowledgeId').value;
+            const knowledgeTitle = document.getElementById('selectedKnowledgeTitle').value;
+            
+            const formData = {
+                title: gameQuestion, // 使用游戏题目作为标题
+                content: JSON.stringify(gameData), // 游戏数据存储为JSON
+                example: knowledgeTitle || '', // 关联的知识点标题
+                user_id: currentUser.id,
+                author_name: currentUser.username || currentUser.email?.split('@')[0] || '匿名用户',
+                status: 'pending_review', // 直接进入审核状态
+                category: 'game',
+                game_type: gameType,
+                difficulty: difficulty,
+                subject: subject,
+                knowledge_id: knowledgeId || null,
+                question_data: JSON.stringify(gameData), // 游戏数据也存储在question_data字段
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
             
             // 显示加载状态
             const submitBtn = e.target.querySelector('.submit-btn');
@@ -1502,7 +1593,9 @@
             submitBtn.disabled = true;
             
             try {
-                // 尝试提交到Supabase
+                console.log('提交游戏数据:', formData);
+                
+                // 提交到submissions表，状态为pending_review（等待审核）
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
                     method: 'POST',
                     headers: {
@@ -1518,11 +1611,11 @@
                     const result = await response.json();
                     console.log('游戏投稿成功:', result);
                     
-                    showMessage('success', '小游戏投稿提交成功！等待审核中...', 'game');
+                    showMessage('success', '游戏题目投稿提交成功！已进入审核队列，管理员审核通过后将会发布。', 'game');
                     
                     // 重置表单
                     e.target.reset();
-                    document.querySelectorAll('.game-type-card.selected, .tf-answer.selected, .difficulty-btn.selected, #gameSubjectTags .tag-btn.selected').forEach(el => {
+                    document.querySelectorAll('.game-type-card.selected, .tf-answer.selected, .difficulty-btn.selected, #gameSubjectTags .tag-btn.selected, .knowledge-list-item.selected').forEach(el => {
                         el.classList.remove('selected');
                     });
                     
@@ -1530,32 +1623,39 @@
                     document.getElementById('gameDifficulty').value = '';
                     document.getElementById('gameSubject').value = '';
                     document.getElementById('tfAnswer').value = '';
+                    document.getElementById('selectedKnowledgeId').value = '';
+                    document.getElementById('selectedKnowledgeTitle').value = '';
                     
                     // 隐藏游戏内容区域
                     document.querySelectorAll('[id$="Content"]').forEach(el => {
                         el.style.display = 'none';
                     });
                     
+                    // 重新显示知识点列表
+                    displayKnowledgeList(availableKnowledge);
+                    
                 } else {
+                    const errorText = await response.text();
+                    console.error('投稿失败响应:', response.status, errorText);
                     throw new Error(`投稿失败: ${response.status}`);
                 }
                 
             } catch (error) {
                 console.error('提交失败:', error);
                 
-                // 如果Supabase提交失败，尝试保存到localStorage作为备份
+                // 如果Supabase提交失败，保存到localStorage
                 try {
-                    const submissions = JSON.parse(localStorage.getItem('pending_submissions') || '[]');
-                    submissions.push({
+                    const pendingSubmissions = JSON.parse(localStorage.getItem('pending_game_submissions') || '[]');
+                    pendingSubmissions.push({
                         ...formData,
                         local_id: Date.now(),
                         timestamp: new Date().toISOString()
                     });
-                    localStorage.setItem('pending_submissions', JSON.stringify(submissions));
+                    localStorage.setItem('pending_game_submissions', JSON.stringify(pendingSubmissions));
                     
-                    showMessage('warning', '投稿已本地保存，网络恢复后将自动同步', 'game');
+                    showMessage('warning', '投稿已本地保存（网络连接问题），请稍后重新提交或等待自动同步', 'game');
                 } catch (localError) {
-                    showMessage('error', '投稿提交失败，请稍后重试', 'game');
+                    showMessage('error', '投稿提交失败，请检查网络连接后重试', 'game');
                 }
             } finally {
                 // 恢复按钮状态
@@ -1565,26 +1665,28 @@
         }
 
         function openGames() {
-            // 这里可以链接到您的小游戏网站
             window.open('https://3e4e592l5353-bot.github.io/DSEHub/games', '_blank');
         }
 
         function openNotes() {
-            // 这里可以链接到您的笔记专区
             window.open('https://3e4e592l5353-bot.github.io/DSEHub/notes', '_blank');
         }
 
         // 自动同步本地保存的投稿
         async function syncPendingSubmissions() {
             try {
-                const pendingSubmissions = JSON.parse(localStorage.getItem('pending_submissions') || '[]');
-                if (pendingSubmissions.length === 0) return;
+                // 同步知识点投稿
+                const pendingKnowledge = JSON.parse(localStorage.getItem('pending_knowledge_submissions') || '[]');
+                const pendingGames = JSON.parse(localStorage.getItem('pending_game_submissions') || '[]');
                 
-                console.log(`发现 ${pendingSubmissions.length} 个待同步投稿`);
+                if (pendingKnowledge.length === 0 && pendingGames.length === 0) return;
+                
+                console.log(`发现 ${pendingKnowledge.length} 个待同步知识点投稿和 ${pendingGames.length} 个游戏投稿`);
                 
                 const successfulSyncs = [];
                 
-                for (const submission of pendingSubmissions) {
+                // 同步知识点投稿
+                for (const submission of pendingKnowledge) {
                     try {
                         const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
                             method: 'POST',
@@ -1599,21 +1701,49 @@
                         
                         if (response.ok) {
                             successfulSyncs.push(submission.local_id);
-                            console.log(`已同步投稿: ${submission.title}`);
+                            console.log(`已同步知识点投稿: ${submission.title}`);
                         }
                     } catch (error) {
-                        console.warn(`同步投稿失败: ${submission.title}`, error);
+                        console.warn(`同步知识点投稿失败: ${submission.title}`, error);
+                    }
+                }
+                
+                // 同步游戏投稿
+                for (const submission of pendingGames) {
+                    try {
+                        const response = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                                'Prefer': 'return=representation'
+                            },
+                            body: JSON.stringify(submission)
+                        });
+                        
+                        if (response.ok) {
+                            successfulSyncs.push(submission.local_id);
+                            console.log(`已同步游戏投稿: ${submission.title}`);
+                        }
+                    } catch (error) {
+                        console.warn(`同步游戏投稿失败: ${submission.title}`, error);
                     }
                 }
                 
                 // 移除已成功同步的投稿
                 if (successfulSyncs.length > 0) {
-                    const remainingSubmissions = pendingSubmissions.filter(
+                    const remainingKnowledge = pendingKnowledge.filter(
                         sub => !successfulSyncs.includes(sub.local_id)
                     );
-                    localStorage.setItem('pending_submissions', JSON.stringify(remainingSubmissions));
+                    const remainingGames = pendingGames.filter(
+                        sub => !successfulSyncs.includes(sub.local_id)
+                    );
                     
-                    if (remainingSubmissions.length === 0) {
+                    localStorage.setItem('pending_knowledge_submissions', JSON.stringify(remainingKnowledge));
+                    localStorage.setItem('pending_game_submissions', JSON.stringify(remainingGames));
+                    
+                    if (remainingKnowledge.length === 0 && remainingGames.length === 0) {
                         console.log('所有待同步投稿已成功上传');
                     }
                 }
@@ -1625,8 +1755,8 @@
         // 页面加载时尝试同步
         window.addEventListener('load', syncPendingSubmissions);
         
-        // 定期尝试同步（每5分钟）
-        setInterval(syncPendingSubmissions, 5 * 60 * 1000);
+        // 定期尝试同步（每2分钟）
+        setInterval(syncPendingSubmissions, 2 * 60 * 1000);
     </script>
 </body>
 </html>
