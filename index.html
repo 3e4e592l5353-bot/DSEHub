@@ -1709,6 +1709,7 @@
             },
 
             // 登录
+            // 登录
             login: async function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -1736,11 +1737,25 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
-                        await this.loadUserProfile();
-                        await this.loadUserTheme(); // 加载用户主题
+                        // 分别处理可能出错的后续操作
+                        try {
+                            await this.loadUserProfile();
+                        } catch (profileErr) {
+                            console.error('加载用户资料出错:', profileErr);
+                            // 不影响登录成功，继续执行
+                        }
+                        
+                        try {
+                            await this.loadUserTheme(); // 加载用户主题
+                        } catch (themeErr) {
+                            console.error('加载主题设置出错:', themeErr);
+                            // 不影响登录成功，继续执行
+                        }
+                        
                         this.loginSuccess();
                     }
                 } catch (err) {
+                    console.error('登录过程中发生错误:', err);
                     this.showNotification('登录时发生错误');
                 }
             },
@@ -2251,3 +2266,4 @@
     </script>
 </body>
 </html>
+
