@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSE Hub - 管理员审核系统</title>
+    <style>
+        :root {
+            /* 蓝紫主题 (管理员专用深色主题) */
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-color: #5a67d8;
+            --accent-light: rgba(90, 103, 216, 0.1);
+            --accent-dark: #4c51bf;
+            --danger-color: #e53e3e;
+            --danger-light: rgba(229, 62, 62, 0.1);
+            --warning-color: #d69e2e;
+            --warning-light: rgba(214, 158, 46, 0.1);
+            --success-color: #38a169;
+            --success-light: rgba(56, 161, 105, 0.1);
+            --info-color: #4299e1;
+            
+            /* 文本颜色 */
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --text-light: #f7fafc;
+            
+            /* 背景与边框 */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-dark: #2d3748;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --border-color: rgba(102, 126, 234, 0.15);
+            --hover-color: rgba(102, 126, 234, 0.06);
+            
+            /* 间距系统 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            
+            /* 圆角系统 */
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            
+            /* 阴影系统 */
+            --shadow-sm: 0 2px 8px rgba(102, 126, 234, 0.08);
+            --shadow-md: 0 4px 16px rgba(102, 126, 234, 0.12);
+            --shadow-lg: 0 8px 32px rgba(102, 126, 234, 0.16);
+            --shadow-xl: 0 12px 48px rgba(102, 126, 234, 0.2);
+            
+            /* 过渡时间 */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-color);
+            background: var(--bg-primary);
+            line-height: 1.6;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        /* 头部样式 */
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .admin-header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-card.pending {
+            border-top: 4px solid var(--warning-color);
+        }
+        
+        .stat-card.approved {
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .stat-card.rejected {
+            border-top: 4px solid var(--danger-color);
+        }
+        
+        .stat-card.users {
+            border-top: 4px solid var(--accent-color);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* 标签页样式 */
+        .admin-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+            gap: var(--spacing-sm);
+        }
+        
+        .tab-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            white-space: nowrap;
+        }
+        
+        .tab-btn:hover {
+            background: var(--hover-color);
+            color: var(--text-color);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* 内容区域 */
+        .tab-content {
+            display: none;
+            animation: fadeIn var(--transition-normal);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 审核卡片样式 */
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .review-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .review-card.pending {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .review-card.approved {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .review-card.rejected {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .review-type {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .review-type.submission {
+            background: var(--accent-light);
+            color: var(--accent-color);
+        }
+        
+        .review-type.question {
+            background: var(--info-light);
+            color: var(--info-color);
+        }
+        
+        .review-type.feedback {
+            background: var(--warning-light);
+            color: var(--warning-color);
+        }
+        
+        .review-status {
+            font-size: 12px;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: var(--warning-light);
+            color: var(--warning-color);
+        }
+        
+        .status-approved {
+            background: var(--success-light);
+            color: var(--success-color);
+        }
+        
+        .status-rejected {
+            background: var(--danger-light);
+            color: var(--danger-color);
+        }
+        
+        .review-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+        
+        .review-content {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: var(--spacing-lg);
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .review-content.expanded {
+            max-height: none;
+        }
+        
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 13px;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .approve-btn {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .approve-btn:hover {
+            background: #2f855a;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .reject-btn {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .reject-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .re-review-btn {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .re-review-btn:hover {
+            background: #b7791f;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* 用户管理表格 */
+        .users-table-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            overflow-x: auto;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .users-table th {
+            text-align: left;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--accent-light);
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .users-table td {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+        
+        .users-table tr:hover {
+            background: var(--hover-color);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-status {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-admin {
+            background: var(--accent-light);
+            color: var(--accent-color);
+        }
+        
+        .status-user {
+            background: var(--success-light);
+            color: var(--success-color);
+        }
+        
+        /* 审核历史 */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .history-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        /* 筛选器 */
+        .filters {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background: var(--bg-secondary);
+            color: var(--text-color);
+            font-size: 14px;
+            transition: all var(--transition-normal);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl) * 2;
+            color: var(--text-muted);
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .admin-container {
+                padding: var(--spacing-lg);
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-header h1 {
+                font-size: 24px;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                text-align: left;
+            }
+            
+            .review-actions {
+                flex-direction: column;
+            }
+            
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-container {
+                padding: var(--spacing-sm);
+            }
+            
+            .review-card {
+                padding: var(--spacing-lg);
+            }
+            
+            .review-header {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xl) * 2;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 确认对话框 */
+        .confirm-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+        }
+        
+        .confirm-dialog.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .confirm-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            transform: translateY(20px);
+            transition: transform var(--transition-normal);
+        }
+        
+        .confirm-dialog.active .confirm-content {
+            transform: translateY(0);
+        }
+        
+        .confirm-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-color);
+        }
+        
+        .confirm-message {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
+            line-height: 1.6;
+        }
+        
+        .confirm-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+        }
+        
+        .cancel-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+        }
+        
+        .cancel-btn:hover {
+            background: var(--hover-color);
+            color: var(--text-color);
+        }
+        
+        .confirm-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            border: none;
+            background: var(--danger-color);
+            color: white;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+        }
+        
+        .confirm-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* 通知 */
+        .notification {
+            position: fixed;
+            top: var(--spacing-xl);
+            right: var(--spacing-xl);
+            background: var(--success-color);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all var(--transition-normal);
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background: var(--danger-color);
+        }
+        
+        .notification.warning {
+            background: var(--warning-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 头部 -->
+        <div class="admin-header">
+            <h1>DSE Hub 管理员审核系统</h1>
+            <p>独断万古之权柄，审阅一切存在之内容</p>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="admin-stats">
+            <div class="stat-card pending">
+                <div class="stat-number" id="pending-count">0</div>
+                <div class="stat-label">待审核内容</div>
+            </div>
+            <div class="stat-card approved">
+                <div class="stat-number" id="approved-count">0</div>
+                <div class="stat-label">已通过内容</div>
+            </div>
+            <div class="stat-card rejected">
+                <div class="stat-number" id="rejected-count">0</div>
+                <div class="stat-label">已拒绝内容</div>
+            </div>
+            <div class="stat-card users">
+                <div class="stat-number" id="users-count">0</div>
+                <div class="stat-label">注册用户</div>
+            </div>
+        </div>
+        
+        <!-- 标签页 -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="pending">待审核</button>
+            <button class="tab-btn" data-tab="submissions">提交内容</button>
+            <button class="tab-btn" data-tab="questions">题目</button>
+            <button class="tab-btn" data-tab="feedback">留言反馈</button>
+            <button class="tab-btn" data-tab="users">用户管理</button>
+            <button class="tab-btn" data-tab="history">审核历史</button>
+        </div>
+        
+        <!-- 筛选器 -->
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">内容类型</label>
+                <select class="filter-select" id="filter-type">
+                    <option value="all">全部类型</option>
+                    <option value="submission">提交内容</option>
+                    <option value="question">题目</option>
+                    <option value="feedback">留言反馈</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">状态</label>
+                <select class="filter-select" id="filter-status">
+                    <option value="pending">待审核</option>
+                    <option value="all">全部状态</option>
+                    <option value="approved">已通过</option>
+                    <option value="rejected">已拒绝</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">排序方式</label>
+                <select class="filter-select" id="filter-sort">
+                    <option value="newest">最新优先</option>
+                    <option value="oldest">最早优先</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- 待审核内容 -->
+        <div class="tab-content active" id="pending-content">
+            <div class="review-grid" id="pending-grid">
+                <!-- 内容会通过JavaScript动态加载 -->
+            </div>
+        </div>
+        
+        <!-- 提交内容 -->
+        <div class="tab-content" id="submissions-content">
+            <div class="review-grid" id="submissions-grid"></div>
+        </div>
+        
+        <!-- 题目 -->
+        <div class="tab-content" id="questions-content">
+            <div class="review-grid" id="questions-grid"></div>
+        </div>
+        
+        <!-- 留言反馈 -->
+        <div class="tab-content" id="feedback-content">
+            <div class="review-grid" id="feedback-grid"></div>
+        </div>
+        
+        <!-- 用户管理 -->
+        <div class="tab-content" id="users-content">
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>用户</th>
+                            <th>身份</th>
+                            <th>邮箱</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <!-- 用户数据会通过JavaScript动态加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 审核历史 -->
+        <div class="tab-content" id="history-content">
+            <div class="history-list" id="history-list">
+                <!-- 审核历史会通过JavaScript动态加载 -->
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <div class="empty-state-icon">📄</div>
+            <h3>暂无内容</h3>
+            <p>没有找到符合条件的内容</p>
+        </div>
+        
+        <!-- 加载状态 -->
+        <div class="loading" id="loading-state">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+    <!-- 确认对话框 -->
+    <div class="confirm-dialog" id="confirm-dialog">
+        <div class="confirm-content">
+            <h3 class="confirm-title" id="confirm-title">确认操作</h3>
+            <p class="confirm-message" id="confirm-message"></p>
+            <div class="confirm-actions">
+                <button class="cancel-btn" id="cancel-btn">取消</button>
+                <button class="confirm-btn" id="confirm-btn">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 通知 -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // 全局状态管理
+        const state = {
+            currentUser: {
+                id: 'admin-001',
+                username: '独断万古的管理员',
+                email: 'admin@dsehub.com',
+                isAdmin: true
+            },
+            allItems: [],
+            filteredItems: [],
+            currentTab: 'pending',
+            currentFilter: {
+                type: 'all',
+                status: 'pending',
+                sort: 'newest'
+            }
+        };
+
+        // 模拟数据 - 基于您的数据库架构
+        const mockData = {
+            submissions: [
+                {
+                    id: 'sub-001',
+                    type: 'submission',
+                    category: '数学',
+                    title: '三角函数的高级应用',
+                    content: '探讨三角函数在物理学和工程学中的实际应用，包括波形分析和信号处理...',
+                    author: '张同学',
+                    authorId: 'user-001',
+                    status: 'pending',
+                    createdAt: '2024-01-15T10:30:00',
+                    likeCount: 12,
+                    viewCount: 45,
+                    gameType: '知识挑战',
+                    difficulty: '高级',
+                    tags: ['数学', '三角函数', '物理应用']
+                },
+                {
+                    id: 'sub-002',
+                    type: 'submission',
+                    category: '英语',
+                    title: '商务英语写作技巧',
+                    content: '详细讲解商务邮件、报告和演示文稿的写作技巧...',
+                    author: '李老师',
+                    authorId: 'user-002',
+                    status: 'approved',
+                    createdAt: '2024-01-14T14:20:00',
+                    likeCount: 28,
+                    viewCount: 89
+                }
+            ],
+            questions: [
+                {
+                    id: 'q-001',
+                    type: 'question',
+                    title: '微积分基础题',
+                    content: '计算函数f(x)=x²在区间[0,2]的定积分值',
+                    gameType: '数学挑战',
+                    subject: '数学',
+                    difficulty: '初级',
+                    status: 'pending',
+                    createdAt: '2024-01-16T09:15:00',
+                    playCount: 0,
+                    successRate: 0,
+                    author: '王同学'
+                }
+            ],
+            feedback: [
+                {
+                    id: 'fb-001',
+                    type: 'feedback',
+                    authorName: '匿名用户',
+                    content: '网站整体设计很棒，但希望增加更多互动功能',
+                    status: 'pending',
+                    createdAt: '2024-01-17T16:45:00',
+                    visibility: 'public',
+                    likeCount: 5
+                }
+            ],
+            users: [
+                {
+                    id: 'user-001',
+                    username: '张三',
+                    email: 'zhangsan@example.com',
+                    isAdmin: false,
+                    score: 2450,
+                    gamesPlayed: 42,
+                    highScore: 850,
+                    createdAt: '2024-01-10T08:30:00'
+                },
+                {
+                    id: 'user-002',
+                    username: '李四',
+                    email: 'lisi@example.com',
+                    isAdmin: false,
+                    score: 1800,
+                    gamesPlayed: 28,
+                    highScore: 720,
+                    createdAt: '2024-01-11T14:20:00'
+                },
+                {
+                    id: 'user-003',
+                    username: '王老师',
+                    email: 'wang@example.com',
+                    isAdmin: true,
+                    score: 5000,
+                    gamesPlayed: 156,
+                    highScore: 1200,
+                    createdAt: '2024-01-05T09:15:00'
+                }
+            ],
+            reviewHistory: [
+                {
+                    id: 'rev-001',
+                    itemId: 'sub-001',
+                    itemType: 'submission',
+                    itemTitle: '三角函数的高级应用',
+                    action: 'approved',
+                    reviewer: '独断万古的管理员',
+                    reviewedAt: '2024-01-15T11:00:00',
+                    reason: '内容质量优秀，符合要求'
+                }
+            ]
+        };
+
+        // DOM元素
+        const elements = {
+            tabs: document.querySelectorAll('.tab-btn'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            filterType: document.getElementById('filter-type'),
+            filterStatus: document.getElementById('filter-status'),
+            filterSort: document.getElementById('filter-sort'),
+            pendingGrid: document.getElementById('pending-grid'),
+            submissionsGrid: document.getElementById('submissions-grid'),
+            questionsGrid: document.getElementById('questions-grid'),
+            feedbackGrid: document.getElementById('feedback-grid'),
+            usersTableBody: document.getElementById('users-table-body'),
+            historyList: document.getElementById('history-list'),
+            emptyState: document.getElementById('empty-state'),
+            loadingState: document.getElementById('loading-state'),
+            confirmDialog: document.getElementById('confirm-dialog'),
+            confirmTitle: document.getElementById('confirm-title'),
+            confirmMessage: document.getElementById('confirm-message'),
+            cancelBtn: document.getElementById('cancel-btn'),
+            confirmBtn: document.getElementById('confirm-btn'),
+            notification: document.getElementById('notification'),
+            stats: {
+                pending: document.getElementById('pending-count'),
+                approved: document.getElementById('approved-count'),
+                rejected: document.getElementById('rejected-count'),
+                users: document.getElementById('users-count')
+            }
+        };
+
+        // 工具函数
+        const utils = {
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleString('zh-CN');
+            },
+            
+            truncateText(text, maxLength = 200) {
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength) + '...';
+            },
+            
+            showNotification(message, type = 'success') {
+                const notification = elements.notification;
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            },
+            
+            showLoading() {
+                elements.loadingState.style.display = 'flex';
+                elements.emptyState.style.display = 'none';
+            },
+            
+            hideLoading() {
+                elements.loadingState.style.display = 'none';
+            },
+            
+            showEmptyState() {
+                elements.emptyState.style.display = 'block';
+            },
+            
+            hideEmptyState() {
+                elements.emptyState.style.display = 'none';
+            }
+        };
+
+        // 数据管理
+        const dataManager = {
+            getAllItems() {
+                return [
+                    ...mockData.submissions.map(item => ({ ...item, type: 'submission' })),
+                    ...mockData.questions.map(item => ({ ...item, type: 'question' })),
+                    ...mockData.feedback.map(item => ({ ...item, type: 'feedback' }))
+                ];
+            },
+            
+            filterItems(items, filter) {
+                return items.filter(item => {
+                    // 类型过滤
+                    if (filter.type !== 'all' && item.type !== filter.type) {
+                        return false;
+                    }
+                    
+                    // 状态过滤
+                    if (filter.status !== 'all' && item.status !== filter.status) {
+                        return false;
+                    }
+                    
+                    return true;
+                }).sort((a, b) => {
+                    // 排序
+                    const dateA = new Date(a.createdAt);
+                    const dateB = new Date(b.createdAt);
+                    return filter.sort === 'newest' ? dateB - dateA : dateA - dateB;
+                });
+            },
+            
+            getStatusCount() {
+                const items = this.getAllItems();
+                return {
+                    pending: items.filter(item => item.status === 'pending').length,
+                    approved: items.filter(item => item.status === 'approved').length,
+                    rejected: items.filter(item => item.status === 'rejected').length
+                };
+            }
+        };
+
+        // 渲染函数
+        const renderer = {
+            createReviewCard(item) {
+                const card = document.createElement('div');
+                card.className = `review-card ${item.status}`;
+                card.dataset.id = item.id;
+                card.dataset.type = item.type;
+                
+                const typeLabel = this.getTypeLabel(item.type);
+                const statusLabel = this.getStatusLabel(item.status);
+                
+                card.innerHTML = `
+                    <div class="review-header">
+                        <div>
+                            <span class="review-type ${item.type}">${typeLabel}</span>
+                            ${item.category ? `<span style="margin-left: 8px; color: var(--text-muted);">${item.category}</span>` : ''}
+                        </div>
+                        <span class="review-status status-${item.status}">${statusLabel}</span>
+                    </div>
+                    <h3 class="review-title">${item.title || '无标题'}</h3>
+                    <div class="review-content">
+                        ${item.content ? utils.truncateText(item.content) : '无内容'}
+                        ${item.content && item.content.length > 200 ? '<button class="expand-btn">展开更多</button>' : ''}
+                    </div>
+                    <div class="review-meta">
+                        <span>作者: ${item.author || item.authorName || '匿名'}</span>
+                        <span>${utils.formatDate(item.createdAt)}</span>
+                    </div>
+                    ${this.renderItemSpecificInfo(item)}
+                    <div class="review-actions">
+                        ${item.status === 'pending' ? `
+                            <button class="action-btn approve-btn" data-action="approve">
+                                <span>✓</span> 通过
+                            </button>
+                            <button class="action-btn reject-btn" data-action="reject">
+                                <span>✗</span> 拒绝
+                            </button>
+                        ` : `
+                            <button class="action-btn re-review-btn" data-action="re-review">
+                                <span>↻</span> 重新审核
+                            </button>
+                        `}
+                    </div>
+                `;
+                
+                return card;
+            },
+            
+            renderItemSpecificInfo(item) {
+                let html = '';
+                
+                if (item.type === 'submission') {
+                    html += `
+                        <div style="display: flex; gap: 12px; margin-bottom: 12px; font-size: 13px;">
+                            ${item.likeCount !== undefined ? `<span>❤️ ${item.likeCount} 点赞</span>` : ''}
+                            ${item.viewCount !== undefined ? `<span>👁️ ${item.viewCount} 浏览</span>` : ''}
+                            ${item.difficulty ? `<span>📊 难度: ${item.difficulty}</span>` : ''}
+                        </div>
+                    `;
+                }
+                
+                if (item.tags && item.tags.length > 0) {
+                    html += `<div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px;">`;
+                    item.tags.forEach(tag => {
+                        html += `<span style="background: var(--accent-light); color: var(--accent-color); padding: 2px 8px; border-radius: 4px; font-size: 12px;">${tag}</span>`;
+                    });
+                    html += `</div>`;
+                }
+                
+                return html;
+            },
+            
+            getTypeLabel(type) {
+                const labels = {
+                    submission: '提交内容',
+                    question: '题目',
+                    feedback: '留言反馈'
+                };
+                return labels[type] || type;
+            },
+            
+            getStatusLabel(status) {
+                const labels = {
+                    pending: '待审核',
+                    approved: '已通过',
+                    rejected: '已拒绝'
+                };
+                return labels[status] || status;
+            },
+            
+            renderUserRow(user) {
+                const row = document.createElement('tr');
+                const initial = user.username.charAt(0).toUpperCase();
+                
+                row.innerHTML = `
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="user-avatar">${initial}</div>
+                            <div>
+                                <div style="font-weight: 600;">${user.username}</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">ID: ${user.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="user-status ${user.isAdmin ? 'status-admin' : 'status-user'}">
+                            ${user.isAdmin ? '管理员' : '普通用户'}
+                        </span>
+                    </td>
+                    <td>${user.email}</td>
+                    <td>${utils.formatDate(user.createdAt)}</td>
+                    <td>
+                        <button class="action-btn" style="padding: 6px 12px; font-size: 12px;" data-user-id="${user.id}" data-action="toggle-admin">
+                            ${user.isAdmin ? '撤销管理员' : '设为管理员'}
+                        </button>
+                    </td>
+                `;
+                
+                return row;
+            },
+            
+            renderHistoryItem(history) {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                
+                const actionColor = history.action === 'approved' ? 'var(--success-color)' : 
+                                 history.action === 'rejected' ? 'var(--danger-color)' : 'var(--warning-color)';
+                
+                item.innerHTML = `
+                    <div class="history-header">
+                        <div>
+                            <strong>${history.itemTitle}</strong>
+                            <span style="margin-left: 8px; font-size: 12px; color: var(--text-muted);">
+                                ${this.getTypeLabel(history.itemType)}
+                            </span>
+                        </div>
+                        <span style="color: ${actionColor}; font-weight: 600;">
+                            ${history.action === 'approved' ? '通过' : history.action === 'rejected' ? '拒绝' : '复审'}
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 13px; color: var(--text-secondary);">审核人: ${history.reviewer}</span>
+                        <span style="margin-left: 12px; font-size: 13px; color: var(--text-secondary);">
+                            ${utils.formatDate(history.reviewedAt)}
+                        </span>
+                    </div>
+                    ${history.reason ? `<div style="font-size: 13px; color: var(--text-muted);">理由: ${history.reason}</div>` : ''}
+                `;
+                
+                return item;
+            }
+        };
+
+        // 事件处理器
+        const eventHandler = {
+            init() {
+                // 标签页切换
+                elements.tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.dataset.tab;
+                        this.switchTab(tabId);
+                    });
+                });
+                
+                // 筛选器变化
+                elements.filterType.addEventListener('change', () => this.handleFilterChange());
+                elements.filterStatus.addEventListener('change', () => this.handleFilterChange());
+                elements.filterSort.addEventListener('change', () => this.handleFilterChange());
+                
+                // 确认对话框
+                elements.cancelBtn.addEventListener('click', () => this.closeConfirmDialog());
+                elements.confirmBtn.addEventListener('click', () => this.handleConfirmAction());
+                
+                // 初始加载
+                this.loadInitialData();
+            },
+            
+            switchTab(tabId) {
+                // 更新活动标签
+                elements.tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabId);
+                });
+                
+                elements.tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabId}-content`);
+                });
+                
+                // 更新状态
+                state.currentTab = tabId;
+                
+                // 根据标签更新筛选器状态
+                if (tabId === 'pending') {
+                    elements.filterStatus.value = 'pending';
+                } else if (['submissions', 'questions', 'feedback'].includes(tabId)) {
+                    elements.filterType.value = tabId.slice(0, -1);
+                    elements.filterStatus.value = 'all';
+                }
+                
+                // 重新加载数据
+                this.handleFilterChange();
+            },
+            
+            handleFilterChange() {
+                state.currentFilter = {
+                    type: elements.filterType.value,
+                    status: elements.filterStatus.value,
+                    sort: elements.filterSort.value
+                };
+                
+                this.loadFilteredData();
+            },
+            
+            async loadInitialData() {
+                utils.showLoading();
+                
+                // 模拟API延迟
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // 加载所有数据
+                state.allItems = dataManager.getAllItems();
+                
+                // 更新统计
+                this.updateStats();
+                
+                // 加载初始视图
+                this.loadFilteredData();
+                
+                // 加载用户数据
+                this.loadUsers();
+                
+                // 加载审核历史
+                this.loadReviewHistory();
+                
+                utils.hideLoading();
+            },
+            
+            loadFilteredData() {
+                const items = dataManager.filterItems(state.allItems, state.currentFilter);
+                state.filteredItems = items;
+                
+                this.renderCurrentView();
+            },
+            
+            renderCurrentView() {
+                const containerId = `${state.currentTab}-content`;
+                const container = document.getElementById(containerId.replace('-content', '-grid')) || 
+                                document.getElementById(containerId.replace('-content', '-list'));
+                
+                if (!container) return;
+                
+                // 清空容器
+                if (container.innerHTML !== undefined) {
+                    container.innerHTML = '';
+                }
+                
+                // 显示空状态
+                if (state.filteredItems.length === 0) {
+                    utils.showEmptyState();
+                    return;
+                }
+                
+                utils.hideEmptyState();
+                
+                // 渲染内容
+                if (state.currentTab === 'users') {
+                    this.loadUsers();
+                } else if (state.currentTab === 'history') {
+                    this.loadReviewHistory();
+                } else {
+                    state.filteredItems.forEach(item => {
+                        const card = renderer.createReviewCard(item);
+                        container.appendChild(card);
+                        
+                        // 添加事件监听
+                        this.addCardEventListeners(card);
+                    });
+                }
+            },
+            
+            addCardEventListeners(card) {
+                // 展开/收起内容
+                const expandBtn = card.querySelector('.expand-btn');
+                if (expandBtn) {
+                    expandBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const content = card.querySelector('.review-content');
+                        const isExpanded = content.classList.toggle('expanded');
+                        expandBtn.textContent = isExpanded ? '收起' : '展开更多';
+                    });
+                }
+                
+                // 操作按钮
+                const actionBtns = card.querySelectorAll('.action-btn');
+                actionBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        const itemId = card.dataset.id;
+                        const itemType = card.dataset.type;
+                        
+                        this.handleItemAction(action, itemId, itemType);
+                    });
+                });
+            },
+            
+            handleItemAction(action, itemId, itemType) {
+                const item = state.allItems.find(item => item.id === itemId);
+                if (!item) return;
+                
+                switch (action) {
+                    case 'approve':
+                        this.showConfirmDialog(
+                            '确认通过',
+                            `确定要通过"${item.title || '该内容'}"吗？`,
+                            () => this.updateItemStatus(itemId, 'approved')
+                        );
+                        break;
+                        
+                    case 'reject':
+                        this.showConfirmDialog(
+                            '确认拒绝',
+                            `确定要拒绝"${item.title || '该内容'}"吗？`,
+                            () => this.updateItemStatus(itemId, 'rejected')
+                        );
+                        break;
+                        
+                    case 're-review':
+                        this.showConfirmDialog(
+                            '重新审核',
+                            `确定要将"${item.title || '该内容'}"重新标记为待审核吗？`,
+                            () => this.updateItemStatus(itemId, 'pending')
+                        );
+                        break;
+                }
+            },
+            
+            updateItemStatus(itemId, newStatus) {
+                const item = state.allItems.find(item => item.id === itemId);
+                if (!item) return;
+                
+                const oldStatus = item.status;
+                item.status = newStatus;
+                
+                // 添加审核历史
+                mockData.reviewHistory.unshift({
+                    id: `rev-${Date.now()}`,
+                    itemId: itemId,
+                    itemType: item.type,
+                    itemTitle: item.title || '无标题',
+                    action: newStatus,
+                    reviewer: state.currentUser.username,
+                    reviewedAt: new Date().toISOString(),
+                    reason: newStatus === 'approved' ? '内容符合要求' : newStatus === 'rejected' ? '内容不符合要求' : '重新审核'
+                });
+                
+                // 更新统计
+                this.updateStats();
+                
+                // 重新渲染当前视图
+                this.loadFilteredData();
+                
+                // 显示通知
+                utils.showNotification(
+                    `已${newStatus === 'approved' ? '通过' : newStatus === 'rejected' ? '拒绝' : '重新审核'}该内容`,
+                    newStatus === 'approved' ? 'success' : newStatus === 'rejected' ? 'error' : 'warning'
+                );
+                
+                this.closeConfirmDialog();
+            },
+            
+            loadUsers() {
+                elements.usersTableBody.innerHTML = '';
+                mockData.users.forEach(user => {
+                    const row = renderer.renderUserRow(user);
+                    elements.usersTableBody.appendChild(row);
+                    
+                    // 添加事件监听
+                    const toggleBtn = row.querySelector('[data-action="toggle-admin"]');
+                    if (toggleBtn) {
+                        toggleBtn.addEventListener('click', () => {
+                            this.handleToggleAdmin(user);
+                        });
+                    }
+                });
+                
+                // 更新用户统计
+                elements.stats.users.textContent = mockData.users.length;
+            },
+            
+            handleToggleAdmin(user) {
+                if (user.id === 'admin-001') {
+                    utils.showNotification('无法修改自己的管理员权限', 'error');
+                    return;
+                }
+                
+                this.showConfirmDialog(
+                    user.isAdmin ? '撤销管理员' : '设为管理员',
+                    `确定要${user.isAdmin ? '撤销' : '设置'}用户"${user.username}"的管理员权限吗？`,
+                    () => {
+                        user.isAdmin = !user.isAdmin;
+                        this.loadUsers();
+                        utils.showNotification(
+                            `已${user.isAdmin ? '设为' : '撤销'}管理员权限`,
+                            'success'
+                        );
+                    }
+                );
+            },
+            
+            loadReviewHistory() {
+                elements.historyList.innerHTML = '';
+                mockData.reviewHistory.forEach(history => {
+                    const item = renderer.renderHistoryItem(history);
+                    elements.historyList.appendChild(item);
+                });
+            },
+            
+            updateStats() {
+                const counts = dataManager.getStatusCount();
+                elements.stats.pending.textContent = counts.pending;
+                elements.stats.approved.textContent = counts.approved;
+                elements.stats.rejected.textContent = counts.rejected;
+            },
+            
+            showConfirmDialog(title, message, callback) {
+                elements.confirmTitle.textContent = title;
+                elements.confirmMessage.textContent = message;
+                elements.confirmDialog.classList.add('active');
+                
+                // 存储回调函数
+                elements.confirmBtn.onclick = () => {
+                    callback();
+                };
+            },
+            
+            closeConfirmDialog() {
+                elements.confirmDialog.classList.remove('active');
+                elements.confirmBtn.onclick = null;
+            },
+            
+            handleConfirmAction() {
+                // 具体逻辑在showConfirmDialog中设置
+            }
+        };
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            eventHandler.init();
+            
+            // 添加一些键盘快捷键
+            document.addEventListener('keydown', (e) => {
+                // ESC关闭对话框
+                if (e.key === 'Escape' && elements.confirmDialog.classList.contains('active')) {
+                    eventHandler.closeConfirmDialog();
+                }
+                
+                // Ctrl+F聚焦筛选器
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    elements.filterType.focus();
+                }
+            });
+        });
+
+        // 模拟与Supabase的交互（注释掉的代码，实际使用时需要根据您的配置调整）
+        /*
+        // 连接Supabase
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_KEY';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 检查用户是否为管理员
+        async function checkAdminStatus() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('auth_id', user.id)
+                .single();
+
+            if (!profile?.is_admin) {
+                window.location.href = '/';
+                return;
+            }
+
+            state.currentUser.id = user.id;
+            state.currentUser.email = user.email;
+            
+            // 获取用户信息
+            const { data: userProfile } = await supabase
+                .from('profiles')
+                .select('username, is_admin')
+                .eq('auth_id', user.id)
+                .single();
+
+            if (userProfile) {
+                state.currentUser.username = userProfile.username;
+            }
+        }
+
+        // 加载待审核内容
+        async function loadPendingContent() {
+            // 加载submissions
+            const { data: submissions } = await supabase
+                .from('submissions')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            // 加载questions
+            const { data: questions } = await supabase
+                .from('questions')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            // 加载feedback
+            const { data: feedback } = await supabase
+                .from('feedbacks')
+                .select('*')
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false });
+
+            return { submissions, questions, feedback };
+        }
+
+        // 更新内容状态
+        async function updateContentStatus(table, id, status) {
+            const { error } = await supabase
+                .from(table)
+                .update({ status, updated_at: new Date().toISOString() })
+                .eq('id', id);
+
+            if (error) {
+                console.error('更新状态失败:', error);
+                return false;
+            }
+
+            // 添加审核记录
+            await supabase
+                .from('submission_reviews') // 假设有审核记录表
+                .insert({
+                    submission_id: id,
+                    reviewer_id: state.currentUser.id,
+                    status: status,
+                    reviewed_at: new Date().toISOString()
+                });
+
+            return true;
+        }
+
+        // 加载所有用户
+        async function loadAllUsers() {
+            const { data: users } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            return users || [];
+        }
+
+        // 更新用户权限
+        async function updateUserAdminStatus(userId, isAdmin) {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ is_admin: isAdmin })
+                .eq('id', userId);
+
+            return !error;
+        }
+        */
+    </script>
+</body>
+</html>
