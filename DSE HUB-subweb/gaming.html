@@ -547,6 +547,25 @@
             border: 1px solid rgba(245, 101, 101, 0.3);
         }
         
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            background: rgba(245, 101, 101, 0.1);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            text-align: center;
+            margin: var(--spacing-md) 0;
+        }
+        
         /* 📱 响应式设计 */
         @media (max-width: 1024px) {
             .content-area {
@@ -610,41 +629,6 @@
                 padding: var(--spacing-lg);
             }
         }
-        
-        /* 🎭 特殊效果 */
-        .linkup-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left var(--transition-normal);
-        }
-        
-        .linkup-card:hover::before {
-            left: 100%;
-        }
-        
-        /* 🎨 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--card-bg);
-            border-radius: var(--border-radius-sm);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: var(--border-radius-sm);
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-dark);
-        }
     </style>
 </head>
 <body>
@@ -702,15 +686,15 @@
                                 选择对战模式：
                             </div>
                             <div class="mode-options">
-                                <label class="mode-option" onclick="selectDuelMode('linkup')">
-                                    <input type="radio" name="duelMode" value="linkup" style="margin-right: 8px;">
+                                <label class="mode-option selected" data-mode="linkup" onclick="selectDuelMode('linkup', this)">
+                                    <input type="radio" name="duelMode" value="linkup" style="margin-right: 8px;" checked>
                                     <span>🔗 连连看</span>
                                 </label>
-                                <label class="mode-option" onclick="selectDuelMode('truefalse')">
+                                <label class="mode-option" data-mode="truefalse" onclick="selectDuelMode('truefalse', this)">
                                     <input type="radio" name="duelMode" value="truefalse" style="margin-right: 8px;">
                                     <span>✅ 对错判断</span>
                                 </label>
-                                <label class="mode-option" onclick="selectDuelMode('guess')">
+                                <label class="mode-option" data-mode="guess" onclick="selectDuelMode('guess', this)">
                                     <input type="radio" name="duelMode" value="guess" style="margin-right: 8px;">
                                     <span>❓ 猜知识点</span>
                                 </label>
@@ -730,7 +714,7 @@
                         </div>
                         
                         <div id="duel-status" style="margin-top: var(--spacing-md); font-size: 12px; color: var(--text-muted); text-align: center;">
-                            等待连接...
+                            选择模式后创建房间
                         </div>
                     </div>
                 </div>
@@ -871,15 +855,6 @@
             matchedPairs: 0
         };
         
-        let truefalseState = {
-            currentQuestion: null
-        };
-        
-        let guessState = {
-            currentClue: null,
-            options: []
-        };
-        
         // 🎨 主题管理器（简化版）
         const ThemeManager = {
             themes: {
@@ -911,7 +886,7 @@
         };
         
         // 📦 初始化函数
-        function initApp() {
+        async function initApp() {
             // 初始化主题
             ThemeManager.init();
             
@@ -921,16 +896,87 @@
                 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
             );
             
+            // 测试数据库连接
+            await testDatabaseConnection();
+            
             // 初始化游戏
-            initLinkUpGame();
+            await initLinkUpGame();
             
             // 更新分数显示
             updateScoreDisplay();
             
             // 设置默认联机模式
-            selectDuelMode('linkup');
+            setDefaultDuelMode();
             
             console.log('游戏平台初始化完成');
+        }
+        
+        // 🔍 测试数据库连接
+        async function testDatabaseConnection() {
+            try {
+                // 尝试一个简单的查询来测试连接
+                const { error } = await supabaseClient
+                    .from('questions')
+                    .select('count')
+                    .limit(1);
+                
+                if (error && error.code === '42501') {
+                    showPermissionError();
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.warn('数据库连接测试失败:', error);
+                showPermissionError();
+                return false;
+            }
+        }
+        
+        // ⚠️ 显示权限错误
+        function showPermissionError() {
+            const board = document.getElementById('linkup-board');
+            if (board) {
+                board.innerHTML = `
+                    <div class="error-message" style="grid-column: 1/-1;">
+                        <h4>⚠️ 数据库权限不足</h4>
+                        <p style="font-size: 14px; margin: var(--spacing-sm) 0;">
+                            请在你的Supabase项目中运行以下SQL：
+                        </p>
+                        <pre style="background: var(--accent-light); padding: var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 12px; text-align: left; margin: var(--spacing-sm) 0;">
+ALTER TABLE knowledge_points ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "允许匿名访问" ON knowledge_points FOR SELECT USING (true);
+
+ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
+                        </pre>
+                        <p style="font-size: 14px; margin-top: var(--spacing-sm);">
+                            或使用测试数据进行游戏：
+                        </p>
+                        <button class="btn btn-secondary" onclick="useDemoData()" style="margin-top: var(--spacing-sm);">
+                            使用演示数据
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // 🎮 使用演示数据
+        function useDemoData() {
+            // 切换到演示模式
+            window.demoMode = true;
+            
+            // 重新初始化游戏
+            if (currentGame === 'linkup') {
+                initLinkUpGame();
+            } else if (currentGame === 'truefalse') {
+                loadTrueFalseQuestion();
+            } else if (currentGame === 'guess') {
+                loadGuessQuestion();
+            }
+            
+            // 更新状态
+            updateDuelStatus('演示模式已启用');
         }
         
         // 🔄 切换游戏
@@ -969,7 +1015,7 @@
             const board = document.getElementById('linkup-board');
             if (!board) return;
             
-            board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">加载中...</div>';
+            board.innerHTML = '<div class="loading">加载中...</div>';
             linkupState.selectedCards = [];
             linkupState.matchedPairs = 0;
             
@@ -980,14 +1026,29 @@
                 resultMsg.textContent = '';
             }
             
+            // 检查是否使用演示数据
+            if (window.demoMode) {
+                useDemoLinkUpData();
+                return;
+            }
+            
             try {
-                // 获取知识点
+                // 从数据库获取知识点
                 const { data: knowledgePoints, error: kpError } = await supabaseClient
                     .from('knowledge_points')
                     .select('id, title')
                     .limit(6);
                 
-                if (kpError) throw kpError;
+                if (kpError) {
+                    console.warn('获取知识点失败，使用演示数据:', kpError);
+                    useDemoLinkUpData();
+                    return;
+                }
+                
+                if (!knowledgePoints || knowledgePoints.length === 0) {
+                    useDemoLinkUpData();
+                    return;
+                }
                 
                 linkupState.pairs = [];
                 
@@ -1026,36 +1087,94 @@
                     }
                 }
                 
+                // 如果没有获取到足够的数据，使用演示数据
                 if (linkupState.pairs.length === 0) {
-                    board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">未找到足够的数据，请确保数据库中有linkup类型的题目</div>';
+                    useDemoLinkUpData();
                     return;
                 }
                 
-                // 洗牌
-                linkupState.pairs.sort(() => Math.random() - 0.5);
-                
-                // 清空并生成卡片
-                board.innerHTML = '';
-                linkupState.pairs.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = `linkup-card ${item.type}`;
-                    card.dataset.id = item.id;
-                    card.dataset.pairId = item.pairId;
-                    card.dataset.type = item.type;
-                    
-                    card.innerHTML = `
-                        <div class="card-label">${item.type === 'knowledge' ? '📚 知识点' : '❓ 题目'}</div>
-                        <div class="card-content">${item.text}</div>
-                    `;
-                    
-                    card.onclick = () => handleCardClick(card);
-                    board.appendChild(card);
-                });
+                generateLinkUpBoard();
                 
             } catch (error) {
                 console.error('初始化连连看游戏失败:', error);
-                board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">加载失败，请检查网络连接</div>';
+                useDemoLinkUpData();
             }
+        }
+        
+        // 🎮 使用演示连连看数据
+        function useDemoLinkUpData() {
+            const demoData = {
+                knowledgePoints: [
+                    { id: 1, title: '牛顿第一定律' },
+                    { id: 2, title: '勾股定理' },
+                    { id: 3, title: '化学方程式' },
+                    { id: 4, title: '细胞结构' }
+                ],
+                questions: [
+                    { id: 1, knowledge_id: 1, title: '物体在没有外力作用时会怎样运动？' },
+                    { id: 2, knowledge_id: 1, title: '什么是惯性定律？' },
+                    { id: 3, knowledge_id: 2, title: '直角三角形的边长关系是什么？' },
+                    { id: 4, knowledge_id: 2, title: 'a² + b² = c² 是什么定理？' },
+                    { id: 5, knowledge_id: 3, title: 'H₂O 是什么化学式？' },
+                    { id: 6, knowledge_id: 3, title: '酸碱中和反应会产生什么？' },
+                    { id: 7, knowledge_id: 4, title: '细胞的能量工厂是什么？' },
+                    { id: 8, knowledge_id: 4, title: '细胞核的主要功能是什么？' }
+                ]
+            };
+            
+            linkupState.pairs = [];
+            
+            // 为每个知识点添加卡片
+            demoData.knowledgePoints.forEach(kp => {
+                // 添加知识点头卡片
+                linkupState.pairs.push({
+                    id: `k-${kp.id}`,
+                    type: 'knowledge',
+                    text: kp.title,
+                    pairId: kp.id
+                });
+                
+                // 添加对应的题目卡片
+                demoData.questions
+                    .filter(q => q.knowledge_id === kp.id)
+                    .forEach(q => {
+                        linkupState.pairs.push({
+                            id: `q-${q.id}`,
+                            type: 'question',
+                            text: q.title,
+                            pairId: kp.id
+                        });
+                    });
+            });
+            
+            generateLinkUpBoard();
+        }
+        
+        // 🎲 生成连连看棋盘
+        function generateLinkUpBoard() {
+            const board = document.getElementById('linkup-board');
+            if (!board) return;
+            
+            // 洗牌
+            linkupState.pairs.sort(() => Math.random() - 0.5);
+            
+            // 清空并生成卡片
+            board.innerHTML = '';
+            linkupState.pairs.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `linkup-card ${item.type}`;
+                card.dataset.id = item.id;
+                card.dataset.pairId = item.pairId;
+                card.dataset.type = item.type;
+                
+                card.innerHTML = `
+                    <div class="card-label">${item.type === 'knowledge' ? '📚 知识点' : '❓ 题目'}</div>
+                    <div class="card-content">${item.text}</div>
+                `;
+                
+                card.onclick = () => handleCardClick(card);
+                board.appendChild(card);
+            });
         }
         
         function handleCardClick(card) {
@@ -1106,8 +1225,7 @@
             initLinkUpGame();
         }
         
-        async function loadMoreLinkUpCards() {
-            // 这里可以添加加载更多卡片的逻辑
+        function loadMoreLinkUpCards() {
             const resultMsg = document.getElementById('linkup-result');
             if (resultMsg) {
                 resultMsg.textContent = '更多卡片功能开发中...';
@@ -1121,8 +1239,13 @@
         
         // ✅ 对错判断游戏函数
         async function loadTrueFalseQuestion() {
+            // 检查是否使用演示数据
+            if (window.demoMode) {
+                useDemoTrueFalseData();
+                return;
+            }
+            
             try {
-                // 直接从questions表获取题目
                 const { data: question, error } = await supabaseClient
                     .from('questions')
                     .select('*')
@@ -1130,55 +1253,94 @@
                     .limit(1)
                     .single();
                 
-                if (error) throw error;
-                
-                if (question) {
-                    truefalseState.currentQuestion = {
-                        id: question.id,
-                        content: question.content || question.title,
-                        actualAnswer: question.correct_answer,
-                        explanation: question.explanation
-                    };
-                    
-                    // 随机决定是否颠倒显示
-                    const shouldFlip = Math.random() > 0.5;
-                    const displayAnswer = shouldFlip ? !question.correct_answer : question.correct_answer;
-                    truefalseState.currentQuestion.displayedAnswer = displayAnswer;
-                    
-                    // 显示题目
-                    const questionText = document.getElementById('tf-question-text');
-                    if (questionText) {
-                        questionText.innerHTML = `
-                            <div style="margin-bottom: var(--spacing-md);">
-                                <strong>题目：</strong>${question.content || question.title}
-                            </div>
-                            <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md); margin-top: var(--spacing-md);">
-                                <strong>陈述：</strong><span style="color: ${displayAnswer ? '#38a169' : '#e53e3e'}; font-weight: 600;">
-                                ${displayAnswer ? '✅ 正确' : '❌ 错误'}</span>
-                            </div>
-                        `;
-                    }
-                    
-                    // 清空结果消息
-                    const resultMsg = document.getElementById('tf-result');
-                    if (resultMsg) {
-                        resultMsg.style.display = 'none';
-                        resultMsg.textContent = '';
-                    }
+                if (error) {
+                    console.warn('获取题目失败，使用演示数据:', error);
+                    useDemoTrueFalseData();
+                    return;
                 }
+                
+                if (!question) {
+                    useDemoTrueFalseData();
+                    return;
+                }
+                
+                displayTrueFalseQuestion(question);
+                
             } catch (error) {
                 console.error('加载对错判断题失败:', error);
-                const questionText = document.getElementById('tf-question-text');
-                if (questionText) {
-                    questionText.textContent = '加载题目失败，请重试';
+                useDemoTrueFalseData();
+            }
+        }
+        
+        // 🎮 使用演示对错判断数据
+        function useDemoTrueFalseData() {
+            const demoQuestions = [
+                {
+                    id: 1,
+                    title: '地球是平的',
+                    content: '地球是一个平面，而不是球体',
+                    correct_answer: false,
+                    explanation: '地球是一个近似球体的行星'
+                },
+                {
+                    id: 2,
+                    title: '水在100°C沸腾',
+                    content: '在标准大气压下，水的沸点是100°C',
+                    correct_answer: true,
+                    explanation: '这是水的标准沸点'
+                },
+                {
+                    id: 3,
+                    title: '太阳绕地球转',
+                    content: '太阳每天绕地球旋转一周',
+                    correct_answer: false,
+                    explanation: '地球绕太阳公转，同时自转'
                 }
+            ];
+            
+            const randomQuestion = demoQuestions[Math.floor(Math.random() * demoQuestions.length)];
+            displayTrueFalseQuestion(randomQuestion);
+        }
+        
+        function displayTrueFalseQuestion(question) {
+            window.currentTFQuestion = {
+                id: question.id,
+                content: question.content || question.title,
+                actualAnswer: question.correct_answer,
+                explanation: question.explanation
+            };
+            
+            // 随机决定是否颠倒显示
+            const shouldFlip = Math.random() > 0.5;
+            const displayAnswer = shouldFlip ? !question.correct_answer : question.correct_answer;
+            window.currentTFQuestion.displayedAnswer = displayAnswer;
+            
+            // 显示题目
+            const questionText = document.getElementById('tf-question-text');
+            if (questionText) {
+                questionText.innerHTML = `
+                    <div style="margin-bottom: var(--spacing-md);">
+                        <strong>题目：</strong>${question.content || question.title}
+                    </div>
+                    <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md); margin-top: var(--spacing-md);">
+                        <strong>陈述：</strong><span style="color: ${displayAnswer ? '#38a169' : '#e53e3e'}; font-weight: 600;">
+                        ${displayAnswer ? '✅ 正确' : '❌ 错误'}</span>
+                    </div>
+                `;
+            }
+            
+            // 清空结果消息
+            const resultMsg = document.getElementById('tf-result');
+            if (resultMsg) {
+                resultMsg.style.display = 'none';
+                resultMsg.textContent = '';
             }
         }
         
         function answerTrueFalse(userAnswer) {
-            if (!truefalseState.currentQuestion) return;
+            if (!window.currentTFQuestion) return;
             
-            const question = truefalseState.currentQuestion;
+            const question = window.currentTFQuestion;
             const isCorrect = (userAnswer === question.actualAnswer);
             
             const resultMsg = document.getElementById('tf-result');
@@ -1200,9 +1362,9 @@
         }
         
         function showExplanation() {
-            if (!truefalseState.currentQuestion) return;
+            if (!window.currentTFQuestion) return;
             
-            const explanation = truefalseState.currentQuestion.explanation || '暂无详细解析';
+            const explanation = window.currentTFQuestion.explanation || '暂无详细解析';
             const resultMsg = document.getElementById('tf-result');
             if (resultMsg) {
                 resultMsg.textContent = `📖 解析：${explanation}`;
@@ -1211,10 +1373,15 @@
             }
         }
         
-        // ❓ 猜知识点游戏函数 - 修复数据库查询
+        // ❓ 猜知识点游戏函数
         async function loadGuessQuestion() {
+            // 检查是否使用演示数据
+            if (window.demoMode) {
+                useDemoGuessData();
+                return;
+            }
+            
             try {
-                // 获取一道题目作为线索
                 const { data: question, error: questionError } = await supabaseClient
                     .from('questions')
                     .select('*')
@@ -1222,10 +1389,10 @@
                     .limit(1)
                     .single();
                 
-                if (questionError) throw questionError;
-                
-                if (!question) {
-                    throw new Error('未找到合适的题目');
+                if (questionError || !question) {
+                    console.warn('获取题目失败，使用演示数据:', questionError);
+                    useDemoGuessData();
+                    return;
                 }
                 
                 // 获取对应的知识点
@@ -1237,22 +1404,16 @@
                 
                 if (knowledgeError) {
                     console.warn('获取知识点失败:', knowledgeError);
-                    // 如果没有对应的知识点，使用默认值
-                    guessState.currentClue = {
+                    // 使用默认值
+                    window.currentGuessQuestion = {
                         ...question,
                         knowledge_title: '未知知识点'
                     };
                 } else {
-                    guessState.currentClue = {
+                    window.currentGuessQuestion = {
                         ...question,
                         knowledge_title: knowledge.title
                     };
-                }
-                
-                // 显示线索
-                const clueText = document.getElementById('guess-clue-text');
-                if (clueText) {
-                    clueText.textContent = question.content || question.title || '题目内容加载中...';
                 }
                 
                 // 获取3个错误选项
@@ -1262,62 +1423,106 @@
                     .neq('id', question.knowledge_id)
                     .limit(3);
                 
-                if (optionsError) throw optionsError;
-                
-                // 合并选项
-                guessState.options = [
-                    { 
-                        id: question.knowledge_id, 
-                        text: guessState.currentClue.knowledge_title, 
-                        correct: true 
-                    },
-                    ...wrongOptions.map(opt => ({ 
-                        id: opt.id, 
-                        text: opt.title, 
-                        correct: false 
-                    }))
-                ].sort(() => Math.random() - 0.5);
-                
-                // 生成选项按钮
-                const optionsContainer = document.getElementById('guess-options');
-                if (optionsContainer) {
-                    optionsContainer.innerHTML = '';
-                    
-                    guessState.options.forEach((opt, index) => {
-                        const optionCard = document.createElement('div');
-                        optionCard.className = 'option-card';
-                        optionCard.dataset.index = index;
-                        optionCard.dataset.correct = opt.correct;
-                        optionCard.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
-                        optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
-                        optionsContainer.appendChild(optionCard);
-                    });
+                if (optionsError) {
+                    console.warn('获取错误选项失败:', optionsError);
+                    useDemoGuessData();
+                    return;
                 }
                 
-                // 清空结果消息
-                const resultMsg = document.getElementById('guess-result');
-                if (resultMsg) {
-                    resultMsg.style.display = 'none';
-                    resultMsg.textContent = '';
-                }
+                displayGuessQuestion(question, wrongOptions);
                 
             } catch (error) {
                 console.error('加载猜知识点题目失败:', error);
-                const clueText = document.getElementById('guess-clue-text');
-                if (clueText) {
-                    clueText.textContent = '加载题目失败，请确保数据库中有guess类型的题目';
-                }
+                useDemoGuessData();
+            }
+        }
+        
+        // 🎮 使用演示猜知识点数据
+        function useDemoGuessData() {
+            const demoData = {
+                clue: "这个公式描述了物体在没有外力作用时的运动状态",
+                correctAnswer: "牛顿第一定律",
+                wrongOptions: [
+                    "牛顿第二定律",
+                    "能量守恒定律",
+                    "万有引力定律"
+                ]
+            };
+            
+            // 显示线索
+            const clueText = document.getElementById('guess-clue-text');
+            if (clueText) {
+                clueText.textContent = demoData.clue;
+            }
+            
+            // 生成选项
+            const options = [
+                { text: demoData.correctAnswer, correct: true },
+                ...demoData.wrongOptions.map(text => ({ text, correct: false }))
+            ].sort(() => Math.random() - 0.5);
+            
+            // 生成选项按钮
+            const optionsContainer = document.getElementById('guess-options');
+            if (optionsContainer) {
+                optionsContainer.innerHTML = '';
                 
-                // 显示测试选项
-                const optionsContainer = document.getElementById('guess-options');
-                if (optionsContainer) {
-                    optionsContainer.innerHTML = `
-                        <div class="option-card" onclick="checkGuessAnswer(true, this)">A. 测试知识点1</div>
-                        <div class="option-card" onclick="checkGuessAnswer(false, this)">B. 测试知识点2</div>
-                        <div class="option-card" onclick="checkGuessAnswer(false, this)">C. 测试知识点3</div>
-                        <div class="option-card" onclick="checkGuessAnswer(false, this)">D. 测试知识点4</div>
-                    `;
-                }
+                options.forEach((opt, index) => {
+                    const optionCard = document.createElement('div');
+                    optionCard.className = 'option-card';
+                    optionCard.dataset.correct = opt.correct;
+                    optionCard.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+                    optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
+                    optionsContainer.appendChild(optionCard);
+                });
+            }
+            
+            // 清空结果消息
+            const resultMsg = document.getElementById('guess-result');
+            if (resultMsg) {
+                resultMsg.style.display = 'none';
+                resultMsg.textContent = '';
+            }
+        }
+        
+        function displayGuessQuestion(question, wrongOptions) {
+            // 显示线索
+            const clueText = document.getElementById('guess-clue-text');
+            if (clueText) {
+                clueText.textContent = question.content || question.title || '题目内容加载中...';
+            }
+            
+            // 合并选项
+            const options = [
+                { 
+                    text: window.currentGuessQuestion.knowledge_title, 
+                    correct: true 
+                },
+                ...wrongOptions.map(opt => ({ 
+                    text: opt.title, 
+                    correct: false 
+                }))
+            ].sort(() => Math.random() - 0.5);
+            
+            // 生成选项按钮
+            const optionsContainer = document.getElementById('guess-options');
+            if (optionsContainer) {
+                optionsContainer.innerHTML = '';
+                
+                options.forEach((opt, index) => {
+                    const optionCard = document.createElement('div');
+                    optionCard.className = 'option-card';
+                    optionCard.dataset.correct = opt.correct;
+                    optionCard.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+                    optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
+                    optionsContainer.appendChild(optionCard);
+                });
+            }
+            
+            // 清空结果消息
+            const resultMsg = document.getElementById('guess-result');
+            if (resultMsg) {
+                resultMsg.style.display = 'none';
+                resultMsg.textContent = '';
             }
         }
         
@@ -1370,19 +1575,32 @@
         }
         
         // ⚔️ 联机对战函数
-        function selectDuelMode(mode) {
+        function setDefaultDuelMode() {
+            // 设置默认选中的模式
+            const defaultOption = document.querySelector('.mode-option[data-mode="linkup"]');
+            if (defaultOption) {
+                defaultOption.classList.add('selected');
+                defaultOption.querySelector('input').checked = true;
+            }
+            selectedDuelMode = 'linkup';
+            updateDuelStatus('已选择 连连看 模式');
+        }
+        
+        function selectDuelMode(mode, element) {
             selectedDuelMode = mode;
             
             // 更新UI
             document.querySelectorAll('.mode-option').forEach(option => {
                 option.classList.remove('selected');
             });
-            event.currentTarget.classList.add('selected');
             
-            // 更新radio选中状态
-            const radio = event.currentTarget.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
+            if (element) {
+                element.classList.add('selected');
+                // 更新radio选中状态
+                const radio = element.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                }
             }
             
             updateDuelStatus(`已选择 ${getModeName(mode)} 模式`);
@@ -1405,10 +1623,10 @@
             
             setTimeout(() => {
                 alert(`🏠 房间创建成功！\n\n房间号：${roomId}\n游戏模式：${modeName}\n\n请分享此房间号给对手进行联机对战`);
+                
+                // 这里可以添加实际的Supabase房间创建逻辑
+                // createDuelRoomInDatabase(roomId);
             }, 100);
-            
-            // 这里可以添加实际的Supabase房间创建逻辑
-            // await supabaseClient.from('duels').insert([{ room_id: roomId, mode: selectedDuelMode, status: 'waiting' }]);
         }
         
         function joinDuelRoom() {
@@ -1426,10 +1644,10 @@
             setTimeout(() => {
                 updateDuelStatus(`已加入房间 ${roomId}`);
                 alert(`成功加入房间 ${roomId}\n\n游戏模式：${modeName}\n\n等待房主开始游戏...`);
+                
+                // 这里可以添加实际的Supabase房间加入逻辑
+                // joinDuelRoomInDatabase(roomId);
             }, 1000);
-            
-            // 这里可以添加实际的Supabase房间加入逻辑
-            // const channel = supabaseClient.channel(`room-${roomId}`);
         }
         
         function updateDuelStatus(message) {
