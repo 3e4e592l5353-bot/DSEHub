@@ -746,10 +746,94 @@
                 font-size: 20px;
             }
         }
+
+        /* 登录覆盖层 */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 64px;
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .login-message {
+            font-size: 18px;
+            color: var(--text-color);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.5;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            margin-top: var(--spacing-md);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 登录覆盖层 -->
+    <div id="login-overlay" class="login-overlay" style="display: none;">
+        <div class="login-box">
+            <div class="login-icon">
+                <i class="fas fa-user-lock"></i>
+            </div>
+            <h2>需要登录</h2>
+            <p class="login-message">请登录您的 DSE Hub 账户以使用笔记功能。</p>
+            <p class="login-message" style="font-size: 14px; color: var(--text-secondary);">
+                如果您已在主站登录，请确保使用相同的浏览器访问本页面。
+            </p>
+            <a href="#" id="main-site-login" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>前往主站登录</span>
+            </a>
+            <p style="margin-top: var(--spacing-lg); color: var(--text-muted); font-size: 14px;">
+                <i class="fas fa-info-circle"></i>
+                登录后将自动重定向回此页面
+            </p>
+        </div>
+    </div>
+
+    <div class="container" id="main-content" style="display: none;">
         <!-- 头部导航 -->
         <header class="header">
             <a href="#" class="logo">
@@ -934,42 +1018,79 @@
         <span id="message-text">操作成功！</span>
     </div>
 
-    <!-- Supabase 初始化 -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 游戏和投稿页面链接（放在代码最后面） -->
+    <div style="display: none;">
+        <a href="games.html" id="games-link">游戏中心</a>
+        <a href="submit.html" id="submit-link">投稿页面</a>
+    </div>
+
+    <!-- 在主站使用相同的 Supabase 配置以实现自动登录 -->
     <script>
-        // Supabase 配置
+        // Supabase 配置（与主站相同）
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
-        // 创建 Supabase 客户端
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         // 全局变量
         let currentUser = null;
         let notes = [];
         let currentPage = 0;
         const NOTES_PER_PAGE = 20;
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', async () => {
+        
+        // 检查是否已经有全局 supabase 实例
+        if (typeof window.supabase === 'undefined') {
+            // 加载 Supabase 客户端库
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.onload = initApp;
+            document.head.appendChild(script);
+        } else {
+            // 如果已经加载了，直接初始化
+            initApp();
+        }
+        
+        async function initApp() {
+            // 创建 Supabase 客户端
+            const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            window.supabaseClient = supabaseClient;
+            
             await initializeApp();
             setupEventListeners();
-            loadNotes();
-        });
+        }
 
         // 初始化应用
         async function initializeApp() {
             try {
-                // 获取当前用户
-                const { data: { user }, error } = await supabase.auth.getUser();
-                if (error) throw error;
+                // 从 localStorage 获取可能的 session
+                const token = localStorage.getItem('supabase.auth.token');
+                let user = null;
+                
+                if (token) {
+                    // 尝试使用 localStorage 中的 token
+                    const { data: { user: authUser }, error: authError } = await window.supabaseClient.auth.getUser();
+                    if (!authError && authUser) {
+                        user = authUser;
+                    }
+                }
+                
+                // 如果没有从 localStorage 获取到，尝试从当前 session 获取
+                if (!user) {
+                    const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                    if (!error && session) {
+                        user = session.user;
+                    }
+                }
                 
                 if (user) {
                     currentUser = user;
+                    // 显示主内容，隐藏登录覆盖层
+                    document.getElementById('main-content').style.display = 'block';
+                    document.getElementById('login-overlay').style.display = 'none';
+                    
+                    // 更新用户显示
                     document.getElementById('current-user').textContent = user.email;
                     
                     // 获取用户资料
-                    const { data: profile } = await supabase
+                    const { data: profile } = await window.supabaseClient
                         .from('profiles')
                         .select('username')
                         .eq('id', user.id)
@@ -978,12 +1099,16 @@
                     if (profile && profile.username) {
                         document.getElementById('current-user').textContent = profile.username;
                     }
+                    
+                    // 加载笔记
+                    loadNotes();
+                    
                 } else {
-                    // 如果没有登录，重定向到登录页或显示提示
-                    showMessage('请先登录', 'error');
-                    setTimeout(() => {
-                        window.location.href = '/login'; // 修改为你的登录页地址
-                    }, 2000);
+                    // 没有登录用户，显示登录覆盖层
+                    document.getElementById('main-content').style.display = 'none';
+                    document.getElementById('login-overlay').style.display = 'flex';
+                    
+                    showMessage('请先登录以使用笔记功能', 'info');
                 }
             } catch (error) {
                 console.error('初始化错误:', error);
@@ -1019,16 +1144,24 @@
                         // 游戏页面跳转
                         showMessage('正在跳转到游戏中心...', 'info');
                         setTimeout(() => {
-                            window.location.href = 'games.html'; // 修改为你的游戏页面地址
+                            window.location.href = 'games.html';
                         }, 1000);
                     } else if (target === 'submit') {
                         // 投稿页面跳转
                         showMessage('正在跳转到投稿页面...', 'info');
                         setTimeout(() => {
-                            window.location.href = 'submit.html'; // 修改为你的投稿页面地址
+                            window.location.href = 'submit.html';
                         }, 1000);
                     }
                 });
+            });
+            
+            // 登录按钮
+            document.getElementById('main-site-login').addEventListener('click', function(e) {
+                e.preventDefault();
+                // 重定向到主站登录页，登录后返回此页面
+                const returnUrl = encodeURIComponent(window.location.href);
+                window.location.href = `https://alsalyskulozwakhmzoa.supabase.co/auth/v1/authorize?provider=github&redirect_to=${returnUrl}`;
             });
         }
 
@@ -1130,7 +1263,7 @@
             
             try {
                 // 获取用户资料
-                const { data: profile } = await supabase
+                const { data: profile } = await window.supabaseClient
                     .from('profiles')
                     .select('username')
                     .eq('id', currentUser.id)
@@ -1139,7 +1272,7 @@
                 const authorName = profile?.username || currentUser.email;
                 
                 // 创建笔记（保存到submissions表）
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('submissions')
                     .insert({
                         title: title,
@@ -1177,7 +1310,7 @@
         // 加载笔记
         async function loadNotes() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('submissions')
                     .select('*')
                     .eq('notes', true)
@@ -1278,7 +1411,7 @@
             
             try {
                 // 检查是否已经点赞
-                const { data: existingLike } = await supabase
+                const { data: existingLike } = await window.supabaseClient
                     .from('likes')
                     .select('id')
                     .eq('user_id', currentUser.id)
@@ -1288,18 +1421,18 @@
                 
                 if (existingLike) {
                     // 取消点赞
-                    await supabase
+                    await window.supabaseClient
                         .from('likes')
                         .delete()
                         .eq('id', existingLike.id);
                     
                     // 更新submissions表的like_count
-                    await supabase.rpc('decrement_like_count', { note_id: noteId });
+                    await window.supabaseClient.rpc('decrement_like_count', { note_id: noteId });
                     
                     showMessage('已取消点赞', 'info');
                 } else {
                     // 添加点赞
-                    await supabase
+                    await window.supabaseClient
                         .from('likes')
                         .insert({
                             user_id: currentUser.id,
@@ -1309,7 +1442,7 @@
                         });
                     
                     // 更新submissions表的like_count
-                    await supabase.rpc('increment_like_count', { note_id: noteId });
+                    await window.supabaseClient.rpc('increment_like_count', { note_id: noteId });
                     
                     showMessage('点赞成功！', 'success');
                 }
@@ -1365,7 +1498,7 @@
             
             try {
                 // 获取被举报的笔记信息
-                const { data: note } = await supabase
+                const { data: note } = await window.supabaseClient
                     .from('submissions')
                     .select('*')
                     .eq('id', noteId)
@@ -1377,7 +1510,7 @@
                 }
                 
                 // 更新笔记状态为待审核（相当于送回submissions）
-                const { error: updateError } = await supabase
+                const { error: updateError } = await window.supabaseClient
                     .from('submissions')
                     .update({
                         status: 'pending',
@@ -1415,7 +1548,7 @@
         // 更新笔记数量显示
         async function updateNotesCount() {
             try {
-                const { count, error } = await supabase
+                const { count, error } = await window.supabaseClient
                     .from('submissions')
                     .select('*', { count: 'exact', head: true })
                     .eq('notes', true)
@@ -1483,37 +1616,13 @@
             div.textContent = text;
             return div.innerHTML;
         }
-    </script>
 
-    <!-- 游戏和投稿页面链接（放在代码最后面） -->
-    <script>
-        // 创建数据库函数（如果不存在）
-        async function createDatabaseFunctions() {
-            try {
-                // 创建点赞计数增加函数
-                await supabase.rpc('increment_like_count', {
-                    note_id: ''
-                }).catch(async () => {
-                    // 如果函数不存在，创建它
-                    const { error } = await supabase.rpc('create_increment_function');
-                    if (error) console.log('函数创建可能需要手动执行SQL');
-                });
-
-                // 创建点赞计数减少函数
-                await supabase.rpc('decrement_like_count', {
-                    note_id: ''
-                }).catch(async () => {
-                    // 如果函数不存在，创建它
-                    const { error } = await supabase.rpc('create_decrement_function');
-                    if (error) console.log('函数创建可能需要手动执行SQL');
-                });
-            } catch (error) {
-                console.log('数据库函数检查完成');
-            }
-        }
-
-        // 初始化数据库函数
-        createDatabaseFunctions();
+        // 全局函数声明
+        window.toggleLike = toggleLike;
+        window.openReportModal = openReportModal;
+        window.closeReportModal = closeReportModal;
+        window.submitReport = submitReport;
     </script>
 </body>
 </html>
+
