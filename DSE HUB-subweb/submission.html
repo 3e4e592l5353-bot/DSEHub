@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿中心 - DSEHub</title>
     <style>
-        /* 保留所有CSS样式不变，只删除游戏题目库相关的样式 */
         * {
             margin: 0;
             padding: 0;
@@ -30,19 +29,19 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 蓝紫色主题 */
-        .theme-blue-purple {
-            --primary-start: #667eea;
-            --primary-end: #764ba2;
-            --accent-color: #5a67d8;
-            --accent-light: rgba(90, 103, 216, 0.1);
-            --accent-dark: #4c51bf;
+        /* 橙青色主题 - 与主站匹配 */
+        .theme-orange-teal {
+            --primary-start: #ff8c00;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
             --text-color: #2d3748;
             --text-secondary: #718096;
             --text-muted: #a0aec0;
             --card-bg: rgba(255, 255, 255, 0.95);
-            --card-shadow: rgba(102, 126, 234, 0.15);
-            --border-color: rgba(102, 126, 234, 0.2);
+            --card-shadow: rgba(255, 140, 0, 0.15);
+            --border-color: rgba(255, 140, 0, 0.2);
         }
 
         /* 绿青色主题 */
@@ -58,21 +57,6 @@
             --card-bg: rgba(255, 255, 255, 0.95);
             --card-shadow: rgba(72, 187, 120, 0.15);
             --border-color: rgba(72, 187, 120, 0.2);
-        }
-
-        /* 橙红色主题 */
-        .theme-orange-red {
-            --primary-start: #ff8c00;
-            --primary-end: #ff4500;
-            --accent-color: #ff4500;
-            --accent-light: rgba(255, 69, 0, 0.1);
-            --accent-dark: #e03e00;
-            --text-color: #2d3748;
-            --text-secondary: #718096;
-            --text-muted: #a0aec0;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-shadow: rgba(255, 140, 0, 0.15);
-            --border-color: rgba(255, 140, 0, 0.2);
         }
 
         /* 深色主题 */
@@ -703,31 +687,6 @@
             color: var(--accent-color);
         }
 
-        .game-type-tag {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .type-matching {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-        }
-
-        .type-true_false {
-            background: rgba(72, 187, 120, 0.1);
-            color: #48bb78;
-            border: 1px solid rgba(72, 187, 120, 0.3);
-        }
-
-        .type-guess {
-            background: rgba(255, 140, 0, 0.1);
-            color: #ff8c00;
-            border: 1px solid rgba(255, 140, 0, 0.3);
-        }
-
         .no-history {
             text-align: center;
             padding: 40px 20px;
@@ -788,17 +747,28 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 示例说明 */
-        .example-hint {
+        /* 例子说明 */
+        .example-note {
             font-size: 0.85rem;
             color: var(--text-secondary);
             margin-top: 5px;
-            font-style: italic;
+            padding: 8px;
+            background: var(--accent-light);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .example-item {
+            background: var(--accent-light);
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 3px 0;
+            border-left: 3px solid var(--accent-color);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="theme-blue-purple">
+<body class="theme-orange-teal">
     <div class="container">
         <!-- 头部导航 -->
         <div class="header">
@@ -822,7 +792,7 @@
                 </div>
                 <div class="user-stats">
                     <div class="stat-item">
-                        <div class="stat-label">投稿数</div>
+                        <div class="stat-label">投稿总数</div>
                         <div class="stat-value" id="submissionCount">0</div>
                     </div>
                     <div class="stat-item">
@@ -837,7 +807,7 @@
             </div>
         </div>
 
-        <!-- 页面切换标签（只有两个标签） -->
+        <!-- 页面切换标签 -->
         <div class="page-tabs">
             <button class="page-tab active" onclick="switchPage('submit')">
                 <i class="fas fa-upload"></i> 投稿
@@ -929,15 +899,18 @@
                         <input type="hidden" id="selectedKnowledgeTitle">
                     </div>
 
-                    <!-- 游戏内容区域 -->
+                    <!-- 连连看游戏内容 -->
                     <div id="matchGameContent" class="form-group" style="display: none;">
-                        <label class="form-label">例子列表 *</label>
+                        <label class="form-label">例子输入 *</label>
                         <textarea class="form-control textarea" id="matchExamples" 
-                                  placeholder="请输入多个例子（每行一个）：&#10;太阳像火球&#10;月亮像银盘&#10;星星像珍珠" 
+                                  placeholder="请输入例子，每行一个：&#10;太阳像火球&#10;月亮像银盘&#10;星星像珍珠" 
                                   rows="6" required></textarea>
-                        <div class="example-hint">每行输入一个完整的比喻例子，系统会自动将其拆分为题目和答案</div>
+                        <div class="example-note">
+                            <i class="fas fa-info-circle"></i> 请输入相关例子，每行一个。系统会自动以知识点为主题生成配对题目。
+                        </div>
                     </div>
 
+                    <!-- 对错判断游戏内容 -->
                     <div id="trueFalseContent" class="form-group" style="display: none;">
                         <label class="form-label">问题陈述 *</label>
                         <textarea class="form-control textarea" id="tfQuestion" 
@@ -958,6 +931,7 @@
                         </div>
                     </div>
 
+                    <!-- 猜知识点游戏内容 -->
                     <div id="guessContent" class="form-group" style="display: none;">
                         <label class="form-label">描述/提示 *</label>
                         <textarea class="form-control textarea" id="guessDescription" 
@@ -983,7 +957,7 @@
             </div>
         </div>
 
-        <!-- 投稿历史页面（包含所有类型的投稿） -->
+        <!-- 投稿历史页面 -->
         <div id="historyPage" style="display: none;">
             <div class="submission-form">
                 <h3 style="margin-bottom: 20px; color: var(--text-color);">我的投稿历史</h3>
@@ -992,9 +966,6 @@
                     <button class="filter-btn active" onclick="filterHistory('all')">全部</button>
                     <button class="filter-btn" onclick="filterHistory('knowledge')">知识点</button>
                     <button class="filter-btn" onclick="filterHistory('game')">小游戏</button>
-                    <button class="filter-btn" onclick="filterHistory('matching')">连连看</button>
-                    <button class="filter-btn" onclick="filterHistory('true_false')">对错判断</button>
-                    <button class="filter-btn" onclick="filterHistory('guess')">猜知识点</button>
                     <button class="filter-btn" onclick="filterHistory('pending_review')">等待审核</button>
                     <button class="filter-btn" onclick="filterHistory('approved')">审核通过</button>
                     <button class="filter-btn" onclick="filterHistory('rejected')">审核拒绝</button>
@@ -1062,7 +1033,7 @@
                 id: 'matching',
                 name: '连连看',
                 icon: 'fas fa-link',
-                description: '配对相关的知识点'
+                description: '根据知识点匹配例子'
             },
             {
                 id: 'true_false',
@@ -1080,7 +1051,7 @@
 
         // 用户数据
         let currentUser = null;
-        let currentTheme = 'theme-blue-purple';
+        let currentTheme = 'theme-orange-teal'; // 使用橙青色主题
         let availableKnowledge = [];
         let userSubmissions = [];
         let currentHistoryFilter = 'all';
@@ -1195,9 +1166,13 @@
         function loadUserTheme(userData) {
             if (userData.theme_color) {
                 currentTheme = userData.theme_color;
+                // 确保使用橙青色主题
+                if (!currentTheme.includes('orange')) {
+                    currentTheme = 'theme-orange-teal';
+                }
                 document.body.className = currentTheme;
             } else {
-                document.body.className = 'theme-blue-purple';
+                document.body.className = 'theme-orange-teal';
             }
         }
 
@@ -1272,8 +1247,8 @@
 
         function getMockKnowledge() {
             return [
-                { id: 'mock-1', title: '勾股定理', subject: 'math' },
-                { id: 'mock-2', title: '二次公式', subject: 'math' },
+                { id: 'mock-1', title: '比喻', subject: 'chinese' },
+                { id: 'mock-2', title: '勾股定理', subject: 'math' },
                 { id: 'mock-3', title: '牛顿第二定律', subject: 'physics' },
                 { id: 'mock-4', title: '元素周期表', subject: 'chemistry' },
                 { id: 'mock-5', title: '成语典故', subject: 'chinese' }
@@ -1539,6 +1514,7 @@
                     // 重新加载用户统计
                     setTimeout(() => {
                         loadUserStats();
+                        loadKnowledgePoints(); // 重新加载知识点列表
                     }, 1000);
                     
                 } else {
@@ -1587,44 +1563,26 @@
             
             switch(gameType) {
                 case 'matching':
-                    const examplesText = document.getElementById('matchExamples').value.trim();
-                    if (!examplesText) {
-                        showMessage('error', '请填写例子列表', 'game');
+                    const examples = document.getElementById('matchExamples').value.trim();
+                    if (!examples) {
+                        showMessage('error', '请输入例子', 'game');
                         isValid = false;
                     } else {
-                        // 处理例子：每行一个，自动拆分为配对项
-                        const examples = examplesText.split('\n')
-                            .filter(line => line.trim())
-                            .map(line => {
-                                // 尝试自动拆分，如果包含"像"、"如"、"是"等词
-                                const lineText = line.trim();
-                                let question = lineText;
-                                let answer = '';
-                                
-                                // 简单的自动拆分逻辑
-                                const splitWords = ['像', '如', '是', '好比', '仿佛', '似'];
-                                for (const word of splitWords) {
-                                    if (lineText.includes(word)) {
-                                        const parts = lineText.split(word);
-                                        if (parts.length >= 2) {
-                                            question = parts[0].trim() + word;
-                                            answer = parts.slice(1).join(word).trim();
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                return {
-                                    original: lineText,
-                                    question: question || lineText,
-                                    answer: answer || lineText
-                                };
-                            });
+                        // 处理例子：每行一个，去空格，过滤空行
+                        const examplesArray = examples.split('\n')
+                            .map(line => line.trim())
+                            .filter(line => line.length > 0);
                         
-                        gameData = { 
-                            examples: examples,
-                            examples_text: examplesText // 保留原始文本
-                        };
+                        if (examplesArray.length < 2) {
+                            showMessage('error', '请输入至少2个例子', 'game');
+                            isValid = false;
+                        } else {
+                            // 新的格式：以知识点为主题，例子为内容
+                            gameData = {
+                                topic: selectedKnowledge.dataset.title,
+                                examples: examplesArray
+                            };
+                        }
                     }
                     break;
                     
@@ -1635,7 +1593,10 @@
                         showMessage('error', '请填写问题和选择答案', 'game');
                         isValid = false;
                     } else {
-                        gameData = { question: question, answer: answer };
+                        gameData = { 
+                            question: question, 
+                            answer: answer === 'true' 
+                        };
                     }
                     break;
                     
@@ -1645,7 +1606,10 @@
                         showMessage('error', '请填写描述', 'game');
                         isValid = false;
                     } else {
-                        gameData = { description: description };
+                        gameData = { 
+                            description: description,
+                            answer: selectedKnowledge.dataset.title
+                        };
                     }
                     break;
             }
@@ -1774,12 +1738,6 @@
                 filteredSubmissions = submissions.filter(s => s.category === 'knowledge');
             } else if (currentHistoryFilter === 'game') {
                 filteredSubmissions = submissions.filter(s => s.category === 'game');
-            } else if (currentHistoryFilter === 'matching') {
-                filteredSubmissions = submissions.filter(s => s.game_type === 'matching');
-            } else if (currentHistoryFilter === 'true_false') {
-                filteredSubmissions = submissions.filter(s => s.game_type === 'true_false');
-            } else if (currentHistoryFilter === 'guess') {
-                filteredSubmissions = submissions.filter(s => s.game_type === 'guess');
             } else if (currentHistoryFilter === 'pending_review') {
                 filteredSubmissions = submissions.filter(s => s.status === 'pending_review');
             } else if (currentHistoryFilter === 'approved') {
@@ -1795,7 +1753,7 @@
             
             let html = '';
             filteredSubmissions.forEach(submission => {
-                // 状态标签
+                // 修正的状态映射
                 let statusClass = '';
                 let statusText = '';
                 switch(submission.status) {
@@ -1816,38 +1774,24 @@
                         statusText = submission.status;
                 }
                 
-                // 游戏类型标签
-                let gameTypeTag = '';
-                if (submission.category === 'game') {
-                    let typeClass = '';
-                    let typeText = '';
-                    switch(submission.game_type) {
-                        case 'matching':
-                            typeClass = 'type-matching';
-                            typeText = '连连看';
-                            break;
-                        case 'true_false':
-                            typeClass = 'type-true_false';
-                            typeText = '对错判断';
-                            break;
-                        case 'guess':
-                            typeClass = 'type-guess';
-                            typeText = '猜知识点';
-                            break;
-                    }
-                    gameTypeTag = `<span class="game-type-tag ${typeClass}">${typeText}</span>`;
-                }
-                
                 // 科目名称
                 const subjectName = subjects.find(s => s.id === submission.subject)?.name || submission.subject || '未分类';
                 
-                // 难度显示
-                let difficultyInfo = '';
-                if (submission.difficulty) {
+                // 游戏类型信息
+                let gameInfo = '';
+                if (submission.category === 'game') {
+                    const gameTypeText = submission.game_type === 'matching' ? '连连看' :
+                                       submission.game_type === 'true_false' ? '对错判断' :
+                                       submission.game_type === 'guess' ? '猜知识点' : '';
+                    
                     const difficultyText = submission.difficulty === 'easy' ? '简单' :
                                          submission.difficulty === 'medium' ? '中等' :
                                          submission.difficulty === 'hard' ? '困难' : '';
-                    difficultyInfo = `<span><i class="fas fa-chart-line"></i> ${difficultyText}</span>`;
+                    
+                    gameInfo = `
+                        <span><i class="fas fa-gamepad"></i> ${gameTypeText}</span>
+                        <span><i class="fas fa-chart-line"></i> ${difficultyText}</span>
+                    `;
                 }
                 
                 // 标签显示
@@ -1865,23 +1809,29 @@
                 let contentPreview = '';
                 if (submission.category === 'knowledge') {
                     contentPreview = submission.content || '';
+                    if (contentPreview.length > 100) {
+                        contentPreview = contentPreview.substring(0, 100) + '...';
+                    }
                 } else if (submission.category === 'game') {
                     try {
                         const gameData = JSON.parse(submission.content || '{}');
                         if (submission.game_type === 'matching') {
-                            contentPreview = '配对游戏：' + (gameData.examples_text || '包含多个例子');
+                            const examples = gameData.examples || [];
+                            contentPreview = `连连看：${submission.title}，${examples.length}个例子`;
                         } else if (submission.game_type === 'true_false') {
                             contentPreview = gameData.question || '判断题';
+                            if (contentPreview.length > 80) {
+                                contentPreview = contentPreview.substring(0, 80) + '...';
+                            }
                         } else if (submission.game_type === 'guess') {
                             contentPreview = gameData.description || '描述题';
+                            if (contentPreview.length > 80) {
+                                contentPreview = contentPreview.substring(0, 80) + '...';
+                            }
                         }
                     } catch (e) {
                         contentPreview = '游戏题目';
                     }
-                }
-                
-                if (contentPreview.length > 100) {
-                    contentPreview = contentPreview.substring(0, 100) + '...';
                 }
                 
                 html += `
@@ -1893,8 +1843,7 @@
                         <div class="history-meta">
                             <span><i class="fas fa-book"></i> ${subjectName}</span>
                             <span><i class="fas fa-tag"></i> ${submission.category === 'knowledge' ? '知识点' : '小游戏'}</span>
-                            ${gameTypeTag ? `<span>${gameTypeTag}</span>` : ''}
-                            ${difficultyInfo}
+                            ${gameInfo}
                         </div>
                         <div class="history-content">${contentPreview}</div>
                         <div class="history-footer">
@@ -1912,7 +1861,7 @@
             currentHistoryFilter = filter;
             
             // 更新按钮状态
-            document.querySelectorAll('#historyPage .filter-btn').forEach(btn => {
+            document.querySelectorAll('.page-tabs + .submission-form .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
