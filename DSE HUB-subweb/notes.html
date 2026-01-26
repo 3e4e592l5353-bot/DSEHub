@@ -1241,7 +1241,7 @@
             return `<div class="formatted-text">${formatted}</div>`;
         }
 
-        // 提交笔记
+        // 在 submitNote 函数中，修改 game_type 为 null
         async function submitNote() {
             const title = document.getElementById('note-title').value.trim();
             const content = document.getElementById('note-content').value.trim();
@@ -1271,20 +1271,22 @@
                 
                 const authorName = profile?.username || currentUser.email;
                 
-                // 创建笔记（保存到submissions表）
+                // 修改这里：game_type 设为 null
                 const { data, error } = await window.supabaseClient
                     .from('submissions')
                     .insert({
                         title: title,
                         content: content,
-                        notes: true, // 标记为笔记
+                        notes: true,
                         user_id: currentUser.id,
                         author_name: authorName,
-                        status: 'pending', // 待审核状态
-                        game_type: 'note', // 标记为笔记类型
+                        status: 'pending',
+                        game_type: null,  // ← 设为 null，符合检查约束
                         category: '学习笔记',
                         created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
+                        updated_at: new Date().toISOString(),
+                        like_count: 0,
+                        view_count: 0
                     })
                     .select()
                     .single();
@@ -1304,6 +1306,35 @@
             } catch (error) {
                 console.error('提交笔记错误:', error);
                 showMessage('提交失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 修改 loadNotes 函数，查询 notes=true 且 game_type 为 null 的记录
+        async function loadNotes() {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('submissions')
+                    .select('*')
+                    .eq('notes', true)
+                    .eq('status', 'approved')
+                    .is('game_type', null)  // ← 查询 game_type 为 null 的记录
+                    .order('created_at', { ascending: false })
+                    .range(currentPage * NOTES_PER_PAGE, (currentPage + 1) * NOTES_PER_PAGE - 1);
+                
+                if (error) throw error;
+                
+                if (currentPage === 0) {
+                    notes = data;
+                } else {
+                    notes = [...notes, ...data];
+                }
+                
+                renderNotes();
+                updateNotesCount();
+                
+            } catch (error) {
+                console.error('加载笔记错误:', error);
+                showMessage('加载笔记失败', 'error');
             }
         }
 
@@ -1546,13 +1577,15 @@
         }
 
         // 更新笔记数量显示
+        // 修改 updateNotesCount 函数
         async function updateNotesCount() {
             try {
                 const { count, error } = await window.supabaseClient
                     .from('submissions')
                     .select('*', { count: 'exact', head: true })
                     .eq('notes', true)
-                    .eq('status', 'approved');
+                    .eq('status', 'approved')
+                    .is('game_type', null);  // ← 统计 game_type 为 null 的记录
                 
                 if (!error) {
                     document.getElementById('notes-count').textContent = 
@@ -1625,4 +1658,5 @@
     </script>
 </body>
 </html>
+
 
