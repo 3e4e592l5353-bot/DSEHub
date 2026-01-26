@@ -102,6 +102,18 @@
             --hover-color: rgba(66, 153, 225, 0.1);
         }
 
+        .theme-orange-teal { 
+            --primary-start: #ff8c00;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
+            
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --border-color: rgba(255, 140, 0, 0.15);
+            --hover-color: rgba(255, 140, 0, 0.06);
+        }
+
         /* 深色模式覆盖 */
         .dark-mode {
             background: linear-gradient(135deg, #1a202c, #2d3748);
@@ -146,17 +158,45 @@
         .logo {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
         }
 
+        /* 新增：标题背景样式 */
+        .logo-text {
+            background: rgba(255, 255, 255, 0.9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-lg);
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius-lg);
+            z-index: -1;
+            backdrop-filter: blur(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
         .logo i {
             font-size: 32px;
+            color: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-md);
+            backdrop-filter: blur(4px);
         }
 
         .nav-links {
@@ -165,7 +205,7 @@
         }
 
         .nav-link {
-            color: var(--text-secondary);
+            color: rgba(255, 255, 255, 0.95);
             text-decoration: none;
             font-weight: 600;
             font-size: 16px;
@@ -175,11 +215,14 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
         }
 
         .nav-link:hover, .nav-link.active {
-            color: var(--accent-color);
-            background: var(--accent-light);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .nav-link i {
@@ -853,6 +896,11 @@
             .action-btn {
                 width: 100%;
             }
+
+            .logo-text {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: 24px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -870,10 +918,15 @@
             .note-title {
                 font-size: 20px;
             }
+
+            .logo-text {
+                font-size: 20px;
+                padding: var(--spacing-xs);
+            }
         }
     </style>
 </head>
-<body>
+<body class="theme-blue-purple">
     <!-- 登录覆盖层 -->
     <div id="login-overlay" class="login-overlay" style="display: none;">
         <div class="login-box">
@@ -901,7 +954,7 @@
         <header class="header">
             <a href="#" class="logo">
                 <i class="fas fa-graduation-cap"></i>
-                <span>DSE Hub 学习笔记</span>
+                <span class="logo-text">DSE Hub 学习笔记</span>
             </a>
             
             <nav class="nav-links">
@@ -1087,454 +1140,47 @@
         <a href="submit.html" id="submit-link">投稿页面</a>
     </div>
 
-    <!-- 主题管理器脚本 -->
-    <script>
-        // 主题管理模块
-        class ThemeManager {
-            constructor() {
-                this.supabase = null;
-                this.currentUser = null;
-                this.themeConfig = null;
-                this.pollingInterval = null;
-                this.isInitialized = false;
-                
-                // 默认主题配置
-                this.defaultTheme = 'blue-purple';
-                this.themes = {
-                    'blue-purple': {
-                        primaryStart: '#667eea',
-                        primaryEnd: '#764ba2',
-                        accentColor: '#5a67d8',
-                        accentLight: 'rgba(90, 103, 216, 0.1)',
-                        accentDark: '#4c51bf',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(102, 126, 234, 0.15)',
-                        hoverColor: 'rgba(102, 126, 234, 0.06)'
-                    },
-                    'green-teal': {
-                        primaryStart: '#48bb78',
-                        primaryEnd: '#319795',
-                        accentColor: '#38a169',
-                        accentLight: 'rgba(56, 161, 105, 0.1)',
-                        accentDark: '#2f855a',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(72, 187, 120, 0.15)',
-                        hoverColor: 'rgba(72, 187, 120, 0.06)'
-                    },
-                    'orange-red': {
-                        primaryStart: '#ff8c00',
-                        primaryEnd: '#ff4500',
-                        accentColor: '#ff4500',
-                        accentLight: 'rgba(255, 69, 0, 0.1)',
-                        accentDark: '#e03e00',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(255, 140, 0, 0.15)',
-                        hoverColor: 'rgba(255, 140, 0, 0.06)'
-                    },
-                    'dark': {
-                        primaryStart: '#4a5568',
-                        primaryEnd: '#2d3748',
-                        accentColor: '#4299e1',
-                        accentLight: 'rgba(66, 153, 225, 0.15)',
-                        accentDark: '#3182ce',
-                        cardBg: '#2d3748',
-                        textColor: '#e2e8f0',
-                        textSecondary: '#a0aec0',
-                        textMuted: '#718096',
-                        borderColor: '#4a5568',
-                        hoverColor: 'rgba(66, 153, 225, 0.1)'
-                    }
-                };
-            }
-            
-            // 初始化主题管理器
-            async init(supabaseUrl, supabaseKey) {
-                if (this.isInitialized) return;
-                
-                try {
-                    // 动态加载 Supabase 客户端（如果不存在）
-                    if (typeof window.supabase === 'undefined') {
-                        await this.loadSupabaseClient();
-                    }
-                    
-                    // 创建 Supabase 客户端
-                    this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-                    
-                    // 获取当前用户
-                    const { data: { user } } = await this.supabase.auth.getUser();
-                    this.currentUser = user;
-                    
-                    // 监听认证状态变化
-                    this.supabase.auth.onAuthStateChange((event, session) => {
-                        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-                            this.currentUser = session?.user || null;
-                            this.loadUserTheme();
-                        } else if (event === 'SIGNED_OUT') {
-                            this.currentUser = null;
-                            this.applyDefaultTheme();
-                        }
-                    });
-                    
-                    // 初始加载主题
-                    await this.loadUserTheme();
-                    
-                    // 开始轮询检查主题变化
-                    this.startPolling();
-                    
-                    this.isInitialized = true;
-                    console.log('主题管理器已初始化');
-                    
-                } catch (error) {
-                    console.error('主题管理器初始化失败:', error);
-                    this.applyDefaultTheme();
-                }
-            }
-            
-            // 加载 Supabase 客户端库
-            loadSupabaseClient() {
-                return new Promise((resolve, reject) => {
-                    if (typeof window.supabase !== 'undefined') {
-                        resolve();
-                        return;
-                    }
-                    
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-                    script.onload = () => {
-                        setTimeout(resolve, 100);
-                    };
-                    script.onerror = (error) => {
-                        console.error('加载 Supabase 客户端失败:', error);
-                        reject(new Error('无法加载 Supabase 客户端库'));
-                    };
-                    document.head.appendChild(script);
-                });
-            }
-            
-            // 加载用户主题
-            async loadUserTheme() {
-                if (!this.currentUser) {
-                    this.applyDefaultTheme();
-                    return;
-                }
-                
-                try {
-                    // 获取用户主题设置
-                    const { data: profile, error } = await this.supabase
-                        .from('profiles')
-                        .select('theme, theme_colors, selected_colors, dark_mode')
-                        .eq('id', this.currentUser.id)
-                        .single();
-                    
-                    if (error) throw error;
-                    
-                    // 应用主题
-                    this.applyTheme(profile);
-                    
-                } catch (error) {
-                    console.warn('加载用户主题失败:', error);
-                    this.applyDefaultTheme();
-                }
-            }
-            
-            // 应用主题配置
-            applyTheme(profile) {
-                if (!profile) {
-                    this.applyDefaultTheme();
-                    return;
-                }
-                
-                // 确定使用的主题名称 - 确保主题名小写和连字符格式
-                let themeName = (profile.theme || profile.theme_colors || this.defaultTheme)
-                    .toLowerCase()
-                    .replace(/\s+/g, '-');
-                
-                // 处理可能的主题名格式
-                if (themeName.includes('blue') && themeName.includes('purple')) {
-                    themeName = 'blue-purple';
-                } else if (themeName.includes('green') && themeName.includes('teal')) {
-                    themeName = 'green-teal';
-                } else if (themeName.includes('orange') && themeName.includes('red')) {
-                    themeName = 'orange-red';
-                }
-                
-                // 获取主题配置
-                const themeConfig = this.themes[themeName] || this.themes[this.defaultTheme];
-                
-                // 保存当前主题配置
-                this.themeConfig = {
-                    ...themeConfig,
-                    isDark: Boolean(profile.dark_mode),
-                    customColors: profile.selected_colors || null
-                };
-                
-                // 应用主题到页面
-                this.applyThemeToPage();
-            }
-            
-            // 将主题应用到页面
-            applyThemeToPage() {
-                const root = document.documentElement;
-                const config = this.themeConfig || this.themes[this.defaultTheme];
-                
-                // 移除所有主题类
-                const themeClasses = Array.from(document.body.classList)
-                    .filter(cls => cls.startsWith('theme-'));
-                themeClasses.forEach(cls => document.body.classList.remove(cls));
-                
-                // 添加当前主题类
-                const themeName = this.getCurrentThemeName();
-                document.body.classList.add(`theme-${themeName}`);
-                
-                // 应用深色模式
-                if (config.isDark) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-                
-                // 应用自定义颜色（如果有）
-                if (config.customColors) {
-                    this.applyCustomColors(config.customColors);
-                }
-                
-                // 应用 CSS 变量
-                this.applyCSSVariables(config);
-                
-                // 触发主题变化事件
-                this.emitThemeChange();
-            }
-            
-            // 获取当前主题名称
-            getCurrentThemeName() {
-                if (!this.themeConfig) return this.defaultTheme;
-                
-                for (const [name, config] of Object.entries(this.themes)) {
-                    if (this.themeConfig.primaryStart === config.primaryStart &&
-                        this.themeConfig.primaryEnd === config.primaryEnd) {
-                        return name;
-                    }
-                }
-                return this.defaultTheme;
-            }
-            
-            // 应用自定义颜色
-            applyCustomColors(customColors) {
-                const root = document.documentElement;
-                let colors;
-                
-                try {
-                    colors = typeof customColors === 'string' ? JSON.parse(customColors) : customColors;
-                } catch (e) {
-                    console.warn('无法解析自定义颜色:', e);
-                    return;
-                }
-                
-                // 应用自定义颜色到 CSS 变量
-                Object.entries(colors).forEach(([key, value]) => {
-                    if (value) {
-                        // 转换 camelCase 为 kebab-case
-                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-                        root.style.setProperty(cssVar, value);
-                    }
-                });
-            }
-            
-            // 应用 CSS 变量
-            applyCSSVariables(config) {
-                const root = document.documentElement;
-                
-                Object.entries(config).forEach(([key, value]) => {
-                    if (key !== 'isDark' && key !== 'customColors' && value != null) {
-                        // 转换 camelCase 为 kebab-case
-                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-                        
-                        // 特殊处理渐变值
-                        if (key.includes('Start') || key.includes('End') || key.includes('Color')) {
-                            root.style.setProperty(cssVar, value);
-                        } else if (key === 'cardBg' || key === 'borderColor' || key === 'hoverColor') {
-                            root.style.setProperty(cssVar, value);
-                        } else if (key.startsWith('text')) {
-                            root.style.setProperty(cssVar, value);
-                        }
-                    }
-                });
-            }
-            
-            // 应用默认主题
-            applyDefaultTheme() {
-                this.themeConfig = this.themes[this.defaultTheme];
-                this.applyThemeToPage();
-            }
-            
-            // 开始轮询检查主题变化
-            startPolling() {
-                // 每30秒检查一次主题变化
-                this.pollingInterval = setInterval(async () => {
-                    if (this.currentUser) {
-                        try {
-                            await this.loadUserTheme();
-                        } catch (error) {
-                            console.warn('轮询更新主题失败:', error);
-                        }
-                    }
-                }, 30000);
-                
-                // 也监听页面可见性变化
-                document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden && this.currentUser) {
-                        this.loadUserTheme();
-                    }
-                });
-            }
-            
-            // 停止轮询
-            stopPolling() {
-                if (this.pollingInterval) {
-                    clearInterval(this.pollingInterval);
-                    this.pollingInterval = null;
-                }
-            }
-            
-            // 触发主题变化事件
-            emitThemeChange() {
-                try {
-                    const event = new CustomEvent('themechange', {
-                        detail: {
-                            theme: this.getCurrentThemeName(),
-                            config: this.themeConfig
-                        }
-                    });
-                    document.dispatchEvent(event);
-                } catch (error) {
-                    console.warn('触发主题变化事件失败:', error);
-                }
-            }
-            
-            // 获取当前主题配置
-            getCurrentTheme() {
-                return {
-                    name: this.getCurrentThemeName(),
-                    config: this.themeConfig
-                };
-            }
-            
-            // 手动更新主题（从外部调用）
-            async updateTheme() {
-                try {
-                    await this.loadUserTheme();
-                } catch (error) {
-                    console.error('手动更新主题失败:', error);
-                }
-            }
-            
-            // 清理
-            destroy() {
-                this.stopPolling();
-                this.isInitialized = false;
-                this.currentUser = null;
-                this.themeConfig = null;
-                
-                // 移除事件监听器
-                document.removeEventListener('visibilitychange', () => {});
-            }
-        }
-
-        // 创建全局主题管理器实例
-        if (!window.ThemeManager) {
-            window.ThemeManager = new ThemeManager();
-        }
-
-        // 自动初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => {
-                    if (!window.ThemeManager.isInitialized) {
-                        const defaultConfig = {
-                            url: 'https://alsalyskulozwakhmzoa.supabase.co',
-                            key: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
-                        };
-                        
-                        const config = window.THEME_CONFIG || defaultConfig;
-                        
-                        window.ThemeManager.init(config.url, config.key)
-                            .catch(err => console.error('主题管理器初始化失败:', err));
-                    }
-                }, 100);
-            });
-        } else {
-            // 如果文档已经加载完成，直接初始化
-            setTimeout(() => {
-                if (!window.ThemeManager.isInitialized) {
-                    const defaultConfig = {
-                        url: 'https://alsalyskulozwakhmzoa.supabase.co',
-                        key: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
-                    };
-                    
-                    const config = window.THEME_CONFIG || defaultConfig;
-                    
-                    window.ThemeManager.init(config.url, config.key)
-                        .catch(err => console.error('主题管理器初始化失败:', err));
-                }
-            }, 100);
-        }
-    </script>
-
     <!-- 主应用脚本 -->
     <script>
+        // Supabase 配置
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        
         // 全局变量
         let currentUser = null;
         let notes = [];
         let currentPage = 0;
         const NOTES_PER_PAGE = 20;
-        
+        let currentTheme = 'theme-blue-purple'; // 默认蓝紫色
+        let themePollingInterval = null;
+
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', async () => {
-            // 等待主题管理器初始化
-            setTimeout(async () => {
-                await initializeApp();
-                setupEventListeners();
-                loadNotes();
-            }, 500);
+            await initializeApp();
+            setupEventListeners();
+            loadNotes();
         });
 
         // 初始化应用
         async function initializeApp() {
             try {
-                // 检查主题管理器是否已初始化
-                if (!window.ThemeManager || !window.ThemeManager.supabase) {
-                    showMessage('主题管理器正在初始化...', 'info');
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-                
-                const supabaseClient = window.ThemeManager.supabase;
-                
-                // 从 localStorage 获取可能的 session
+                // 检查是否有现有的会话
                 const token = localStorage.getItem('supabase.auth.token');
                 let user = null;
                 
+                // 尝试从 localStorage 获取用户
                 if (token) {
-                    // 尝试使用 localStorage 中的 token
-                    const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser();
-                    if (!authError && authUser) {
-                        user = authUser;
-                    }
-                }
-                
-                // 如果没有从 localStorage 获取到，尝试从当前 session 获取
-                if (!user) {
-                    const { data: { session }, error } = await supabaseClient.auth.getSession();
-                    if (!error && session) {
-                        user = session.user;
+                    // 使用 fetch API 直接验证用户
+                    const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'apikey': SUPABASE_KEY
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        user = data.user;
                     }
                 }
                 
@@ -1547,16 +1193,11 @@
                     // 更新用户显示
                     document.getElementById('current-user').textContent = user.email;
                     
-                    // 获取用户资料
-                    const { data: profile } = await supabaseClient
-                        .from('profiles')
-                        .select('username')
-                        .eq('id', user.id)
-                        .single();
+                    // 获取用户资料和主题
+                    await loadUserData();
                     
-                    if (profile && profile.username) {
-                        document.getElementById('current-user').textContent = profile.username;
-                    }
+                    // 开始主题轮询
+                    startThemePolling();
                     
                 } else {
                     // 没有登录用户，显示登录覆盖层
@@ -1569,6 +1210,139 @@
                 console.error('初始化错误:', error);
                 showMessage('初始化失败，请刷新页面', 'error');
             }
+        }
+
+        // 加载用户数据
+        async function loadUserData() {
+            try {
+                // 先加载用户主题
+                await loadUserTheme();
+                
+                // 获取用户资料
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=username,theme_color,theme_colors`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const profiles = await response.json();
+                    if (profiles && profiles.length > 0) {
+                        const userProfile = profiles[0];
+                        
+                        // 更新用户名显示
+                        if (userProfile.username) {
+                            document.getElementById('current-user').textContent = userProfile.username;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载用户数据失败:', error);
+            }
+        }
+
+        // 加载用户主题
+        async function loadUserTheme() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('正在加载用户主题，用户ID:', currentUser.id);
+                
+                // 从 profiles 表获取用户的 theme_color 或 theme_colors
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=theme_color,theme_colors`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const profiles = await response.json();
+                    if (profiles && profiles.length > 0) {
+                        const userProfile = profiles[0];
+                        const themeColor = userProfile.theme_color || userProfile.theme_colors;
+                        
+                        console.log('获取到用户主题:', themeColor);
+                        
+                        // 根据 theme_color 应用对应的主题类
+                        let themeClass = 'theme-blue-purple'; // 默认
+                        
+                        if (themeColor) {
+                            // 精确匹配主题
+                            const themeLower = themeColor.toLowerCase().replace(/\s+/g, '-');
+                            
+                            if (themeLower === 'blue-purple' || themeLower === 'theme-blue-purple' || 
+                                (themeLower.includes('blue') && themeLower.includes('purple'))) {
+                                themeClass = 'theme-blue-purple';
+                            } else if (themeLower === 'green-teal' || themeLower === 'theme-green-teal' || 
+                                     (themeLower.includes('green') && themeLower.includes('teal'))) {
+                                themeClass = 'theme-green-teal';
+                            } else if (themeLower === 'orange-red' || themeLower === 'theme-orange-red' || 
+                                     (themeLower.includes('orange') && themeLower.includes('red'))) {
+                                themeClass = 'theme-orange-red';
+                            } else if (themeLower === 'dark' || themeLower === 'theme-dark') {
+                                themeClass = 'theme-dark';
+                            } else if (themeLower === 'orange-teal' || themeLower === 'theme-orange-teal' || 
+                                     (themeLower.includes('orange') && themeLower.includes('teal'))) {
+                                themeClass = 'theme-orange-teal';
+                            }
+                        }
+                        
+                        // 如果主题改变了，应用新主题
+                        if (currentTheme !== themeClass) {
+                            currentTheme = themeClass;
+                            document.body.className = themeClass;
+                            console.log('应用主题:', themeClass);
+                            
+                            // 触发主题变化事件
+                            document.dispatchEvent(new CustomEvent('themechange', {
+                                detail: { theme: themeClass }
+                            }));
+                        }
+                    } else {
+                        console.log('没有找到用户profile，使用默认主题');
+                        applyDefaultTheme();
+                    }
+                } else {
+                    console.log('获取profile失败，使用默认主题');
+                    applyDefaultTheme();
+                }
+            } catch (error) {
+                console.error('加载用户主题失败:', error);
+                applyDefaultTheme();
+            }
+        }
+
+        // 应用默认主题
+        function applyDefaultTheme() {
+            if (currentTheme !== 'theme-blue-purple') {
+                currentTheme = 'theme-blue-purple';
+                document.body.className = 'theme-blue-purple';
+            }
+        }
+
+        // 开始主题轮询
+        function startThemePolling() {
+            // 每30秒检查一次主题变化
+            themePollingInterval = setInterval(async () => {
+                if (currentUser) {
+                    await loadUserTheme();
+                }
+            }, 30000); // 30秒
+            
+            // 页面可见时也检查
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && currentUser) {
+                    loadUserTheme();
+                }
+            });
         }
 
         // 设置事件监听器
@@ -1614,9 +1388,15 @@
             // 登录按钮
             document.getElementById('main-site-login').addEventListener('click', function(e) {
                 e.preventDefault();
-                // 重定向到主站登录页，登录后返回此页面
+                // 重定向到主站登录页
                 const returnUrl = encodeURIComponent(window.location.href);
                 window.location.href = `https://alsalyskulozwakhmzoa.supabase.co/auth/v1/authorize?provider=github&redirect_to=${returnUrl}`;
+            });
+
+            // 监听主题变化
+            document.addEventListener('themechange', (event) => {
+                console.log('主题已更改为:', event.detail.theme);
+                // 可以在这里添加主题变化后的额外处理
             });
         }
 
@@ -1717,38 +1497,56 @@
             }
             
             try {
-                const supabaseClient = window.ThemeManager.supabase;
-                
                 // 获取用户资料
-                const { data: profile } = await supabaseClient
-                    .from('profiles')
-                    .select('username')
-                    .eq('id', currentUser.id)
-                    .single();
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=username`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
                 
-                const authorName = profile?.username || currentUser.email;
+                let authorName = currentUser.email;
+                if (response.ok) {
+                    const profiles = await response.json();
+                    if (profiles && profiles.length > 0) {
+                        authorName = profiles[0].username || currentUser.email;
+                    }
+                }
                 
-                // 创建笔记（保存到submissions表）- 使用null作为game_type
-                const { data, error } = await supabaseClient
-                    .from('submissions')
-                    .insert({
-                        title: title,
-                        content: content,
-                        notes: true,
-                        user_id: currentUser.id,
-                        author_name: authorName,
-                        status: 'pending',
-                        game_type: null,  // 设为null
-                        category: '学习笔记',
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString(),
-                        like_count: 0,
-                        view_count: 0
-                    })
-                    .select()
-                    .single();
+                // 创建笔记（保存到submissions表）
+                const noteData = {
+                    title: title,
+                    content: content,
+                    notes: true,
+                    user_id: currentUser.id,
+                    author_name: authorName,
+                    status: 'pending',
+                    game_type: null,
+                    category: '学习笔记',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    like_count: 0,
+                    view_count: 0
+                };
                 
-                if (error) throw error;
+                const createResponse = await fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify([noteData])
+                });
+                
+                if (!createResponse.ok) {
+                    const error = await createResponse.json();
+                    throw new Error(error.message || '提交失败');
+                }
                 
                 // 清空表单
                 document.getElementById('note-title').value = '';
@@ -1769,17 +1567,19 @@
         // 加载笔记
         async function loadNotes() {
             try {
-                const supabaseClient = window.ThemeManager.supabase;
-                const { data, error } = await supabaseClient
-                    .from('submissions')
-                    .select('*')
-                    .eq('notes', true)
-                    .eq('status', 'approved')
-                    .is('game_type', null)
-                    .order('created_at', { ascending: false })
-                    .range(currentPage * NOTES_PER_PAGE, (currentPage + 1) * NOTES_PER_PAGE - 1);
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?notes=eq.true&status=eq.approved&game_type=is.null&order=created_at.desc&limit=${NOTES_PER_PAGE}&offset=${currentPage * NOTES_PER_PAGE}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
                 
-                if (error) throw error;
+                if (!response.ok) throw new Error('加载失败');
+                
+                const data = await response.json();
                 
                 if (currentPage === 0) {
                     notes = data;
@@ -1871,55 +1671,72 @@
             }
             
             try {
-                const supabaseClient = window.ThemeManager.supabase;
-                
                 // 检查是否已经点赞
-                const { data: existingLike } = await supabaseClient
-                    .from('likes')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .eq('target_type', 'submission')
-                    .eq('target_id', noteId)
-                    .single();
+                const checkResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/likes?user_id=eq.${currentUser.id}&target_type=eq.submission&target_id=eq.${noteId}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                let existingLike = null;
+                if (checkResponse.ok) {
+                    const likes = await checkResponse.json();
+                    existingLike = likes && likes.length > 0 ? likes[0] : null;
+                }
                 
                 if (existingLike) {
                     // 取消点赞
-                    await supabaseClient
-                        .from('likes')
-                        .delete()
-                        .eq('id', existingLike.id);
+                    await fetch(`${SUPABASE_URL}/rest/v1/likes?id=eq.${existingLike.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
                     
-                    // 更新submissions表的like_count
-                    await supabaseClient.rpc('decrement_like_count', { note_id: noteId });
+                    // 更新点赞数（递减）
+                    await updateLikeCount(noteId, -1);
                     
                     showMessage('已取消点赞', 'info');
                 } else {
                     // 添加点赞
-                    await supabaseClient
-                        .from('likes')
-                        .insert({
-                            user_id: currentUser.id,
-                            target_type: 'submission',
-                            target_id: noteId,
-                            created_at: new Date().toISOString()
-                        });
+                    const likeData = {
+                        user_id: currentUser.id,
+                        target_type: 'submission',
+                        target_id: noteId,
+                        created_at: new Date().toISOString()
+                    };
                     
-                    // 更新submissions表的like_count
-                    await supabaseClient.rpc('increment_like_count', { note_id: noteId });
+                    await fetch(`${SUPABASE_URL}/rest/v1/likes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify([likeData])
+                    });
+                    
+                    // 更新点赞数（递增）
+                    await updateLikeCount(noteId, 1);
                     
                     showMessage('点赞成功！', 'success');
                 }
                 
-                // 更新本地数据并重新渲染
+                // 更新本地数据
                 const noteIndex = notes.findIndex(n => n.id === noteId);
                 if (noteIndex !== -1) {
                     const currentLikes = notes[noteIndex].like_count || 0;
                     notes[noteIndex].like_count = existingLike ? currentLikes - 1 : currentLikes + 1;
                     
-                    // 只更新该笔记的点赞显示
+                    // 更新显示
                     const likeBtn = document.querySelector(`[data-id="${noteId}"] .like-btn`);
                     const likeCountSpan = likeBtn.querySelector('.like-count');
-                    
                     likeCountSpan.textContent = notes[noteIndex].like_count;
                     likeBtn.classList.toggle('active', !existingLike);
                 }
@@ -1927,6 +1744,43 @@
             } catch (error) {
                 console.error('点赞操作错误:', error);
                 showMessage('操作失败', 'error');
+            }
+        }
+
+        // 更新点赞数
+        async function updateLikeCount(noteId, delta) {
+            try {
+                // 先获取当前点赞数
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}&select=like_count`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const currentLikeCount = data[0].like_count || 0;
+                        const newLikeCount = Math.max(0, currentLikeCount + delta);
+                        
+                        // 更新点赞数
+                        await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            },
+                            body: JSON.stringify({ like_count: newLikeCount })
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('更新点赞数失败:', error);
             }
         }
 
@@ -1959,36 +1813,48 @@
             }
             
             try {
-                const supabaseClient = window.ThemeManager.supabase;
-                
                 // 获取被举报的笔记信息
-                const { data: note } = await supabaseClient
-                    .from('submissions')
-                    .select('*')
-                    .eq('id', noteId)
-                    .single();
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
                 
-                if (!note) {
+                if (!response.ok) throw new Error('笔记不存在');
+                
+                const notes = await response.json();
+                if (!notes || notes.length === 0) {
                     showMessage('笔记不存在', 'error');
                     return;
                 }
                 
-                // 更新笔记状态为待审核（相当于送回submissions）
-                const { error: updateError } = await supabaseClient
-                    .from('submissions')
-                    .update({
-                        status: 'pending',
-                        messages: {
-                            reported_by: currentUser.id,
-                            reported_at: new Date().toISOString(),
-                            reason: reason,
-                            reported_by_name: currentUser.email
-                        },
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', noteId);
+                // 更新笔记状态为待审核
+                const updateData = {
+                    status: 'pending',
+                    messages: {
+                        reported_by: currentUser.id,
+                        reported_at: new Date().toISOString(),
+                        reason: reason,
+                        reported_by_name: currentUser.email
+                    },
+                    updated_at: new Date().toISOString()
+                };
                 
-                if (updateError) throw updateError;
+                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (!updateResponse.ok) throw new Error('举报失败');
                 
                 showMessage('举报成功！笔记已送回审核队列', 'success');
                 closeReportModal();
@@ -2012,17 +1878,21 @@
         // 更新笔记数量显示
         async function updateNotesCount() {
             try {
-                const supabaseClient = window.ThemeManager.supabase;
-                const { count, error } = await supabaseClient
-                    .from('submissions')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('notes', true)
-                    .eq('status', 'approved')
-                    .is('game_type', null);
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?notes=eq.true&status=eq.approved&game_type=is.null&select=count`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
                 
-                if (!error) {
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data[0]?.count || 0;
                     document.getElementById('notes-count').textContent = 
-                        `${notes.length} / ${count || 0}`;
+                        `${notes.length} / ${count}`;
                 }
             } catch (error) {
                 console.error('获取笔记数量错误:', error);
@@ -2083,11 +1953,22 @@
             return div.innerHTML;
         }
 
+        // 清理函数
+        function cleanup() {
+            if (themePollingInterval) {
+                clearInterval(themePollingInterval);
+                themePollingInterval = null;
+            }
+        }
+
         // 全局函数声明
         window.toggleLike = toggleLike;
         window.openReportModal = openReportModal;
         window.closeReportModal = closeReportModal;
         window.submitReport = submitReport;
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', cleanup);
     </script>
 </body>
 </html>
