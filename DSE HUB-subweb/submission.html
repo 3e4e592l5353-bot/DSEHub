@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿中心 - DSEHub</title>
     <style>
+        /* 保留所有CSS样式不变，只删除游戏题目库相关的样式 */
         * {
             margin: 0;
             padding: 0;
@@ -702,6 +703,31 @@
             color: var(--accent-color);
         }
 
+        .game-type-tag {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .type-matching {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .type-true_false {
+            background: rgba(72, 187, 120, 0.1);
+            color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+        }
+
+        .type-guess {
+            background: rgba(255, 140, 0, 0.1);
+            color: #ff8c00;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
         .no-history {
             text-align: center;
             padding: 40px 20px;
@@ -762,27 +788,12 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 连连看示例 */
-        .match-example {
-            background: var(--accent-light);
-            border-left: 4px solid var(--accent-color);
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .match-example code {
-            background: rgba(0,0,0,0.05);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        .examples-count {
-            font-size: 0.8rem;
+        /* 示例说明 */
+        .example-hint {
+            font-size: 0.85rem;
             color: var(--text-secondary);
             margin-top: 5px;
+            font-style: italic;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -822,15 +833,11 @@
                         <div class="stat-label">等待审核</div>
                         <div class="stat-value" id="pendingCount">0</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">游戏题目</div>
-                        <div class="stat-value" id="questionCount">0</div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 页面切换标签（已删除游戏题目库） -->
+        <!-- 页面切换标签（只有两个标签） -->
         <div class="page-tabs">
             <button class="page-tab active" onclick="switchPage('submit')">
                 <i class="fas fa-upload"></i> 投稿
@@ -907,7 +914,7 @@
                         </div>
                     </div>
 
-                    <!-- 知识点选择（所有游戏类型共用） -->
+                    <!-- 知识点选择 -->
                     <div class="form-group knowledge-selector">
                         <label class="form-label">选择关联知识点 *</label>
                         <div class="search-box">
@@ -922,27 +929,20 @@
                         <input type="hidden" id="selectedKnowledgeTitle">
                     </div>
 
-                    <!-- 连连看内容区域 -->
+                    <!-- 游戏内容区域 -->
                     <div id="matchGameContent" class="form-group" style="display: none;">
-                        <label class="form-label">配对示例 *</label>
-                        <div class="match-example">
-                            <strong>格式说明：</strong> 每行一个配对项目，用 <code>//</code> 分隔左右项
-                            <br><strong>示例：</strong>
-                            <br><code>勾股定理 // a²+b²=c²</code>
-                            <br><code>牛顿第二定律 // F=ma</code>
-                            <br><code>光合作用 // CO₂+H₂O→葡萄糖+O₂</code>
-                        </div>
+                        <label class="form-label">例子列表 *</label>
                         <textarea class="form-control textarea" id="matchExamples" 
-                                  placeholder="请输入配对项目（至少3对，每行一对）：&#10;项目A // 对应的项目B&#10;项目C // 对应的项目D&#10;项目E // 对应的项目F" 
+                                  placeholder="请输入多个例子（每行一个）：&#10;太阳像火球&#10;月亮像银盘&#10;星星像珍珠" 
                                   rows="6" required></textarea>
-                        <div class="examples-count" id="examplesCount">0 对示例</div>
+                        <div class="example-hint">每行输入一个完整的比喻例子，系统会自动将其拆分为题目和答案</div>
                     </div>
 
                     <div id="trueFalseContent" class="form-group" style="display: none;">
                         <label class="form-label">问题陈述 *</label>
                         <textarea class="form-control textarea" id="tfQuestion" 
                                   placeholder="请输入需要判断正误的陈述..." 
-                                  rows="4" required></textarea>
+                                  required></textarea>
                         
                         <div style="margin-top: 15px;">
                             <label class="form-label">正确答案 *</label>
@@ -962,7 +962,7 @@
                         <label class="form-label">描述/提示 *</label>
                         <textarea class="form-control textarea" id="guessDescription" 
                                   placeholder="请描述这个知识点，但不直接说出名称..." 
-                                  rows="4" required></textarea>
+                                  required></textarea>
                     </div>
 
                     <!-- 难度选择 -->
@@ -983,7 +983,7 @@
             </div>
         </div>
 
-        <!-- 投稿历史页面（包含所有投稿） -->
+        <!-- 投稿历史页面（包含所有类型的投稿） -->
         <div id="historyPage" style="display: none;">
             <div class="submission-form">
                 <h3 style="margin-bottom: 20px; color: var(--text-color);">我的投稿历史</h3>
@@ -992,6 +992,9 @@
                     <button class="filter-btn active" onclick="filterHistory('all')">全部</button>
                     <button class="filter-btn" onclick="filterHistory('knowledge')">知识点</button>
                     <button class="filter-btn" onclick="filterHistory('game')">小游戏</button>
+                    <button class="filter-btn" onclick="filterHistory('matching')">连连看</button>
+                    <button class="filter-btn" onclick="filterHistory('true_false')">对错判断</button>
+                    <button class="filter-btn" onclick="filterHistory('guess')">猜知识点</button>
                     <button class="filter-btn" onclick="filterHistory('pending_review')">等待审核</button>
                     <button class="filter-btn" onclick="filterHistory('approved')">审核通过</button>
                     <button class="filter-btn" onclick="filterHistory('rejected')">审核拒绝</button>
@@ -1135,11 +1138,6 @@
                 validateKnowledgeContent();
             });
 
-            // 连连看示例计数
-            document.getElementById('matchExamples').addEventListener('input', function() {
-                updateExamplesCount();
-            });
-
             // 知识点搜索
             document.getElementById('knowledgeSearch').addEventListener('input', searchKnowledge);
         }
@@ -1184,6 +1182,7 @@
             document.getElementById('username').textContent = '未登录';
             document.getElementById('userEmail').textContent = '请先登录主站';
             
+            // 禁用表单
             document.querySelectorAll('form').forEach(form => {
                 form.querySelectorAll('input, textarea, button, select').forEach(element => {
                     element.disabled = true;
@@ -1225,22 +1224,18 @@
                     const total = userSubmissions.length;
                     const approved = userSubmissions.filter(s => s.status === 'approved').length;
                     const pending = userSubmissions.filter(s => s.status === 'pending_review').length;
-                    const questionCount = userSubmissions.filter(s => 
-                        s.category === 'game' && s.status === 'approved'
-                    ).length;
                     
                     // 更新显示
                     document.getElementById('submissionCount').textContent = total;
                     document.getElementById('approvedCount').textContent = approved;
                     document.getElementById('pendingCount').textContent = pending;
-                    document.getElementById('questionCount').textContent = questionCount;
                 }
             } catch (error) {
                 console.log('加载用户统计失败:', error);
+                // 设置默认值
                 document.getElementById('submissionCount').textContent = '0';
                 document.getElementById('approvedCount').textContent = '0';
                 document.getElementById('pendingCount').textContent = '0';
-                document.getElementById('questionCount').textContent = '0';
             }
         }
 
@@ -1308,6 +1303,7 @@
             
             knowledgeSelection.innerHTML = html;
             
+            // 添加点击事件
             knowledgeSelection.querySelectorAll('.knowledge-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.knowledge-btn').forEach(b => b.classList.remove('selected'));
@@ -1403,7 +1399,6 @@
             switch(gameType) {
                 case 'matching':
                     document.getElementById('matchGameContent').style.display = 'block';
-                    updateExamplesCount();
                     break;
                 case 'true_false':
                     document.getElementById('trueFalseContent').style.display = 'block';
@@ -1427,21 +1422,6 @@
                 wordCount.className = 'word-count error';
             } else {
                 wordCount.className = 'word-count';
-            }
-        }
-
-        function updateExamplesCount() {
-            const textarea = document.getElementById('matchExamples');
-            const examplesCount = document.getElementById('examplesCount');
-            const lines = textarea.value.split('\n').filter(line => line.trim().includes('//'));
-            
-            const count = lines.length;
-            examplesCount.textContent = `${count} 对示例`;
-            
-            if (count < 3) {
-                examplesCount.className = 'examples-count warning';
-            } else {
-                examplesCount.className = 'examples-count';
             }
         }
 
@@ -1607,29 +1587,44 @@
             
             switch(gameType) {
                 case 'matching':
-                    const examples = document.getElementById('matchExamples').value.trim();
-                    const lines = examples.split('\n').filter(line => line.trim().includes('//'));
-                    
-                    if (lines.length < 3) {
-                        showMessage('error', '至少需要3对配对示例', 'game');
+                    const examplesText = document.getElementById('matchExamples').value.trim();
+                    if (!examplesText) {
+                        showMessage('error', '请填写例子列表', 'game');
                         isValid = false;
                     } else {
-                        // 解析配对示例
-                        const pairs = lines.map(line => {
-                            const [left, right] = line.split('//').map(s => s.trim());
-                            return { left: left || '', right: right || '' };
-                        }).filter(pair => pair.left && pair.right);
+                        // 处理例子：每行一个，自动拆分为配对项
+                        const examples = examplesText.split('\n')
+                            .filter(line => line.trim())
+                            .map(line => {
+                                // 尝试自动拆分，如果包含"像"、"如"、"是"等词
+                                const lineText = line.trim();
+                                let question = lineText;
+                                let answer = '';
+                                
+                                // 简单的自动拆分逻辑
+                                const splitWords = ['像', '如', '是', '好比', '仿佛', '似'];
+                                for (const word of splitWords) {
+                                    if (lineText.includes(word)) {
+                                        const parts = lineText.split(word);
+                                        if (parts.length >= 2) {
+                                            question = parts[0].trim() + word;
+                                            answer = parts.slice(1).join(word).trim();
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                return {
+                                    original: lineText,
+                                    question: question || lineText,
+                                    answer: answer || lineText
+                                };
+                            });
                         
-                        if (pairs.length < 3) {
-                            showMessage('error', '请确保每行都有完整的配对（用 // 分隔）', 'game');
-                            isValid = false;
-                        } else {
-                            gameData = { 
-                                examples: examples,
-                                pairs: pairs,
-                                pair_count: pairs.length
-                            };
-                        }
+                        gameData = { 
+                            examples: examples,
+                            examples_text: examplesText // 保留原始文本
+                        };
                     }
                     break;
                     
@@ -1779,6 +1774,12 @@
                 filteredSubmissions = submissions.filter(s => s.category === 'knowledge');
             } else if (currentHistoryFilter === 'game') {
                 filteredSubmissions = submissions.filter(s => s.category === 'game');
+            } else if (currentHistoryFilter === 'matching') {
+                filteredSubmissions = submissions.filter(s => s.game_type === 'matching');
+            } else if (currentHistoryFilter === 'true_false') {
+                filteredSubmissions = submissions.filter(s => s.game_type === 'true_false');
+            } else if (currentHistoryFilter === 'guess') {
+                filteredSubmissions = submissions.filter(s => s.game_type === 'guess');
             } else if (currentHistoryFilter === 'pending_review') {
                 filteredSubmissions = submissions.filter(s => s.status === 'pending_review');
             } else if (currentHistoryFilter === 'approved') {
@@ -1815,22 +1816,38 @@
                         statusText = submission.status;
                 }
                 
+                // 游戏类型标签
+                let gameTypeTag = '';
+                if (submission.category === 'game') {
+                    let typeClass = '';
+                    let typeText = '';
+                    switch(submission.game_type) {
+                        case 'matching':
+                            typeClass = 'type-matching';
+                            typeText = '连连看';
+                            break;
+                        case 'true_false':
+                            typeClass = 'type-true_false';
+                            typeText = '对错判断';
+                            break;
+                        case 'guess':
+                            typeClass = 'type-guess';
+                            typeText = '猜知识点';
+                            break;
+                    }
+                    gameTypeTag = `<span class="game-type-tag ${typeClass}">${typeText}</span>`;
+                }
+                
                 // 科目名称
                 const subjectName = subjects.find(s => s.id === submission.subject)?.name || submission.subject || '未分类';
                 
-                // 游戏类型信息
-                let gameInfo = '';
-                if (submission.category === 'game') {
-                    const gameTypeText = submission.game_type === 'matching' ? '连连看' :
-                                       submission.game_type === 'true_false' ? '对错判断' :
-                                       submission.game_type === 'guess' ? '猜知识点' : '';
-                    
+                // 难度显示
+                let difficultyInfo = '';
+                if (submission.difficulty) {
                     const difficultyText = submission.difficulty === 'easy' ? '简单' :
                                          submission.difficulty === 'medium' ? '中等' :
                                          submission.difficulty === 'hard' ? '困难' : '';
-                    
-                    gameInfo = `<span><i class="fas fa-gamepad"></i> ${gameTypeText}</span>
-                                ${submission.difficulty ? `<span><i class="fas fa-chart-line"></i> ${difficultyText}</span>` : ''}`;
+                    difficultyInfo = `<span><i class="fas fa-chart-line"></i> ${difficultyText}</span>`;
                 }
                 
                 // 标签显示
@@ -1845,12 +1862,14 @@
                 ).join('');
                 
                 // 内容预览
-                let contentPreview = submission.content || '';
-                if (submission.category === 'game') {
+                let contentPreview = '';
+                if (submission.category === 'knowledge') {
+                    contentPreview = submission.content || '';
+                } else if (submission.category === 'game') {
                     try {
-                        const gameData = JSON.parse(contentPreview);
+                        const gameData = JSON.parse(submission.content || '{}');
                         if (submission.game_type === 'matching') {
-                            contentPreview = `连连看游戏 - ${gameData.pair_count || 0} 对配对`;
+                            contentPreview = '配对游戏：' + (gameData.examples_text || '包含多个例子');
                         } else if (submission.game_type === 'true_false') {
                             contentPreview = gameData.question || '判断题';
                         } else if (submission.game_type === 'guess') {
@@ -1874,7 +1893,8 @@
                         <div class="history-meta">
                             <span><i class="fas fa-book"></i> ${subjectName}</span>
                             <span><i class="fas fa-tag"></i> ${submission.category === 'knowledge' ? '知识点' : '小游戏'}</span>
-                            ${gameInfo}
+                            ${gameTypeTag ? `<span>${gameTypeTag}</span>` : ''}
+                            ${difficultyInfo}
                         </div>
                         <div class="history-content">${contentPreview}</div>
                         <div class="history-footer">
@@ -1892,7 +1912,7 @@
             currentHistoryFilter = filter;
             
             // 更新按钮状态
-            document.querySelectorAll('.page-tabs + .submission-form .filter-btn').forEach(btn => {
+            document.querySelectorAll('#historyPage .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
@@ -1911,4 +1931,3 @@
     </script>
 </body>
 </html>
-
