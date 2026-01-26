@@ -3,421 +3,694 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三合一知识对战</title>
+    <title>知识对战平台 - 三合一游戏</title>
+    
+    <!-- Supabase客户端库 -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <style>
+        /* 使用你提供的完整设计系统 */
         :root {
-            --primary-start: #667eea;
-            --primary-end: #764ba2;
-            --accent-color: #5a67d8;
+            /* 🎨 色彩系统 */
+            --primary-start: #667eea;     /* 蓝色 */
+            --primary-end: #764ba2;       /* 紫色 */
+            --accent-color: #5a67d8;      /* 强调蓝紫色 */
+            --accent-light: rgba(90, 103, 216, 0.1);
+            --accent-dark: #4c51bf;
             --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --border-color: rgba(102, 126, 234, 0.15);
+            --hover-color: rgba(102, 126, 234, 0.06);
+            
+            /* 📏 间距系统 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
             --spacing-xl: 24px;
+            
+            /* 🔲 圆角系统 */
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
             --border-radius-xl: 20px;
+            
+            /* 🌈 阴影系统 */
+            --shadow-sm: 0 2px 8px rgba(102, 126, 234, 0.08);
+            --shadow-md: 0 4px 16px rgba(102, 126, 234, 0.12);
             --shadow-lg: 0 8px 32px rgba(102, 126, 234, 0.16);
+            --shadow-xl: 0 12px 48px rgba(102, 126, 234, 0.2);
+            
+            /* ⚡ 动画系统 */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            
+            /* 🧭 布局系统 */
+            --container-width: 1200px;
+            --side-nav-width: 260px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-color);
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            margin: 0;
-            padding: var(--spacing-xl);
+            line-height: 1.6;
         }
         
-        .game-container {
-            max-width: 1200px;
+        /* 🧭 主容器 */
+        .container {
+            max-width: var(--container-width);
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: var(--spacing-xl);
-        }
-        
-        /* 游戏类型侧边栏 */
-        .game-sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
-            box-shadow: var(--shadow-lg);
-            height: fit-content;
-            position: sticky;
-            top: var(--spacing-xl);
         }
         
-        .game-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            margin: 12px 0;
-            background: white;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .game-option:hover {
-            transform: translateX(4px);
-            border-color: var(--accent-color);
-        }
-        
-        .game-option.active {
-            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
-            color: white;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .game-icon {
-            font-size: 24px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-        
-        /* 游戏主区域 */
-        .game-main {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: var(--border-radius-xl);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-lg);
-            min-height: 600px;
-        }
-        
-        .game-header {
+        /* 🎯 头部区域 */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .score-display {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--primary-end);
-            background: rgba(102, 126, 234, 0.1);
-            padding: 8px 20px;
-            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent-color);
+            background: var(--accent-light);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-lg);
         }
         
-        /* 连连看网格 */
-        .linkup-grid {
+        /* 📱 主要内容区域 */
+        .content-area {
+            display: flex;
+            gap: var(--spacing-xl);
+            min-height: 600px;
+        }
+        
+        /* 🎮 游戏类型选择侧边栏 */
+        .side-nav {
+            width: var(--side-nav-width);
+            position: sticky;
+            top: var(--spacing-xl);
+            align-self: flex-start;
+        }
+        
+        .game-nav {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .game-nav-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-color);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .game-nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: 1px solid transparent;
+        }
+        
+        .game-nav-item:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .game-nav-item.active {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .game-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 🎲 游戏主区域 */
+        .game-main {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .game-header {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .game-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .game-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        /* 🔗 连连看游戏区域 */
+        .linkup-container {
+            display: none;
+        }
+        
+        .linkup-container.active {
+            display: block;
+        }
+        
+        .linkup-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            max-width: 800px;
-            margin: 0 auto;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
         }
         
         .linkup-card {
-            aspect-ratio: 1;
+            min-height: 120px;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea15, #764ba215);
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 16px;
+            padding: var(--spacing-md);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all var(--transition-normal);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
         .linkup-card.knowledge {
-            background: linear-gradient(135deg, #48bb7815, #31979515);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .linkup-card.question {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(49, 151, 149, 0.1));
             border-color: rgba(72, 187, 120, 0.3);
         }
         
+        .linkup-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
         .linkup-card.selected {
-            transform: scale(1.05);
+            transform: translateY(-4px);
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.2);
+            box-shadow: 0 0 0 3px var(--accent-light), var(--shadow-lg);
         }
         
         .linkup-card.matched {
-            opacity: 0.3;
-            transform: scale(0.95);
+            opacity: 0.4;
+            pointer-events: none;
         }
         
         .card-label {
             font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+        }
+        
+        .card-content {
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text-color);
-            opacity: 0.7;
-            margin-bottom: 4px;
         }
         
-        /* 对错判断样式 */
+        /* ✅ 对错判断游戏区域 */
+        .truefalse-container {
+            display: none;
+        }
+        
+        .truefalse-container.active {
+            display: block;
+        }
+        
         .question-card {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
         }
         
-        .truefalse-options {
+        .question-text {
+            font-size: 18px;
+            margin-bottom: var(--spacing-xl);
+            line-height: 1.7;
+        }
+        
+        .answer-options {
             display: flex;
-            gap: 20px;
+            gap: var(--spacing-lg);
             justify-content: center;
-            margin-top: 40px;
+            margin-top: var(--spacing-xl);
         }
         
-        .truefalse-btn {
-            padding: 20px 40px;
-            font-size: 1.2em;
-            border-radius: 16px;
+        /* ❓ 猜知识点游戏区域 */
+        .guess-container {
+            display: none;
+        }
+        
+        .guess-container.active {
+            display: block;
+        }
+        
+        .clue-card {
+            background: linear-gradient(135deg, var(--accent-light), transparent);
+            border-left: 4px solid var(--accent-color);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-xl) 0;
+            border-radius: var(--border-radius-md);
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .option-card {
+            padding: var(--spacing-lg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-align: center;
+            font-size: 15px;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* ⚔️ 联机对战区域 */
+        .duel-panel {
+            background: var(--accent-light);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+        
+        .room-input-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        /* 🎯 按钮系统 */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            min-height: 44px;
+            font-size: 14px;
+            border-radius: var(--border-radius-lg);
             border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            min-width: 160px;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
         
-        .true-btn {
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-success {
             background: linear-gradient(135deg, #48bb78, #38a169);
             color: white;
         }
         
-        .false-btn {
+        .btn-danger {
             background: linear-gradient(135deg, #f56565, #e53e3e);
             color: white;
         }
         
-        /* 猜知识点样式 */
-        .guess-clue {
-            font-size: 1.3em;
-            line-height: 1.6;
-            padding: 30px;
-            background: rgba(102, 126, 234, 0.05);
-            border-radius: 16px;
-            margin: 30px 0;
-            border-left: 4px solid var(--accent-color);
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
         }
         
-        .guess-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .guess-option {
-            padding: 20px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-size: 1.1em;
-        }
-        
-        .guess-option:hover {
-            transform: translateY(-2px);
+        .btn-secondary:hover {
+            background: var(--hover-color);
             border-color: var(--accent-color);
         }
         
-        .guess-option.correct {
-            background: linear-gradient(135deg, #48bb78, #38a169);
-            color: white;
-        }
-        
-        .guess-option.wrong {
-            background: linear-gradient(135deg, #f56565, #e53e3e);
-            color: white;
-        }
-        
-        /* 联机对战面板 */
-        .duel-panel {
-            background: rgba(102, 126, 234, 0.05);
-            border-radius: 16px;
-            padding: 24px;
-            margin-top: 30px;
-        }
-        
-        .player-status {
+        /* 📊 游戏控制区域 */
+        .game-controls {
             display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
         }
         
-        .player {
+        .result-message {
             text-align: center;
-            padding: 16px;
-            background: white;
-            border-radius: 12px;
-            min-width: 180px;
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border-radius: var(--border-radius-lg);
+            font-size: 16px;
+            font-weight: 600;
         }
         
-        .player.active {
-            box-shadow: 0 0 0 3px var(--accent-color);
+        .success {
+            background: rgba(72, 187, 120, 0.1);
+            color: #38a169;
+            border: 1px solid rgba(72, 187, 120, 0.3);
         }
         
-        @media (max-width: 768px) {
-            .game-container {
-                grid-template-columns: 1fr;
+        .error {
+            background: rgba(245, 101, 101, 0.1);
+            color: #e53e3e;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+        }
+        
+        /* 📱 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-area {
+                flex-direction: column;
             }
             
-            .game-sidebar {
+            .side-nav {
+                width: 100%;
                 position: static;
             }
             
-            .linkup-grid {
+            .linkup-board {
                 grid-template-columns: repeat(3, 1fr);
             }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-lg);
+            }
             
-            .guess-options {
+            .linkup-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .options-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .answer-options {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .linkup-board {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- 左侧游戏类型选择 -->
-        <div class="game-sidebar">
-            <h2>🎮 游戏类型</h2>
-            <div class="game-option active" onclick="switchGame('linkup')">
-                <div class="game-icon">🔗</div>
-                <div>
-                    <h3>连连看</h3>
-                    <p style="font-size: 12px; opacity: 0.7;">匹配知识点与题目</p>
-                </div>
-            </div>
-            
-            <div class="game-option" onclick="switchGame('truefalse')">
-                <div class="game-icon">✅</div>
-                <div>
-                    <h3>对错判断</h3>
-                    <p style="font-size: 12px; opacity: 0.7;">判断题目正误</p>
-                </div>
-            </div>
-            
-            <div class="game-option" onclick="switchGame('guess')">
-                <div class="game-icon">❓</div>
-                <div>
-                    <h3>猜知识点</h3>
-                    <p style="font-size: 12px; opacity: 0.7;">根据线索猜知识点</p>
-                </div>
-            </div>
-            
-            <div class="duel-panel">
-                <h3>⚔️ 联机对战</h3>
-                <button onclick="startDuel()" style="width: 100%; margin-top: 12px;">
-                    创建对战房间
-                </button>
-                <div style="margin-top: 16px; font-size: 14px;">
-                    <input type="text" placeholder="输入房间ID" id="roomIdInput" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
-                    <button onclick="joinDuel()" style="width: 100%; margin-top: 8px;">加入房间</button>
-                </div>
+    <div class="container">
+        <!-- 头部区域 -->
+        <div class="header">
+            <div class="logo">🧠 知识对战平台</div>
+            <div class="score-display">
+                得分: <span id="global-score">0</span>
             </div>
         </div>
         
-        <!-- 右侧游戏主区域 -->
-        <div class="game-main">
-            <div class="game-header">
-                <h1 id="game-title">知识点连连看</h1>
-                <div class="score-display">
-                    得分: <span id="current-score">0</span>
-                </div>
-            </div>
-            
-            <!-- 连连看游戏区域 -->
-            <div id="linkup-game" class="game-area active">
-                <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                    点击匹配对应的知识点和题目，每个知识点可能对应多个题目
-                </p>
-                <div id="linkup-board" class="linkup-grid">
-                    <!-- 卡片通过JavaScript动态生成 -->
-                </div>
-                <div style="text-align: center; margin-top: 30px;">
-                    <button onclick="restartLinkUp()" style="padding: 12px 24px;">重新开始</button>
-                </div>
-            </div>
-            
-            <!-- 对错判断游戏区域 -->
-            <div id="truefalse-game" class="game-area" style="display: none;">
-                <div class="question-card">
-                    <p id="tf-question-text">加载题目中...</p>
-                    <div class="truefalse-options">
-                        <button class="truefalse-btn true-btn" onclick="answerTrueFalse(true)">✅ 正确</button>
-                        <button class="truefalse-btn false-btn" onclick="answerTrueFalse(false)">❌ 错误</button>
+        <!-- 主要内容区域 -->
+        <div class="content-area">
+            <!-- 左侧游戏导航 -->
+            <div class="side-nav">
+                <div class="game-nav">
+                    <div class="game-nav-header">🎮 游戏类型</div>
+                    
+                    <div class="game-nav-item active" onclick="switchGame('linkup')">
+                        <div class="game-icon">🔗</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">连连看</div>
+                            <div style="font-size: 12px; color: inherit; opacity: 0.8;">匹配知识点与题目</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-nav-item" onclick="switchGame('truefalse')">
+                        <div class="game-icon">✅</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">对错判断</div>
+                            <div style="font-size: 12px; color: inherit; opacity: 0.8;">判断题目正误</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-nav-item" onclick="switchGame('guess')">
+                        <div class="game-icon">❓</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px;">猜知识点</div>
+                            <div style="font-size: 12px; color: inherit; opacity: 0.8;">根据线索猜知识点</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 联机对战面板 -->
+                    <div class="duel-panel">
+                        <div style="font-weight: 600; margin-bottom: var(--spacing-sm);">⚔️ 联机对战</div>
+                        <button class="btn btn-primary" onclick="createDuelRoom()" style="width: 100%;">
+                            创建房间
+                        </button>
+                        <div class="room-input-group">
+                            <input type="text" id="roomIdInput" placeholder="输入房间ID" 
+                                   style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+                            <button class="btn btn-secondary" onclick="joinDuelRoom()">加入</button>
+                        </div>
                     </div>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <p id="tf-result" style="font-size: 1.2em;"></p>
-                    <button onclick="nextTrueFalse()" style="margin-top: 16px;">下一题</button>
-                </div>
             </div>
             
-            <!-- 猜知识点游戏区域 -->
-            <div id="guess-game" class="game-area" style="display: none;">
-                <div class="question-card">
-                    <p class="guess-clue" id="guess-clue-text">线索加载中...</p>
-                    <div id="guess-options-container" class="guess-options">
+            <!-- 右侧游戏主区域 -->
+            <div class="game-main">
+                <!-- 连连看游戏 -->
+                <div id="linkup-game" class="linkup-container active">
+                    <div class="game-header">
+                        <h2>🔗 知识点连连看</h2>
+                        <p class="game-description">点击匹配对应的知识点和题目，每个知识点可能对应多个题目</p>
+                    </div>
+                    
+                    <div id="linkup-board" class="linkup-board">
+                        <!-- 卡片通过JavaScript动态生成 -->
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="restartLinkUp()">
+                            🔄 重新开始
+                        </button>
+                        <button class="btn btn-primary" onclick="loadMoreLinkUpCards()">
+                            ➕ 加载更多
+                        </button>
+                    </div>
+                    
+                    <div id="linkup-result" class="result-message" style="display: none;"></div>
+                </div>
+                
+                <!-- 对错判断游戏 -->
+                <div id="truefalse-game" class="truefalse-container">
+                    <div class="game-header">
+                        <h2>✅ 对错判断</h2>
+                        <p class="game-description">判断以下题目陈述的正确性</p>
+                    </div>
+                    
+                    <div class="question-card">
+                        <div id="tf-question-text" class="question-text">
+                            题目加载中...
+                        </div>
+                        
+                        <div class="answer-options">
+                            <button class="btn btn-success" onclick="answerTrueFalse(true)">
+                                ✅ 正确
+                            </button>
+                            <button class="btn btn-danger" onclick="answerTrueFalse(false)">
+                                ❌ 错误
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="tf-result" class="result-message" style="display: none;"></div>
+                    
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="nextTrueFalse()">
+                            ⏭️ 下一题
+                        </button>
+                        <button class="btn btn-primary" onclick="showExplanation()">
+                            📖 查看解析
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 猜知识点游戏 -->
+                <div id="guess-game" class="guess-container">
+                    <div class="game-header">
+                        <h2>❓ 猜知识点</h2>
+                        <p class="game-description">根据题目线索选择正确的知识点</p>
+                    </div>
+                    
+                    <div class="clue-card">
+                        <div id="guess-clue-text" class="question-text">
+                            线索加载中...
+                        </div>
+                    </div>
+                    
+                    <div id="guess-options" class="options-grid">
                         <!-- 选项通过JavaScript动态生成 -->
                     </div>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <p id="guess-result"></p>
-                    <button onclick="nextGuess()" style="margin-top: 16px;">下一题</button>
+                    
+                    <div id="guess-result" class="result-message" style="display: none;"></div>
+                    
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" onclick="nextGuess()">
+                            ⏭️ 下一题
+                        </button>
+                        <button class="btn btn-primary" onclick="skipGuess()">
+                            ⏭️ 跳过此题
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Supabase配置
-        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // 游戏状态
+        // 🔧 全局配置 - 只声明一次
+        let supabaseClient = null;
         let currentGame = 'linkup';
-        let score = 0;
-        let linkupPairs = [];
-        let selectedCards = [];
+        let globalScore = 0;
         
-        // 初始化
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initLinkUpGame();
-        });
+        // 🎮 游戏状态
+        let linkupState = {
+            pairs: [],
+            selectedCards: [],
+            matchedPairs: 0
+        };
         
-        // 切换游戏
-        function switchGame(gameType) {
-            // 更新UI
-            document.querySelectorAll('.game-option').forEach(opt => {
-                opt.classList.remove('active');
-            });
-            document.querySelectorAll('.game-area').forEach(area => {
-                area.style.display = 'none';
-            });
-            
-            event.currentTarget.classList.add('active');
-            
-            // 更新游戏状态
-            currentGame = gameType;
-            
-            // 更新标题
-            const titles = {
-                'linkup': '知识点连连看',
-                'truefalse': '对错判断挑战',
-                'guess': '猜知识点'
-            };
-            document.getElementById('game-title').textContent = titles[gameType];
-            
-            // 显示对应的游戏区域
-            document.getElementById(`${gameType}-game`).style.display = 'block';
+        let truefalseState = {
+            currentQuestion: null,
+            questionHistory: []
+        };
+        
+        let guessState = {
+            currentClue: null,
+            options: []
+        };
+        
+        // 📦 初始化函数
+        function initApp() {
+            // 初始化Supabase客户端
+            supabaseClient = supabase.createClient(
+                'https://alsalyskulozwakhmzoa.supabase.co',
+                'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
+            );
             
             // 初始化游戏
+            initLinkUpGame();
+            
+            // 更新分数显示
+            updateScoreDisplay();
+            
+            console.log('游戏平台初始化完成');
+        }
+        
+        // 🔄 切换游戏
+        function switchGame(gameType) {
+            if (currentGame === gameType) return;
+            
+            // 更新导航项状态
+            document.querySelectorAll('.game-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // 隐藏所有游戏容器
+            document.querySelectorAll('.linkup-container, .truefalse-container, .guess-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // 显示目标游戏
+            document.getElementById(`${gameType}-game`).classList.add('active');
+            
+            // 更新当前游戏状态
+            currentGame = gameType;
+            
+            // 初始化对应游戏
             if (gameType === 'linkup') {
                 initLinkUpGame();
             } else if (gameType === 'truefalse') {
@@ -427,168 +700,223 @@
             }
         }
         
-        // ==================== 连连看游戏 ====================
+        // 🔗 连连看游戏函数
         async function initLinkUpGame() {
             const board = document.getElementById('linkup-board');
+            if (!board) return;
+            
             board.innerHTML = '';
-            selectedCards = [];
+            linkupState.selectedCards = [];
+            linkupState.matchedPairs = 0;
             
-            // 从数据库获取数据
-            const { data: knowledgePoints } = await supabase
-                .from('knowledge_points')
-                .select('id, title')
-                .limit(6);
-            
-            linkupPairs = [];
-            
-            // 为每个知识点找2-3个相关题目
-            for (const kp of knowledgePoints) {
-                const { data: questions } = await supabase
-                    .from('questions')
-                    .select('id, title, content')
-                    .eq('knowledge_id', kp.id)
-                    .eq('game_type', 'linkup')
-                    .limit(3);
-                
-                if (questions && questions.length > 0) {
-                    // 添加知识点头
-                    linkupPairs.push({
-                        type: 'knowledge',
-                        text: kp.title,
-                        pairId: kp.id,
-                        id: `k-${kp.id}`
-                    });
-                    
-                    // 添加相关题目
-                    questions.forEach((q, idx) => {
-                        linkupPairs.push({
-                            type: 'question',
-                            text: q.title.length > 30 ? q.title.substring(0, 30) + '...' : q.title,
-                            pairId: kp.id,
-                            id: `q-${q.id}`
-                        });
-                    });
-                }
+            // 清空结果消息
+            const resultMsg = document.getElementById('linkup-result');
+            if (resultMsg) {
+                resultMsg.style.display = 'none';
+                resultMsg.textContent = '';
             }
             
-            // 洗牌
-            linkupPairs.sort(() => Math.random() - 0.5);
-            
-            // 生成卡片
-            linkupPairs.forEach(item => {
-                const card = document.createElement('div');
-                card.className = `linkup-card ${item.type}`;
-                card.innerHTML = `
-                    <div class="card-label">${item.type === 'knowledge' ? '📚 知识点' : '❓ 题目'}</div>
-                    <div style="font-weight: bold;">${item.text}</div>
-                `;
-                card.dataset.id = item.id;
-                card.dataset.pairId = item.pairId;
-                card.dataset.type = item.type;
-                card.onclick = () => handleCardClick(card);
-                board.appendChild(card);
-            });
+            try {
+                // 获取知识点
+                const { data: knowledgePoints, error: kpError } = await supabaseClient
+                    .from('knowledge_points')
+                    .select('id, title')
+                    .limit(6);
+                
+                if (kpError) throw kpError;
+                
+                linkupState.pairs = [];
+                
+                // 为每个知识点获取相关题目
+                for (const kp of knowledgePoints) {
+                    const { data: questions, error: qError } = await supabaseClient
+                        .from('questions')
+                        .select('id, title')
+                        .eq('knowledge_id', kp.id)
+                        .eq('game_type', 'linkup')
+                        .limit(2);
+                    
+                    if (qError) throw qError;
+                    
+                    if (questions && questions.length > 0) {
+                        // 添加知识点头卡片
+                        linkupState.pairs.push({
+                            id: `k-${kp.id}`,
+                            type: 'knowledge',
+                            text: kp.title,
+                            pairId: kp.id
+                        });
+                        
+                        // 添加题目卡片
+                        questions.forEach((q, idx) => {
+                            linkupState.pairs.push({
+                                id: `q-${q.id}`,
+                                type: 'question',
+                                text: q.title.length > 30 ? q.title.substring(0, 30) + '...' : q.title,
+                                pairId: kp.id
+                            });
+                        });
+                    }
+                }
+                
+                // 洗牌
+                linkupState.pairs.sort(() => Math.random() - 0.5);
+                
+                // 生成卡片
+                linkupState.pairs.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = `linkup-card ${item.type}`;
+                    card.dataset.id = item.id;
+                    card.dataset.pairId = item.pairId;
+                    card.dataset.type = item.type;
+                    
+                    card.innerHTML = `
+                        <div class="card-label">${item.type === 'knowledge' ? '📚 知识点' : '❓ 题目'}</div>
+                        <div class="card-content">${item.text}</div>
+                    `;
+                    
+                    card.onclick = () => handleCardClick(card);
+                    board.appendChild(card);
+                });
+                
+            } catch (error) {
+                console.error('初始化连连看游戏失败:', error);
+                board.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">加载失败，请刷新页面重试</div>';
+            }
         }
         
         function handleCardClick(card) {
             if (card.classList.contains('matched') || card.classList.contains('selected')) return;
             
             card.classList.add('selected');
-            selectedCards.push(card);
+            linkupState.selectedCards.push(card);
             
-            if (selectedCards.length === 2) {
-                const [card1, card2] = selectedCards;
+            if (linkupState.selectedCards.length === 2) {
+                const [card1, card2] = linkupState.selectedCards;
                 const isMatch = card1.dataset.pairId === card2.dataset.pairId && 
                                card1.dataset.type !== card2.dataset.type;
                 
                 if (isMatch) {
+                    // 匹配成功
                     setTimeout(() => {
                         card1.classList.add('matched');
                         card2.classList.add('matched');
-                        updateScore(10);
-                        checkLinkUpCompletion();
+                        card1.classList.remove('selected');
+                        card2.classList.remove('selected');
+                        
+                        linkupState.matchedPairs++;
+                        updateGlobalScore(10);
+                        
+                        // 检查是否完成所有配对
+                        if (linkupState.matchedPairs === linkupState.pairs.length / 2) {
+                            const resultMsg = document.getElementById('linkup-result');
+                            if (resultMsg) {
+                                resultMsg.textContent = '🎉 恭喜！你完成了所有配对！';
+                                resultMsg.className = 'result-message success';
+                                resultMsg.style.display = 'block';
+                            }
+                        }
                     }, 500);
                 } else {
+                    // 匹配失败
                     setTimeout(() => {
                         card1.classList.remove('selected');
                         card2.classList.remove('selected');
-                    }, 1000);
+                    }, 800);
                 }
                 
-                selectedCards = [];
-            }
-        }
-        
-        function checkLinkUpCompletion() {
-            const matchedCards = document.querySelectorAll('.linkup-card.matched').length;
-            if (matchedCards === linkupPairs.length) {
-                setTimeout(() => {
-                    alert('🎉 恭喜！你完成了所有配对！');
-                }, 300);
+                linkupState.selectedCards = [];
             }
         }
         
         function restartLinkUp() {
             initLinkUpGame();
-            score = 0;
-            updateScore(0);
         }
         
-        // ==================== 对错判断游戏 ====================
+        async function loadMoreLinkUpCards() {
+            // 这里可以添加加载更多卡片的逻辑
+            alert('加载更多卡片功能待实现');
+        }
+        
+        // ✅ 对错判断游戏函数
         async function loadTrueFalseQuestion() {
-            const { data } = await supabase
-                .from('questions')
-                .select(`
-                    id, title, content, correct_answer, explanation,
-                    knowledge_points!inner (title)
-                `)
-                .eq('game_type', 'truefalse')
-                .limit(1)
-                .single();
-            
-            if (data) {
-                // 存储正确答案
-                window.currentTFQuestion = {
-                    id: data.id,
-                    actualAnswer: data.correct_answer,
-                    explanation: data.explanation
-                };
+            try {
+                const { data, error } = await supabaseClient
+                    .from('questions')
+                    .select(`
+                        id, title, content, correct_answer, explanation,
+                        knowledge_points!inner (title)
+                    `)
+                    .eq('game_type', 'truefalse')
+                    .limit(1)
+                    .single();
                 
-                // 随机决定是否颠倒显示
-                const shouldFlip = Math.random() > 0.5;
-                const displayAnswer = shouldFlip ? !data.correct_answer : data.correct_answer;
+                if (error) throw error;
                 
-                // 显示题目
-                document.getElementById('tf-question-text').innerHTML = `
-                    <strong>题目：</strong>${data.content || data.title}<br><br>
-                    <strong>陈述：</strong>${data.knowledge_points.title}<br><br>
-                    <strong>答案：</strong><span style="color: ${displayAnswer ? '#48bb78' : '#f56565'}">
-                    ${displayAnswer ? '正确' : '错误'}</span>
-                `;
-                
-                // 存储显示答案
-                window.currentTFQuestion.displayedAnswer = displayAnswer;
-                
-                document.getElementById('tf-result').textContent = '';
+                if (data) {
+                    truefalseState.currentQuestion = {
+                        id: data.id,
+                        content: data.content || data.title,
+                        knowledge: data.knowledge_points.title,
+                        actualAnswer: data.correct_answer,
+                        explanation: data.explanation
+                    };
+                    
+                    // 随机决定是否颠倒显示
+                    const shouldFlip = Math.random() > 0.5;
+                    const displayAnswer = shouldFlip ? !data.correct_answer : data.correct_answer;
+                    truefalseState.currentQuestion.displayedAnswer = displayAnswer;
+                    
+                    // 显示题目
+                    const questionText = document.getElementById('tf-question-text');
+                    if (questionText) {
+                        questionText.innerHTML = `
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <strong>题目：</strong>${data.content || data.title}
+                            </div>
+                            <div style="margin-bottom: var(--spacing-md);">
+                                <strong>知识点：</strong>${data.knowledge_points.title}
+                            </div>
+                            <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md);">
+                                <strong>陈述：</strong><span style="color: ${displayAnswer ? '#38a169' : '#e53e3e'}; font-weight: 600;">
+                                ${displayAnswer ? '正确' : '错误'}</span>
+                            </div>
+                        `;
+                    }
+                    
+                    // 清空结果消息
+                    const resultMsg = document.getElementById('tf-result');
+                    if (resultMsg) {
+                        resultMsg.style.display = 'none';
+                        resultMsg.textContent = '';
+                    }
+                }
+            } catch (error) {
+                console.error('加载对错判断题失败:', error);
+                const questionText = document.getElementById('tf-question-text');
+                if (questionText) {
+                    questionText.textContent = '加载题目失败，请重试';
+                }
             }
         }
         
         function answerTrueFalse(userAnswer) {
-            const question = window.currentTFQuestion;
+            if (!truefalseState.currentQuestion) return;
+            
+            const question = truefalseState.currentQuestion;
             const isCorrect = (userAnswer === question.actualAnswer);
             
-            if (isCorrect) {
-                document.getElementById('tf-result').innerHTML = `
-                    <span style="color: #48bb78;">✅ 回答正确！</span>
-                    <br><small>${question.explanation || '太棒了！'}</small>
-                `;
-                updateScore(5);
-            } else {
-                document.getElementById('tf-result').innerHTML = `
-                    <span style="color: #f56565;">❌ 回答错误！</span>
-                    <br><small>正确答案：${question.actualAnswer ? '正确' : '错误'}</small>
-                    <br><small>${question.explanation || ''}</small>
-                `;
+            const resultMsg = document.getElementById('tf-result');
+            if (resultMsg) {
+                if (isCorrect) {
+                    resultMsg.textContent = `✅ 回答正确！ ${question.explanation ? '解析：' + question.explanation : ''}`;
+                    resultMsg.className = 'result-message success';
+                    updateGlobalScore(5);
+                } else {
+                    resultMsg.textContent = `❌ 回答错误！正确答案：${question.actualAnswer ? '正确' : '错误'}。${question.explanation ? '解析：' + question.explanation : ''}`;
+                    resultMsg.className = 'result-message error';
+                }
+                resultMsg.style.display = 'block';
             }
         }
         
@@ -596,66 +924,128 @@
             loadTrueFalseQuestion();
         }
         
-        // ==================== 猜知识点游戏 ====================
-        async function loadGuessQuestion() {
-            // 获取一道题目作为线索
-            const { data: clueQuestion } = await supabase
-                .from('questions')
-                .select(`
-                    id, content, knowledge_id,
-                    knowledge_points!inner (title, subject)
-                `)
-                .eq('game_type', 'guess')
-                .limit(1)
-                .single();
+        function showExplanation() {
+            if (!truefalseState.currentQuestion) return;
             
-            if (!clueQuestion) return;
-            
-            // 显示线索
-            document.getElementById('guess-clue-text').textContent = clueQuestion.content;
-            
-            // 获取3个错误选项
-            const { data: wrongOptions } = await supabase
-                .from('knowledge_points')
-                .select('id, title')
-                .neq('id', clueQuestion.knowledge_id)
-                .limit(3);
-            
-            // 合并选项
-            const options = [
-                { id: clueQuestion.knowledge_id, text: clueQuestion.knowledge_points.title, correct: true },
-                ...wrongOptions.map(opt => ({ id: opt.id, text: opt.title, correct: false }))
-            ].sort(() => Math.random() - 0.5);
-            
-            // 生成选项按钮
-            const container = document.getElementById('guess-options-container');
-            container.innerHTML = '';
-            
-            options.forEach(opt => {
-                const button = document.createElement('div');
-                button.className = 'guess-option';
-                button.textContent = opt.text;
-                button.onclick = () => checkGuessAnswer(opt.correct, button);
-                container.appendChild(button);
-            });
-            
-            document.getElementById('guess-result').textContent = '';
+            alert(`题目解析：\n\n${truefalseState.currentQuestion.explanation || '暂无详细解析'}`);
         }
         
-        function checkGuessAnswer(isCorrect, button) {
-            document.querySelectorAll('.guess-option').forEach(opt => {
-                opt.style.pointerEvents = 'none';
+        // ❓ 猜知识点游戏函数
+        async function loadGuessQuestion() {
+            try {
+                // 获取一道题目作为线索
+                const { data: clueQuestion, error: clueError } = await supabaseClient
+                    .from('questions')
+                    .select(`
+                        id, content, knowledge_id,
+                        knowledge_points!inner (title, subject)
+                    `)
+                    .eq('game_type', 'guess')
+                    .limit(1)
+                    .single();
+                
+                if (clueError) throw clueError;
+                
+                if (!clueQuestion) {
+                    throw new Error('未找到合适的题目');
+                }
+                
+                guessState.currentClue = clueQuestion;
+                
+                // 显示线索
+                const clueText = document.getElementById('guess-clue-text');
+                if (clueText) {
+                    clueText.textContent = clueQuestion.content || '题目内容加载中...';
+                }
+                
+                // 获取3个错误选项
+                const { data: wrongOptions, error: optionsError } = await supabaseClient
+                    .from('knowledge_points')
+                    .select('id, title')
+                    .neq('id', clueQuestion.knowledge_id)
+                    .limit(3);
+                
+                if (optionsError) throw optionsError;
+                
+                // 合并选项
+                guessState.options = [
+                    { 
+                        id: clueQuestion.knowledge_id, 
+                        text: clueQuestion.knowledge_points.title, 
+                        correct: true 
+                    },
+                    ...wrongOptions.map(opt => ({ 
+                        id: opt.id, 
+                        text: opt.title, 
+                        correct: false 
+                    }))
+                ].sort(() => Math.random() - 0.5);
+                
+                // 生成选项按钮
+                const optionsContainer = document.getElementById('guess-options');
+                if (optionsContainer) {
+                    optionsContainer.innerHTML = '';
+                    
+                    guessState.options.forEach((opt, index) => {
+                        const optionCard = document.createElement('div');
+                        optionCard.className = 'option-card';
+                        optionCard.dataset.index = index;
+                        optionCard.dataset.correct = opt.correct;
+                        optionCard.textContent = opt.text;
+                        optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
+                        optionsContainer.appendChild(optionCard);
+                    });
+                }
+                
+                // 清空结果消息
+                const resultMsg = document.getElementById('guess-result');
+                if (resultMsg) {
+                    resultMsg.style.display = 'none';
+                    resultMsg.textContent = '';
+                }
+                
+            } catch (error) {
+                console.error('加载猜知识点题目失败:', error);
+                const clueText = document.getElementById('guess-clue-text');
+                if (clueText) {
+                    clueText.textContent = '加载题目失败，请重试';
+                }
+            }
+        }
+        
+        function checkGuessAnswer(isCorrect, optionCard) {
+            // 禁用所有选项
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.style.pointerEvents = 'none';
             });
             
+            // 标记正确/错误
             if (isCorrect) {
-                button.classList.add('correct');
-                document.getElementById('guess-result').innerHTML = 
-                    '<span style="color: #48bb78;">✅ 答对了！</span>';
-                updateScore(10);
+                optionCard.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+                optionCard.style.color = 'white';
+                optionCard.style.borderColor = '#38a169';
+                
+                updateGlobalScore(10);
             } else {
-                button.classList.add('wrong');
-                document.getElementById('guess-result').innerHTML = 
-                    '<span style="color: #f56565;">❌ 答错了</span>';
+                optionCard.style.background = 'linear-gradient(135deg, #f56565, #e53e3e)';
+                optionCard.style.color = 'white';
+                optionCard.style.borderColor = '#e53e3e';
+                
+                // 找到正确的选项并高亮
+                const correctCard = document.querySelector('.option-card[data-correct="true"]');
+                if (correctCard) {
+                    correctCard.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
+                    correctCard.style.color = 'white';
+                    correctCard.style.borderColor = '#38a169';
+                }
+            }
+            
+            // 显示结果消息
+            const resultMsg = document.getElementById('guess-result');
+            if (resultMsg) {
+                resultMsg.textContent = isCorrect ? '✅ 答对了！' : '❌ 答错了';
+                resultMsg.className = `result-message ${isCorrect ? 'success' : 'error'}`;
+                resultMsg.style.display = 'block';
             }
         }
         
@@ -663,25 +1053,47 @@
             loadGuessQuestion();
         }
         
-        // ==================== 通用函数 ====================
-        function updateScore(points = 0) {
-            score += points;
-            document.getElementById('current-score').textContent = score;
+        function skipGuess() {
+            updateGlobalScore(-2); // 跳过扣2分
+            loadGuessQuestion();
         }
         
-        // 联机对战功能（简版）
-        function startDuel() {
+        // ⚔️ 联机对战函数
+        function createDuelRoom() {
             const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            alert(`创建房间成功！房间号：${roomId}\n\n分享此房间号给对手即可开始对战`);
+            alert(`房间创建成功！\n\n房间号：${roomId}\n\n请分享此房间号给对手进行联机对战`);
         }
         
-        function joinDuel() {
-            const roomId = document.getElementById('roomIdInput').value;
-            if (roomId) {
-                alert(`正在加入房间 ${roomId}...`);
-                // 这里可以添加实际的Supabase房间加入逻辑
+        function joinDuelRoom() {
+            const roomIdInput = document.getElementById('roomIdInput');
+            const roomId = roomIdInput.value.trim();
+            
+            if (!roomId) {
+                alert('请输入房间ID');
+                return;
+            }
+            
+            alert(`正在加入房间 ${roomId}...\n\n联机对战功能开发中`);
+            // 这里可以添加实际的Supabase房间加入逻辑
+        }
+        
+        // 📊 通用函数
+        function updateGlobalScore(points) {
+            globalScore += points;
+            if (globalScore < 0) globalScore = 0;
+            updateScoreDisplay();
+        }
+        
+        function updateScoreDisplay() {
+            const scoreElement = document.getElementById('global-score');
+            if (scoreElement) {
+                scoreElement.textContent = globalScore;
             }
         }
+        
+        // 🚀 启动应用
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
+
