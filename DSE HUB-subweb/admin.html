@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* 基础CSS变量 - 会被主题管理器覆盖 */
+        /* 基础CSS变量 - 主题管理器会动态修改 */
         :root {
-            /* 蓝紫主题 (默认) */
             --primary-start: #667eea;
             --primary-end: #764ba2;
             --accent-color: #5a67d8;
@@ -24,6 +23,7 @@
             --success-color: #38a169;
             --warning-color: #ed8936;
             --danger-color: #f56565;
+            --info-color: #4299e1;
             
             /* 间距系统 */
             --spacing-xs: 4px;
@@ -52,7 +52,17 @@
         }
 
         /* 主题类 */
-        body.theme-green-teal {
+        .theme-blue-purple {
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-color: #5a67d8;
+            --accent-light: rgba(90, 103, 216, 0.1);
+            --accent-dark: #4c51bf;
+            --border-color: rgba(102, 126, 234, 0.15);
+            --hover-color: rgba(102, 126, 234, 0.06);
+        }
+        
+        .theme-green-teal {
             --primary-start: #48bb78;
             --primary-end: #319795;
             --accent-color: #38a169;
@@ -62,7 +72,7 @@
             --hover-color: rgba(72, 187, 120, 0.06);
         }
         
-        body.theme-orange-red {
+        .theme-orange-red {
             --primary-start: #ff8c00;
             --primary-end: #ff4500;
             --accent-color: #ff4500;
@@ -72,7 +82,7 @@
             --hover-color: rgba(255, 140, 0, 0.06);
         }
         
-        body.theme-dark {
+        .theme-dark {
             --primary-start: #4a5568;
             --primary-end: #2d3748;
             --accent-color: #4299e1;
@@ -84,11 +94,6 @@
             --text-muted: #718096;
             --border-color: #4a5568;
             --hover-color: rgba(66, 153, 225, 0.1);
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            color: var(--text-color);
         }
 
         * {
@@ -103,10 +108,10 @@
             color: var(--text-color);
             min-height: 100vh;
             line-height: 1.6;
-            transition: all var(--transition-normal);
+            transition: background-color var(--transition-normal);
         }
 
-        /* 管理员登录容器 */
+        /* 登录界面 */
         .login-container {
             display: flex;
             justify-content: center;
@@ -123,6 +128,7 @@
             max-width: 400px;
             box-shadow: var(--shadow-xl);
             border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
         }
 
         .login-title {
@@ -137,11 +143,6 @@
             background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .login-title p {
-            color: var(--text-secondary);
-            font-size: 14px;
         }
 
         .login-input {
@@ -164,12 +165,6 @@
             font-size: 14px;
             transition: all var(--transition-normal);
             background: rgba(255, 255, 255, 0.9);
-        }
-
-        .login-input input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px var(--accent-light);
         }
 
         .login-btn {
@@ -209,7 +204,7 @@
             min-height: 100vh;
         }
 
-        /* 顶部导航栏 */
+        /* 顶部导航 */
         .top-nav {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
@@ -296,123 +291,39 @@
             font-size: 16px;
         }
 
-        /* 内容卡片网格 */
-        .content-grid {
-            display: grid;
-            gap: var(--spacing-xl);
-        }
-
-        .content-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius-xl);
-            padding: var(--spacing-xl);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-normal);
-        }
-
-        .content-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .card-title h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .card-meta {
-            display: flex;
-            gap: var(--spacing-lg);
-            color: var(--text-secondary);
-            font-size: 14px;
-            flex-wrap: wrap;
-        }
-
-        .card-meta span {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .card-content {
-            margin-bottom: var(--spacing-lg);
-            line-height: 1.6;
-        }
-
-        .card-actions {
+        /* 标签页导航 */
+        .tab-nav {
             display: flex;
             gap: var(--spacing-sm);
-            justify-content: flex-end;
+            margin-bottom: var(--spacing-xl);
             flex-wrap: wrap;
         }
 
-        /* 状态标签 */
-        .status-tag {
-            padding: var(--spacing-xs) var(--spacing-md);
-            border-radius: var(--border-radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #d69e2e;
-        }
-
-        .status-approved {
-            background: rgba(72, 187, 120, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-rejected {
-            background: rgba(245, 101, 101, 0.1);
-            color: var(--danger-color);
-        }
-
-        /* 按钮样式 */
-        .btn {
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: none;
+        .tab-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius-lg);
-            font-size: 14px;
+            color: var(--text-secondary);
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             transition: all var(--transition-normal);
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            min-height: 44px;
+            white-space: nowrap;
         }
 
-        .btn-approve {
-            background: linear-gradient(135deg, #48bb78, #319795);
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-        }
-
-        .btn-reject {
-            background: linear-gradient(135deg, #f56565, #ed8936);
-            color: white;
-        }
-
-        .btn-review {
-            background: linear-gradient(135deg, #4299e1, #667eea);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            border-color: transparent;
         }
 
         /* 控制栏 */
@@ -426,6 +337,7 @@
             display: flex;
             gap: var(--spacing-lg);
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .search-box {
@@ -480,44 +392,188 @@
             border-color: var(--accent-color);
         }
 
-        .quick-actions {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-left: auto;
+        /* 内容网格 */
+        .content-grid {
+            display: grid;
+            gap: var(--spacing-xl);
         }
 
-        /* 标签页导航 */
-        .tab-nav {
+        /* 内容卡片 */
+        .content-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
             display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-xl);
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .card-title {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .card-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-color);
+        }
+
+        .card-meta {
+            display: flex;
+            gap: var(--spacing-lg);
+            color: var(--text-secondary);
+            font-size: 14px;
             flex-wrap: wrap;
         }
 
-        .tab-btn {
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all var(--transition-normal);
+        .card-meta span {
             display: flex;
             align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .card-content {
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-content p {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: rgba(90, 103, 216, 0.05);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .card-actions {
+            display: flex;
             gap: var(--spacing-sm);
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
-        .tab-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
+        /* 状态标签 */
+        .status-tag {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-        .tab-btn.active {
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d69e2e;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-approved {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .status-rejected {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            min-height: 44px;
+        }
+
+        .btn-primary {
             background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-            border-color: transparent;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #48bb78, #319795);
+            color: white;
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #f56565, #ed8936);
+            color: white;
+        }
+
+        .btn-review {
+            background: linear-gradient(135deg, #4299e1, #667eea);
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         /* 响应式设计 */
@@ -532,14 +588,19 @@
             
             .card-header {
                 flex-direction: column;
-                gap: var(--spacing-md);
+            }
+            
+            .card-title {
+                min-width: 100%;
             }
             
             .card-actions {
                 justify-content: flex-start;
+                width: 100%;
             }
             
-            .tab-nav {
+            .btn {
+                flex: 1;
                 justify-content: center;
             }
         }
@@ -552,10 +613,15 @@
             .tab-btn {
                 flex: 1;
                 justify-content: center;
+                padding: var(--spacing-sm) var(--spacing-md);
             }
             
             .filter-select {
                 min-width: 100%;
+            }
+            
+            .card-details {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -566,11 +632,11 @@
         <div class="login-card">
             <div class="login-title">
                 <h1>管理员登录</h1>
-                <p>请输入管理员账号和密码</p>
+                <p>请输入管理员邮箱和密码</p>
             </div>
             <div class="login-input">
                 <label for="adminEmail">管理员邮箱</label>
-                <input type="email" id="adminEmail" placeholder="admin@example.com" value="admin@example.com">
+                <input type="email" id="adminEmail" placeholder="admin@example.com">
             </div>
             <div class="login-input">
                 <label for="adminPassword">密码</label>
@@ -578,21 +644,21 @@
             </div>
             <button class="login-btn" onclick="loginAsAdmin()">
                 <i class="fas fa-sign-in-alt"></i>
-                登录管理员账号
+                登录
             </button>
             <div class="login-error" id="loginError">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="errorMessage">登录失败</span>
             </div>
             <div style="margin-top: var(--spacing-xl); text-align: center; color: var(--text-secondary); font-size: 12px;">
-                <p>当前仅支持管理员账号登录，确保profiles表中is_admin=true</p>
+                <p>需要profiles表中is_admin=true的账号</p>
             </div>
         </div>
     </div>
 
     <!-- 主管理员界面 -->
     <div class="admin-container" id="adminContainer">
-        <!-- 顶部导航栏 -->
+        <!-- 顶部导航 -->
         <nav class="top-nav">
             <div class="logo">
                 <i class="fas fa-crown"></i>
@@ -613,27 +679,27 @@
         <!-- 主内容区域 -->
         <main class="main-content">
             <header class="page-header">
-                <h1>全权内容审核中心</h1>
-                <p>管理所有数据库内容 - 无限复审权限 · 独断裁决 · 无理由审核</p>
+                <h1>全权内容管理中心</h1>
+                <p>管理所有数据库内容 - 独断裁决 · 无限权限 · 实时主题同步</p>
             </header>
 
             <!-- 标签页导航 -->
             <div class="tab-nav">
-                <button class="tab-btn active" data-type="knowledge">
-                    <i class="fas fa-book"></i>
-                    知识点
-                </button>
-                <button class="tab-btn" data-type="notes">
-                    <i class="fas fa-sticky-note"></i>
-                    笔记
-                </button>
-                <button class="tab-btn" data-type="messages">
-                    <i class="fas fa-comment"></i>
-                    留言
+                <button class="tab-btn active" data-type="submissions">
+                    <i class="fas fa-file-upload"></i>
+                    题目提交
                 </button>
                 <button class="tab-btn" data-type="questions">
                     <i class="fas fa-question-circle"></i>
-                    题目
+                    已发布题目
+                </button>
+                <button class="tab-btn" data-type="users">
+                    <i class="fas fa-users"></i>
+                    用户管理
+                </button>
+                <button class="tab-btn" data-type="all">
+                    <i class="fas fa-database"></i>
+                    所有内容
                 </button>
             </div>
 
@@ -641,134 +707,115 @@
             <div class="control-bar">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="搜索内容、用户、关键词..." onkeyup="handleSearch()">
+                    <input type="text" id="searchInput" placeholder="搜索内容、作者、关键词...">
                 </div>
                 <div class="filter-group">
-                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <select class="filter-select" id="statusFilter">
                         <option value="all">所有状态</option>
                         <option value="pending">待审核</option>
                         <option value="approved">已通过</option>
                         <option value="rejected">已拒绝</option>
                     </select>
-                    <select class="filter-select" id="sortFilter" onchange="applyFilters()">
+                    <select class="filter-select" id="sortFilter">
                         <option value="newest">最新优先</option>
                         <option value="oldest">最早优先</option>
-                        <option value="popular">最受欢迎</option>
+                        <option value="popular">最多点赞</option>
                     </select>
                 </div>
-                <div class="quick-actions">
-                    <button class="btn" onclick="refreshData()" style="background: var(--accent-light); color: var(--accent-color);">
-                        <i class="fas fa-sync-alt"></i>
-                        刷新
-                    </button>
-                    <button class="btn btn-approve" onclick="batchApprove()">
-                        <i class="fas fa-check-double"></i>
-                        批量通过
-                    </button>
-                </div>
+                <button class="btn btn-primary" onclick="refreshData()" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    刷新
+                </button>
             </div>
 
             <!-- 内容展示区 -->
             <div class="content-grid" id="contentContainer">
+                <!-- 内容通过JS动态加载 -->
                 <div class="content-card" style="text-align: center; padding: 48px;">
                     <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
-                    <h3>正在加载审核数据...</h3>
-                    <p style="color: var(--text-secondary);">请稍候</p>
+                    <h3>正在加载数据...</h3>
+                    <p style="color: var(--text-secondary);">请先登录管理员账号</p>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- 主题管理模块 -->
+    <!-- 主题管理器 -->
     <script>
+        // 主题管理器 - 支持实时监测用户主题变化
         class ThemeManager {
             constructor() {
                 this.supabase = null;
                 this.currentUser = null;
-                this.themeConfig = null;
+                this.currentTheme = 'theme-blue-purple';
                 this.pollingInterval = null;
                 this.isInitialized = false;
                 
-                this.defaultTheme = 'blue-purple';
+                // 主题映射
+                this.themeMapping = {
+                    'blue': 'theme-blue-purple',
+                    'green': 'theme-green-teal',
+                    'orange': 'theme-orange-red',
+                    'dark': 'theme-dark',
+                    'default': 'theme-blue-purple'
+                };
+                
+                // 主题颜色预设
                 this.themes = {
-                    'blue-purple': {
+                    'theme-blue-purple': {
                         primaryStart: '#667eea',
                         primaryEnd: '#764ba2',
-                        accentColor: '#5a67d8',
-                        accentLight: 'rgba(90, 103, 216, 0.1)',
-                        accentDark: '#4c51bf',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(102, 126, 234, 0.15)',
-                        hoverColor: 'rgba(102, 126, 234, 0.06)'
+                        accentColor: '#5a67d8'
                     },
-                    'green-teal': {
+                    'theme-green-teal': {
                         primaryStart: '#48bb78',
                         primaryEnd: '#319795',
-                        accentColor: '#38a169',
-                        accentLight: 'rgba(56, 161, 105, 0.1)',
-                        accentDark: '#2f855a',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(72, 187, 120, 0.15)',
-                        hoverColor: 'rgba(72, 187, 120, 0.06)'
+                        accentColor: '#38a169'
                     },
-                    'orange-red': {
+                    'theme-orange-red': {
                         primaryStart: '#ff8c00',
                         primaryEnd: '#ff4500',
-                        accentColor: '#ff4500',
-                        accentLight: 'rgba(255, 69, 0, 0.1)',
-                        accentDark: '#e03e00',
-                        cardBg: 'rgba(255, 255, 255, 0.98)',
-                        textColor: '#2d3748',
-                        textSecondary: '#718096',
-                        textMuted: '#a0aec0',
-                        borderColor: 'rgba(255, 140, 0, 0.15)',
-                        hoverColor: 'rgba(255, 140, 0, 0.06)'
+                        accentColor: '#ff4500'
                     },
-                    'dark': {
+                    'theme-dark': {
                         primaryStart: '#4a5568',
                         primaryEnd: '#2d3748',
-                        accentColor: '#4299e1',
-                        accentLight: 'rgba(66, 153, 225, 0.15)',
-                        accentDark: '#3182ce',
-                        cardBg: '#2d3748',
-                        textColor: '#e2e8f0',
-                        textSecondary: '#a0aec0',
-                        textMuted: '#718096',
-                        borderColor: '#4a5568',
-                        hoverColor: 'rgba(66, 153, 225, 0.1)'
+                        accentColor: '#4299e1'
                     }
                 };
             }
             
+            // 初始化主题管理器
             async init(supabaseUrl, supabaseKey) {
                 if (this.isInitialized) return;
                 
                 try {
+                    // 创建Supabase客户端
                     this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
                     
-                    const { data: { user } } = await this.supabase.auth.getUser();
-                    this.currentUser = user;
-                    
-                    this.supabase.auth.onAuthStateChange((event, session) => {
-                        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-                            this.currentUser = session?.user || null;
-                            this.loadUserTheme();
+                    // 监听认证状态变化
+                    this.supabase.auth.onAuthStateChange(async (event, session) => {
+                        if (event === 'SIGNED_IN') {
+                            this.currentUser = session.user;
+                            await this.loadUserTheme();
+                            this.startPolling();
                         } else if (event === 'SIGNED_OUT') {
                             this.currentUser = null;
+                            this.stopPolling();
                             this.applyDefaultTheme();
                         }
                     });
                     
-                    await this.loadUserTheme();
-                    this.startPolling();
+                    // 检查当前会话
+                    const { data: { session } } = await this.supabase.auth.getSession();
+                    if (session) {
+                        this.currentUser = session.user;
+                        await this.loadUserTheme();
+                        this.startPolling();
+                    }
                     
                     this.isInitialized = true;
+                    console.log('主题管理器已初始化');
                     
                 } catch (error) {
                     console.error('主题管理器初始化失败:', error);
@@ -776,6 +823,7 @@
                 }
             }
             
+            // 加载用户主题
             async loadUserTheme() {
                 if (!this.currentUser) {
                     this.applyDefaultTheme();
@@ -783,141 +831,92 @@
                 }
                 
                 try {
-                    const { data: profile, error } = await this.supabase
+                    // 从profiles表获取用户主题设置
+                    const { data: profiles, error } = await this.supabase
                         .from('profiles')
-                        .select('theme, theme_colors, selected_colors, dark_mode')
-                        .eq('id', this.currentUser.id)
+                        .select('theme_color, theme_colors, theme')
+                        .eq('auth_id', this.currentUser.id)
                         .single();
                     
-                    if (error) throw error;
+                    if (error) {
+                        // 可能是没有记录，使用默认主题
+                        console.warn('获取用户主题失败:', error.message);
+                        this.applyDefaultTheme();
+                        return;
+                    }
                     
-                    this.applyTheme(profile);
+                    // 确定主题名称
+                    let themeName = this.determineThemeName(profiles);
+                    console.log('检测到用户主题:', themeName);
+                    
+                    // 应用主题
+                    this.applyTheme(themeName);
                     
                 } catch (error) {
-                    console.warn('加载用户主题失败:', error);
+                    console.error('加载用户主题时出错:', error);
                     this.applyDefaultTheme();
                 }
             }
             
-            applyTheme(profile) {
-                if (!profile) {
-                    this.applyDefaultTheme();
-                    return;
+            // 确定主题名称
+            determineThemeName(profile) {
+                // 优先级: theme_color > theme_colors > theme > 默认
+                let themeValue = profile.theme_color || profile.theme_colors || profile.theme;
+                
+                if (!themeValue) return 'default';
+                
+                themeValue = themeValue.toLowerCase().trim();
+                
+                // 检查主题映射
+                for (const [key, themeClass] of Object.entries(this.themeMapping)) {
+                    if (themeValue.includes(key)) {
+                        return themeClass;
+                    }
                 }
                 
-                let themeName = (profile.theme || profile.theme_colors || this.defaultTheme)
-                    .toLowerCase()
-                    .replace(/\s+/g, '-');
-                
-                if (themeName.includes('blue') && themeName.includes('purple')) {
-                    themeName = 'blue-purple';
-                } else if (themeName.includes('green') && themeName.includes('teal')) {
-                    themeName = 'green-teal';
-                } else if (themeName.includes('orange') && themeName.includes('red')) {
-                    themeName = 'orange-red';
-                }
-                
-                const themeConfig = this.themes[themeName] || this.themes[this.defaultTheme];
-                
-                this.themeConfig = {
-                    ...themeConfig,
-                    isDark: Boolean(profile.dark_mode),
-                    customColors: profile.selected_colors || null
-                };
-                
-                this.applyThemeToPage();
+                return 'default';
             }
             
-            applyThemeToPage() {
-                const root = document.documentElement;
-                const config = this.themeConfig || this.themes[this.defaultTheme];
+            // 应用主题
+            applyTheme(themeName) {
+                const themeClass = this.themeMapping[themeName] || this.themeMapping['default'];
                 
-                const themeClasses = Array.from(document.body.classList)
-                    .filter(cls => cls.startsWith('theme-'));
-                themeClasses.forEach(cls => document.body.classList.remove(cls));
-                
-                const themeName = this.getCurrentThemeName();
-                document.body.classList.add(`theme-${themeName}`);
-                
-                if (config.isDark) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
+                if (this.currentTheme === themeClass) {
+                    return; // 主题未变化
                 }
                 
-                if (config.customColors) {
-                    this.applyCustomColors(config.customColors);
-                }
+                // 移除旧主题类
+                document.body.classList.remove(this.currentTheme);
                 
-                this.applyCSSVariables(config);
+                // 添加新主题类
+                document.body.classList.add(themeClass);
+                this.currentTheme = themeClass;
+                
+                console.log('已应用主题:', themeClass);
+                
+                // 触发主题变化事件
                 this.emitThemeChange();
             }
             
-            getCurrentThemeName() {
-                if (!this.themeConfig) return this.defaultTheme;
-                
-                for (const [name, config] of Object.entries(this.themes)) {
-                    if (this.themeConfig.primaryStart === config.primaryStart &&
-                        this.themeConfig.primaryEnd === config.primaryEnd) {
-                        return name;
-                    }
-                }
-                return this.defaultTheme;
-            }
-            
-            applyCustomColors(customColors) {
-                const root = document.documentElement;
-                let colors;
-                
-                try {
-                    colors = typeof customColors === 'string' ? JSON.parse(customColors) : customColors;
-                } catch (e) {
-                    console.warn('无法解析自定义颜色:', e);
-                    return;
-                }
-                
-                Object.entries(colors).forEach(([key, value]) => {
-                    if (value) {
-                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-                        root.style.setProperty(cssVar, value);
-                    }
-                });
-            }
-            
-            applyCSSVariables(config) {
-                const root = document.documentElement;
-                
-                Object.entries(config).forEach(([key, value]) => {
-                    if (key !== 'isDark' && key !== 'customColors' && value != null) {
-                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-                        
-                        if (key.includes('Start') || key.includes('End') || key.includes('Color')) {
-                            root.style.setProperty(cssVar, value);
-                        } else if (key === 'cardBg' || key === 'borderColor' || key === 'hoverColor') {
-                            root.style.setProperty(cssVar, value);
-                        } else if (key.startsWith('text')) {
-                            root.style.setProperty(cssVar, value);
-                        }
-                    }
-                });
-            }
-            
+            // 应用默认主题
             applyDefaultTheme() {
-                this.themeConfig = this.themes[this.defaultTheme];
-                this.applyThemeToPage();
+                this.applyTheme('default');
             }
             
+            // 开始轮询检查主题变化
             startPolling() {
+                // 每30秒检查一次主题变化
                 this.pollingInterval = setInterval(async () => {
                     if (this.currentUser) {
                         try {
                             await this.loadUserTheme();
                         } catch (error) {
-                            console.warn('轮询更新主题失败:', error);
+                            console.warn('轮询检查主题失败:', error);
                         }
                     }
-                }, 30000);
+                }, 30000); // 30秒
                 
+                // 监听页面可见性变化
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden && this.currentUser) {
                         this.loadUserTheme();
@@ -925,6 +924,7 @@
                 });
             }
             
+            // 停止轮询
             stopPolling() {
                 if (this.pollingInterval) {
                     clearInterval(this.pollingInterval);
@@ -932,45 +932,46 @@
                 }
             }
             
+            // 触发主题变化事件
             emitThemeChange() {
                 try {
                     const event = new CustomEvent('themechange', {
                         detail: {
-                            theme: this.getCurrentThemeName(),
-                            config: this.themeConfig
+                            theme: this.currentTheme,
+                            config: this.themes[this.currentTheme]
                         }
                     });
-                    document.dispatchEvent(event);
+                    window.dispatchEvent(event);
                 } catch (error) {
                     console.warn('触发主题变化事件失败:', error);
                 }
             }
             
-            getCurrentTheme() {
-                return {
-                    name: this.getCurrentThemeName(),
-                    config: this.themeConfig
-                };
-            }
-            
+            // 手动更新主题
             async updateTheme() {
-                try {
+                if (this.currentUser) {
                     await this.loadUserTheme();
-                } catch (error) {
-                    console.error('手动更新主题失败:', error);
                 }
             }
             
+            // 获取当前主题
+            getCurrentTheme() {
+                return {
+                    name: this.currentTheme,
+                    config: this.themes[this.currentTheme]
+                };
+            }
+            
+            // 清理
             destroy() {
                 this.stopPolling();
                 this.isInitialized = false;
                 this.currentUser = null;
-                this.themeConfig = null;
-                document.removeEventListener('visibilitychange', () => {});
+                this.currentTheme = 'theme-blue-purple';
             }
         }
 
-        // 创建全局主题管理器
+        // 创建全局主题管理器实例
         window.themeManager = new ThemeManager();
     </script>
 
@@ -983,26 +984,26 @@
         // 全局变量
         let supabase = null;
         let currentUser = null;
-        let currentDataType = 'knowledge';
+        let currentDataType = 'submissions';
         let allItems = [];
-        let filteredItems = [];
         let selectedItems = new Set();
 
         // 初始化应用
         document.addEventListener('DOMContentLoaded', async function() {
-            await initializeSupabase();
+            await initializeApp();
             setupEventListeners();
         });
 
-        // 初始化Supabase
-        async function initializeSupabase() {
+        // 初始化应用
+        async function initializeApp() {
             try {
+                // 初始化Supabase客户端
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 
                 // 初始化主题管理器
                 await window.themeManager.init(SUPABASE_URL, SUPABASE_KEY);
                 
-                // 检查是否已登录
+                // 检查是否已有登录会话
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session) {
                     currentUser = session.user;
@@ -1011,7 +1012,7 @@
                 
             } catch (error) {
                 console.error('初始化失败:', error);
-                showError('系统初始化失败，请刷新页面');
+                showLoginError('系统初始化失败');
             }
         }
 
@@ -1045,13 +1046,21 @@
         // 验证管理员状态
         async function verifyAdminStatus() {
             try {
-                const { data: profile, error } = await supabase
+                // 查找用户对应的profiles记录
+                const { data: profiles, error } = await supabase
                     .from('profiles')
-                    .select('is_admin, username, email')
-                    .eq('auth_id', currentUser.id)
-                    .single();
+                    .select('*')
+                    .eq('auth_id', currentUser.id);
                 
                 if (error) throw error;
+                
+                if (!profiles || profiles.length === 0) {
+                    showLoginError('未找到用户资料');
+                    await logout();
+                    return;
+                }
+                
+                const profile = profiles[0];
                 
                 if (!profile.is_admin) {
                     showLoginError('此账号不是管理员');
@@ -1093,7 +1102,6 @@
                 
                 // 清空数据
                 allItems = [];
-                filteredItems = [];
                 selectedItems.clear();
                 
             } catch (error) {
@@ -1101,61 +1109,146 @@
             }
         }
 
-        // 加载数据（根据类型查询不同表）
+        // 加载数据
         async function loadData(dataType) {
             showLoading();
             
             try {
                 let query = null;
+                let items = [];
                 
                 switch(dataType) {
-                    case 'knowledge': // 知识点
-                        query = supabase
-                            .from('knowledge_points')
-                            .select('*')
-                            .order('created_at', { ascending: false });
-                        break;
-                        
-                    case 'notes': // 笔记（从submissions中筛选notes=TRUE）
-                        query = supabase
+                    case 'submissions': // 题目提交（主要是未审核内容）
+                        const { data: submissions, error: subError } = await supabase
                             .from('submissions')
-                            .select('*')
-                            .eq('game_type', 'notes')
+                            .select(`
+                                *,
+                                submission_reviews(*)
+                            `)
                             .order('created_at', { ascending: false });
+                        
+                        if (subError) throw subError;
+                        items = submissions || [];
                         break;
                         
-                    case 'messages': // 留言（从chat_messages）
-                        query = supabase
-                            .from('chat_messages')
-                            .select('*')
-                            .order('created_at', { ascending: false });
-                        break;
-                        
-                    case 'questions': // 题目（从questions表）
-                        query = supabase
+                    case 'questions': // 已发布题目
+                        const { data: questions, error: qError } = await supabase
                             .from('questions')
                             .select('*')
                             .order('created_at', { ascending: false });
+                        
+                        if (qError) throw qError;
+                        items = questions || [];
+                        break;
+                        
+                    case 'users': // 用户管理
+                        const { data: profiles, error: pError } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        
+                        if (pError) throw pError;
+                        items = profiles || [];
+                        break;
+                        
+                    case 'all': // 所有内容（多表查询）
+                        const allData = await getAllData();
+                        items = allData;
                         break;
                 }
                 
-                if (!query) {
-                    throw new Error('未知的数据类型');
-                }
-                
-                const { data, error } = await query;
-                
-                if (error) throw error;
-                
-                allItems = data || [];
+                allItems = items;
                 applyFilters();
                 
             } catch (error) {
                 console.error('加载数据时出错:', error);
                 showError(`无法加载${getDataTypeName(dataType)}数据: ${error.message}`);
                 allItems = [];
-                applyFilters();
+                renderItems();
             }
+        }
+
+        // 获取所有数据
+        async function getAllData() {
+            const allData = [];
+            
+            try {
+                // 获取submissions
+                const { data: submissions } = await supabase
+                    .from('submissions')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (submissions) {
+                    submissions.forEach(item => {
+                        allData.push({
+                            ...item,
+                            _type: 'submission',
+                            _typeName: '题目提交'
+                        });
+                    });
+                }
+                
+                // 获取questions
+                const { data: questions } = await supabase
+                    .from('questions')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (questions) {
+                    questions.forEach(item => {
+                        allData.push({
+                            ...item,
+                            _type: 'question',
+                            _typeName: '已发布题目'
+                        });
+                    });
+                }
+                
+                // 获取knowledge_points
+                const { data: knowledge } = await supabase
+                    .from('knowledge_points')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (knowledge) {
+                    knowledge.forEach(item => {
+                        allData.push({
+                            ...item,
+                            _type: 'knowledge',
+                            _typeName: '知识点'
+                        });
+                    });
+                }
+                
+                // 获取chat_messages
+                const { data: messages } = await supabase
+                    .from('chat_messages')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (messages) {
+                    messages.forEach(item => {
+                        allData.push({
+                            ...item,
+                            _type: 'message',
+                            _typeName: '聊天消息'
+                        });
+                    });
+                }
+                
+                // 按时间排序
+                allData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                
+            } catch (error) {
+                console.error('获取所有数据时出错:', error);
+            }
+            
+            return allData;
         }
 
         // 应用筛选
@@ -1164,37 +1257,36 @@
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const sortFilter = document.getElementById('sortFilter').value;
             
-            // 筛选数据
-            filteredItems = allItems.filter(item => {
-                // 状态筛选（不同表的status字段可能不同）
-                if (statusFilter !== 'all') {
-                    const itemStatus = getItemStatus(item);
-                    if (itemStatus !== statusFilter) {
-                        return false;
-                    }
-                }
-                
-                // 搜索筛选
-                if (searchQuery) {
-                    const searchableText = [
+            let filtered = allItems;
+            
+            // 状态筛选
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(item => {
+                    const status = getItemStatus(item);
+                    return status === statusFilter;
+                });
+            }
+            
+            // 搜索筛选
+            if (searchQuery) {
+                filtered = filtered.filter(item => {
+                    const searchText = [
                         item.title || '',
                         item.content || '',
                         item.author_name || '',
                         item.username || '',
+                        item.email || '',
                         item.subject || '',
+                        item.category || '',
                         item.tags || ''
                     ].join(' ').toLowerCase();
                     
-                    if (!searchableText.includes(searchQuery)) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            });
+                    return searchText.includes(searchQuery);
+                });
+            }
             
-            // 排序数据
-            filteredItems.sort((a, b) => {
+            // 排序
+            filtered.sort((a, b) => {
                 switch(sortFilter) {
                     case 'newest':
                         return new Date(b.created_at) - new Date(a.created_at);
@@ -1207,25 +1299,43 @@
                 }
             });
             
-            renderItems();
+            renderItems(filtered);
         }
 
         // 获取项目状态
         function getItemStatus(item) {
-            // 不同表的status字段名称可能不同
-            return item.status || item.review_status || 'pending';
+            // 处理不同表的status字段
+            if (item.status !== undefined) {
+                return item.status;
+            }
+            
+            // 对于submissions表，检查是否已有审核记录
+            if (item.submission_reviews && item.submission_reviews.length > 0) {
+                return item.submission_reviews[0].status || 'pending';
+            }
+            
+            // 用户没有status字段
+            if (item._type === 'user') {
+                return 'active';
+            }
+            
+            return 'pending';
         }
 
         // 渲染项目
-        function renderItems() {
+        function renderItems(items = []) {
             const container = document.getElementById('contentContainer');
             
-            if (filteredItems.length === 0) {
+            if (items.length === 0) {
                 container.innerHTML = `
                     <div class="content-card" style="text-align: center; padding: 48px;">
                         <i class="fas fa-inbox fa-3x" style="color: var(--text-muted); margin-bottom: 16px;"></i>
                         <h3>没有找到内容</h3>
                         <p style="color: var(--text-secondary);">当前筛选条件下没有匹配的内容</p>
+                        <button class="btn btn-primary" onclick="refreshData()" style="margin-top: var(--spacing-lg);">
+                            <i class="fas fa-sync-alt"></i>
+                            重新加载
+                        </button>
                     </div>
                 `;
                 return;
@@ -1233,55 +1343,111 @@
             
             let html = '';
             
-            filteredItems.forEach(item => {
+            items.forEach(item => {
                 const status = getItemStatus(item);
                 const statusText = getStatusText(status);
                 const statusClass = getStatusClass(status);
                 const createdAt = formatDate(item.created_at);
-                const previewContent = (item.content || '').substring(0, 200) + ((item.content || '').length > 200 ? '...' : '');
+                const previewContent = truncateText(item.content || item.question_data || item.description || '', 200);
+                const itemType = item._typeName || getDataTypeName(currentDataType);
                 const itemId = item.id;
                 const isSelected = selectedItems.has(itemId);
                 
                 html += `
-                    <div class="content-card" data-id="${itemId}">
+                    <div class="content-card" data-id="${itemId}" data-type="${item._type || currentDataType}">
                         <div class="card-header">
                             <div class="card-title">
-                                <h3>${item.title || '未命名内容'}</h3>
+                                <h3>${item.title || item.username || item.name || '未命名内容'}</h3>
                                 <div class="card-meta">
-                                    <span><i class="far fa-user"></i> ${item.author_name || item.username || '匿名用户'}</span>
+                                    <span><i class="far fa-user"></i> ${item.author_name || item.username || item.email || '匿名用户'}</span>
                                     <span><i class="far fa-calendar"></i> ${createdAt}</span>
-                                    ${item.subject ? `<span><i class="fas fa-tag"></i> ${item.subject}</span>` : ''}
+                                    <span><i class="fas fa-tag"></i> ${itemType}</span>
+                                    ${item.game_type ? `<span><i class="fas fa-gamepad"></i> ${item.game_type}</span>` : ''}
+                                    ${item.is_admin ? `<span style="color: var(--accent-color);"><i class="fas fa-crown"></i> 管理员</span>` : ''}
                                 </div>
                             </div>
-                            <div class="status-tag ${statusClass}">${statusText}</div>
+                            <div class="status-tag ${statusClass}">
+                                <i class="fas fa-${getStatusIcon(status)}"></i>
+                                ${statusText}
+                            </div>
                         </div>
                         
-                        <div class="card-content">
-                            <p>${previewContent}</p>
-                            ${item.difficulty ? `<p><strong>难度:</strong> ${item.difficulty}</p>` : ''}
-                            ${item.like_count !== undefined ? `<p><strong>点赞数:</strong> ${item.like_count}</p>` : ''}
+                        ${previewContent ? `
+                            <div class="card-content">
+                                ${previewContent}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="card-details">
+                            ${item.subject ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">科目</span>
+                                    <span class="detail-value">${item.subject}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${item.difficulty ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">难度</span>
+                                    <span class="detail-value">${item.difficulty}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${item.category ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">分类</span>
+                                    <span class="detail-value">${item.category}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${item.like_count !== undefined ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">点赞数</span>
+                                    <span class="detail-value">${item.like_count}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${item.score !== undefined ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">积分</span>
+                                    <span class="detail-value">${item.score}</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${item.games_played !== undefined ? `
+                                <div class="detail-item">
+                                    <span class="detail-label">游戏次数</span>
+                                    <span class="detail-value">${item.games_played}</span>
+                                </div>
+                            ` : ''}
                         </div>
                         
                         <div class="card-actions">
-                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; margin-right: auto;">
                                 <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelection('${itemId}')">
                                 <span>选择</span>
                             </label>
                             
-                            ${status !== 'approved' ? `
-                                <button class="btn btn-approve" onclick="approveItem('${itemId}')">
+                            ${status !== 'approved' && item.status !== undefined ? `
+                                <button class="btn btn-approve" onclick="approveItem('${itemId}', '${item._type || currentDataType}')">
                                     <i class="fas fa-check"></i> 通过
                                 </button>
                             ` : ''}
                             
-                            ${status !== 'rejected' ? `
-                                <button class="btn btn-reject" onclick="rejectItem('${itemId}')">
+                            ${status !== 'rejected' && item.status !== undefined ? `
+                                <button class="btn btn-reject" onclick="rejectItem('${itemId}', '${item._type || currentDataType}')">
                                     <i class="fas fa-times"></i> 拒绝
                                 </button>
                             ` : ''}
                             
-                            <button class="btn btn-review" onclick="reviewItem('${itemId}')">
-                                <i class="fas fa-redo"></i> 复审
+                            ${status !== 'pending' && item.status !== undefined ? `
+                                <button class="btn btn-review" onclick="reviewItem('${itemId}', '${item._type || currentDataType}')">
+                                    <i class="fas fa-redo"></i> 复审
+                                </button>
+                            ` : ''}
+                            
+                            <button class="btn btn-delete" onclick="deleteItem('${itemId}', '${item._type || currentDataType}')">
+                                <i class="fas fa-trash"></i> 删除
                             </button>
                         </div>
                     </div>
@@ -1301,11 +1467,17 @@
         }
 
         // 批准项目
-        async function approveItem(itemId) {
+        async function approveItem(itemId, itemType = currentDataType) {
             if (!confirm('确定要通过此内容吗？')) return;
             
             try {
-                const tableName = getTableName(currentDataType);
+                const tableName = getTableName(itemType);
+                
+                if (!tableName) {
+                    showError('无法确定表名');
+                    return;
+                }
+                
                 const { error } = await supabase
                     .from(tableName)
                     .update({ 
@@ -1318,6 +1490,7 @@
                 
                 showSuccess('内容已通过审核');
                 await loadData(currentDataType);
+                selectedItems.delete(itemId);
                 
             } catch (error) {
                 console.error('批准内容时出错:', error);
@@ -1326,11 +1499,17 @@
         }
 
         // 拒绝项目
-        async function rejectItem(itemId) {
+        async function rejectItem(itemId, itemType = currentDataType) {
             if (!confirm('确定要拒绝此内容吗？')) return;
             
             try {
-                const tableName = getTableName(currentDataType);
+                const tableName = getTableName(itemType);
+                
+                if (!tableName) {
+                    showError('无法确定表名');
+                    return;
+                }
+                
                 const { error } = await supabase
                     .from(tableName)
                     .update({ 
@@ -1343,6 +1522,7 @@
                 
                 showSuccess('内容已拒绝');
                 await loadData(currentDataType);
+                selectedItems.delete(itemId);
                 
             } catch (error) {
                 console.error('拒绝内容时出错:', error);
@@ -1351,11 +1531,17 @@
         }
 
         // 复审项目
-        async function reviewItem(itemId) {
+        async function reviewItem(itemId, itemType = currentDataType) {
             if (!confirm('确定要重新审核此内容吗？内容将恢复为待审核状态。')) return;
             
             try {
-                const tableName = getTableName(currentDataType);
+                const tableName = getTableName(itemType);
+                
+                if (!tableName) {
+                    showError('无法确定表名');
+                    return;
+                }
+                
                 const { error } = await supabase
                     .from(tableName)
                     .update({ 
@@ -1368,6 +1554,7 @@
                 
                 showSuccess('内容已标记为待复审');
                 await loadData(currentDataType);
+                selectedItems.delete(itemId);
                 
             } catch (error) {
                 console.error('复审内容时出错:', error);
@@ -1375,46 +1562,46 @@
             }
         }
 
-        // 批量通过
-        async function batchApprove() {
-            if (selectedItems.size === 0) {
-                alert('请先选择要操作的内容');
-                return;
-            }
-            
-            if (!confirm(`确定要通过选中的 ${selectedItems.size} 个内容吗？`)) return;
+        // 删除项目
+        async function deleteItem(itemId, itemType = currentDataType) {
+            if (!confirm('⚠️ 警告：确定要删除此内容吗？此操作不可撤销！')) return;
             
             try {
-                const tableName = getTableName(currentDataType);
-                const itemIds = Array.from(selectedItems);
+                const tableName = getTableName(itemType);
+                
+                if (!tableName) {
+                    showError('无法确定表名');
+                    return;
+                }
                 
                 const { error } = await supabase
                     .from(tableName)
-                    .update({ 
-                        status: 'approved',
-                        updated_at: new Date().toISOString()
-                    })
-                    .in('id', itemIds);
+                    .delete()
+                    .eq('id', itemId);
                 
                 if (error) throw error;
                 
-                showSuccess(`已通过 ${itemIds.length} 个内容`);
-                selectedItems.clear();
+                showSuccess('内容已删除');
                 await loadData(currentDataType);
+                selectedItems.delete(itemId);
                 
             } catch (error) {
-                console.error('批量通过时出错:', error);
-                showError('批量操作失败: ' + error.message);
+                console.error('删除内容时出错:', error);
+                showError('操作失败: ' + error.message);
             }
         }
 
         // 获取表名
         function getTableName(dataType) {
             const tableMap = {
+                'submission': 'submissions',
+                'question': 'questions',
                 'knowledge': 'knowledge_points',
-                'notes': 'submissions',
-                'messages': 'chat_messages',
-                'questions': 'questions'
+                'message': 'chat_messages',
+                'user': 'profiles',
+                'submissions': 'submissions',
+                'questions': 'questions',
+                'users': 'profiles'
             };
             return tableMap[dataType];
         }
@@ -1435,16 +1622,28 @@
             
             // 搜索输入防抖
             let searchTimeout;
-            function handleSearch() {
+            document.getElementById('searchInput').addEventListener('input', () => {
                 clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(applyFilters, 500);
-            }
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 500);
+            });
             
-            window.handleSearch = handleSearch;
+            // 筛选器变更
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+            
+            // 刷新按钮
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
         }
 
         // 刷新数据
         async function refreshData() {
+            if (!currentUser) {
+                showError('请先登录');
+                return;
+            }
+            
             selectedItems.clear();
             await loadData(currentDataType);
             showSuccess('数据已刷新');
@@ -1453,10 +1652,10 @@
         // 辅助函数
         function getDataTypeName(type) {
             const names = {
-                'knowledge': '知识点',
-                'notes': '笔记',
-                'messages': '留言',
-                'questions': '题目'
+                'submissions': '题目提交',
+                'questions': '已发布题目',
+                'users': '用户管理',
+                'all': '所有内容'
             };
             return names[type] || '内容';
         }
@@ -1467,9 +1666,22 @@
                 'approved': '已通过',
                 'rejected': '已拒绝',
                 'published': '已发布',
-                'draft': '草稿'
+                'draft': '草稿',
+                'active': '活跃'
             };
-            return statusMap[status] || status || '未知状态';
+            return statusMap[status] || status || '未知';
+        }
+
+        function getStatusIcon(status) {
+            const iconMap = {
+                'pending': 'clock',
+                'approved': 'check-circle',
+                'rejected': 'times-circle',
+                'published': 'check-circle',
+                'draft': 'clock',
+                'active': 'user-check'
+            };
+            return iconMap[status] || 'question-circle';
         }
 
         function getStatusClass(status) {
@@ -1478,7 +1690,8 @@
                 'approved': 'status-approved',
                 'rejected': 'status-rejected',
                 'published': 'status-approved',
-                'draft': 'status-pending'
+                'draft': 'status-pending',
+                'active': 'status-approved'
             };
             return classMap[status] || 'status-pending';
         }
@@ -1486,22 +1699,32 @@
         function formatDate(dateString) {
             if (!dateString) return '未知日期';
             
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 60) {
-                return `${diffMins}分钟前`;
-            } else if (diffHours < 24) {
-                return `${diffHours}小时前`;
-            } else if (diffDays < 7) {
-                return `${diffDays}天前`;
-            } else {
-                return date.toLocaleDateString('zh-CN');
+            try {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 60) {
+                    return `${diffMins}分钟前`;
+                } else if (diffHours < 24) {
+                    return `${diffHours}小时前`;
+                } else if (diffDays < 7) {
+                    return `${diffDays}天前`;
+                } else {
+                    return date.toLocaleDateString('zh-CN');
+                }
+            } catch (e) {
+                return '未知日期';
             }
+        }
+
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
         }
 
         // 显示加载状态
@@ -1531,12 +1754,30 @@
 
         // 显示成功消息
         function showSuccess(message) {
+            showNotification(message, 'success');
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'success': { bg: 'var(--success-color)', icon: 'check-circle' },
+                'error': { bg: 'var(--danger-color)', icon: 'exclamation-circle' },
+                'info': { bg: 'var(--accent-color)', icon: 'info-circle' }
+            };
+            
+            const color = colors[type] || colors.info;
+            
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: var(--success-color);
+                background: ${color.bg};
                 color: white;
                 padding: var(--spacing-md) var(--spacing-lg);
                 border-radius: var(--border-radius-md);
@@ -1546,9 +1787,10 @@
                 display: flex;
                 align-items: center;
                 gap: var(--spacing-sm);
+                max-width: 400px;
             `;
             notification.innerHTML = `
-                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-${color.icon}"></i>
                 <span>${message}</span>
             `;
             document.body.appendChild(notification);
@@ -1558,51 +1800,6 @@
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
-
-        // 显示错误消息
-        function showError(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--danger-color);
-                color: white;
-                padding: var(--spacing-md) var(--spacing-lg);
-                border-radius: var(--border-radius-md);
-                box-shadow: var(--shadow-lg);
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-sm);
-            `;
-            notification.innerHTML = `
-                <i class="fas fa-exclamation-circle"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
-        }
-
-        // 添加CSS动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
-
