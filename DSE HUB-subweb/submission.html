@@ -29,19 +29,19 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 橙青色主题 - 与主站匹配 */
-        .theme-orange-teal {
-            --primary-start: #ff8c00;
-            --primary-end: #319795;
-            --accent-color: #38a169;
-            --accent-light: rgba(56, 161, 105, 0.1);
-            --accent-dark: #2f855a;
+        /* 蓝紫色主题 */
+        .theme-blue-purple {
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-color: #5a67d8;
+            --accent-light: rgba(90, 103, 216, 0.1);
+            --accent-dark: #4c51bf;
             --text-color: #2d3748;
             --text-secondary: #718096;
             --text-muted: #a0aec0;
             --card-bg: rgba(255, 255, 255, 0.95);
-            --card-shadow: rgba(255, 140, 0, 0.15);
-            --border-color: rgba(255, 140, 0, 0.2);
+            --card-shadow: rgba(102, 126, 234, 0.15);
+            --border-color: rgba(102, 126, 234, 0.2);
         }
 
         /* 绿青色主题 */
@@ -57,6 +57,21 @@
             --card-bg: rgba(255, 255, 255, 0.95);
             --card-shadow: rgba(72, 187, 120, 0.15);
             --border-color: rgba(72, 187, 120, 0.2);
+        }
+
+        /* 橙红色主题 */
+        .theme-orange-red {
+            --primary-start: #ff8c00;
+            --primary-end: #ff4500;
+            --accent-color: #ff4500;
+            --accent-light: rgba(255, 69, 0, 0.1);
+            --accent-dark: #e03e00;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: rgba(255, 140, 0, 0.15);
+            --border-color: rgba(255, 140, 0, 0.2);
         }
 
         /* 深色主题 */
@@ -757,18 +772,10 @@
             border-radius: 6px;
             border-left: 3px solid var(--accent-color);
         }
-
-        .example-item {
-            background: var(--accent-light);
-            padding: 5px 10px;
-            border-radius: 4px;
-            margin: 3px 0;
-            border-left: 3px solid var(--accent-color);
-        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="theme-orange-teal">
+<body class="theme-blue-purple">
     <div class="container">
         <!-- 头部导航 -->
         <div class="header">
@@ -1051,7 +1058,7 @@
 
         // 用户数据
         let currentUser = null;
-        let currentTheme = 'theme-orange-teal'; // 使用橙青色主题
+        let currentTheme = 'theme-blue-purple';
         let availableKnowledge = [];
         let userSubmissions = [];
         let currentHistoryFilter = 'all';
@@ -1164,16 +1171,24 @@
         }
 
         function loadUserTheme(userData) {
+            // 从用户数据中获取主题色
             if (userData.theme_color) {
                 currentTheme = userData.theme_color;
-                // 确保使用橙青色主题
-                if (!currentTheme.includes('orange')) {
-                    currentTheme = 'theme-orange-teal';
-                }
-                document.body.className = currentTheme;
-            } else {
-                document.body.className = 'theme-orange-teal';
+                console.log('加载用户主题色:', currentTheme);
+            } else if (userData.theme) {
+                // 兼容旧版本的主题字段
+                currentTheme = userData.theme;
             }
+            
+            // 确保主题类是有效的
+            const validThemes = ['theme-blue-purple', 'theme-green-teal', 'theme-orange-red', 'theme-dark'];
+            if (!validThemes.includes(currentTheme)) {
+                currentTheme = 'theme-blue-purple'; // 默认主题
+            }
+            
+            // 应用主题
+            document.body.className = currentTheme;
+            console.log('应用主题:', currentTheme);
         }
 
         async function loadUserStats() {
@@ -1880,3 +1895,4 @@
     </script>
 </body>
 </html>
+
