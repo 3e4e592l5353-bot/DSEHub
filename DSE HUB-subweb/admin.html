@@ -5,25 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSE Hub - 管理员中心</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* 基础CSS变量 - 会被主题管理器覆盖 */
         :root {
-            /* 设计规范中的色彩系统 */
+            /* 蓝紫主题 (默认) */
             --primary-start: #667eea;
             --primary-end: #764ba2;
             --accent-color: #5a67d8;
             --accent-light: rgba(90, 103, 216, 0.1);
             --accent-dark: #4c51bf;
+            --card-bg: rgba(255, 255, 255, 0.98);
             --text-color: #2d3748;
             --text-secondary: #718096;
             --text-muted: #a0aec0;
-            --card-bg: rgba(255, 255, 255, 0.98);
             --border-color: rgba(102, 126, 234, 0.15);
             --hover-color: rgba(102, 126, 234, 0.06);
             --success-color: #38a169;
             --warning-color: #ed8936;
             --danger-color: #f56565;
             
-            /* 设计规范中的间距系统 */
+            /* 间距系统 */
             --spacing-xs: 4px;
             --spacing-sm: 8px;
             --spacing-md: 12px;
@@ -31,22 +33,62 @@
             --spacing-xl: 24px;
             --spacing-2xl: 32px;
             
-            /* 设计规范中的圆角系统 */
+            /* 圆角系统 */
             --border-radius-sm: 8px;
             --border-radius-md: 12px;
             --border-radius-lg: 16px;
             --border-radius-xl: 20px;
             
-            /* 设计规范中的阴影系统 */
+            /* 阴影系统 */
             --shadow-sm: 0 2px 8px rgba(102, 126, 234, 0.08);
             --shadow-md: 0 4px 16px rgba(102, 126, 234, 0.12);
             --shadow-lg: 0 8px 32px rgba(102, 126, 234, 0.16);
             --shadow-xl: 0 12px 48px rgba(102, 126, 234, 0.2);
             
-            /* 设计规范中的动画系统 */
+            /* 动画系统 */
             --transition-fast: 0.2s ease;
             --transition-normal: 0.3s ease;
             --transition-slow: 0.5s ease;
+        }
+
+        /* 主题类 */
+        body.theme-green-teal {
+            --primary-start: #48bb78;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
+            --border-color: rgba(72, 187, 120, 0.15);
+            --hover-color: rgba(72, 187, 120, 0.06);
+        }
+        
+        body.theme-orange-red {
+            --primary-start: #ff8c00;
+            --primary-end: #ff4500;
+            --accent-color: #ff4500;
+            --accent-light: rgba(255, 69, 0, 0.1);
+            --accent-dark: #e03e00;
+            --border-color: rgba(255, 140, 0, 0.15);
+            --hover-color: rgba(255, 140, 0, 0.06);
+        }
+        
+        body.theme-dark {
+            --primary-start: #4a5568;
+            --primary-end: #2d3748;
+            --accent-color: #4299e1;
+            --accent-light: rgba(66, 153, 225, 0.15);
+            --accent-dark: #3182ce;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border-color: #4a5568;
+            --hover-color: rgba(66, 153, 225, 0.1);
+        }
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            color: var(--text-color);
         }
 
         * {
@@ -61,6 +103,110 @@
             color: var(--text-color);
             min-height: 100vh;
             line-height: 1.6;
+            transition: all var(--transition-normal);
+        }
+
+        /* 管理员登录容器 */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--spacing-xl);
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-2xl);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .login-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .login-input {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .login-input label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .login-input input {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            transition: all var(--transition-normal);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .login-input input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            margin-top: var(--spacing-lg);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-error {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            margin-top: var(--spacing-lg);
+            display: none;
+        }
+
+        /* 主管理员界面 */
+        .admin-container {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
         }
 
         /* 顶部导航栏 */
@@ -107,17 +253,33 @@
             font-size: 14px;
         }
 
-        /* 主容器 */
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
+        .logout-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* 主内容区域 */
+        .main-content {
             padding: var(--spacing-xl);
         }
 
-        /* 页面标题 */
         .page-header {
             margin-bottom: var(--spacing-2xl);
-            text-align: center;
         }
 
         .page-header h1 {
@@ -134,129 +296,141 @@
             font-size: 16px;
         }
 
-        /* 统计卡片 */
-        .stats-grid {
+        /* 内容卡片网格 */
+        .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-2xl);
+            gap: var(--spacing-xl);
         }
 
-        .stat-card {
+        .content-card {
             background: var(--card-bg);
             border-radius: var(--border-radius-xl);
             padding: var(--spacing-xl);
             box-shadow: var(--shadow-sm);
-            text-align: center;
-            transition: all var(--transition-normal);
             border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
         }
 
-        .stat-card:hover {
+        .content-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-lg);
         }
 
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto var(--spacing-lg);
-            border-radius: var(--border-radius-lg);
+        .card-header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
         }
 
-        .stat-icon.pending { background: rgba(245, 158, 11, 0.1); color: #d69e2e; }
-        .stat-icon.approved { background: rgba(72, 187, 120, 0.1); color: var(--success-color); }
-        .stat-icon.rejected { background: rgba(245, 101, 101, 0.1); color: var(--danger-color); }
-        .stat-icon.total { background: rgba(102, 126, 234, 0.1); color: var(--accent-color); }
-
-        .stat-number {
-            font-size: 36px;
+        .card-title h3 {
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: var(--spacing-xs);
         }
 
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* 主内容区域 */
-        .content-area {
-            background: var(--card-bg);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        /* 标签页导航 */
-        .tab-nav {
+        .card-meta {
             display: flex;
-            background: rgba(102, 126, 234, 0.05);
-            border-bottom: 1px solid var(--border-color);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .tab-nav::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab-button {
-            padding: var(--spacing-lg) var(--spacing-xl);
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
+            gap: var(--spacing-lg);
             color: var(--text-secondary);
-            font-weight: 600;
             font-size: 14px;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            white-space: nowrap;
+            flex-wrap: wrap;
+        }
+
+        .card-meta span {
             display: flex;
             align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .card-content {
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        .card-actions {
+            display: flex;
             gap: var(--spacing-sm);
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
-        .tab-button:hover {
-            color: var(--accent-color);
-            background: var(--hover-color);
+        /* 状态标签 */
+        .status-tag {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .tab-button.active {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
-            background: rgba(90, 103, 216, 0.05);
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d69e2e;
         }
 
-        .badge {
-            background: var(--accent-color);
+        .status-approved {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-rejected {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius-lg);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            min-height: 44px;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #48bb78, #319795);
             color: white;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            min-width: 20px;
-            text-align: center;
+        }
+
+        .btn-reject {
+            background: linear-gradient(135deg, #f56565, #ed8936);
+            color: white;
+        }
+
+        .btn-review {
+            background: linear-gradient(135deg, #4299e1, #667eea);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         /* 控制栏 */
         .control-bar {
-            padding: var(--spacing-lg) var(--spacing-xl);
+            background: var(--card-bg);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
             display: flex;
             gap: var(--spacing-lg);
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.5);
+            flex-wrap: wrap;
         }
 
         .search-box {
             flex: 1;
-            max-width: 400px;
+            min-width: 300px;
             position: relative;
         }
 
@@ -267,13 +441,13 @@
             border-radius: var(--border-radius-lg);
             font-size: 14px;
             transition: all var(--transition-normal);
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .search-box input:focus {
             outline: none;
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+            box-shadow: 0 0 0 3px var(--accent-light);
         }
 
         .search-box i {
@@ -282,12 +456,12 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 14px;
         }
 
         .filter-group {
             display: flex;
             gap: var(--spacing-sm);
+            flex-wrap: wrap;
         }
 
         .filter-select {
@@ -312,10 +486,20 @@
             margin-left: auto;
         }
 
-        .action-btn {
+        /* 标签页导航 */
+        .tab-nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
             padding: var(--spacing-md) var(--spacing-lg);
-            border: none;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
             border-radius: var(--border-radius-lg);
+            color: var(--text-secondary);
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
@@ -323,675 +507,655 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            min-height: 44px;
         }
 
-        .action-btn.primary {
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active {
             background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             color: white;
-        }
-
-        .action-btn.secondary {
-            background: white;
-            color: var(--accent-color);
-            border: 2px solid var(--border-color);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        /* 内容表格 */
-        .content-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .content-table thead {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .content-table th {
-            padding: var(--spacing-lg) var(--spacing-md);
-            text-align: left;
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .content-table tbody tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: all var(--transition-fast);
-        }
-
-        .content-table tbody tr:hover {
-            background: var(--hover-color);
-        }
-
-        .content-table td {
-            padding: var(--spacing-lg) var(--spacing-md);
-            font-size: 14px;
-            vertical-align: middle;
-        }
-
-        /* 内容预览 */
-        .content-preview {
-            max-width: 300px;
-            line-height: 1.4;
-        }
-
-        .content-preview .title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .content-preview .excerpt {
-            color: var(--text-secondary);
-            font-size: 13px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* 用户信息 */
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .user-details .name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .user-details .email {
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-
-        /* 状态标签 */
-        .status-tag {
-            padding: 4px 8px;
-            border-radius: var(--border-radius-sm);
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .status-tag.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #d69e2e;
-        }
-
-        .status-tag.approved {
-            background: rgba(72, 187, 120, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-tag.rejected {
-            background: rgba(245, 101, 101, 0.1);
-            color: var(--danger-color);
-        }
-
-        /* 操作按钮 */
-        .action-buttons {
-            display: flex;
-            gap: var(--spacing-xs);
-        }
-
-        .action-btn-small {
-            padding: 6px 12px;
-            border: none;
-            border-radius: var(--border-radius-md);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .action-btn-small.approve {
-            background: rgba(72, 187, 120, 0.1);
-            color: var(--success-color);
-        }
-
-        .action-btn-small.reject {
-            background: rgba(245, 101, 101, 0.1);
-            color: var(--danger-color);
-        }
-
-        .action-btn-small.review {
-            background: rgba(102, 126, 234, 0.1);
-            color: var(--accent-color);
-        }
-
-        .action-btn-small:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .action-btn-small.approve:hover {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .action-btn-small.reject:hover {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        .action-btn-small.review:hover {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        /* 加载状态 */
-        .loading-state {
-            padding: var(--spacing-2xl);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .loading-state i {
-            font-size: 32px;
-            margin-bottom: var(--spacing-lg);
-            color: var(--accent-color);
-        }
-
-        .empty-state {
-            padding: var(--spacing-2xl);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: var(--spacing-lg);
-            color: var(--text-muted);
-            opacity: 0.5;
-        }
-
-        /* 底部信息 */
-        .footer-info {
-            margin-top: var(--spacing-2xl);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            padding: var(--spacing-lg);
+            border-color: transparent;
         }
 
         /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .admin-container {
-                padding: var(--spacing-lg);
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
+        @media (max-width: 768px) {
             .control-bar {
-                flex-wrap: wrap;
+                flex-direction: column;
             }
             
             .search-box {
-                max-width: 100%;
+                min-width: 100%;
             }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
+            
+            .card-header {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+            
+            .card-actions {
+                justify-content: flex-start;
             }
             
             .tab-nav {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-            }
-            
-            .control-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-group {
-                flex-wrap: wrap;
-            }
-            
-            .filter-select {
-                flex: 1;
-                min-width: 0;
-            }
-            
-            .quick-actions {
-                margin-left: 0;
                 justify-content: center;
-            }
-            
-            .content-table {
-                display: block;
-                overflow-x: auto;
             }
         }
 
         @media (max-width: 480px) {
-            .top-nav {
-                flex-direction: column;
-                gap: var(--spacing-md);
+            .main-content {
                 padding: var(--spacing-md);
             }
             
-            .nav-controls {
-                width: 100%;
+            .tab-btn {
+                flex: 1;
                 justify-content: center;
             }
             
-            .admin-container {
-                padding: var(--spacing-md);
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .action-btn-small {
-                width: 100%;
-                justify-content: center;
+            .filter-select {
+                min-width: 100%;
             }
         }
     </style>
 </head>
-<body>
-    <!-- 顶部导航栏 -->
-    <nav class="top-nav">
-        <div class="logo">
-            <i class="fas fa-crown"></i>
-            <span>DSE Hub 管理员中心</span>
-        </div>
-        <div class="nav-controls">
-            <div class="admin-badge">
-                <i class="fas fa-user-shield"></i>
-                <span>独断万古的管理员</span>
+<body class="theme-blue-purple">
+    <!-- 登录界面 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-title">
+                <h1>管理员登录</h1>
+                <p>请输入管理员账号和密码</p>
             </div>
-            <button class="action-btn secondary" onclick="refreshAllData()">
-                <i class="fas fa-sync-alt"></i>
-                <span>刷新</span>
+            <div class="login-input">
+                <label for="adminEmail">管理员邮箱</label>
+                <input type="email" id="adminEmail" placeholder="admin@example.com" value="admin@example.com">
+            </div>
+            <div class="login-input">
+                <label for="adminPassword">密码</label>
+                <input type="password" id="adminPassword" placeholder="********">
+            </div>
+            <button class="login-btn" onclick="loginAsAdmin()">
+                <i class="fas fa-sign-in-alt"></i>
+                登录管理员账号
             </button>
-        </div>
-    </nav>
-
-    <!-- 主容器 -->
-    <div class="admin-container">
-        <!-- 页面标题 -->
-        <header class="page-header">
-            <h1>全权内容审核中心</h1>
-            <p>管理所有数据库内容 - 无限复审权限 · 独断裁决 · 无理由审核</p>
-        </header>
-
-        <!-- 统计卡片 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon total">
-                    <i class="fas fa-database"></i>
-                </div>
-                <div class="stat-number" id="totalCount">0</div>
-                <div class="stat-label">总内容数</div>
+            <div class="login-error" id="loginError">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorMessage">登录失败</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon pending">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-number" id="pendingCount">0</div>
-                <div class="stat-label">待审核</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon approved">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-number" id="approvedCount">0</div>
-                <div class="stat-label">已通过</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon rejected">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-                <div class="stat-number" id="rejectedCount">0</div>
-                <div class="stat-label">已拒绝</div>
+            <div style="margin-top: var(--spacing-xl); text-align: center; color: var(--text-secondary); font-size: 12px;">
+                <p>当前仅支持管理员账号登录，确保profiles表中is_admin=true</p>
             </div>
         </div>
+    </div>
+
+    <!-- 主管理员界面 -->
+    <div class="admin-container" id="adminContainer">
+        <!-- 顶部导航栏 -->
+        <nav class="top-nav">
+            <div class="logo">
+                <i class="fas fa-crown"></i>
+                <span>DSE Hub 管理员中心</span>
+            </div>
+            <div class="nav-controls">
+                <div class="admin-badge" id="adminBadge">
+                    <i class="fas fa-user-shield"></i>
+                    <span>加载中...</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    退出
+                </button>
+            </div>
+        </nav>
 
         <!-- 主内容区域 -->
-        <div class="content-area">
+        <main class="main-content">
+            <header class="page-header">
+                <h1>全权内容审核中心</h1>
+                <p>管理所有数据库内容 - 无限复审权限 · 独断裁决 · 无理由审核</p>
+            </header>
+
             <!-- 标签页导航 -->
-            <nav class="tab-nav">
-                <button class="tab-button active" data-type="submissions">
-                    <i class="fas fa-file-alt"></i>
-                    题目提交
-                    <span class="badge" id="badge-submissions">0</span>
+            <div class="tab-nav">
+                <button class="tab-btn active" data-type="knowledge">
+                    <i class="fas fa-book"></i>
+                    知识点
                 </button>
-                <button class="tab-button" data-type="questions">
+                <button class="tab-btn" data-type="notes">
+                    <i class="fas fa-sticky-note"></i>
+                    笔记
+                </button>
+                <button class="tab-btn" data-type="messages">
+                    <i class="fas fa-comment"></i>
+                    留言
+                </button>
+                <button class="tab-btn" data-type="questions">
                     <i class="fas fa-question-circle"></i>
-                    已发布题目
-                    <span class="badge" id="badge-questions">0</span>
+                    题目
                 </button>
-                <button class="tab-button" data-type="feedbacks">
-                    <i class="fas fa-comments"></i>
-                    用户反馈
-                    <span class="badge" id="badge-feedbacks">0</span>
-                </button>
-                <button class="tab-button" data-type="game_questions">
-                    <i class="fas fa-gamepad"></i>
-                    游戏题目
-                    <span class="badge" id="badge-game_questions">0</span>
-                </button>
-                <button class="tab-button" data-type="profiles">
-                    <i class="fas fa-users"></i>
-                    用户管理
-                    <span class="badge" id="badge-profiles">0</span>
-                </button>
-            </nav>
+            </div>
 
             <!-- 控制栏 -->
             <div class="control-bar">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="搜索内容、用户、关键词...">
+                    <input type="text" id="searchInput" placeholder="搜索内容、用户、关键词..." onkeyup="handleSearch()">
                 </div>
                 <div class="filter-group">
-                    <select class="filter-select" id="statusFilter">
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
                         <option value="all">所有状态</option>
                         <option value="pending">待审核</option>
                         <option value="approved">已通过</option>
                         <option value="rejected">已拒绝</option>
                     </select>
-                    <select class="filter-select" id="sortFilter">
+                    <select class="filter-select" id="sortFilter" onchange="applyFilters()">
                         <option value="newest">最新优先</option>
                         <option value="oldest">最早优先</option>
-                        <option value="most_viewed">最多浏览</option>
-                        <option value="most_liked">最多点赞</option>
+                        <option value="popular">最受欢迎</option>
                     </select>
                 </div>
                 <div class="quick-actions">
-                    <button class="action-btn secondary" onclick="showAllPending()">
-                        <i class="fas fa-filter"></i>
-                        只看待审
+                    <button class="btn" onclick="refreshData()" style="background: var(--accent-light); color: var(--accent-color);">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新
                     </button>
-                    <button class="action-btn primary" onclick="createQuickNote()">
-                        <i class="fas fa-plus"></i>
-                        新建笔记
+                    <button class="btn btn-approve" onclick="batchApprove()">
+                        <i class="fas fa-check-double"></i>
+                        批量通过
                     </button>
                 </div>
             </div>
 
-            <!-- 内容表格 -->
-            <div id="contentTableContainer">
-                <!-- 内容将通过JavaScript动态加载 -->
-                <div class="loading-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>正在加载审核数据...</p>
+            <!-- 内容展示区 -->
+            <div class="content-grid" id="contentContainer">
+                <div class="content-card" style="text-align: center; padding: 48px;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
+                    <h3>正在加载审核数据...</h3>
+                    <p style="color: var(--text-secondary);">请稍候</p>
                 </div>
             </div>
-        </div>
-
-        <!-- 底部信息 -->
-        <div class="footer-info">
-            <p>当前管理员拥有无限复审权限，可对任何内容进行无理由审核</p>
-            <p><i class="fas fa-shield-alt"></i> 数据库连接状态: <span id="connectionStatus">正在连接...</span></p>
-        </div>
+        </main>
     </div>
 
-    <!-- 新建笔记模态框 -->
-    <div id="noteModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: var(--spacing-xl);">
-        <div style="background: white; width: 100%; max-width: 600px; border-radius: var(--border-radius-xl); padding: var(--spacing-2xl); box-shadow: var(--shadow-xl);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-xl);">
-                <h2 style="font-size: 20px; font-weight: 700;">新建管理员笔记</h2>
-                <button onclick="closeNoteModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: var(--spacing-sm);">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <textarea id="noteContent" style="width: 100%; height: 200px; padding: var(--spacing-md); border: 2px solid var(--border-color); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-xl); font-family: inherit; font-size: 14px; resize: vertical;" placeholder="在此记录重要的审核事项、系统问题或管理决策..."></textarea>
-            <div style="display: flex; gap: var(--spacing-sm); justify-content: flex-end;">
-                <button onclick="closeNoteModal()" style="padding: var(--spacing-md) var(--spacing-xl); border: 2px solid var(--border-color); border-radius: var(--border-radius-md); background: white; cursor: pointer; font-weight: 600; font-size: 14px; transition: all var(--transition-normal);">
-                    取消
-                </button>
-                <button onclick="saveNote()" style="padding: var(--spacing-md) var(--spacing-xl); background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); color: white; border: none; border-radius: var(--border-radius-md); cursor: pointer; font-weight: 600; font-size: 14px; transition: all var(--transition-normal);">
-                    保存笔记
-                </button>
-            </div>
-        </div>
-    </div>
-
+    <!-- 主题管理模块 -->
     <script>
-        // Supabase配置 - 修复认证问题
+        class ThemeManager {
+            constructor() {
+                this.supabase = null;
+                this.currentUser = null;
+                this.themeConfig = null;
+                this.pollingInterval = null;
+                this.isInitialized = false;
+                
+                this.defaultTheme = 'blue-purple';
+                this.themes = {
+                    'blue-purple': {
+                        primaryStart: '#667eea',
+                        primaryEnd: '#764ba2',
+                        accentColor: '#5a67d8',
+                        accentLight: 'rgba(90, 103, 216, 0.1)',
+                        accentDark: '#4c51bf',
+                        cardBg: 'rgba(255, 255, 255, 0.98)',
+                        textColor: '#2d3748',
+                        textSecondary: '#718096',
+                        textMuted: '#a0aec0',
+                        borderColor: 'rgba(102, 126, 234, 0.15)',
+                        hoverColor: 'rgba(102, 126, 234, 0.06)'
+                    },
+                    'green-teal': {
+                        primaryStart: '#48bb78',
+                        primaryEnd: '#319795',
+                        accentColor: '#38a169',
+                        accentLight: 'rgba(56, 161, 105, 0.1)',
+                        accentDark: '#2f855a',
+                        cardBg: 'rgba(255, 255, 255, 0.98)',
+                        textColor: '#2d3748',
+                        textSecondary: '#718096',
+                        textMuted: '#a0aec0',
+                        borderColor: 'rgba(72, 187, 120, 0.15)',
+                        hoverColor: 'rgba(72, 187, 120, 0.06)'
+                    },
+                    'orange-red': {
+                        primaryStart: '#ff8c00',
+                        primaryEnd: '#ff4500',
+                        accentColor: '#ff4500',
+                        accentLight: 'rgba(255, 69, 0, 0.1)',
+                        accentDark: '#e03e00',
+                        cardBg: 'rgba(255, 255, 255, 0.98)',
+                        textColor: '#2d3748',
+                        textSecondary: '#718096',
+                        textMuted: '#a0aec0',
+                        borderColor: 'rgba(255, 140, 0, 0.15)',
+                        hoverColor: 'rgba(255, 140, 0, 0.06)'
+                    },
+                    'dark': {
+                        primaryStart: '#4a5568',
+                        primaryEnd: '#2d3748',
+                        accentColor: '#4299e1',
+                        accentLight: 'rgba(66, 153, 225, 0.15)',
+                        accentDark: '#3182ce',
+                        cardBg: '#2d3748',
+                        textColor: '#e2e8f0',
+                        textSecondary: '#a0aec0',
+                        textMuted: '#718096',
+                        borderColor: '#4a5568',
+                        hoverColor: 'rgba(66, 153, 225, 0.1)'
+                    }
+                };
+            }
+            
+            async init(supabaseUrl, supabaseKey) {
+                if (this.isInitialized) return;
+                
+                try {
+                    this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                    
+                    const { data: { user } } = await this.supabase.auth.getUser();
+                    this.currentUser = user;
+                    
+                    this.supabase.auth.onAuthStateChange((event, session) => {
+                        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+                            this.currentUser = session?.user || null;
+                            this.loadUserTheme();
+                        } else if (event === 'SIGNED_OUT') {
+                            this.currentUser = null;
+                            this.applyDefaultTheme();
+                        }
+                    });
+                    
+                    await this.loadUserTheme();
+                    this.startPolling();
+                    
+                    this.isInitialized = true;
+                    
+                } catch (error) {
+                    console.error('主题管理器初始化失败:', error);
+                    this.applyDefaultTheme();
+                }
+            }
+            
+            async loadUserTheme() {
+                if (!this.currentUser) {
+                    this.applyDefaultTheme();
+                    return;
+                }
+                
+                try {
+                    const { data: profile, error } = await this.supabase
+                        .from('profiles')
+                        .select('theme, theme_colors, selected_colors, dark_mode')
+                        .eq('id', this.currentUser.id)
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    this.applyTheme(profile);
+                    
+                } catch (error) {
+                    console.warn('加载用户主题失败:', error);
+                    this.applyDefaultTheme();
+                }
+            }
+            
+            applyTheme(profile) {
+                if (!profile) {
+                    this.applyDefaultTheme();
+                    return;
+                }
+                
+                let themeName = (profile.theme || profile.theme_colors || this.defaultTheme)
+                    .toLowerCase()
+                    .replace(/\s+/g, '-');
+                
+                if (themeName.includes('blue') && themeName.includes('purple')) {
+                    themeName = 'blue-purple';
+                } else if (themeName.includes('green') && themeName.includes('teal')) {
+                    themeName = 'green-teal';
+                } else if (themeName.includes('orange') && themeName.includes('red')) {
+                    themeName = 'orange-red';
+                }
+                
+                const themeConfig = this.themes[themeName] || this.themes[this.defaultTheme];
+                
+                this.themeConfig = {
+                    ...themeConfig,
+                    isDark: Boolean(profile.dark_mode),
+                    customColors: profile.selected_colors || null
+                };
+                
+                this.applyThemeToPage();
+            }
+            
+            applyThemeToPage() {
+                const root = document.documentElement;
+                const config = this.themeConfig || this.themes[this.defaultTheme];
+                
+                const themeClasses = Array.from(document.body.classList)
+                    .filter(cls => cls.startsWith('theme-'));
+                themeClasses.forEach(cls => document.body.classList.remove(cls));
+                
+                const themeName = this.getCurrentThemeName();
+                document.body.classList.add(`theme-${themeName}`);
+                
+                if (config.isDark) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                
+                if (config.customColors) {
+                    this.applyCustomColors(config.customColors);
+                }
+                
+                this.applyCSSVariables(config);
+                this.emitThemeChange();
+            }
+            
+            getCurrentThemeName() {
+                if (!this.themeConfig) return this.defaultTheme;
+                
+                for (const [name, config] of Object.entries(this.themes)) {
+                    if (this.themeConfig.primaryStart === config.primaryStart &&
+                        this.themeConfig.primaryEnd === config.primaryEnd) {
+                        return name;
+                    }
+                }
+                return this.defaultTheme;
+            }
+            
+            applyCustomColors(customColors) {
+                const root = document.documentElement;
+                let colors;
+                
+                try {
+                    colors = typeof customColors === 'string' ? JSON.parse(customColors) : customColors;
+                } catch (e) {
+                    console.warn('无法解析自定义颜色:', e);
+                    return;
+                }
+                
+                Object.entries(colors).forEach(([key, value]) => {
+                    if (value) {
+                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+                        root.style.setProperty(cssVar, value);
+                    }
+                });
+            }
+            
+            applyCSSVariables(config) {
+                const root = document.documentElement;
+                
+                Object.entries(config).forEach(([key, value]) => {
+                    if (key !== 'isDark' && key !== 'customColors' && value != null) {
+                        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+                        
+                        if (key.includes('Start') || key.includes('End') || key.includes('Color')) {
+                            root.style.setProperty(cssVar, value);
+                        } else if (key === 'cardBg' || key === 'borderColor' || key === 'hoverColor') {
+                            root.style.setProperty(cssVar, value);
+                        } else if (key.startsWith('text')) {
+                            root.style.setProperty(cssVar, value);
+                        }
+                    }
+                });
+            }
+            
+            applyDefaultTheme() {
+                this.themeConfig = this.themes[this.defaultTheme];
+                this.applyThemeToPage();
+            }
+            
+            startPolling() {
+                this.pollingInterval = setInterval(async () => {
+                    if (this.currentUser) {
+                        try {
+                            await this.loadUserTheme();
+                        } catch (error) {
+                            console.warn('轮询更新主题失败:', error);
+                        }
+                    }
+                }, 30000);
+                
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden && this.currentUser) {
+                        this.loadUserTheme();
+                    }
+                });
+            }
+            
+            stopPolling() {
+                if (this.pollingInterval) {
+                    clearInterval(this.pollingInterval);
+                    this.pollingInterval = null;
+                }
+            }
+            
+            emitThemeChange() {
+                try {
+                    const event = new CustomEvent('themechange', {
+                        detail: {
+                            theme: this.getCurrentThemeName(),
+                            config: this.themeConfig
+                        }
+                    });
+                    document.dispatchEvent(event);
+                } catch (error) {
+                    console.warn('触发主题变化事件失败:', error);
+                }
+            }
+            
+            getCurrentTheme() {
+                return {
+                    name: this.getCurrentThemeName(),
+                    config: this.themeConfig
+                };
+            }
+            
+            async updateTheme() {
+                try {
+                    await this.loadUserTheme();
+                } catch (error) {
+                    console.error('手动更新主题失败:', error);
+                }
+            }
+            
+            destroy() {
+                this.stopPolling();
+                this.isInitialized = false;
+                this.currentUser = null;
+                this.themeConfig = null;
+                document.removeEventListener('visibilitychange', () => {});
+            }
+        }
+
+        // 创建全局主题管理器
+        window.themeManager = new ThemeManager();
+    </script>
+
+    <!-- 主应用逻辑 -->
+    <script>
+        // Supabase配置
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
         
-        // 状态管理
-        let currentDataType = 'submissions';
+        // 全局变量
+        let supabase = null;
+        let currentUser = null;
+        let currentDataType = 'knowledge';
         let allItems = [];
         let filteredItems = [];
-        let stats = {
-            total: 0,
-            pending: 0,
-            approved: 0,
-            rejected: 0
-        };
-
-        // 表名映射（解决404错误）
-        const tableMapping = {
-            'submissions': 'submissions',
-            'questions': 'questions',
-            'feedbacks': 'feedbacks',
-            'game_questions': 'game_questions',
-            'profiles': 'profiles',
-            'audit_logs': 'audit_log_entries'  // 根据你提供的表名
-        };
+        let selectedItems = new Set();
 
         // 初始化应用
         document.addEventListener('DOMContentLoaded', async function() {
-            await initializeApp();
+            await initializeSupabase();
             setupEventListeners();
-            updateConnectionStatus();
         });
 
-        // 初始化应用
-        async function initializeApp() {
-            // 检查Supabase连接
-            if (!await testSupabaseConnection()) {
-                showError('无法连接Supabase数据库，请检查API密钥');
+        // 初始化Supabase
+        async function initializeSupabase() {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                
+                // 初始化主题管理器
+                await window.themeManager.init(SUPABASE_URL, SUPABASE_KEY);
+                
+                // 检查是否已登录
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    await verifyAdminStatus();
+                }
+                
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showError('系统初始化失败，请刷新页面');
+            }
+        }
+
+        // 管理员登录
+        async function loginAsAdmin() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!email || !password) {
+                showLoginError('请输入邮箱和密码');
                 return;
             }
             
-            // 加载初始数据
-            await loadData(currentDataType);
-        }
-
-        // 测试Supabase连接
-        async function testSupabaseConnection() {
             try {
-                // 尝试访问一个公共表
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=count`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
                 });
                 
-                return response.ok;
+                if (error) throw error;
+                
+                currentUser = data.user;
+                await verifyAdminStatus();
+                
             } catch (error) {
-                console.error('连接测试失败:', error);
-                return false;
+                console.error('登录失败:', error);
+                showLoginError('登录失败: ' + error.message);
             }
         }
 
-        // 更新连接状态
-        function updateConnectionStatus() {
-            const statusElement = document.getElementById('connectionStatus');
-            testSupabaseConnection().then(isConnected => {
-                if (isConnected) {
-                    statusElement.textContent = '已连接';
-                    statusElement.style.color = 'var(--success-color)';
-                } else {
-                    statusElement.textContent = '连接失败';
-                    statusElement.style.color = 'var(--danger-color)';
+        // 验证管理员状态
+        async function verifyAdminStatus() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('is_admin, username, email')
+                    .eq('auth_id', currentUser.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (!profile.is_admin) {
+                    showLoginError('此账号不是管理员');
+                    await logout();
+                    return;
                 }
-            });
+                
+                // 登录成功，显示管理员界面
+                showAdminInterface(profile);
+                await loadData(currentDataType);
+                
+            } catch (error) {
+                console.error('验证管理员状态失败:', error);
+                showLoginError('验证管理员权限失败');
+            }
         }
 
-        // 加载数据（修复认证问题）
+        // 显示管理员界面
+        function showAdminInterface(profile) {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+            
+            const adminBadge = document.getElementById('adminBadge');
+            adminBadge.innerHTML = `
+                <i class="fas fa-user-shield"></i>
+                <span>管理员: ${profile.username || profile.email}</span>
+            `;
+        }
+
+        // 退出登录
+        async function logout() {
+            try {
+                await supabase.auth.signOut();
+                currentUser = null;
+                
+                document.getElementById('adminContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('adminPassword').value = '';
+                
+                // 清空数据
+                allItems = [];
+                filteredItems = [];
+                selectedItems.clear();
+                
+            } catch (error) {
+                console.error('退出失败:', error);
+            }
+        }
+
+        // 加载数据（根据类型查询不同表）
         async function loadData(dataType) {
             showLoading();
             
             try {
-                const tableName = tableMapping[dataType] || dataType;
+                let query = null;
                 
-                // 构建查询URL
-                let url = `${SUPABASE_URL}/rest/v1/${tableName}?`;
-                
-                // 根据数据类型选择不同的列
-                const columnSelectors = {
-                    'submissions': 'id,title,content,status,user_id,author_name,created_at,game_type,difficulty,like_count,view_count',
-                    'questions': 'id,title,content,status,author_id,author_name,created_at,game_type,difficulty,play_count,avg_score',
-                    'feedbacks': 'id,content,status,user_id,author_name,created_at,visibility,like_count',
-                    'game_questions': 'id,title,content,status,user_id,author_name,created_at,game_type',
-                    'profiles': 'id,username,email,is_admin,score,games_played,created_at,auth_id'
-                };
-                
-                const columns = columnSelectors[dataType] || '*';
-                url += `select=${columns}&order=created_at.desc`;
-                
-                // 发送请求（修复认证头）
-                const response = await fetch(url, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    }
-                });
-                
-                if (response.ok) {
-                    allItems = await response.json();
-                    updateStats();
-                    applyFilters();
-                } else {
-                    console.error('API响应:', response.status, response.statusText);
-                    
-                    // 如果表不存在，使用模拟数据
-                    if (response.status === 404) {
-                        console.warn(`表 ${tableName} 不存在，使用模拟数据`);
-                        allItems = generateMockData(dataType);
-                        updateStats();
-                        applyFilters();
-                    } else {
-                        throw new Error(`API错误: ${response.status}`);
-                    }
+                switch(dataType) {
+                    case 'knowledge': // 知识点
+                        query = supabase
+                            .from('knowledge_points')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        break;
+                        
+                    case 'notes': // 笔记（从submissions中筛选notes=TRUE）
+                        query = supabase
+                            .from('submissions')
+                            .select('*')
+                            .eq('game_type', 'notes')
+                            .order('created_at', { ascending: false });
+                        break;
+                        
+                    case 'messages': // 留言（从chat_messages）
+                        query = supabase
+                            .from('chat_messages')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        break;
+                        
+                    case 'questions': // 题目（从questions表）
+                        query = supabase
+                            .from('questions')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        break;
                 }
-            } catch (error) {
-                console.error('加载数据时出错:', error);
                 
-                // 如果出错，使用模拟数据
-                allItems = generateMockData(dataType);
-                updateStats();
+                if (!query) {
+                    throw new Error('未知的数据类型');
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                allItems = data || [];
                 applyFilters();
                 
-                showError(`无法加载${getDataTypeName(dataType)}数据，使用模拟数据演示`);
+            } catch (error) {
+                console.error('加载数据时出错:', error);
+                showError(`无法加载${getDataTypeName(dataType)}数据: ${error.message}`);
+                allItems = [];
+                applyFilters();
             }
-        }
-
-        // 生成模拟数据
-        function generateMockData(dataType) {
-            const mockData = [];
-            const statuses = ['pending', 'approved', 'rejected'];
-            const authors = ['张三', '李四', '王五', '赵六', '钱七'];
-            const games = ['知识问答', '智力挑战', '速度竞赛', '团队对战'];
-            
-            for (let i = 1; i <= 15; i++) {
-                const status = statuses[Math.floor(Math.random() * statuses.length)];
-                const createdAt = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-                
-                let item = {
-                    id: `mock-${dataType}-${i}`,
-                    title: `${getDataTypeName(dataType)}示例 ${i}`,
-                    content: `这是${getDataTypeName(dataType)}的示例内容，用于演示管理员审核界面。`,
-                    status: status,
-                    author_name: authors[Math.floor(Math.random() * authors.length)],
-                    created_at: createdAt.toISOString(),
-                    like_count: Math.floor(Math.random() * 100),
-                    view_count: Math.floor(Math.random() * 500),
-                    is_mock: true
-                };
-                
-                // 根据不同数据类型添加特定字段
-                switch(dataType) {
-                    case 'submissions':
-                    case 'questions':
-                        item.game_type = games[Math.floor(Math.random() * games.length)];
-                        item.difficulty = ['简单', '中等', '困难'][Math.floor(Math.random() * 3)];
-                        break;
-                    case 'profiles':
-                        item.username = `user${i}`;
-                        item.email = `user${i}@example.com`;
-                        item.is_admin = i === 1; // 第一个用户是管理员
-                        item.score = Math.floor(Math.random() * 1000);
-                        item.games_played = Math.floor(Math.random() * 50);
-                        break;
-                }
-                
-                mockData.push(item);
-            }
-            
-            return mockData;
-        }
-
-        // 更新统计信息
-        function updateStats() {
-            stats.total = allItems.length;
-            stats.pending = allItems.filter(item => item.status === 'pending').length;
-            stats.approved = allItems.filter(item => item.status === 'approved').length;
-            stats.rejected = allItems.filter(item => item.status === 'rejected').length;
-            
-            // 更新统计卡片
-            document.getElementById('totalCount').textContent = stats.total;
-            document.getElementById('pendingCount').textContent = stats.pending;
-            document.getElementById('approvedCount').textContent = stats.approved;
-            document.getElementById('rejectedCount').textContent = stats.rejected;
-            
-            // 更新标签徽章
-            document.getElementById(`badge-${currentDataType}`).textContent = stats.total;
         }
 
         // 应用筛选
@@ -1002,9 +1166,12 @@
             
             // 筛选数据
             filteredItems = allItems.filter(item => {
-                // 状态筛选
-                if (statusFilter !== 'all' && item.status !== statusFilter) {
-                    return false;
+                // 状态筛选（不同表的status字段可能不同）
+                if (statusFilter !== 'all') {
+                    const itemStatus = getItemStatus(item);
+                    if (itemStatus !== statusFilter) {
+                        return false;
+                    }
                 }
                 
                 // 搜索筛选
@@ -1014,7 +1181,8 @@
                         item.content || '',
                         item.author_name || '',
                         item.username || '',
-                        item.email || ''
+                        item.subject || '',
+                        item.tags || ''
                     ].join(' ').toLowerCase();
                     
                     if (!searchableText.includes(searchQuery)) {
@@ -1032,159 +1200,125 @@
                         return new Date(b.created_at) - new Date(a.created_at);
                     case 'oldest':
                         return new Date(a.created_at) - new Date(b.created_at);
-                    case 'most_viewed':
-                        return (b.view_count || 0) - (a.view_count || 0);
-                    case 'most_liked':
+                    case 'popular':
                         return (b.like_count || 0) - (a.like_count || 0);
                     default:
                         return 0;
                 }
             });
             
-            renderTable();
+            renderItems();
         }
 
-        // 渲染表格
-        function renderTable() {
-            const container = document.getElementById('contentTableContainer');
+        // 获取项目状态
+        function getItemStatus(item) {
+            // 不同表的status字段名称可能不同
+            return item.status || item.review_status || 'pending';
+        }
+
+        // 渲染项目
+        function renderItems() {
+            const container = document.getElementById('contentContainer');
             
             if (filteredItems.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
+                    <div class="content-card" style="text-align: center; padding: 48px;">
+                        <i class="fas fa-inbox fa-3x" style="color: var(--text-muted); margin-bottom: 16px;"></i>
                         <h3>没有找到内容</h3>
-                        <p>当前筛选条件下没有匹配的内容</p>
-                        <button class="action-btn secondary" onclick="clearFilters()" style="margin-top: var(--spacing-lg);">
-                            <i class="fas fa-times"></i>
-                            清除筛选
-                        </button>
+                        <p style="color: var(--text-secondary);">当前筛选条件下没有匹配的内容</p>
                     </div>
                 `;
                 return;
             }
             
-            let tableHTML = `
-                <table class="content-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40%;">内容</th>
-                            <th style="width: 15%;">作者</th>
-                            <th style="width: 15%;">状态</th>
-                            <th style="width: 15%;">创建时间</th>
-                            <th style="width: 15%;">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
+            let html = '';
             
             filteredItems.forEach(item => {
-                const statusText = getStatusText(item.status);
-                const statusClass = getStatusClass(item.status);
+                const status = getItemStatus(item);
+                const statusText = getStatusText(status);
+                const statusClass = getStatusClass(status);
                 const createdAt = formatDate(item.created_at);
-                const isMock = item.is_mock || false;
+                const previewContent = (item.content || '').substring(0, 200) + ((item.content || '').length > 200 ? '...' : '');
+                const itemId = item.id;
+                const isSelected = selectedItems.has(itemId);
                 
-                tableHTML += `
-                    <tr>
-                        <td>
-                            <div class="content-preview">
-                                <div class="title">${item.title || '未命名内容'}</div>
-                                <div class="excerpt">${(item.content || '').substring(0, 100)}...</div>
-                                ${item.game_type ? `<div style="font-size: 12px; color: var(--accent-color); margin-top: 4px;"><i class="fas fa-gamepad"></i> ${item.game_type}</div>` : ''}
-                                ${isMock ? '<div style="font-size: 11px; color: var(--warning-color); margin-top: 2px;"><i class="fas fa-vial"></i> 演示数据</div>' : ''}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-info">
-                                <div class="user-avatar">
-                                    ${(item.author_name || item.username || '?').charAt(0)}
-                                </div>
-                                <div class="user-details">
-                                    <div class="name">${item.author_name || item.username || '匿名用户'}</div>
-                                    ${item.email ? `<div class="email">${item.email}</div>` : ''}
+                html += `
+                    <div class="content-card" data-id="${itemId}">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3>${item.title || '未命名内容'}</h3>
+                                <div class="card-meta">
+                                    <span><i class="far fa-user"></i> ${item.author_name || item.username || '匿名用户'}</span>
+                                    <span><i class="far fa-calendar"></i> ${createdAt}</span>
+                                    ${item.subject ? `<span><i class="fas fa-tag"></i> ${item.subject}</span>` : ''}
                                 </div>
                             </div>
-                        </td>
-                        <td>
-                            <span class="status-tag ${statusClass}">
-                                <i class="fas fa-${getStatusIcon(item.status)}"></i>
-                                ${statusText}
-                            </span>
-                        </td>
-                        <td>
-                            <div style="font-size: 13px;">${createdAt}</div>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                ${item.status !== 'approved' ? `
-                                    <button class="action-btn-small approve" onclick="approveItem('${item.id}')" ${isMock ? 'disabled style="opacity: 0.5;"' : ''}>
-                                        <i class="fas fa-check"></i> 通过
-                                    </button>
-                                ` : ''}
-                                
-                                ${item.status !== 'rejected' ? `
-                                    <button class="action-btn-small reject" onclick="rejectItem('${item.id}')" ${isMock ? 'disabled style="opacity: 0.5;"' : ''}>
-                                        <i class="fas fa-times"></i> 拒绝
-                                    </button>
-                                ` : ''}
-                                
-                                <button class="action-btn-small review" onclick="reviewItem('${item.id}')" ${isMock ? 'disabled style="opacity: 0.5;"' : ''}>
-                                    <i class="fas fa-redo"></i> 复审
+                            <div class="status-tag ${statusClass}">${statusText}</div>
+                        </div>
+                        
+                        <div class="card-content">
+                            <p>${previewContent}</p>
+                            ${item.difficulty ? `<p><strong>难度:</strong> ${item.difficulty}</p>` : ''}
+                            ${item.like_count !== undefined ? `<p><strong>点赞数:</strong> ${item.like_count}</p>` : ''}
+                        </div>
+                        
+                        <div class="card-actions">
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer;">
+                                <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelection('${itemId}')">
+                                <span>选择</span>
+                            </label>
+                            
+                            ${status !== 'approved' ? `
+                                <button class="btn btn-approve" onclick="approveItem('${itemId}')">
+                                    <i class="fas fa-check"></i> 通过
                                 </button>
-                            </div>
-                        </td>
-                    </tr>
+                            ` : ''}
+                            
+                            ${status !== 'rejected' ? `
+                                <button class="btn btn-reject" onclick="rejectItem('${itemId}')">
+                                    <i class="fas fa-times"></i> 拒绝
+                                </button>
+                            ` : ''}
+                            
+                            <button class="btn btn-review" onclick="reviewItem('${itemId}')">
+                                <i class="fas fa-redo"></i> 复审
+                            </button>
+                        </div>
+                    </div>
                 `;
             });
             
-            tableHTML += `
-                    </tbody>
-                </table>
-            `;
-            
-            container.innerHTML = tableHTML;
+            container.innerHTML = html;
         }
 
-        // 批准项目（修复PATCH请求）
+        // 切换选择
+        function toggleSelection(itemId) {
+            if (selectedItems.has(itemId)) {
+                selectedItems.delete(itemId);
+            } else {
+                selectedItems.add(itemId);
+            }
+        }
+
+        // 批准项目
         async function approveItem(itemId) {
-            if (!confirm('确定要通过此内容吗？此操作不可撤销。')) return;
+            if (!confirm('确定要通过此内容吗？')) return;
             
             try {
-                const tableName = tableMapping[currentDataType];
-                const isMock = allItems.find(item => item.id === itemId)?.is_mock;
-                
-                if (isMock) {
-                    showSuccess('演示数据：内容已通过审核');
-                    // 更新本地数据
-                    allItems = allItems.map(item => 
-                        item.id === itemId ? {...item, status: 'approved', updated_at: new Date().toISOString()} : item
-                    );
-                    updateStats();
-                    applyFilters();
-                    return;
-                }
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?id=eq.${itemId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({
+                const tableName = getTableName(currentDataType);
+                const { error } = await supabase
+                    .from(tableName)
+                    .update({ 
                         status: 'approved',
                         updated_at: new Date().toISOString()
                     })
-                });
+                    .eq('id', itemId);
                 
-                if (response.ok) {
-                    showSuccess('内容已通过审核');
-                    // 重新加载数据
-                    await loadData(currentDataType);
-                } else {
-                    const error = await response.text();
-                    throw new Error(`更新失败: ${error}`);
-                }
+                if (error) throw error;
+                
+                showSuccess('内容已通过审核');
+                await loadData(currentDataType);
+                
             } catch (error) {
                 console.error('批准内容时出错:', error);
                 showError('操作失败: ' + error.message);
@@ -1193,46 +1327,26 @@
 
         // 拒绝项目
         async function rejectItem(itemId) {
-            if (!confirm('确定要拒绝此内容吗？此操作不可撤销。')) return;
+            if (!confirm('确定要拒绝此内容吗？')) return;
             
             try {
-                const tableName = tableMapping[currentDataType];
-                const isMock = allItems.find(item => item.id === itemId)?.is_mock;
-                
-                if (isMock) {
-                    showSuccess('演示数据：内容已拒绝');
-                    // 更新本地数据
-                    allItems = allItems.map(item => 
-                        item.id === itemId ? {...item, status: 'rejected', updated_at: new Date().toISOString()} : item
-                    );
-                    updateStats();
-                    applyFilters();
-                    return;
-                }
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?id=eq.${itemId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({
+                const tableName = getTableName(currentDataType);
+                const { error } = await supabase
+                    .from(tableName)
+                    .update({ 
                         status: 'rejected',
                         updated_at: new Date().toISOString()
                     })
-                });
+                    .eq('id', itemId);
                 
-                if (response.ok) {
-                    showSuccess('内容已拒绝');
-                    await loadData(currentDataType);
-                } else {
-                    throw new Error('更新失败');
-                }
+                if (error) throw error;
+                
+                showSuccess('内容已拒绝');
+                await loadData(currentDataType);
+                
             } catch (error) {
                 console.error('拒绝内容时出错:', error);
-                showError('操作失败');
+                showError('操作失败: ' + error.message);
             }
         }
 
@@ -1241,82 +1355,109 @@
             if (!confirm('确定要重新审核此内容吗？内容将恢复为待审核状态。')) return;
             
             try {
-                const tableName = tableMapping[currentDataType];
-                const isMock = allItems.find(item => item.id === itemId)?.is_mock;
-                
-                if (isMock) {
-                    showSuccess('演示数据：内容已标记为待复审');
-                    // 更新本地数据
-                    allItems = allItems.map(item => 
-                        item.id === itemId ? {...item, status: 'pending', updated_at: new Date().toISOString()} : item
-                    );
-                    updateStats();
-                    applyFilters();
-                    return;
-                }
-                
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?id=eq.${itemId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({
+                const tableName = getTableName(currentDataType);
+                const { error } = await supabase
+                    .from(tableName)
+                    .update({ 
                         status: 'pending',
                         updated_at: new Date().toISOString()
                     })
-                });
+                    .eq('id', itemId);
                 
-                if (response.ok) {
-                    showSuccess('内容已标记为待复审');
-                    await loadData(currentDataType);
-                } else {
-                    throw new Error('更新失败');
-                }
+                if (error) throw error;
+                
+                showSuccess('内容已标记为待复审');
+                await loadData(currentDataType);
+                
             } catch (error) {
                 console.error('复审内容时出错:', error);
-                showError('操作失败');
+                showError('操作失败: ' + error.message);
             }
+        }
+
+        // 批量通过
+        async function batchApprove() {
+            if (selectedItems.size === 0) {
+                alert('请先选择要操作的内容');
+                return;
+            }
+            
+            if (!confirm(`确定要通过选中的 ${selectedItems.size} 个内容吗？`)) return;
+            
+            try {
+                const tableName = getTableName(currentDataType);
+                const itemIds = Array.from(selectedItems);
+                
+                const { error } = await supabase
+                    .from(tableName)
+                    .update({ 
+                        status: 'approved',
+                        updated_at: new Date().toISOString()
+                    })
+                    .in('id', itemIds);
+                
+                if (error) throw error;
+                
+                showSuccess(`已通过 ${itemIds.length} 个内容`);
+                selectedItems.clear();
+                await loadData(currentDataType);
+                
+            } catch (error) {
+                console.error('批量通过时出错:', error);
+                showError('批量操作失败: ' + error.message);
+            }
+        }
+
+        // 获取表名
+        function getTableName(dataType) {
+            const tableMap = {
+                'knowledge': 'knowledge_points',
+                'notes': 'submissions',
+                'messages': 'chat_messages',
+                'questions': 'questions'
+            };
+            return tableMap[dataType];
         }
 
         // 设置事件监听器
         function setupEventListeners() {
             // 标签页点击
-            document.querySelectorAll('.tab-button').forEach(button => {
+            document.querySelectorAll('.tab-btn').forEach(button => {
                 button.addEventListener('click', async () => {
-                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     
                     currentDataType = button.dataset.type;
+                    selectedItems.clear();
                     await loadData(currentDataType);
                 });
             });
             
-            // 搜索输入
-            const searchInput = document.getElementById('searchInput');
+            // 搜索输入防抖
             let searchTimeout;
-            searchInput.addEventListener('input', () => {
+            function handleSearch() {
                 clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(applyFilters, 300);
-            });
+                searchTimeout = setTimeout(applyFilters, 500);
+            }
             
-            // 筛选器变更
-            document.getElementById('statusFilter').addEventListener('change', applyFilters);
-            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+            window.handleSearch = handleSearch;
+        }
+
+        // 刷新数据
+        async function refreshData() {
+            selectedItems.clear();
+            await loadData(currentDataType);
+            showSuccess('数据已刷新');
         }
 
         // 辅助函数
         function getDataTypeName(type) {
             const names = {
-                'submissions': '题目提交',
-                'questions': '已发布题目',
-                'feedbacks': '用户反馈',
-                'game_questions': '游戏题目',
-                'profiles': '用户账户'
+                'knowledge': '知识点',
+                'notes': '笔记',
+                'messages': '留言',
+                'questions': '题目'
             };
-            
             return names[type] || '内容';
         }
 
@@ -1324,30 +1465,22 @@
             const statusMap = {
                 'pending': '待审核',
                 'approved': '已通过',
-                'rejected': '已拒绝'
+                'rejected': '已拒绝',
+                'published': '已发布',
+                'draft': '草稿'
             };
-            
-            return statusMap[status] || '未知状态';
+            return statusMap[status] || status || '未知状态';
         }
 
         function getStatusClass(status) {
             const classMap = {
-                'pending': 'pending',
-                'approved': 'approved',
-                'rejected': 'rejected'
+                'pending': 'status-pending',
+                'approved': 'status-approved',
+                'rejected': 'status-rejected',
+                'published': 'status-approved',
+                'draft': 'status-pending'
             };
-            
-            return classMap[status] || 'pending';
-        }
-
-        function getStatusIcon(status) {
-            const iconMap = {
-                'pending': 'clock',
-                'approved': 'check-circle',
-                'rejected': 'times-circle'
-            };
-            
-            return iconMap[status] || 'question-circle';
+            return classMap[status] || 'status-pending';
         }
 
         function formatDate(dateString) {
@@ -1371,19 +1504,33 @@
             }
         }
 
-        // 工具函数
+        // 显示加载状态
         function showLoading() {
-            const container = document.getElementById('contentTableContainer');
+            const container = document.getElementById('contentContainer');
             container.innerHTML = `
-                <div class="loading-state">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>正在加载${getDataTypeName(currentDataType)}数据...</p>
+                <div class="content-card" style="text-align: center; padding: 48px;">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
+                    <h3>正在加载数据...</h3>
+                    <p style="color: var(--text-secondary);">请稍候</p>
                 </div>
             `;
         }
 
+        // 显示错误消息
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            errorMsg.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // 显示成功消息
         function showSuccess(message) {
-            // 创建临时通知
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
@@ -1396,12 +1543,13 @@
                 box-shadow: var(--shadow-lg);
                 z-index: 1000;
                 animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
             `;
             notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                    <i class="fas fa-check-circle"></i>
-                    <span>${message}</span>
-                </div>
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
             `;
             document.body.appendChild(notification);
             
@@ -1411,8 +1559,8 @@
             }, 3000);
         }
 
+        // 显示错误消息
         function showError(message) {
-            // 创建临时通知
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
@@ -1425,22 +1573,23 @@
                 box-shadow: var(--shadow-lg);
                 z-index: 1000;
                 animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
             `;
             notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>${message}</span>
-                </div>
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${message}</span>
             `;
             document.body.appendChild(notification);
             
             setTimeout(() => {
                 notification.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            }, 5000);
         }
 
-        // 新增CSS动画
+        // 添加CSS动画
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
@@ -1453,57 +1602,7 @@
             }
         `;
         document.head.appendChild(style);
-
-        // 快捷操作函数
-        function refreshAllData() {
-            loadData(currentDataType);
-            updateConnectionStatus();
-            showSuccess('数据已刷新');
-        }
-
-        function showAllPending() {
-            document.getElementById('statusFilter').value = 'pending';
-            applyFilters();
-            showSuccess('已筛选出所有待审内容');
-        }
-
-        function clearFilters() {
-            document.getElementById('statusFilter').value = 'all';
-            document.getElementById('searchInput').value = '';
-            applyFilters();
-        }
-
-        function createQuickNote() {
-            document.getElementById('noteModal').style.display = 'flex';
-            document.getElementById('noteContent').focus();
-        }
-
-        function closeNoteModal() {
-            document.getElementById('noteModal').style.display = 'none';
-            document.getElementById('noteContent').value = '';
-        }
-
-        function saveNote() {
-            const noteContent = document.getElementById('noteContent').value.trim();
-            if (!noteContent) {
-                showError('请输入笔记内容');
-                return;
-            }
-            
-            // 在实际应用中，这里应该保存到数据库
-            // 目前先保存到本地存储
-            const notes = JSON.parse(localStorage.getItem('admin_notes') || '[]');
-            notes.push({
-                content: noteContent,
-                created_at: new Date().toISOString(),
-                type: 'admin_note'
-            });
-            
-            localStorage.setItem('admin_notes', JSON.stringify(notes));
-            
-            showSuccess('笔记已保存到本地存储');
-            closeNoteModal();
-        }
     </script>
 </body>
 </html>
+
