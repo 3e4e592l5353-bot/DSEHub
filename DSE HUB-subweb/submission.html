@@ -89,6 +89,21 @@
             --border-color: rgba(74, 85, 104, 0.5);
         }
 
+        /* 橙青色主题（如果用户有） */
+        .theme-orange-teal {
+            --primary-start: #ff8c00;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --text-muted: #a0aec0;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: rgba(255, 140, 0, 0.15);
+            --border-color: rgba(255, 140, 0, 0.2);
+        }
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -772,10 +787,18 @@
             border-radius: 6px;
             border-left: 3px solid var(--accent-color);
         }
+
+        .example-item {
+            background: var(--accent-light);
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 3px 0;
+            border-left: 3px solid var(--accent-color);
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="theme-blue-purple">
+<body class="theme-blue-purple"> <!-- 默认使用蓝紫色主题 -->
     <div class="container">
         <!-- 头部导航 -->
         <div class="header">
@@ -1058,7 +1081,7 @@
 
         // 用户数据
         let currentUser = null;
-        let currentTheme = 'theme-blue-purple';
+        let currentTheme = 'theme-blue-purple'; // 默认蓝紫色
         let availableKnowledge = [];
         let userSubmissions = [];
         let currentHistoryFilter = 'all';
@@ -1141,13 +1164,17 @@
             return btn;
         }
 
-        function loadUserData() {
+        async function loadUserData() {
             try {
                 const userData = JSON.parse(localStorage.getItem('dsehub_user') || '{}');
                 if (userData && userData.id) {
                     currentUser = userData;
                     updateUserDisplay(userData);
-                    loadUserTheme(userData);
+                    
+                    // 先加载用户主题
+                    await loadUserTheme();
+                    
+                    // 然后加载其他数据
                     loadUserStats();
                     loadKnowledgePoints();
                     return;
@@ -1170,25 +1197,71 @@
             showMessage('warning', '请先登录主站系统', 'knowledge');
         }
 
-        function loadUserTheme(userData) {
-            // 从用户数据中获取主题色
-            if (userData.theme_color) {
-                currentTheme = userData.theme_color;
-                console.log('加载用户主题色:', currentTheme);
-            } else if (userData.theme) {
-                // 兼容旧版本的主题字段
-                currentTheme = userData.theme;
-            }
+        async function loadUserTheme() {
+            if (!currentUser) return;
             
-            // 确保主题类是有效的
-            const validThemes = ['theme-blue-purple', 'theme-green-teal', 'theme-orange-red', 'theme-dark'];
-            if (!validThemes.includes(currentTheme)) {
-                currentTheme = 'theme-blue-purple'; // 默认主题
+            try {
+                console.log('正在加载用户主题，用户ID:', currentUser.id);
+                
+                // 从 profiles 表获取用户的 theme_color
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=theme_color`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const profiles = await response.json();
+                    if (profiles && profiles.length > 0) {
+                        const userProfile = profiles[0];
+                        const themeColor = userProfile.theme_color;
+                        
+                        console.log('获取到用户主题:', themeColor);
+                        
+                        // 根据 theme_color 应用对应的主题类
+                        let themeClass = '';
+                        
+                        if (themeColor) {
+                            // 检查是否是有效的主题
+                            if (themeColor.includes('blue') || themeColor.includes('purple')) {
+                                themeClass = 'theme-blue-purple';
+                            } else if (themeColor.includes('green') || themeColor.includes('teal')) {
+                                themeClass = 'theme-green-teal';
+                            } else if (themeColor.includes('orange') || themeColor.includes('red')) {
+                                themeClass = 'theme-orange-red';
+                            } else if (themeColor.includes('dark')) {
+                                themeClass = 'theme-dark';
+                            } else {
+                                // 默认使用蓝紫色主题
+                                themeClass = 'theme-blue-purple';
+                            }
+                        } else {
+                            // 没有设置主题，使用默认
+                            themeClass = 'theme-blue-purple';
+                        }
+                        
+                        currentTheme = themeClass;
+                        document.body.className = themeClass;
+                        console.log('应用主题:', themeClass);
+                    } else {
+                        console.log('没有找到用户profile，使用默认主题');
+                        currentTheme = 'theme-blue-purple';
+                        document.body.className = 'theme-blue-purple';
+                    }
+                } else {
+                    console.log('获取profile失败，使用默认主题');
+                    currentTheme = 'theme-blue-purple';
+                    document.body.className = 'theme-blue-purple';
+                }
+            } catch (error) {
+                console.error('加载用户主题失败:', error);
+                currentTheme = 'theme-blue-purple';
+                document.body.className = 'theme-blue-purple';
             }
-            
-            // 应用主题
-            document.body.className = currentTheme;
-            console.log('应用主题:', currentTheme);
         }
 
         async function loadUserStats() {
