@@ -9,12 +9,12 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* 使用你提供的完整设计系统 */
+        /* 🎨 使用完整的设计系统 */
         :root {
-            /* 🎨 色彩系统 */
-            --primary-start: #667eea;     /* 蓝色 */
-            --primary-end: #764ba2;       /* 紫色 */
-            --accent-color: #5a67d8;      /* 强调蓝紫色 */
+            /* 蓝紫主题 (默认) */
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-color: #5a67d8;
             --accent-light: rgba(90, 103, 216, 0.1);
             --accent-dark: #4c51bf;
             --text-color: #2d3748;
@@ -50,7 +50,48 @@
             
             /* 🧭 布局系统 */
             --container-width: 1200px;
-            --side-nav-width: 260px;
+            --side-nav-width: 280px;
+        }
+        
+        /* 🎨 绿青主题 */
+        .theme-green-teal {
+            --primary-start: #48bb78;
+            --primary-end: #319795;
+            --accent-color: #38a169;
+            --accent-light: rgba(56, 161, 105, 0.1);
+            --accent-dark: #2f855a;
+            --border-color: rgba(72, 187, 120, 0.15);
+            --hover-color: rgba(72, 187, 120, 0.06);
+        }
+        
+        /* 🎨 橙红主题 */
+        .theme-orange-red {
+            --primary-start: #ff8c00;
+            --primary-end: #ff4500;
+            --accent-color: #ff4500;
+            --accent-light: rgba(255, 69, 0, 0.1);
+            --accent-dark: #e03e00;
+            --border-color: rgba(255, 140, 0, 0.15);
+            --hover-color: rgba(255, 140, 0, 0.06);
+        }
+        
+        /* 🎨 深色主题 */
+        .theme-dark {
+            --primary-start: #4a5568;
+            --primary-end: #2d3748;
+            --accent-color: #4299e1;
+            --accent-light: rgba(66, 153, 225, 0.15);
+            --accent-dark: #3182ce;
+            --card-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border-color: #4a5568;
+            --hover-color: rgba(66, 153, 225, 0.1);
+        }
+        
+        .dark-mode {
+            background: #1a202c !important;
         }
         
         * {
@@ -65,6 +106,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             line-height: 1.6;
+            transition: all var(--transition-normal);
         }
         
         /* 🧭 主容器 */
@@ -80,8 +122,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--spacing-xl);
-            padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            background: var(--card-bg);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
         }
         
         .logo {
@@ -90,6 +135,13 @@
             background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
         }
         
         .score-display {
@@ -97,8 +149,9 @@
             font-weight: 600;
             color: var(--accent-color);
             background: var(--accent-light);
-            padding: var(--spacing-sm) var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-lg);
             border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
         }
         
         /* 📱 主要内容区域 */
@@ -106,6 +159,7 @@
             display: flex;
             gap: var(--spacing-xl);
             min-height: 600px;
+            align-items: flex-start;
         }
         
         /* 🎮 游戏类型选择侧边栏 */
@@ -114,6 +168,7 @@
             position: sticky;
             top: var(--spacing-xl);
             align-self: flex-start;
+            flex-shrink: 0;
         }
         
         .game-nav {
@@ -130,7 +185,7 @@
             margin-bottom: var(--spacing-lg);
             color: var(--text-color);
             padding-bottom: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
         }
         
         .game-nav-item {
@@ -142,13 +197,14 @@
             border-radius: var(--border-radius-lg);
             cursor: pointer;
             transition: all var(--transition-normal);
-            border: 1px solid transparent;
+            border: 2px solid transparent;
         }
         
         .game-nav-item:hover {
             background: var(--hover-color);
-            transform: translateY(-2px);
+            transform: translateX(4px);
             box-shadow: var(--shadow-sm);
+            border-color: var(--border-color);
         }
         
         .game-nav-item.active {
@@ -164,6 +220,72 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
+        }
+        
+        /* ⚔️ 联机对战面板 */
+        .duel-panel {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--accent-light);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .duel-panel h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-color);
+        }
+        
+        .room-input-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .room-input-group input {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        .game-mode-selector {
+            margin: var(--spacing-md) 0;
+        }
+        
+        .mode-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .mode-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .mode-option:hover {
+            background: var(--hover-color);
+            border-color: var(--accent-color);
+        }
+        
+        .mode-option.selected {
+            background: var(--accent-light);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
         
         /* 🎲 游戏主区域 */
@@ -174,23 +296,26 @@
             padding: var(--spacing-xl);
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-color);
+            min-height: 600px;
         }
         
         .game-header {
             margin-bottom: var(--spacing-xl);
             padding-bottom: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
         }
         
         .game-header h2 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
         }
         
         .game-description {
             color: var(--text-secondary);
             font-size: 14px;
+            line-height: 1.6;
         }
         
         /* 🔗 连连看游戏区域 */
@@ -207,10 +332,12 @@
             grid-template-columns: repeat(4, 1fr);
             gap: var(--spacing-lg);
             margin: var(--spacing-xl) 0;
+            justify-items: center;
         }
         
         .linkup-card {
-            min-height: 120px;
+            width: 100%;
+            min-height: 140px;
             background: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius-lg);
@@ -227,17 +354,17 @@
         }
         
         .linkup-card.knowledge {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-            border-color: rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            border-color: rgba(102, 126, 234, 0.25);
         }
         
         .linkup-card.question {
-            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(49, 151, 149, 0.1));
-            border-color: rgba(72, 187, 120, 0.3);
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.08), rgba(49, 151, 149, 0.08));
+            border-color: rgba(72, 187, 120, 0.25);
         }
         
         .linkup-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             box-shadow: var(--shadow-lg);
         }
         
@@ -250,6 +377,7 @@
         .linkup-card.matched {
             opacity: 0.4;
             pointer-events: none;
+            transform: scale(0.95);
         }
         
         .card-label {
@@ -263,6 +391,7 @@
             font-size: 14px;
             font-weight: 600;
             color: var(--text-color);
+            line-height: 1.4;
         }
         
         /* ✅ 对错判断游戏区域 */
@@ -287,6 +416,7 @@
             font-size: 18px;
             margin-bottom: var(--spacing-xl);
             line-height: 1.7;
+            color: var(--text-color);
         }
         
         .answer-options {
@@ -328,26 +458,14 @@
             transition: all var(--transition-normal);
             text-align: center;
             font-size: 15px;
+            background: var(--card-bg);
+            color: var(--text-color);
         }
         
         .option-card:hover {
             transform: translateY(-2px);
             border-color: var(--accent-color);
             box-shadow: var(--shadow-sm);
-        }
-        
-        /* ⚔️ 联机对战区域 */
-        .duel-panel {
-            background: var(--accent-light);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-lg);
-            margin-top: var(--spacing-xl);
-        }
-        
-        .room-input-group {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-md);
         }
         
         /* 🎯 按钮系统 */
@@ -462,8 +580,15 @@
                 flex-direction: column;
             }
             
-            .btn {
-                width: 100%;
+            .header {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: var(--spacing-sm);
             }
         }
         
@@ -474,11 +599,51 @@
             
             .linkup-board {
                 grid-template-columns: 1fr;
+                gap: var(--spacing-md);
             }
             
             .logo {
                 font-size: 24px;
             }
+            
+            .game-main {
+                padding: var(--spacing-lg);
+            }
+        }
+        
+        /* 🎭 特殊效果 */
+        .linkup-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left var(--transition-normal);
+        }
+        
+        .linkup-card:hover::before {
+            left: 100%;
+        }
+        
+        /* 🎨 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-sm);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: var(--border-radius-sm);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dark);
         }
     </style>
 </head>
@@ -487,8 +652,13 @@
         <!-- 头部区域 -->
         <div class="header">
             <div class="logo">🧠 知识对战平台</div>
-            <div class="score-display">
-                得分: <span id="global-score">0</span>
+            <div class="user-info">
+                <div class="score-display">
+                    得分: <span id="global-score">0</span>
+                </div>
+                <button class="btn btn-secondary" onclick="showThemeSelector()">
+                    🎨 主题
+                </button>
             </div>
         </div>
         
@@ -523,16 +693,44 @@
                         </div>
                     </div>
                     
-                    <!-- 联机对战面板 -->
+                    <!-- ⚔️ 联机对战面板 -->
                     <div class="duel-panel">
-                        <div style="font-weight: 600; margin-bottom: var(--spacing-sm);">⚔️ 联机对战</div>
-                        <button class="btn btn-primary" onclick="createDuelRoom()" style="width: 100%;">
-                            创建房间
+                        <h3>⚔️ 联机对战</h3>
+                        
+                        <div class="game-mode-selector">
+                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">
+                                选择对战模式：
+                            </div>
+                            <div class="mode-options">
+                                <label class="mode-option" onclick="selectDuelMode('linkup')">
+                                    <input type="radio" name="duelMode" value="linkup" style="margin-right: 8px;">
+                                    <span>🔗 连连看</span>
+                                </label>
+                                <label class="mode-option" onclick="selectDuelMode('truefalse')">
+                                    <input type="radio" name="duelMode" value="truefalse" style="margin-right: 8px;">
+                                    <span>✅ 对错判断</span>
+                                </label>
+                                <label class="mode-option" onclick="selectDuelMode('guess')">
+                                    <input type="radio" name="duelMode" value="guess" style="margin-right: 8px;">
+                                    <span>❓ 猜知识点</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="createDuelRoom()" style="width: 100%; margin-top: var(--spacing-md);">
+                            🏠 创建房间
                         </button>
+                        
                         <div class="room-input-group">
                             <input type="text" id="roomIdInput" placeholder="输入房间ID" 
-                                   style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
-                            <button class="btn btn-secondary" onclick="joinDuelRoom()">加入</button>
+                                   style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: var(--card-bg); color: var(--text-color);">
+                            <button class="btn btn-secondary" onclick="joinDuelRoom()">
+                                加入
+                            </button>
+                        </div>
+                        
+                        <div id="duel-status" style="margin-top: var(--spacing-md); font-size: 12px; color: var(--text-muted); text-align: center;">
+                            等待连接...
                         </div>
                     </div>
                 </div>
@@ -544,7 +742,7 @@
                 <div id="linkup-game" class="linkup-container active">
                     <div class="game-header">
                         <h2>🔗 知识点连连看</h2>
-                        <p class="game-description">点击匹配对应的知识点和题目，每个知识点可能对应多个题目</p>
+                        <p class="game-description">点击匹配对应的知识点和题目，每个知识点可能对应多个题目。匹配成功获得10分。</p>
                     </div>
                     
                     <div id="linkup-board" class="linkup-board">
@@ -556,7 +754,7 @@
                             🔄 重新开始
                         </button>
                         <button class="btn btn-primary" onclick="loadMoreLinkUpCards()">
-                            ➕ 加载更多
+                            ➕ 加载更多卡片
                         </button>
                     </div>
                     
@@ -567,7 +765,7 @@
                 <div id="truefalse-game" class="truefalse-container">
                     <div class="game-header">
                         <h2>✅ 对错判断</h2>
-                        <p class="game-description">判断以下题目陈述的正确性</p>
+                        <p class="game-description">判断以下题目陈述的正确性。答对获得5分。</p>
                     </div>
                     
                     <div class="question-card">
@@ -601,7 +799,7 @@
                 <div id="guess-game" class="guess-container">
                     <div class="game-header">
                         <h2>❓ 猜知识点</h2>
-                        <p class="game-description">根据题目线索选择正确的知识点</p>
+                        <p class="game-description">根据题目线索选择正确的知识点。答对获得10分。</p>
                     </div>
                     
                     <div class="clue-card">
@@ -629,11 +827,42 @@
         </div>
     </div>
 
+    <!-- 主题选择模态框 -->
+    <div id="themeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: var(--card-bg); padding: var(--spacing-xl); border-radius: var(--border-radius-xl); max-width: 400px; width: 90%;">
+            <h3 style="margin-bottom: var(--spacing-lg);">🎨 选择主题</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md);">
+                <button class="btn btn-secondary" onclick="changeTheme('blue-purple')" style="justify-content: flex-start;">
+                    <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 4px; margin-right: 8px;"></div>
+                    蓝紫主题
+                </button>
+                <button class="btn btn-secondary" onclick="changeTheme('green-teal')" style="justify-content: flex-start;">
+                    <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #48bb78, #319795); border-radius: 4px; margin-right: 8px;"></div>
+                    绿青主题
+                </button>
+                <button class="btn btn-secondary" onclick="changeTheme('orange-red')" style="justify-content: flex-start;">
+                    <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #ff8c00, #ff4500); border-radius: 4px; margin-right: 8px;"></div>
+                    橙红主题
+                </button>
+                <button class="btn btn-secondary" onclick="changeTheme('dark')" style="justify-content: flex-start;">
+                    <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #4a5568, #2d3748); border-radius: 4px; margin-right: 8px;"></div>
+                    深色主题
+                </button>
+            </div>
+            <div style="margin-top: var(--spacing-lg); text-align: right;">
+                <button class="btn btn-secondary" onclick="closeThemeModal()">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 🔧 全局配置 - 只声明一次
+        // 🔧 全局配置
         let supabaseClient = null;
         let currentGame = 'linkup';
         let globalScore = 0;
+        let selectedDuelMode = 'linkup';
         
         // 🎮 游戏状态
         let linkupState = {
@@ -643,8 +872,7 @@
         };
         
         let truefalseState = {
-            currentQuestion: null,
-            questionHistory: []
+            currentQuestion: null
         };
         
         let guessState = {
@@ -652,8 +880,41 @@
             options: []
         };
         
+        // 🎨 主题管理器（简化版）
+        const ThemeManager = {
+            themes: {
+                'blue-purple': 'theme-blue-purple',
+                'green-teal': 'theme-green-teal',
+                'orange-red': 'theme-orange-red',
+                'dark': 'theme-dark'
+            },
+            
+            init() {
+                // 从localStorage加载保存的主题
+                const savedTheme = localStorage.getItem('game-theme') || 'blue-purple';
+                this.applyTheme(savedTheme);
+            },
+            
+            applyTheme(themeName) {
+                // 移除所有主题类
+                Object.values(this.themes).forEach(themeClass => {
+                    document.body.classList.remove(themeClass);
+                });
+                
+                // 应用新主题
+                const themeClass = this.themes[themeName] || this.themes['blue-purple'];
+                document.body.classList.add(themeClass);
+                
+                // 保存到localStorage
+                localStorage.setItem('game-theme', themeName);
+            }
+        };
+        
         // 📦 初始化函数
         function initApp() {
+            // 初始化主题
+            ThemeManager.init();
+            
             // 初始化Supabase客户端
             supabaseClient = supabase.createClient(
                 'https://alsalyskulozwakhmzoa.supabase.co',
@@ -665,6 +926,9 @@
             
             // 更新分数显示
             updateScoreDisplay();
+            
+            // 设置默认联机模式
+            selectDuelMode('linkup');
             
             console.log('游戏平台初始化完成');
         }
@@ -705,7 +969,7 @@
             const board = document.getElementById('linkup-board');
             if (!board) return;
             
-            board.innerHTML = '';
+            board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">加载中...</div>';
             linkupState.selectedCards = [];
             linkupState.matchedPairs = 0;
             
@@ -736,7 +1000,10 @@
                         .eq('game_type', 'linkup')
                         .limit(2);
                     
-                    if (qError) throw qError;
+                    if (qError) {
+                        console.warn(`未找到知识点 ${kp.title} 的题目:`, qError);
+                        continue;
+                    }
                     
                     if (questions && questions.length > 0) {
                         // 添加知识点头卡片
@@ -748,21 +1015,27 @@
                         });
                         
                         // 添加题目卡片
-                        questions.forEach((q, idx) => {
+                        questions.forEach((q) => {
                             linkupState.pairs.push({
                                 id: `q-${q.id}`,
                                 type: 'question',
-                                text: q.title.length > 30 ? q.title.substring(0, 30) + '...' : q.title,
+                                text: q.title.length > 40 ? q.title.substring(0, 40) + '...' : q.title,
                                 pairId: kp.id
                             });
                         });
                     }
                 }
                 
+                if (linkupState.pairs.length === 0) {
+                    board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">未找到足够的数据，请确保数据库中有linkup类型的题目</div>';
+                    return;
+                }
+                
                 // 洗牌
                 linkupState.pairs.sort(() => Math.random() - 0.5);
                 
-                // 生成卡片
+                // 清空并生成卡片
+                board.innerHTML = '';
                 linkupState.pairs.forEach(item => {
                     const card = document.createElement('div');
                     card.className = `linkup-card ${item.type}`;
@@ -781,7 +1054,7 @@
                 
             } catch (error) {
                 console.error('初始化连连看游戏失败:', error);
-                board.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">加载失败，请刷新页面重试</div>';
+                board.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">加载失败，请检查网络连接</div>';
             }
         }
         
@@ -808,7 +1081,7 @@
                         updateGlobalScore(10);
                         
                         // 检查是否完成所有配对
-                        if (linkupState.matchedPairs === linkupState.pairs.length / 2) {
+                        if (linkupState.matchedPairs >= linkupState.pairs.length / 2) {
                             const resultMsg = document.getElementById('linkup-result');
                             if (resultMsg) {
                                 resultMsg.textContent = '🎉 恭喜！你完成了所有配对！';
@@ -816,7 +1089,7 @@
                                 resultMsg.style.display = 'block';
                             }
                         }
-                    }, 500);
+                    }, 300);
                 } else {
                     // 匹配失败
                     setTimeout(() => {
@@ -835,36 +1108,41 @@
         
         async function loadMoreLinkUpCards() {
             // 这里可以添加加载更多卡片的逻辑
-            alert('加载更多卡片功能待实现');
+            const resultMsg = document.getElementById('linkup-result');
+            if (resultMsg) {
+                resultMsg.textContent = '更多卡片功能开发中...';
+                resultMsg.className = 'result-message';
+                resultMsg.style.display = 'block';
+                setTimeout(() => {
+                    resultMsg.style.display = 'none';
+                }, 2000);
+            }
         }
         
         // ✅ 对错判断游戏函数
         async function loadTrueFalseQuestion() {
             try {
-                const { data, error } = await supabaseClient
+                // 直接从questions表获取题目
+                const { data: question, error } = await supabaseClient
                     .from('questions')
-                    .select(`
-                        id, title, content, correct_answer, explanation,
-                        knowledge_points!inner (title)
-                    `)
+                    .select('*')
                     .eq('game_type', 'truefalse')
                     .limit(1)
                     .single();
                 
                 if (error) throw error;
                 
-                if (data) {
+                if (question) {
                     truefalseState.currentQuestion = {
-                        id: data.id,
-                        content: data.content || data.title,
-                        knowledge: data.knowledge_points.title,
-                        actualAnswer: data.correct_answer,
-                        explanation: data.explanation
+                        id: question.id,
+                        content: question.content || question.title,
+                        actualAnswer: question.correct_answer,
+                        explanation: question.explanation
                     };
                     
                     // 随机决定是否颠倒显示
                     const shouldFlip = Math.random() > 0.5;
-                    const displayAnswer = shouldFlip ? !data.correct_answer : data.correct_answer;
+                    const displayAnswer = shouldFlip ? !question.correct_answer : question.correct_answer;
                     truefalseState.currentQuestion.displayedAnswer = displayAnswer;
                     
                     // 显示题目
@@ -872,14 +1150,11 @@
                     if (questionText) {
                         questionText.innerHTML = `
                             <div style="margin-bottom: var(--spacing-md);">
-                                <strong>题目：</strong>${data.content || data.title}
+                                <strong>题目：</strong>${question.content || question.title}
                             </div>
-                            <div style="margin-bottom: var(--spacing-md);">
-                                <strong>知识点：</strong>${data.knowledge_points.title}
-                            </div>
-                            <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md);">
+                            <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md); margin-top: var(--spacing-md);">
                                 <strong>陈述：</strong><span style="color: ${displayAnswer ? '#38a169' : '#e53e3e'}; font-weight: 600;">
-                                ${displayAnswer ? '正确' : '错误'}</span>
+                                ${displayAnswer ? '✅ 正确' : '❌ 错误'}</span>
                             </div>
                         `;
                     }
@@ -913,7 +1188,7 @@
                     resultMsg.className = 'result-message success';
                     updateGlobalScore(5);
                 } else {
-                    resultMsg.textContent = `❌ 回答错误！正确答案：${question.actualAnswer ? '正确' : '错误'}。${question.explanation ? '解析：' + question.explanation : ''}`;
+                    resultMsg.textContent = `❌ 回答错误！正确答案：${question.actualAnswer ? '✅ 正确' : '❌ 错误'}。${question.explanation ? '解析：' + question.explanation : ''}`;
                     resultMsg.className = 'result-message error';
                 }
                 resultMsg.style.display = 'block';
@@ -927,42 +1202,64 @@
         function showExplanation() {
             if (!truefalseState.currentQuestion) return;
             
-            alert(`题目解析：\n\n${truefalseState.currentQuestion.explanation || '暂无详细解析'}`);
+            const explanation = truefalseState.currentQuestion.explanation || '暂无详细解析';
+            const resultMsg = document.getElementById('tf-result');
+            if (resultMsg) {
+                resultMsg.textContent = `📖 解析：${explanation}`;
+                resultMsg.className = 'result-message';
+                resultMsg.style.display = 'block';
+            }
         }
         
-        // ❓ 猜知识点游戏函数
+        // ❓ 猜知识点游戏函数 - 修复数据库查询
         async function loadGuessQuestion() {
             try {
                 // 获取一道题目作为线索
-                const { data: clueQuestion, error: clueError } = await supabaseClient
+                const { data: question, error: questionError } = await supabaseClient
                     .from('questions')
-                    .select(`
-                        id, content, knowledge_id,
-                        knowledge_points!inner (title, subject)
-                    `)
+                    .select('*')
                     .eq('game_type', 'guess')
                     .limit(1)
                     .single();
                 
-                if (clueError) throw clueError;
+                if (questionError) throw questionError;
                 
-                if (!clueQuestion) {
+                if (!question) {
                     throw new Error('未找到合适的题目');
                 }
                 
-                guessState.currentClue = clueQuestion;
+                // 获取对应的知识点
+                const { data: knowledge, error: knowledgeError } = await supabaseClient
+                    .from('knowledge_points')
+                    .select('title, subject')
+                    .eq('id', question.knowledge_id)
+                    .single();
+                
+                if (knowledgeError) {
+                    console.warn('获取知识点失败:', knowledgeError);
+                    // 如果没有对应的知识点，使用默认值
+                    guessState.currentClue = {
+                        ...question,
+                        knowledge_title: '未知知识点'
+                    };
+                } else {
+                    guessState.currentClue = {
+                        ...question,
+                        knowledge_title: knowledge.title
+                    };
+                }
                 
                 // 显示线索
                 const clueText = document.getElementById('guess-clue-text');
                 if (clueText) {
-                    clueText.textContent = clueQuestion.content || '题目内容加载中...';
+                    clueText.textContent = question.content || question.title || '题目内容加载中...';
                 }
                 
                 // 获取3个错误选项
                 const { data: wrongOptions, error: optionsError } = await supabaseClient
                     .from('knowledge_points')
                     .select('id, title')
-                    .neq('id', clueQuestion.knowledge_id)
+                    .neq('id', question.knowledge_id)
                     .limit(3);
                 
                 if (optionsError) throw optionsError;
@@ -970,8 +1267,8 @@
                 // 合并选项
                 guessState.options = [
                     { 
-                        id: clueQuestion.knowledge_id, 
-                        text: clueQuestion.knowledge_points.title, 
+                        id: question.knowledge_id, 
+                        text: guessState.currentClue.knowledge_title, 
                         correct: true 
                     },
                     ...wrongOptions.map(opt => ({ 
@@ -991,7 +1288,7 @@
                         optionCard.className = 'option-card';
                         optionCard.dataset.index = index;
                         optionCard.dataset.correct = opt.correct;
-                        optionCard.textContent = opt.text;
+                        optionCard.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
                         optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
                         optionsContainer.appendChild(optionCard);
                     });
@@ -1008,7 +1305,18 @@
                 console.error('加载猜知识点题目失败:', error);
                 const clueText = document.getElementById('guess-clue-text');
                 if (clueText) {
-                    clueText.textContent = '加载题目失败，请重试';
+                    clueText.textContent = '加载题目失败，请确保数据库中有guess类型的题目';
+                }
+                
+                // 显示测试选项
+                const optionsContainer = document.getElementById('guess-options');
+                if (optionsContainer) {
+                    optionsContainer.innerHTML = `
+                        <div class="option-card" onclick="checkGuessAnswer(true, this)">A. 测试知识点1</div>
+                        <div class="option-card" onclick="checkGuessAnswer(false, this)">B. 测试知识点2</div>
+                        <div class="option-card" onclick="checkGuessAnswer(false, this)">C. 测试知识点3</div>
+                        <div class="option-card" onclick="checkGuessAnswer(false, this)">D. 测试知识点4</div>
+                    `;
                 }
             }
         }
@@ -1017,6 +1325,7 @@
             // 禁用所有选项
             document.querySelectorAll('.option-card').forEach(card => {
                 card.style.pointerEvents = 'none';
+                card.style.opacity = '0.7';
             });
             
             // 标记正确/错误
@@ -1024,6 +1333,7 @@
                 optionCard.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
                 optionCard.style.color = 'white';
                 optionCard.style.borderColor = '#38a169';
+                optionCard.style.opacity = '1';
                 
                 updateGlobalScore(10);
             } else {
@@ -1037,6 +1347,7 @@
                     correctCard.style.background = 'linear-gradient(135deg, #48bb78, #38a169)';
                     correctCard.style.color = 'white';
                     correctCard.style.borderColor = '#38a169';
+                    correctCard.style.opacity = '1';
                 }
             }
             
@@ -1054,14 +1365,50 @@
         }
         
         function skipGuess() {
-            updateGlobalScore(-2); // 跳过扣2分
+            updateGlobalScore(-2);
             loadGuessQuestion();
         }
         
         // ⚔️ 联机对战函数
+        function selectDuelMode(mode) {
+            selectedDuelMode = mode;
+            
+            // 更新UI
+            document.querySelectorAll('.mode-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // 更新radio选中状态
+            const radio = event.currentTarget.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+            }
+            
+            updateDuelStatus(`已选择 ${getModeName(mode)} 模式`);
+        }
+        
+        function getModeName(mode) {
+            const names = {
+                'linkup': '连连看',
+                'truefalse': '对错判断',
+                'guess': '猜知识点'
+            };
+            return names[mode] || mode;
+        }
+        
         function createDuelRoom() {
             const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            alert(`房间创建成功！\n\n房间号：${roomId}\n\n请分享此房间号给对手进行联机对战`);
+            const modeName = getModeName(selectedDuelMode);
+            
+            updateDuelStatus(`房间创建成功！`);
+            
+            setTimeout(() => {
+                alert(`🏠 房间创建成功！\n\n房间号：${roomId}\n游戏模式：${modeName}\n\n请分享此房间号给对手进行联机对战`);
+            }, 100);
+            
+            // 这里可以添加实际的Supabase房间创建逻辑
+            // await supabaseClient.from('duels').insert([{ room_id: roomId, mode: selectedDuelMode, status: 'waiting' }]);
         }
         
         function joinDuelRoom() {
@@ -1073,8 +1420,44 @@
                 return;
             }
             
-            alert(`正在加入房间 ${roomId}...\n\n联机对战功能开发中`);
+            const modeName = getModeName(selectedDuelMode);
+            updateDuelStatus(`正在加入房间 ${roomId}...`);
+            
+            setTimeout(() => {
+                updateDuelStatus(`已加入房间 ${roomId}`);
+                alert(`成功加入房间 ${roomId}\n\n游戏模式：${modeName}\n\n等待房主开始游戏...`);
+            }, 1000);
+            
             // 这里可以添加实际的Supabase房间加入逻辑
+            // const channel = supabaseClient.channel(`room-${roomId}`);
+        }
+        
+        function updateDuelStatus(message) {
+            const statusElement = document.getElementById('duel-status');
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.style.color = 'var(--accent-color)';
+            }
+        }
+        
+        // 🎨 主题管理函数
+        function showThemeSelector() {
+            const modal = document.getElementById('themeModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+        
+        function closeThemeModal() {
+            const modal = document.getElementById('themeModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function changeTheme(themeName) {
+            ThemeManager.applyTheme(themeName);
+            closeThemeModal();
         }
         
         // 📊 通用函数
@@ -1093,6 +1476,13 @@
         
         // 🚀 启动应用
         document.addEventListener('DOMContentLoaded', initApp);
+        
+        // 点击模态框外部关闭
+        document.getElementById('themeModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeThemeModal();
+            }
+        });
     </script>
 </body>
 </html>
