@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知识对战平台 - 三合一游戏</title>
+    <title>DSEHub-Gaming</title>
     
     <!-- Supabase客户端库 -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -221,71 +221,6 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
-        }
-        
-        /* ⚔️ 联机对战面板 */
-        .duel-panel {
-            margin-top: var(--spacing-xl);
-            padding: var(--spacing-lg);
-            background: var(--accent-light);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
-        }
-        
-        .duel-panel h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: var(--spacing-md);
-            color: var(--text-color);
-        }
-        
-        .room-input-group {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-md);
-        }
-        
-        .room-input-group input {
-            flex: 1;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            background: var(--card-bg);
-            color: var(--text-color);
-            font-size: 14px;
-        }
-        
-        .game-mode-selector {
-            margin: var(--spacing-md) 0;
-        }
-        
-        .mode-options {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-sm);
-        }
-        
-        .mode-option {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        
-        .mode-option:hover {
-            background: var(--hover-color);
-            border-color: var(--accent-color);
-        }
-        
-        .mode-option.selected {
-            background: var(--accent-light);
-            border-color: var(--accent-color);
-            color: var(--accent-color);
         }
         
         /* 🎲 游戏主区域 */
@@ -631,7 +566,7 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-blue-purple">
     <div class="container">
         <!-- 头部区域 -->
         <div class="header">
@@ -676,47 +611,6 @@
                             <div style="font-size: 12px; color: inherit; opacity: 0.8;">根据线索猜知识点</div>
                         </div>
                     </div>
-                    
-                    <!-- ⚔️ 联机对战面板 -->
-                    <div class="duel-panel">
-                        <h3>⚔️ 联机对战</h3>
-                        
-                        <div class="game-mode-selector">
-                            <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">
-                                选择对战模式：
-                            </div>
-                            <div class="mode-options">
-                                <label class="mode-option selected" data-mode="linkup" onclick="selectDuelMode('linkup', this)">
-                                    <input type="radio" name="duelMode" value="linkup" style="margin-right: 8px;" checked>
-                                    <span>🔗 连连看</span>
-                                </label>
-                                <label class="mode-option" data-mode="truefalse" onclick="selectDuelMode('truefalse', this)">
-                                    <input type="radio" name="duelMode" value="truefalse" style="margin-right: 8px;">
-                                    <span>✅ 对错判断</span>
-                                </label>
-                                <label class="mode-option" data-mode="guess" onclick="selectDuelMode('guess', this)">
-                                    <input type="radio" name="duelMode" value="guess" style="margin-right: 8px;">
-                                    <span>❓ 猜知识点</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <button class="btn btn-primary" onclick="createDuelRoom()" style="width: 100%; margin-top: var(--spacing-md);">
-                            🏠 创建房间
-                        </button>
-                        
-                        <div class="room-input-group">
-                            <input type="text" id="roomIdInput" placeholder="输入房间ID" 
-                                   style="flex: 1; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: var(--card-bg); color: var(--text-color);">
-                            <button class="btn btn-secondary" onclick="joinDuelRoom()">
-                                加入
-                            </button>
-                        </div>
-                        
-                        <div id="duel-status" style="margin-top: var(--spacing-md); font-size: 12px; color: var(--text-muted); text-align: center;">
-                            选择模式后创建房间
-                        </div>
-                    </div>
                 </div>
             </div>
             
@@ -726,7 +620,7 @@
                 <div id="linkup-game" class="linkup-container active">
                     <div class="game-header">
                         <h2>🔗 知识点连连看</h2>
-                        <p class="game-description">点击匹配对应的知识点和题目，每个知识点可能对应多个题目。匹配成功获得10分。</p>
+                        <p class="game-description">点击匹配对应的知识点和题目，每个知识点对应一个题目。匹配成功获得10分。</p>
                     </div>
                     
                     <div id="linkup-board" class="linkup-board">
@@ -736,9 +630,6 @@
                     <div class="game-controls">
                         <button class="btn btn-secondary" onclick="restartLinkUp()">
                             🔄 重新开始
-                        </button>
-                        <button class="btn btn-primary" onclick="loadMoreLinkUpCards()">
-                            ➕ 加载更多卡片
                         </button>
                     </div>
                     
@@ -843,10 +734,14 @@
 
     <script>
         // 🔧 全局配置
+        const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
+        
         let supabaseClient = null;
         let currentGame = 'linkup';
         let globalScore = 0;
-        let selectedDuelMode = 'linkup';
+        let currentUser = null;
+        let currentTheme = 'theme-blue-purple';
         
         // 🎮 游戏状态
         let linkupState = {
@@ -855,49 +750,27 @@
             matchedPairs: 0
         };
         
-        // 🎨 主题管理器（简化版）
-        const ThemeManager = {
-            themes: {
-                'blue-purple': 'theme-blue-purple',
-                'green-teal': 'theme-green-teal',
-                'orange-red': 'theme-orange-red',
-                'dark': 'theme-dark'
-            },
-            
-            init() {
-                // 从localStorage加载保存的主题
-                const savedTheme = localStorage.getItem('game-theme') || 'blue-purple';
-                this.applyTheme(savedTheme);
-            },
-            
-            applyTheme(themeName) {
-                // 移除所有主题类
-                Object.values(this.themes).forEach(themeClass => {
-                    document.body.classList.remove(themeClass);
-                });
-                
-                // 应用新主题
-                const themeClass = this.themes[themeName] || this.themes['blue-purple'];
-                document.body.classList.add(themeClass);
-                
-                // 保存到localStorage
-                localStorage.setItem('game-theme', themeName);
-            }
-        };
-        
         // 📦 初始化函数
         async function initApp() {
-            // 初始化主题
-            ThemeManager.init();
+            console.log('正在初始化游戏平台...');
             
             // 初始化Supabase客户端
-            supabaseClient = supabase.createClient(
-                'https://alsalyskulozwakhmzoa.supabase.co',
-                'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr'
-            );
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // 测试数据库连接
-            await testDatabaseConnection();
+            // 尝试获取当前用户
+            try {
+                const { data: { user }, error } = await supabaseClient.auth.getUser();
+                if (error) {
+                    console.log('未登录，使用匿名模式:', error.message);
+                } else {
+                    currentUser = user;
+                    console.log('当前用户:', currentUser);
+                    // 加载用户主题
+                    await loadUserTheme();
+                }
+            } catch (error) {
+                console.log('用户认证检查失败:', error.message);
+            }
             
             // 初始化游戏
             await initLinkUpGame();
@@ -905,78 +778,80 @@
             // 更新分数显示
             updateScoreDisplay();
             
-            // 设置默认联机模式
-            setDefaultDuelMode();
-            
             console.log('游戏平台初始化完成');
         }
         
-        // 🔍 测试数据库连接
-        async function testDatabaseConnection() {
+        // 🎨 主题管理 - 监测用户profiles改变主题色
+        async function loadUserTheme() {
+            if (!currentUser) {
+                console.log('未登录，使用默认主题');
+                applyTheme('blue-purple');
+                return;
+            }
+            
             try {
-                // 尝试一个简单的查询来测试连接
-                const { error } = await supabaseClient
-                    .from('questions')
-                    .select('count')
-                    .limit(1);
+                console.log('正在加载用户主题，用户ID:', currentUser.id);
                 
-                if (error && error.code === '42501') {
-                    showPermissionError();
-                    return false;
+                // 从 profiles 表获取用户的 theme_color
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=theme_color,theme`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const profiles = await response.json();
+                    if (profiles && profiles.length > 0) {
+                        const userProfile = profiles[0];
+                        const themeColor = userProfile.theme_color || userProfile.theme;
+                        
+                        console.log('获取到用户主题配置:', themeColor);
+                        
+                        // 根据 theme_color 应用对应的主题类
+                        let themeName = 'blue-purple';
+                        
+                        if (themeColor) {
+                            const themeLower = themeColor.toLowerCase();
+                            if (themeLower.includes('blue') || themeLower.includes('purple')) {
+                                themeName = 'blue-purple';
+                            } else if (themeLower.includes('green') || themeLower.includes('teal')) {
+                                themeName = 'green-teal';
+                            } else if (themeLower.includes('orange') && themeLower.includes('red')) {
+                                themeName = 'orange-red';
+                            } else if (themeLower.includes('dark')) {
+                                themeName = 'dark';
+                            } else if (themeLower.includes('orange')) {
+                                themeName = 'orange-red';
+                            } else {
+                                themeName = 'blue-purple';
+                            }
+                        }
+                        
+                        applyTheme(themeName);
+                        console.log('应用主题:', themeName);
+                    } else {
+                        console.log('没有找到用户profile，使用默认主题');
+                        applyTheme('blue-purple');
+                    }
+                } else {
+                    console.log('获取profile失败，使用默认主题');
+                    applyTheme('blue-purple');
                 }
-                
-                return true;
             } catch (error) {
-                console.warn('数据库连接测试失败:', error);
-                showPermissionError();
-                return false;
+                console.error('加载用户主题失败:', error);
+                applyTheme('blue-purple');
             }
         }
         
-        // ⚠️ 显示权限错误
-        function showPermissionError() {
-            const board = document.getElementById('linkup-board');
-            if (board) {
-                board.innerHTML = `
-                    <div class="error-message" style="grid-column: 1/-1;">
-                        <h4>⚠️ 数据库权限不足</h4>
-                        <p style="font-size: 14px; margin: var(--spacing-sm) 0;">
-                            请在你的Supabase项目中运行以下SQL：
-                        </p>
-                        <pre style="background: var(--accent-light); padding: var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 12px; text-align: left; margin: var(--spacing-sm) 0;">
-ALTER TABLE knowledge_points ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "允许匿名访问" ON knowledge_points FOR SELECT USING (true);
-
-ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
-                        </pre>
-                        <p style="font-size: 14px; margin-top: var(--spacing-sm);">
-                            或使用测试数据进行游戏：
-                        </p>
-                        <button class="btn btn-secondary" onclick="useDemoData()" style="margin-top: var(--spacing-sm);">
-                            使用演示数据
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        // 🎮 使用演示数据
-        function useDemoData() {
-            // 切换到演示模式
-            window.demoMode = true;
-            
-            // 重新初始化游戏
-            if (currentGame === 'linkup') {
-                initLinkUpGame();
-            } else if (currentGame === 'truefalse') {
-                loadTrueFalseQuestion();
-            } else if (currentGame === 'guess') {
-                loadGuessQuestion();
-            }
-            
-            // 更新状态
-            updateDuelStatus('演示模式已启用');
+        // 应用主题
+        function applyTheme(themeName) {
+            const themeClass = `theme-${themeName}`;
+            document.body.className = themeClass;
+            currentTheme = themeClass;
         }
         
         // 🔄 切换游戏
@@ -1010,7 +885,7 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             }
         }
         
-        // 🔗 连连看游戏函数
+        // 🔗 连连看游戏函数 - 修复：一个知识点只取一个题目
         async function initLinkUpGame() {
             const board = document.getElementById('linkup-board');
             if (!board) return;
@@ -1026,47 +901,45 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
                 resultMsg.textContent = '';
             }
             
-            // 检查是否使用演示数据
-            if (window.demoMode) {
-                useDemoLinkUpData();
-                return;
-            }
-            
             try {
-                // 从数据库获取知识点
+                // 获取知识点
                 const { data: knowledgePoints, error: kpError } = await supabaseClient
                     .from('knowledge_points')
                     .select('id, title')
-                    .limit(6);
+                    .limit(8); // 取8个知识点
                 
                 if (kpError) {
-                    console.warn('获取知识点失败，使用演示数据:', kpError);
-                    useDemoLinkUpData();
+                    console.error('获取知识点失败:', kpError);
+                    showDBError('获取知识点失败，请确保已设置数据库权限');
                     return;
                 }
                 
                 if (!knowledgePoints || knowledgePoints.length === 0) {
-                    useDemoLinkUpData();
+                    showDBError('数据库中没有知识点数据');
                     return;
                 }
                 
+                console.log('获取到知识点:', knowledgePoints.length, '个');
                 linkupState.pairs = [];
                 
-                // 为每个知识点获取相关题目
+                // 为每个知识点获取一个随机题目
                 for (const kp of knowledgePoints) {
+                    // 获取该知识点的所有题目
                     const { data: questions, error: qError } = await supabaseClient
                         .from('questions')
                         .select('id, title')
                         .eq('knowledge_id', kp.id)
-                        .eq('game_type', 'linkup')
-                        .limit(2);
+                        .eq('game_type', 'linkup');
                     
                     if (qError) {
-                        console.warn(`未找到知识点 ${kp.title} 的题目:`, qError);
+                        console.warn(`获取知识点 ${kp.title} 的题目失败:`, qError);
                         continue;
                     }
                     
                     if (questions && questions.length > 0) {
+                        // 随机选择一个题目
+                        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                        
                         // 添加知识点头卡片
                         linkupState.pairs.push({
                             id: `k-${kp.id}`,
@@ -1075,88 +948,63 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
                             pairId: kp.id
                         });
                         
-                        // 添加题目卡片
-                        questions.forEach((q) => {
-                            linkupState.pairs.push({
-                                id: `q-${q.id}`,
-                                type: 'question',
-                                text: q.title.length > 40 ? q.title.substring(0, 40) + '...' : q.title,
-                                pairId: kp.id
-                            });
+                        // 添加对应的题目卡片
+                        linkupState.pairs.push({
+                            id: `q-${randomQuestion.id}`,
+                            type: 'question',
+                            text: randomQuestion.title.length > 40 ? 
+                                  randomQuestion.title.substring(0, 40) + '...' : 
+                                  randomQuestion.title,
+                            pairId: kp.id
                         });
                     }
                 }
                 
-                // 如果没有获取到足够的数据，使用演示数据
                 if (linkupState.pairs.length === 0) {
-                    useDemoLinkUpData();
+                    showDBError('没有找到连连看题目，请确保数据库中有game_type为"linkup"的题目');
                     return;
                 }
                 
+                // 洗牌
+                linkupState.pairs.sort(() => Math.random() - 0.5);
+                
+                // 生成卡片
                 generateLinkUpBoard();
                 
             } catch (error) {
                 console.error('初始化连连看游戏失败:', error);
-                useDemoLinkUpData();
+                showDBError('游戏初始化失败: ' + error.message);
             }
         }
         
-        // 🎮 使用演示连连看数据
-        function useDemoLinkUpData() {
-            const demoData = {
-                knowledgePoints: [
-                    { id: 1, title: '牛顿第一定律' },
-                    { id: 2, title: '勾股定理' },
-                    { id: 3, title: '化学方程式' },
-                    { id: 4, title: '细胞结构' }
-                ],
-                questions: [
-                    { id: 1, knowledge_id: 1, title: '物体在没有外力作用时会怎样运动？' },
-                    { id: 2, knowledge_id: 1, title: '什么是惯性定律？' },
-                    { id: 3, knowledge_id: 2, title: '直角三角形的边长关系是什么？' },
-                    { id: 4, knowledge_id: 2, title: 'a² + b² = c² 是什么定理？' },
-                    { id: 5, knowledge_id: 3, title: 'H₂O 是什么化学式？' },
-                    { id: 6, knowledge_id: 3, title: '酸碱中和反应会产生什么？' },
-                    { id: 7, knowledge_id: 4, title: '细胞的能量工厂是什么？' },
-                    { id: 8, knowledge_id: 4, title: '细胞核的主要功能是什么？' }
-                ]
-            };
-            
-            linkupState.pairs = [];
-            
-            // 为每个知识点添加卡片
-            demoData.knowledgePoints.forEach(kp => {
-                // 添加知识点头卡片
-                linkupState.pairs.push({
-                    id: `k-${kp.id}`,
-                    type: 'knowledge',
-                    text: kp.title,
-                    pairId: kp.id
-                });
-                
-                // 添加对应的题目卡片
-                demoData.questions
-                    .filter(q => q.knowledge_id === kp.id)
-                    .forEach(q => {
-                        linkupState.pairs.push({
-                            id: `q-${q.id}`,
-                            type: 'question',
-                            text: q.title,
-                            pairId: kp.id
-                        });
-                    });
-            });
-            
-            generateLinkUpBoard();
+        // 显示数据库错误
+        function showDBError(message) {
+            const board = document.getElementById('linkup-board');
+            if (board) {
+                board.innerHTML = `
+                    <div class="error-message" style="grid-column: 1/-1;">
+                        <h4>⚠️ 数据库错误</h4>
+                        <p>${message}</p>
+                        <div style="margin-top: var(--spacing-md); font-size: 12px; text-align: left;">
+                            <strong>请执行以下SQL设置权限：</strong>
+                            <pre style="background: var(--accent-light); padding: var(--spacing-sm); border-radius: var(--border-radius-sm); margin-top: var(--spacing-sm); overflow-x: auto;">
+-- 在Supabase SQL编辑器中运行：
+ALTER TABLE knowledge_points ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "允许匿名访问" ON knowledge_points FOR SELECT USING (true);
+
+ALTER TABLE questions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
+                            </pre>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         // 🎲 生成连连看棋盘
         function generateLinkUpBoard() {
             const board = document.getElementById('linkup-board');
             if (!board) return;
-            
-            // 洗牌
-            linkupState.pairs.sort(() => Math.random() - 0.5);
             
             // 清空并生成卡片
             board.innerHTML = '';
@@ -1225,81 +1073,35 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             initLinkUpGame();
         }
         
-        function loadMoreLinkUpCards() {
-            const resultMsg = document.getElementById('linkup-result');
-            if (resultMsg) {
-                resultMsg.textContent = '更多卡片功能开发中...';
-                resultMsg.className = 'result-message';
-                resultMsg.style.display = 'block';
-                setTimeout(() => {
-                    resultMsg.style.display = 'none';
-                }, 2000);
-            }
-        }
-        
-        // ✅ 对错判断游戏函数
+        // ✅ 对错判断游戏函数 - 修复：直接显示题目，不需要"陈述"
         async function loadTrueFalseQuestion() {
-            // 检查是否使用演示数据
-            if (window.demoMode) {
-                useDemoTrueFalseData();
-                return;
-            }
-            
             try {
-                const { data: question, error } = await supabaseClient
+                // 获取随机题目
+                const { data: questions, error } = await supabaseClient
                     .from('questions')
                     .select('*')
-                    .eq('game_type', 'truefalse')
-                    .limit(1)
-                    .single();
+                    .eq('game_type', 'truefalse');
                 
                 if (error) {
-                    console.warn('获取题目失败，使用演示数据:', error);
-                    useDemoTrueFalseData();
+                    console.error('获取题目失败:', error);
+                    showTrueFalseError('获取题目失败');
                     return;
                 }
                 
-                if (!question) {
-                    useDemoTrueFalseData();
+                if (!questions || questions.length === 0) {
+                    showTrueFalseError('数据库中没有对错判断题');
                     return;
                 }
                 
-                displayTrueFalseQuestion(question);
+                // 随机选择一个题目
+                const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+                
+                displayTrueFalseQuestion(randomQuestion);
                 
             } catch (error) {
                 console.error('加载对错判断题失败:', error);
-                useDemoTrueFalseData();
+                showTrueFalseError('加载题目失败: ' + error.message);
             }
-        }
-        
-        // 🎮 使用演示对错判断数据
-        function useDemoTrueFalseData() {
-            const demoQuestions = [
-                {
-                    id: 1,
-                    title: '地球是平的',
-                    content: '地球是一个平面，而不是球体',
-                    correct_answer: false,
-                    explanation: '地球是一个近似球体的行星'
-                },
-                {
-                    id: 2,
-                    title: '水在100°C沸腾',
-                    content: '在标准大气压下，水的沸点是100°C',
-                    correct_answer: true,
-                    explanation: '这是水的标准沸点'
-                },
-                {
-                    id: 3,
-                    title: '太阳绕地球转',
-                    content: '太阳每天绕地球旋转一周',
-                    correct_answer: false,
-                    explanation: '地球绕太阳公转，同时自转'
-                }
-            ];
-            
-            const randomQuestion = demoQuestions[Math.floor(Math.random() * demoQuestions.length)];
-            displayTrueFalseQuestion(randomQuestion);
         }
         
         function displayTrueFalseQuestion(question) {
@@ -1310,21 +1112,12 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
                 explanation: question.explanation
             };
             
-            // 随机决定是否颠倒显示
-            const shouldFlip = Math.random() > 0.5;
-            const displayAnswer = shouldFlip ? !question.correct_answer : question.correct_answer;
-            window.currentTFQuestion.displayedAnswer = displayAnswer;
-            
-            // 显示题目
+            // 显示题目 - 直接显示题目内容，不需要"陈述"
             const questionText = document.getElementById('tf-question-text');
             if (questionText) {
                 questionText.innerHTML = `
                     <div style="margin-bottom: var(--spacing-md);">
-                        <strong>题目：</strong>${question.content || question.title}
-                    </div>
-                    <div style="padding: var(--spacing-md); background: var(--accent-light); border-radius: var(--border-radius-md); margin-top: var(--spacing-md);">
-                        <strong>陈述：</strong><span style="color: ${displayAnswer ? '#38a169' : '#e53e3e'}; font-weight: 600;">
-                        ${displayAnswer ? '✅ 正确' : '❌ 错误'}</span>
+                        ${question.content || question.title}
                     </div>
                 `;
             }
@@ -1334,6 +1127,17 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             if (resultMsg) {
                 resultMsg.style.display = 'none';
                 resultMsg.textContent = '';
+            }
+        }
+        
+        function showTrueFalseError(message) {
+            const questionText = document.getElementById('tf-question-text');
+            if (questionText) {
+                questionText.innerHTML = `
+                    <div class="error-message">
+                        ${message}
+                    </div>
+                `;
             }
         }
         
@@ -1350,7 +1154,7 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
                     resultMsg.className = 'result-message success';
                     updateGlobalScore(5);
                 } else {
-                    resultMsg.textContent = `❌ 回答错误！正确答案：${question.actualAnswer ? '✅ 正确' : '❌ 错误'}。${question.explanation ? '解析：' + question.explanation : ''}`;
+                    resultMsg.textContent = `❌ 回答错误！${question.explanation ? '解析：' + question.explanation : ''}`;
                     resultMsg.className = 'result-message error';
                 }
                 resultMsg.style.display = 'block';
@@ -1375,126 +1179,70 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
         
         // ❓ 猜知识点游戏函数
         async function loadGuessQuestion() {
-            // 检查是否使用演示数据
-            if (window.demoMode) {
-                useDemoGuessData();
-                return;
-            }
-            
             try {
-                const { data: question, error: questionError } = await supabaseClient
+                // 获取随机题目作为线索
+                const { data: questions, error: questionError } = await supabaseClient
                     .from('questions')
                     .select('*')
-                    .eq('game_type', 'guess')
-                    .limit(1)
-                    .single();
+                    .eq('game_type', 'guess');
                 
-                if (questionError || !question) {
-                    console.warn('获取题目失败，使用演示数据:', questionError);
-                    useDemoGuessData();
+                if (questionError || !questions || questions.length === 0) {
+                    console.error('获取题目失败:', questionError);
+                    showGuessError('获取题目线索失败');
                     return;
                 }
+                
+                // 随机选择一个题目
+                const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
                 
                 // 获取对应的知识点
                 const { data: knowledge, error: knowledgeError } = await supabaseClient
                     .from('knowledge_points')
                     .select('title, subject')
-                    .eq('id', question.knowledge_id)
+                    .eq('id', randomQuestion.knowledge_id)
                     .single();
                 
                 if (knowledgeError) {
                     console.warn('获取知识点失败:', knowledgeError);
-                    // 使用默认值
-                    window.currentGuessQuestion = {
-                        ...question,
-                        knowledge_title: '未知知识点'
-                    };
-                } else {
-                    window.currentGuessQuestion = {
-                        ...question,
-                        knowledge_title: knowledge.title
-                    };
+                    showGuessError('获取知识点信息失败');
+                    return;
                 }
                 
-                // 获取3个错误选项
+                // 获取3个错误选项（其他知识点）
                 const { data: wrongOptions, error: optionsError } = await supabaseClient
                     .from('knowledge_points')
                     .select('id, title')
-                    .neq('id', question.knowledge_id)
+                    .neq('id', randomQuestion.knowledge_id)
                     .limit(3);
                 
                 if (optionsError) {
                     console.warn('获取错误选项失败:', optionsError);
-                    useDemoGuessData();
+                    showGuessError('获取选项失败');
                     return;
                 }
                 
-                displayGuessQuestion(question, wrongOptions);
+                displayGuessQuestion(randomQuestion, knowledge, wrongOptions);
                 
             } catch (error) {
                 console.error('加载猜知识点题目失败:', error);
-                useDemoGuessData();
+                showGuessError('加载题目失败: ' + error.message);
             }
         }
         
-        // 🎮 使用演示猜知识点数据
-        function useDemoGuessData() {
-            const demoData = {
-                clue: "这个公式描述了物体在没有外力作用时的运动状态",
-                correctAnswer: "牛顿第一定律",
-                wrongOptions: [
-                    "牛顿第二定律",
-                    "能量守恒定律",
-                    "万有引力定律"
-                ]
-            };
-            
-            // 显示线索
-            const clueText = document.getElementById('guess-clue-text');
-            if (clueText) {
-                clueText.textContent = demoData.clue;
-            }
-            
-            // 生成选项
-            const options = [
-                { text: demoData.correctAnswer, correct: true },
-                ...demoData.wrongOptions.map(text => ({ text, correct: false }))
-            ].sort(() => Math.random() - 0.5);
-            
-            // 生成选项按钮
-            const optionsContainer = document.getElementById('guess-options');
-            if (optionsContainer) {
-                optionsContainer.innerHTML = '';
-                
-                options.forEach((opt, index) => {
-                    const optionCard = document.createElement('div');
-                    optionCard.className = 'option-card';
-                    optionCard.dataset.correct = opt.correct;
-                    optionCard.textContent = `${String.fromCharCode(65 + index)}. ${opt.text}`;
-                    optionCard.onclick = () => checkGuessAnswer(opt.correct, optionCard);
-                    optionsContainer.appendChild(optionCard);
-                });
-            }
-            
-            // 清空结果消息
-            const resultMsg = document.getElementById('guess-result');
-            if (resultMsg) {
-                resultMsg.style.display = 'none';
-                resultMsg.textContent = '';
-            }
-        }
-        
-        function displayGuessQuestion(question, wrongOptions) {
+        function displayGuessQuestion(question, knowledge, wrongOptions) {
             // 显示线索
             const clueText = document.getElementById('guess-clue-text');
             if (clueText) {
                 clueText.textContent = question.content || question.title || '题目内容加载中...';
             }
             
+            // 保存正确答案
+            window.currentGuessCorrectAnswer = knowledge.title;
+            
             // 合并选项
             const options = [
                 { 
-                    text: window.currentGuessQuestion.knowledge_title, 
+                    text: knowledge.title, 
                     correct: true 
                 },
                 ...wrongOptions.map(opt => ({ 
@@ -1523,6 +1271,17 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             if (resultMsg) {
                 resultMsg.style.display = 'none';
                 resultMsg.textContent = '';
+            }
+        }
+        
+        function showGuessError(message) {
+            const clueText = document.getElementById('guess-clue-text');
+            if (clueText) {
+                clueText.innerHTML = `
+                    <div class="error-message">
+                        ${message}
+                    </div>
+                `;
             }
         }
         
@@ -1559,7 +1318,7 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             // 显示结果消息
             const resultMsg = document.getElementById('guess-result');
             if (resultMsg) {
-                resultMsg.textContent = isCorrect ? '✅ 答对了！' : '❌ 答错了';
+                resultMsg.textContent = isCorrect ? '✅ 答对了！' : `❌ 答错了，正确答案是：${window.currentGuessCorrectAnswer}`;
                 resultMsg.className = `result-message ${isCorrect ? 'success' : 'error'}`;
                 resultMsg.style.display = 'block';
             }
@@ -1574,91 +1333,7 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
             loadGuessQuestion();
         }
         
-        // ⚔️ 联机对战函数
-        function setDefaultDuelMode() {
-            // 设置默认选中的模式
-            const defaultOption = document.querySelector('.mode-option[data-mode="linkup"]');
-            if (defaultOption) {
-                defaultOption.classList.add('selected');
-                defaultOption.querySelector('input').checked = true;
-            }
-            selectedDuelMode = 'linkup';
-            updateDuelStatus('已选择 连连看 模式');
-        }
-        
-        function selectDuelMode(mode, element) {
-            selectedDuelMode = mode;
-            
-            // 更新UI
-            document.querySelectorAll('.mode-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            if (element) {
-                element.classList.add('selected');
-                // 更新radio选中状态
-                const radio = element.querySelector('input[type="radio"]');
-                if (radio) {
-                    radio.checked = true;
-                }
-            }
-            
-            updateDuelStatus(`已选择 ${getModeName(mode)} 模式`);
-        }
-        
-        function getModeName(mode) {
-            const names = {
-                'linkup': '连连看',
-                'truefalse': '对错判断',
-                'guess': '猜知识点'
-            };
-            return names[mode] || mode;
-        }
-        
-        function createDuelRoom() {
-            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const modeName = getModeName(selectedDuelMode);
-            
-            updateDuelStatus(`房间创建成功！`);
-            
-            setTimeout(() => {
-                alert(`🏠 房间创建成功！\n\n房间号：${roomId}\n游戏模式：${modeName}\n\n请分享此房间号给对手进行联机对战`);
-                
-                // 这里可以添加实际的Supabase房间创建逻辑
-                // createDuelRoomInDatabase(roomId);
-            }, 100);
-        }
-        
-        function joinDuelRoom() {
-            const roomIdInput = document.getElementById('roomIdInput');
-            const roomId = roomIdInput.value.trim();
-            
-            if (!roomId) {
-                alert('请输入房间ID');
-                return;
-            }
-            
-            const modeName = getModeName(selectedDuelMode);
-            updateDuelStatus(`正在加入房间 ${roomId}...`);
-            
-            setTimeout(() => {
-                updateDuelStatus(`已加入房间 ${roomId}`);
-                alert(`成功加入房间 ${roomId}\n\n游戏模式：${modeName}\n\n等待房主开始游戏...`);
-                
-                // 这里可以添加实际的Supabase房间加入逻辑
-                // joinDuelRoomInDatabase(roomId);
-            }, 1000);
-        }
-        
-        function updateDuelStatus(message) {
-            const statusElement = document.getElementById('duel-status');
-            if (statusElement) {
-                statusElement.textContent = message;
-                statusElement.style.color = 'var(--accent-color)';
-            }
-        }
-        
-        // 🎨 主题管理函数
+        // 🎨 主题选择函数
         function showThemeSelector() {
             const modal = document.getElementById('themeModal');
             if (modal) {
@@ -1674,7 +1349,7 @@ CREATE POLICY "允许匿名访问" ON questions FOR SELECT USING (true);
         }
         
         function changeTheme(themeName) {
-            ThemeManager.applyTheme(themeName);
+            applyTheme(themeName);
             closeThemeModal();
         }
         
