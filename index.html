@@ -1637,19 +1637,84 @@
                 this.initKnowledgeGrid();
                 this.initMessageBoard();
                 this.showPanel('knowledge');
+                
+                // 页面加载时检查登录状态
+                this.checkSession();
             },
 
-            // Supabase初始化 - 关闭持久会话
+            // Supabase初始化 - 启用持久会话
             initSupabase: function() {
                 const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
                 const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
                 
                 this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-                    auth: { 
-                        autoRefreshToken: false,
-                        persistSession: false
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
                     }
                 });
+            },
+
+            // 检查会话
+            checkSession: async function() {
+                try {
+                    const { data, error } = await this.supabase.auth.getSession();
+                    
+                    if (error) {
+                        console.error('获取会话错误:', error);
+                        return;
+                    }
+                    
+                    if (data.session) {
+                        // 会话存在，设置用户
+                        this.currentUser = {
+                            id: data.session.user.id,
+                            email: data.session.user.email,
+                            username: data.session.user.email.split('@')[0]
+                        };
+                        
+                        // 设置cookie，供投稿中心使用
+                        this.setLoginCookie(data.session.access_token);
+                        
+                        this.isLoggedIn = true;
+                        
+                        // 加载用户资料
+                        setTimeout(async () => {
+                            try {
+                                await this.loadUserProfile();
+                            } catch (err) {
+                                console.error('加载用户资料出错:', err);
+                            }
+                            
+                            try {
+                                await this.loadUserTheme();
+                            } catch (err) {
+                                console.error('加载主题设置出错:', err);
+                            }
+                            
+                            this.loginSuccess();
+                        }, 100);
+                    }
+                } catch (err) {
+                    console.error('检查会话出错:', err);
+                }
+            },
+
+            // 设置登录cookie供投稿中心使用
+            setLoginCookie: function(accessToken) {
+                // 设置一个cookie标记用户已登录
+                const expires = new Date();
+                expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7天
+                document.cookie = `dsehub_logged_in=true; expires=${expires.toUTCString()}; path=/`;
+                document.cookie = `dsehub_auth_token=${accessToken}; expires=${expires.toUTCString()}; path=/`;
+            },
+
+            // 清除登录cookie
+            clearLoginCookie: function() {
+                document.cookie = 'dsehub_logged_in=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'dsehub_auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'dsehub_user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             },
 
             // 加载用户资料
@@ -1677,6 +1742,16 @@
                     } else if (data) {
                         this.userProfile = data;
                         this.isAdmin = data.is_admin === true;
+                        
+                        // 存储用户数据到cookie，供投稿中心使用
+                        const userData = {
+                            id: this.currentUser.id,
+                            email: this.currentUser.email,
+                            username: data.username || this.currentUser.username
+                        };
+                        const expires = new Date();
+                        expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
+                        document.cookie = `dsehub_user=${encodeURIComponent(JSON.stringify(userData))}; expires=${expires.toUTCString()}; path=/`;
                     } else {
                         this.userProfile = {
                             username: this.currentUser.username,
@@ -1687,6 +1762,16 @@
                             is_admin: false
                         };
                         this.isAdmin = false;
+                        
+                        // 存储用户数据到cookie
+                        const userData = {
+                            id: this.currentUser.id,
+                            email: this.currentUser.email,
+                            username: this.currentUser.username
+                        };
+                        const expires = new Date();
+                        expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
+                        document.cookie = `dsehub_user=${encodeURIComponent(JSON.stringify(userData))}; expires=${expires.toUTCString()}; path=/`;
                     }
                     
                     this.updateAccountUI();
@@ -1795,6 +1880,11 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
+                        // 设置cookie，供投稿中心使用
+                        this.setLoginCookie(data.session.access_token);
+                        
+                        this.isLoggedIn = true;
+                        
                         setTimeout(async () => {
                             try {
                                 await this.loadUserProfile();
@@ -1807,9 +1897,9 @@
                             } catch (err) {
                                 console.error('加载主题设置出错:', err);
                             }
+                            
+                            this.loginSuccess();
                         }, 100);
-                        
-                        this.loginSuccess();
                     }
                 } catch (err) {
                     console.error('登录过程中发生错误:', err);
@@ -1820,7 +1910,6 @@
             // 登录成功
             loginSuccess: function() {
                 this.closeModal();
-                this.isLoggedIn = true;
                 this.updateUserUI();
                 this.showNotification(`欢迎回来，${this.currentUser.username}！`);
                 
@@ -1900,6 +1989,9 @@
                     this.userProfile = null;
                     this.isLoggedIn = false;
                     this.isAdmin = false;
+                    
+                    // 清除cookie
+                    this.clearLoginCookie();
                     
                     this.updateUserUI();
                     this.showNotification('已退出登录');
@@ -2346,4 +2438,5 @@
     </script>
 </body>
 </html>
+
 
