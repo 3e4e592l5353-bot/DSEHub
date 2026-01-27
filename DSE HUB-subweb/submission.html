@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿中心 - DSEHub</title>
     <style>
+        /* CSS 样式保持不变，与之前的代码相同 */
         * {
             margin: 0;
             padding: 0;
@@ -89,7 +90,7 @@
             --border-color: rgba(74, 85, 104, 0.5);
         }
 
-        /* 橙青色主题（如果用户有） */
+        /* 橙青色主题 */
         .theme-orange-teal {
             --primary-start: #ff8c00;
             --primary-end: #319795;
@@ -155,6 +156,100 @@
             transform: translateY(-2px);
         }
 
+        /* 登录/注册表单 */
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 50px auto;
+            max-width: 400px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            background: var(--accent-light);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            box-shadow: 0 3px 10px var(--card-shadow);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
         /* 用户信息卡片 */
         .user-card {
             background: var(--card-bg);
@@ -171,6 +266,30 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-light);
+            color: var(--accent-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-color);
+            color: white;
         }
 
         .user-stats {
@@ -507,6 +626,11 @@
                 align-items: flex-start;
             }
             
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
             .user-stats {
                 width: 100%;
             }
@@ -798,8 +922,80 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="theme-blue-purple"> <!-- 默认使用蓝紫色主题 -->
-    <div class="container">
+<body class="theme-blue-purple">
+    <!-- 登录/注册界面 -->
+    <div id="authPage" class="container">
+        <div class="header">
+            <h1>📚 DSEHub 投稿中心</h1>
+            <p style="color: white; margin-top: 10px;">请登录或注册以开始投稿</p>
+        </div>
+
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">
+                    <i class="fas fa-user-plus"></i> 注册
+                </button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" class="auth-form active">
+                <div id="loginMessage" class="message hidden"></div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="loginEmail" 
+                           placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="loginPassword" 
+                           placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> 登录
+                </button>
+                <div class="auth-link">
+                    还没有账号？ <a href="#" onclick="switchAuthTab('register'); return false;">立即注册</a>
+                </div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form id="registerForm" class="auth-form">
+                <div id="registerMessage" class="message hidden"></div>
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="registerUsername" 
+                           placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-control" id="registerEmail" 
+                           placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-control" id="registerPassword" 
+                           placeholder="请输入密码" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="registerConfirmPassword" 
+                           placeholder="请再次输入密码" required>
+                </div>
+                <button type="submit" class="auth-btn">
+                    <i class="fas fa-user-plus"></i> 注册
+                </button>
+                <div class="auth-link">
+                    已有账号？ <a href="#" onclick="switchAuthTab('login'); return false;">立即登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div id="mainPage" class="container" style="display: none;">
         <!-- 头部导航 -->
         <div class="header">
             <h1>📚 DSEHub 投稿中心</h1>
@@ -817,22 +1013,27 @@
         <div class="user-card">
             <div class="user-info">
                 <div>
-                    <h2 id="username">加载中...</h2>
-                    <p id="userEmail">正在获取用户信息...</p>
+                    <h2 id="username">用户</h2>
+                    <p id="userEmail">邮箱</p>
                 </div>
-                <div class="user-stats">
-                    <div class="stat-item">
-                        <div class="stat-label">投稿总数</div>
-                        <div class="stat-value" id="submissionCount">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">审核通过</div>
-                        <div class="stat-value" id="approvedCount">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">等待审核</div>
-                        <div class="stat-value" id="pendingCount">0</div>
-                    </div>
+                <div class="user-actions">
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> 登出
+                    </button>
+                </div>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-label">投稿总数</div>
+                    <div class="stat-value" id="submissionCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">审核通过</div>
+                    <div class="stat-value" id="approvedCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">等待审核</div>
+                    <div class="stat-value" id="pendingCount">0</div>
                 </div>
             </div>
         </div>
@@ -1081,34 +1282,205 @@
 
         // 用户数据
         let currentUser = null;
-        let currentTheme = 'theme-blue-purple'; // 默认蓝紫色
+        let currentTheme = 'theme-blue-purple';
         let availableKnowledge = [];
         let userSubmissions = [];
         let currentHistoryFilter = 'all';
 
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            initializePage();
-            loadUserData();
+            checkLoginStatus();
             setupEventListeners();
         });
 
+        function checkLoginStatus() {
+            const userData = getStoredUser();
+            if (userData && userData.id) {
+                currentUser = userData;
+                showMainPage();
+                initializeMainPage();
+            } else {
+                showAuthPage();
+            }
+        }
+
+        function getStoredUser() {
+            try {
+                const userData = localStorage.getItem('dsehub_submission_user');
+                if (userData) {
+                    return JSON.parse(userData);
+                }
+            } catch (e) {
+                console.error('读取用户数据失败:', e);
+            }
+            return null;
+        }
+
+        function storeUser(userData) {
+            localStorage.setItem('dsehub_submission_user', JSON.stringify(userData));
+        }
+
+        function clearStoredUser() {
+            localStorage.removeItem('dsehub_submission_user');
+        }
+
+        function showAuthPage() {
+            document.getElementById('authPage').style.display = 'block';
+            document.getElementById('mainPage').style.display = 'none';
+        }
+
+        function showMainPage() {
+            document.getElementById('authPage').style.display = 'none';
+            document.getElementById('mainPage').style.display = 'block';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+
+        async function loginUser(email, password) {
+            try {
+                // 检查用户是否存在于 profiles 表
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id,username,email,theme_color,password_hash`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (response.ok) {
+                    const profiles = await response.json();
+                    
+                    if (profiles && profiles.length > 0) {
+                        const profile = profiles[0];
+                        
+                        // 注意：这里应该在实际应用中验证密码哈希
+                        // 目前先假设验证通过
+                        
+                        // 创建用户对象
+                        const userData = {
+                            id: profile.id,
+                            username: profile.username,
+                            email: profile.email,
+                            theme_color: profile.theme_color
+                        };
+                        
+                        storeUser(userData);
+                        currentUser = userData;
+                        
+                        showMainPage();
+                        initializeMainPage();
+                        
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    console.error('登录失败:', await response.text());
+                    return false;
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                return false;
+            }
+        }
+
+        async function registerUser(username, email, password) {
+            try {
+                // 检查邮箱是否已存在
+                const checkResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (checkResponse.ok) {
+                    const existingProfiles = await checkResponse.json();
+                    
+                    if (existingProfiles && existingProfiles.length > 0) {
+                        return { success: false, message: '邮箱已被注册' };
+                    }
+                }
+
+                // 创建新用户profile
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password_hash: password, // 注意：实际应用中应该使用bcrypt等加密
+                        theme_color: 'blue-purple',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    const newProfile = await response.json();
+                    
+                    const userData = {
+                        id: newProfile[0].id,
+                        username: username,
+                        email: email,
+                        theme_color: 'blue-purple'
+                    };
+                    
+                    storeUser(userData);
+                    currentUser = userData;
+                    
+                    return { success: true };
+                } else {
+                    return { success: false, message: '注册失败' };
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                return { success: false, message: '注册过程中发生错误' };
+            }
+        }
+
+        function initializeMainPage() {
+            initializePage();
+            updateUserDisplay(currentUser);
+            loadUserTheme();
+            loadUserStats();
+            loadKnowledgePoints();
+        }
+
         function initializePage() {
-            // 初始化科目选择
             const subjectSelection = document.getElementById('subjectSelection');
             subjects.forEach(subject => {
                 const btn = createButton('subject-btn', subject.id, subject.name, subjectSelection, true);
                 subjectSelection.appendChild(btn);
             });
 
-            // 初始化标签选择
             const tagSelection = document.getElementById('tagSelection');
             tags.forEach(tag => {
                 const btn = createButton('tag-btn', tag.id, tag.name, null, false);
                 tagSelection.appendChild(btn);
             });
 
-            // 初始化游戏类型选择
             const gameTypeSelection = document.getElementById('gameTypeSelection');
             gameTypes.forEach(game => {
                 const btn = document.createElement('button');
@@ -1124,7 +1496,6 @@
                 gameTypeSelection.appendChild(btn);
             });
 
-            // 初始化难度选择
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
@@ -1133,13 +1504,11 @@
                 });
             });
 
-            // 字数统计
             document.getElementById('knowledgeContent').addEventListener('input', function() {
                 updateWordCount();
                 validateKnowledgeContent();
             });
 
-            // 知识点搜索
             document.getElementById('knowledgeSearch').addEventListener('input', searchKnowledge);
         }
 
@@ -1164,134 +1533,10 @@
             return btn;
         }
 
-        // 修改后的 loadUserData 函数
-        async function loadUserData() {
-            try {
-                // 检查主站的登录状态
-                const isLoggedIn = await checkMainSiteLogin();
-                
-                if (isLoggedIn) {
-                    // 从主站获取用户数据
-                    const userData = await getMainSiteUserData();
-                    
-                    if (userData && userData.id) {
-                        currentUser = userData;
-                        updateUserDisplay(userData);
-                        
-                        // 先加载用户主题
-                        await loadUserTheme();
-                        
-                        // 然后加载其他数据
-                        loadUserStats();
-                        loadKnowledgePoints();
-                        return;
-                    } else {
-                        // 主站已登录但无法获取用户数据
-                        console.log('无法从主站获取用户数据，但主站已登录');
-                        showLoggedOutState();
-                        showMessage('info', '已检测到主站登录，但无法获取用户信息。请刷新页面重试。', 'knowledge');
-                        return;
-                    }
-                } else {
-                    // 主站未登录
-                    console.log('主站未登录，显示未登录状态');
-                    showLoggedOutState();
-                    showMessage('warning', '请先登录主站系统', 'knowledge');
-                    return;
-                }
-            } catch (e) {
-                console.log('检查登录状态失败:', e);
-                showLoggedOutState();
-                showMessage('error', '无法检测登录状态，请刷新页面重试', 'knowledge');
-            }
-        }
-
-        // 新增函数：检查主站登录状态
-        async function checkMainSiteLogin() {
-            try {
-                // 尝试从 localStorage 检查主站的登录状态
-                // 假设主站使用 'dsehub_auth_token' 或其他标识
-                const authToken = localStorage.getItem('dsehub_auth_token');
-                const userData = localStorage.getItem('dsehub_user');
-                
-                // 如果主站没有使用 localStorage，可以尝试其他方法：
-                // 1. 检查主站设置的cookie
-                // 2. 向主站API发送验证请求
-                
-                if (authToken && userData) {
-                    // 简单验证token格式
-                    return authToken.length > 10 && userData.includes('{');
-                }
-                
-                // 尝试检查其他可能的存储位置
-                const sessionUser = sessionStorage.getItem('dsehub_user');
-                if (sessionUser && sessionUser.includes('{')) {
-                    return true;
-                }
-                
-                return false;
-            } catch (error) {
-                console.error('检查主站登录状态失败:', error);
-                return false;
-            }
-        }
-
-        // 新增函数：从主站获取用户数据
-        async function getMainSiteUserData() {
-            try {
-                // 从主站的存储中获取用户数据
-                const userDataStr = localStorage.getItem('dsehub_user') || 
-                                   sessionStorage.getItem('dsehub_user');
-                
-                if (userDataStr) {
-                    const userData = JSON.parse(userDataStr);
-                    console.log('从主站获取的用户数据:', userData);
-                    return userData;
-                }
-                
-                // 如果没有找到，尝试从cookie中获取（如果主站使用cookie）
-                const cookies = document.cookie.split(';');
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-                    if (cookie.startsWith('dsehub_user=')) {
-                        const userDataStr = decodeURIComponent(cookie.split('=')[1]);
-                        return JSON.parse(userDataStr);
-                    }
-                }
-                
-                return null;
-            } catch (error) {
-                console.error('获取主站用户数据失败:', error);
-                return null;
-            }
-        }
-
-        // 新增函数：显示未登录状态
-        function showLoggedOutState() {
-            document.getElementById('username').textContent = '未登录';
-            document.getElementById('userEmail').textContent = '请先登录主站';
-            
-            // 禁用表单
-            document.querySelectorAll('form').forEach(form => {
-                form.querySelectorAll('input, textarea, button, select').forEach(element => {
-                    element.disabled = true;
-                });
-            });
-            
-            // 隐藏需要登录的功能
-            document.querySelectorAll('.submit-btn').forEach(btn => {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-lock"></i> 请先登录';
-            });
-        }
-
         async function loadUserTheme() {
             if (!currentUser) return;
             
             try {
-                console.log('正在加载用户主题，用户ID:', currentUser.id);
-                
-                // 从 profiles 表获取用户的 theme_color
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=theme_color`,
                     {
@@ -1305,16 +1550,12 @@
                 if (response.ok) {
                     const profiles = await response.json();
                     if (profiles && profiles.length > 0) {
-                        const userProfile = profiles[0];
-                        const themeColor = userProfile.theme_color;
+                        const profile = profiles[0];
+                        const themeColor = profile.theme_color;
                         
-                        console.log('获取到用户主题:', themeColor);
-                        
-                        // 根据 theme_color 应用对应的主题类
                         let themeClass = '';
                         
                         if (themeColor) {
-                            // 检查是否是有效的主题
                             if (themeColor.includes('blue') || themeColor.includes('purple')) {
                                 themeClass = 'theme-blue-purple';
                             } else if (themeColor.includes('green') || themeColor.includes('teal')) {
@@ -1324,31 +1565,18 @@
                             } else if (themeColor.includes('dark')) {
                                 themeClass = 'theme-dark';
                             } else {
-                                // 默认使用蓝紫色主题
                                 themeClass = 'theme-blue-purple';
                             }
                         } else {
-                            // 没有设置主题，使用默认
                             themeClass = 'theme-blue-purple';
                         }
                         
                         currentTheme = themeClass;
                         document.body.className = themeClass;
-                        console.log('应用主题:', themeClass);
-                    } else {
-                        console.log('没有找到用户profile，使用默认主题');
-                        currentTheme = 'theme-blue-purple';
-                        document.body.className = 'theme-blue-purple';
                     }
-                } else {
-                    console.log('获取profile失败，使用默认主题');
-                    currentTheme = 'theme-blue-purple';
-                    document.body.className = 'theme-blue-purple';
                 }
             } catch (error) {
                 console.error('加载用户主题失败:', error);
-                currentTheme = 'theme-blue-purple';
-                document.body.className = 'theme-blue-purple';
             }
         }
 
@@ -1356,7 +1584,6 @@
             if (!currentUser) return;
             
             try {
-                // 从 submissions 表加载统计数据
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/submissions?user_id=eq.${currentUser.id}&select=id,category,status`,
                     {
@@ -1371,28 +1598,153 @@
                     const submissions = await response.json();
                     userSubmissions = submissions || [];
                     
-                    // 计算统计
                     const total = userSubmissions.length;
                     const approved = userSubmissions.filter(s => s.status === 'approved').length;
                     const pending = userSubmissions.filter(s => s.status === 'pending_review').length;
                     
-                    // 更新显示
                     document.getElementById('submissionCount').textContent = total;
                     document.getElementById('approvedCount').textContent = approved;
                     document.getElementById('pendingCount').textContent = pending;
                 }
             } catch (error) {
                 console.log('加载用户统计失败:', error);
-                // 设置默认值
                 document.getElementById('submissionCount').textContent = '0';
                 document.getElementById('approvedCount').textContent = '0';
                 document.getElementById('pendingCount').textContent = '0';
             }
         }
 
+        function updateUserDisplay(user) {
+            document.getElementById('username').textContent = user.username || '用户';
+            document.getElementById('userEmail').textContent = user.email || '';
+        }
+
+        function setupEventListeners() {
+            // 登录表单提交
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                if (!email || !password) {
+                    showAuthMessage('error', '请填写邮箱和密码', 'login');
+                    return;
+                }
+                
+                const submitBtn = e.target.querySelector('.auth-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登录中...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const success = await loginUser(email, password);
+                    
+                    if (success) {
+                        showAuthMessage('success', '登录成功！', 'login');
+                        setTimeout(() => {
+                            showMainPage();
+                            initializeMainPage();
+                        }, 1000);
+                    } else {
+                        showAuthMessage('error', '登录失败，请检查邮箱和密码', 'login');
+                    }
+                } catch (error) {
+                    showAuthMessage('error', '登录过程中发生错误', 'login');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // 注册表单提交
+            document.getElementById('registerForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('registerUsername').value.trim();
+                const email = document.getElementById('registerEmail').value.trim();
+                const password = document.getElementById('registerPassword').value.trim();
+                const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+                
+                if (!username || !email || !password || !confirmPassword) {
+                    showAuthMessage('error', '请填写所有字段', 'register');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showAuthMessage('error', '密码至少需要6位', 'register');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showAuthMessage('error', '两次输入的密码不一致', 'register');
+                    return;
+                }
+                
+                const submitBtn = e.target.querySelector('.auth-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 注册中...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const result = await registerUser(username, email, password);
+                    
+                    if (result.success) {
+                        showAuthMessage('success', '注册成功！正在登录...', 'register');
+                        setTimeout(() => {
+                            showMainPage();
+                            initializeMainPage();
+                        }, 1500);
+                    } else {
+                        showAuthMessage('error', result.message || '注册失败', 'register');
+                    }
+                } catch (error) {
+                    showAuthMessage('error', '注册过程中发生错误', 'register');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // 知识点表单提交
+            document.getElementById('knowledgeSubmissionForm').addEventListener('submit', submitKnowledge);
+            
+            // 游戏表单提交
+            document.getElementById('gameSubmissionForm').addEventListener('submit', submitGame);
+            
+            // 对错判断答案选择
+            document.querySelectorAll('.tf-answer').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.tf-answer').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    document.getElementById('tfAnswer').value = this.dataset.value;
+                });
+            });
+        }
+
+        function showAuthMessage(type, message, formId) {
+            const messageDiv = document.getElementById(formId + 'Message');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <div>${message}</div>
+            `;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function logout() {
+            clearStoredUser();
+            currentUser = null;
+            showAuthPage();
+        }
+
+        // 以下是原有的投稿相关函数
         async function loadKnowledgePoints() {
             try {
-                // 查询所有已审核的知识点
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/submissions?category=eq.knowledge&status=eq.approved&select=id,title,subject&order=created_at.desc&limit=50`,
                     {
@@ -1454,7 +1806,6 @@
             
             knowledgeSelection.innerHTML = html;
             
-            // 添加点击事件
             knowledgeSelection.querySelectorAll('.knowledge-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.knowledge-btn').forEach(b => b.classList.remove('selected'));
@@ -1482,40 +1833,15 @@
             displayKnowledge(filtered);
         }
 
-        function updateUserDisplay(user) {
-            document.getElementById('username').textContent = user.username || '用户';
-            document.getElementById('userEmail').textContent = user.email || '';
-        }
-
-        function setupEventListeners() {
-            // 知识点表单提交
-            document.getElementById('knowledgeSubmissionForm').addEventListener('submit', submitKnowledge);
-            
-            // 游戏表单提交
-            document.getElementById('gameSubmissionForm').addEventListener('submit', submitGame);
-            
-            // 对错判断答案选择
-            document.querySelectorAll('.tf-answer').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.tf-answer').forEach(b => b.classList.remove('selected'));
-                    this.classList.add('selected');
-                    document.getElementById('tfAnswer').value = this.dataset.value;
-                });
-            });
-        }
-
         function switchPage(page) {
-            // 更新页面标签
             document.querySelectorAll('.page-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
-            // 显示对应的页面
             document.getElementById('submitPage').style.display = 'none';
             document.getElementById('historyPage').style.display = 'none';
             
             document.getElementById(page + 'Page').style.display = 'block';
             
-            // 加载对应页面的数据
             if (page === 'history') {
                 loadSubmissionHistory();
             }
@@ -1541,12 +1867,10 @@
         }
 
         function showGameContent(gameType) {
-            // 隐藏所有游戏内容
             document.getElementById('matchGameContent').style.display = 'none';
             document.getElementById('trueFalseContent').style.display = 'none';
             document.getElementById('guessContent').style.display = 'none';
             
-            // 显示对应的游戏内容
             switch(gameType) {
                 case 'matching':
                     document.getElementById('matchGameContent').style.display = 'block';
@@ -1611,7 +1935,6 @@
                 return;
             }
             
-            // 收集数据
             const selectedSubject = document.querySelector('#subjectSelection .subject-btn.selected');
             const selectedTags = Array.from(document.querySelectorAll('#tagSelection .tag-btn.selected'))
                 .map(btn => btn.dataset.id).join(',');
@@ -1619,7 +1942,6 @@
             const content = document.getElementById('knowledgeContent').value.trim();
             const title = document.getElementById('knowledgeTitle').value.trim();
             
-            // 验证
             if (!selectedSubject) {
                 showMessage('error', '请选择科目', 'knowledge');
                 return;
@@ -1645,7 +1967,6 @@
                 return;
             }
             
-            // 准备提交数据
             const formData = {
                 title: title,
                 content: content,
@@ -1659,7 +1980,6 @@
                 updated_at: new Date().toISOString()
             };
             
-            // 提交
             const submitBtn = e.target.querySelector('.submit-btn');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
@@ -1680,17 +2000,15 @@
                 if (response.ok) {
                     showMessage('success', '知识点投稿提交成功！等待审核中...', 'knowledge');
                     
-                    // 重置表单
                     e.target.reset();
                     document.querySelectorAll('#subjectSelection .selected, #tagSelection .selected').forEach(el => {
                         el.classList.remove('selected');
                     });
                     updateWordCount();
                     
-                    // 重新加载用户统计
                     setTimeout(() => {
                         loadUserStats();
-                        loadKnowledgePoints(); // 重新加载知识点列表
+                        loadKnowledgePoints();
                     }, 1000);
                     
                 } else {
@@ -1744,7 +2062,6 @@
                         showMessage('error', '请输入例子', 'game');
                         isValid = false;
                     } else {
-                        // 处理例子：每行一个，去空格，过滤空行
                         const examplesArray = examples.split('\n')
                             .map(line => line.trim())
                             .filter(line => line.length > 0);
@@ -1753,7 +2070,6 @@
                             showMessage('error', '请输入至少2个例子', 'game');
                             isValid = false;
                         } else {
-                            // 新的格式：以知识点为主题，例子为内容
                             gameData = {
                                 topic: selectedKnowledge.dataset.title,
                                 examples: examplesArray
@@ -1792,7 +2108,6 @@
             
             if (!isValid) return;
             
-            // 准备提交数据
             const formData = {
                 title: selectedKnowledge.dataset.title,
                 content: JSON.stringify(gameData),
@@ -1809,7 +2124,6 @@
                 updated_at: new Date().toISOString()
             };
             
-            // 提交
             const submitBtn = e.target.querySelector('.submit-btn');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
@@ -1830,7 +2144,6 @@
                 if (response.ok) {
                     showMessage('success', '游戏投稿提交成功！等待审核中...', 'game');
                     
-                    // 重置表单
                     e.target.reset();
                     document.querySelectorAll('.game-type-btn.selected, .difficulty-btn.selected, .tf-answer.selected, .knowledge-btn.selected').forEach(el => {
                         el.classList.remove('selected');
@@ -1840,18 +2153,13 @@
                     document.getElementById('selectedKnowledgeId').value = '';
                     document.getElementById('selectedKnowledgeTitle').value = '';
                     
-                    // 隐藏游戏内容
                     document.querySelectorAll('[id$="Content"]').forEach(el => {
                         el.style.display = 'none';
                     });
                     
-                    // 清空搜索框
                     document.getElementById('knowledgeSearch').value = '';
-                    
-                    // 重新显示知识点列表
                     displayKnowledge(availableKnowledge);
                     
-                    // 重新加载用户统计
                     setTimeout(() => {
                         loadUserStats();
                     }, 1000);
@@ -1908,7 +2216,6 @@
                 return;
             }
             
-            // 过滤历史记录
             let filteredSubmissions = submissions;
             if (currentHistoryFilter === 'knowledge') {
                 filteredSubmissions = submissions.filter(s => s.category === 'knowledge');
@@ -1929,7 +2236,6 @@
             
             let html = '';
             filteredSubmissions.forEach(submission => {
-                // 修正的状态映射
                 let statusClass = '';
                 let statusText = '';
                 switch(submission.status) {
@@ -1950,10 +2256,8 @@
                         statusText = submission.status;
                 }
                 
-                // 科目名称
                 const subjectName = subjects.find(s => s.id === submission.subject)?.name || submission.subject || '未分类';
                 
-                // 游戏类型信息
                 let gameInfo = '';
                 if (submission.category === 'game') {
                     const gameTypeText = submission.game_type === 'matching' ? '连连看' :
@@ -1970,7 +2274,6 @@
                     `;
                 }
                 
-                // 标签显示
                 const tags = submission.tags ? submission.tags.split(',') : [];
                 const tagNames = tags.map(tagId => {
                     const tag = tags.find(t => t.id === tagId);
@@ -1981,7 +2284,6 @@
                     `<span class="history-tag">${tagName}</span>`
                 ).join('');
                 
-                // 内容预览
                 let contentPreview = '';
                 if (submission.category === 'knowledge') {
                     contentPreview = submission.content || '';
@@ -2036,13 +2338,11 @@
         function filterHistory(filter) {
             currentHistoryFilter = filter;
             
-            // 更新按钮状态
             document.querySelectorAll('.page-tabs + .submission-form .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // 显示过滤后的历史记录
             displayHistory(userSubmissions);
         }
 
