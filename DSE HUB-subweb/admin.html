@@ -177,6 +177,34 @@
             margin-bottom: var(--spacing-xs);
         }
 
+        .login-input {
+            margin-bottom: var(--spacing-lg);
+            text-align: left;
+        }
+
+        .login-input label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .login-input input {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            transition: all var(--transition-normal);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .login-input input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
         .login-btn {
             width: 100%;
             padding: var(--spacing-md) var(--spacing-lg);
@@ -639,6 +667,55 @@
             box-shadow: var(--shadow-md);
         }
 
+        /* 批量操作栏 */
+        .batch-actions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--accent-color);
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .batch-count {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .batch-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition-normal);
+        }
+
+        .batch-btn-approve {
+            background: linear-gradient(135deg, #48bb78, #319795);
+            color: white;
+        }
+
+        .batch-btn-reject {
+            background: linear-gradient(135deg, #f56565, #ed8936);
+            color: white;
+        }
+
+        .batch-btn-delete {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .control-bar {
@@ -664,6 +741,12 @@
             
             .btn {
                 flex: 1;
+                justify-content: center;
+            }
+            
+            .batch-actions {
+                width: 90%;
+                flex-wrap: wrap;
                 justify-content: center;
             }
         }
@@ -715,11 +798,11 @@
             </div>
             
             <div id="manualLoginSection">
-                <div class="login-input" style="text-align: left;">
+                <div class="login-input">
                     <label for="adminEmail">管理员邮箱</label>
                     <input type="email" id="adminEmail" placeholder="admin@example.com">
                 </div>
-                <div class="login-input" style="text-align: left;">
+                <div class="login-input">
                     <label for="adminPassword">密码</label>
                     <input type="password" id="adminPassword" placeholder="********">
                 </div>
@@ -827,13 +910,37 @@
         </main>
     </div>
 
+    <!-- 批量操作栏 -->
+    <div class="batch-actions" id="batchActions">
+        <div class="batch-count">
+            <i class="fas fa-check-square"></i>
+            已选择 <span id="batchCount">0</span> 个项目
+        </div>
+        <button class="batch-btn batch-btn-approve" onclick="batchApprove()">
+            <i class="fas fa-check"></i>
+            批量通过
+        </button>
+        <button class="batch-btn batch-btn-reject" onclick="batchReject()">
+            <i class="fas fa-times"></i>
+            批量拒绝
+        </button>
+        <button class="batch-btn batch-btn-delete" onclick="batchDelete()">
+            <i class="fas fa-trash"></i>
+            批量删除
+        </button>
+        <button class="batch-btn" onclick="clearSelection()" style="background: var(--hover-color); color: var(--text-color);">
+            <i class="fas fa-times"></i>
+            清空选择
+        </button>
+    </div>
+
     <script>
         // 全局配置
         const CONFIG = {
             SUPABASE_URL: 'https://alsalyskulozwakhmzoa.supabase.co',
             SUPABASE_KEY: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr',
-            AUTO_LOGIN_DELAY: 1000, // 自动登录延迟
-            THEME_POLL_INTERVAL: 30000 // 主题轮询间隔
+            AUTO_LOGIN_DELAY: 1000,
+            THEME_POLL_INTERVAL: 30000
         };
 
         // 全局应用状态
@@ -851,7 +958,6 @@
         const ThemeManager = {
             currentTheme: 'theme-blue-purple',
             
-            // 根据profile确定主题
             determineTheme(profile) {
                 const themeValue = (profile.theme_color || profile.theme_colors || profile.theme || '').toLowerCase();
                 
@@ -868,7 +974,6 @@
                 return 'theme-blue-purple';
             },
             
-            // 应用主题
             applyTheme(themeClass) {
                 if (this.currentTheme === themeClass) return;
                 
@@ -877,7 +982,6 @@
                 this.currentTheme = themeClass;
             },
             
-            // 更新用户主题
             async updateUserTheme(userId) {
                 try {
                     const { data: profile, error } = await AppState.supabase
@@ -895,21 +999,17 @@
                 }
             },
             
-            // 开始主题轮询
             startPolling(userId) {
                 if (this.themeInterval) {
                     clearInterval(this.themeInterval);
                 }
                 
-                // 立即更新一次
                 this.updateUserTheme(userId);
                 
-                // 定时更新
                 this.themeInterval = setInterval(() => {
                     this.updateUserTheme(userId);
                 }, CONFIG.THEME_POLL_INTERVAL);
                 
-                // 页面可见时更新
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         this.updateUserTheme(userId);
@@ -917,7 +1017,6 @@
                 });
             },
             
-            // 停止主题轮询
             stopPolling() {
                 if (this.themeInterval) {
                     clearInterval(this.themeInterval);
@@ -944,7 +1043,9 @@
             refreshBtn: document.getElementById('refreshBtn'),
             autoLoginLoading: document.getElementById('autoLoginLoading'),
             manualLoginSection: document.getElementById('manualLoginSection'),
-            tabButtons: document.querySelectorAll('.tab-btn')
+            tabButtons: document.querySelectorAll('.tab-btn'),
+            batchActions: document.getElementById('batchActions'),
+            batchCount: document.getElementById('batchCount')
         };
 
         // 工具函数
@@ -955,6 +1056,20 @@
                         <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
                         <h3>正在加载数据...</h3>
                         <p style="color: var(--text-secondary);">请稍候</p>
+                    </div>
+                `;
+            },
+
+            showError(message) {
+                DOM.contentContainer.innerHTML = `
+                    <div class="content-card" style="text-align: center; padding: 48px;">
+                        <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--danger-color); margin-bottom: 16px;"></i>
+                        <h3>加载数据失败</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">${message}</p>
+                        <button class="btn btn-primary" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i>
+                            重新加载
+                        </button>
                     </div>
                 `;
             },
@@ -1028,7 +1143,6 @@
             },
 
             getSubmissionType(submission) {
-                // 根据submission的字段判断投稿类型
                 if (submission.notes && submission.notes.trim().length > 0) {
                     return '笔记';
                 } else if (submission.game_type) {
@@ -1085,6 +1199,17 @@
                     'all': '所有内容'
                 };
                 return map[type] || '内容';
+            },
+
+            updateBatchActions() {
+                const count = AppState.selectedItems.size;
+                DOM.batchCount.textContent = count;
+                
+                if (count > 0) {
+                    DOM.batchActions.style.display = 'flex';
+                } else {
+                    DOM.batchActions.style.display = 'none';
+                }
             }
         };
 
@@ -1142,7 +1267,7 @@
                     console.error('加载数据时出错:', error);
                     Utils.showError(`无法加载${Utils.getDataTypeName(dataType)}数据: ${error.message}`);
                     AppState.allItems = [];
-                    this.renderItems();
+                    this.renderItems([]);
                 }
             },
 
@@ -1424,6 +1549,65 @@
                 });
                 
                 DOM.contentContainer.innerHTML = html;
+            },
+
+            async updateItemStatus(itemId, itemType, status) {
+                const tableMap = {
+                    'submission': 'submissions',
+                    'question': 'questions',
+                    'knowledge': 'knowledge_points',
+                    'message': 'chat_messages',
+                    'user': 'profiles',
+                    'submissions': 'submissions',
+                    'questions': 'questions',
+                    'users': 'profiles'
+                };
+                
+                const tableName = tableMap[itemType];
+                if (!tableName) return false;
+                
+                try {
+                    const { error } = await AppState.supabase
+                        .from(tableName)
+                        .update({ 
+                            status: status,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', itemId);
+                    
+                    return !error;
+                } catch (error) {
+                    console.error('更新状态失败:', error);
+                    return false;
+                }
+            },
+
+            async deleteItem(itemId, itemType) {
+                const tableMap = {
+                    'submission': 'submissions',
+                    'question': 'questions',
+                    'knowledge': 'knowledge_points',
+                    'message': 'chat_messages',
+                    'user': 'profiles',
+                    'submissions': 'submissions',
+                    'questions': 'questions',
+                    'users': 'profiles'
+                };
+                
+                const tableName = tableMap[itemType];
+                if (!tableName) return false;
+                
+                try {
+                    const { error } = await AppState.supabase
+                        .from(tableName)
+                        .delete()
+                        .eq('id', itemId);
+                    
+                    return !error;
+                } catch (error) {
+                    console.error('删除失败:', error);
+                    return false;
+                }
             }
         };
 
@@ -1431,13 +1615,10 @@
         const BusinessLogic = {
             async initializeApp() {
                 try {
-                    // 动态加载Supabase客户端
                     await this.loadSupabaseClient();
                     
-                    // 初始化Supabase
                     AppState.supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
                     
-                    // 尝试自动登录
                     await this.attemptAutoLogin();
                     
                     this.setupEventListeners();
@@ -1456,7 +1637,7 @@
                     }
                     
                     const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
                     script.onload = () => setTimeout(resolve, 100);
                     script.onerror = () => reject(new Error('无法加载Supabase客户端'));
                     document.head.appendChild(script);
@@ -1467,11 +1648,9 @@
                 DOM.autoLoginLoading.style.display = 'flex';
                 DOM.manualLoginSection.style.display = 'none';
                 
-                // 延迟以显示加载状态
                 await new Promise(resolve => setTimeout(resolve, CONFIG.AUTO_LOGIN_DELAY));
                 
                 try {
-                    // 检查现有会话
                     const { data: { session } } = await AppState.supabase.auth.getSession();
                     
                     if (session) {
@@ -1480,7 +1659,6 @@
                         return;
                     }
                     
-                    // 如果没有会话，显示手动登录
                     throw new Error('没有找到登录会话');
                     
                 } catch (error) {
@@ -1574,8 +1752,8 @@
                     
                     AppState.allItems = [];
                     AppState.selectedItems.clear();
+                    Utils.updateBatchActions();
                     
-                    // 停止主题轮询
                     ThemeManager.stopPolling();
                     
                 } catch (error) {
@@ -1587,26 +1765,16 @@
                 if (!confirm('确定要通过此内容吗？')) return;
                 
                 try {
-                    const tableName = this.getTableName(itemType);
+                    const success = await DataManager.updateItemStatus(itemId, itemType, 'approved');
                     
-                    if (!tableName) {
-                        Utils.showError('无法确定表名');
-                        return;
+                    if (success) {
+                        Utils.showNotification('内容已通过审核', 'success');
+                        await DataManager.loadData(AppState.currentDataType);
+                        AppState.selectedItems.delete(itemId);
+                        Utils.updateBatchActions();
+                    } else {
+                        Utils.showNotification('操作失败', 'error');
                     }
-                    
-                    const { error } = await AppState.supabase
-                        .from(tableName)
-                        .update({ 
-                            status: 'approved',
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', itemId);
-                    
-                    if (error) throw error;
-                    
-                    Utils.showNotification('内容已通过审核', 'success');
-                    await DataManager.loadData(AppState.currentDataType);
-                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('批准内容时出错:', error);
@@ -1618,26 +1786,16 @@
                 if (!confirm('确定要拒绝此内容吗？')) return;
                 
                 try {
-                    const tableName = this.getTableName(itemType);
+                    const success = await DataManager.updateItemStatus(itemId, itemType, 'rejected');
                     
-                    if (!tableName) {
-                        Utils.showError('无法确定表名');
-                        return;
+                    if (success) {
+                        Utils.showNotification('内容已拒绝', 'success');
+                        await DataManager.loadData(AppState.currentDataType);
+                        AppState.selectedItems.delete(itemId);
+                        Utils.updateBatchActions();
+                    } else {
+                        Utils.showNotification('操作失败', 'error');
                     }
-                    
-                    const { error } = await AppState.supabase
-                        .from(tableName)
-                        .update({ 
-                            status: 'rejected',
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', itemId);
-                    
-                    if (error) throw error;
-                    
-                    Utils.showNotification('内容已拒绝', 'success');
-                    await DataManager.loadData(AppState.currentDataType);
-                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('拒绝内容时出错:', error);
@@ -1649,26 +1807,16 @@
                 if (!confirm('确定要重新审核此内容吗？内容将恢复为待审核状态。')) return;
                 
                 try {
-                    const tableName = this.getTableName(itemType);
+                    const success = await DataManager.updateItemStatus(itemId, itemType, 'pending');
                     
-                    if (!tableName) {
-                        Utils.showError('无法确定表名');
-                        return;
+                    if (success) {
+                        Utils.showNotification('内容已标记为待复审', 'success');
+                        await DataManager.loadData(AppState.currentDataType);
+                        AppState.selectedItems.delete(itemId);
+                        Utils.updateBatchActions();
+                    } else {
+                        Utils.showNotification('操作失败', 'error');
                     }
-                    
-                    const { error } = await AppState.supabase
-                        .from(tableName)
-                        .update({ 
-                            status: 'pending',
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', itemId);
-                    
-                    if (error) throw error;
-                    
-                    Utils.showNotification('内容已标记为待复审', 'success');
-                    await DataManager.loadData(AppState.currentDataType);
-                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('复审内容时出错:', error);
@@ -1680,23 +1828,16 @@
                 if (!confirm('⚠️ 警告：确定要删除此内容吗？此操作不可撤销！')) return;
                 
                 try {
-                    const tableName = this.getTableName(itemType);
+                    const success = await DataManager.deleteItem(itemId, itemType);
                     
-                    if (!tableName) {
-                        Utils.showError('无法确定表名');
-                        return;
+                    if (success) {
+                        Utils.showNotification('内容已删除', 'success');
+                        await DataManager.loadData(AppState.currentDataType);
+                        AppState.selectedItems.delete(itemId);
+                        Utils.updateBatchActions();
+                    } else {
+                        Utils.showNotification('删除失败', 'error');
                     }
-                    
-                    const { error } = await AppState.supabase
-                        .from(tableName)
-                        .delete()
-                        .eq('id', itemId);
-                    
-                    if (error) throw error;
-                    
-                    Utils.showNotification('内容已删除', 'success');
-                    await DataManager.loadData(AppState.currentDataType);
-                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('删除内容时出错:', error);
@@ -1704,31 +1845,11 @@
                 }
             },
 
-            getTableName(dataType) {
-                const tableMap = {
-                    'submission': 'submissions',
-                    'question': 'questions',
-                    'knowledge': 'knowledge_points',
-                    'message': 'chat_messages',
-                    'user': 'profiles',
-                    'submissions': 'submissions',
-                    'questions': 'questions',
-                    'users': 'profiles'
-                };
-                return tableMap[dataType];
-            },
-
             setupEventListeners() {
-                // 登录按钮
                 DOM.loginButton.addEventListener('click', () => this.loginAsAdmin());
-                
-                // 退出按钮
                 DOM.logoutButton.addEventListener('click', () => this.logout());
-                
-                // 刷新按钮
                 DOM.refreshBtn.addEventListener('click', () => this.refreshData());
                 
-                // 标签页点击
                 DOM.tabButtons.forEach(button => {
                     button.addEventListener('click', async () => {
                         DOM.tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -1736,11 +1857,11 @@
                         
                         AppState.currentDataType = button.dataset.type;
                         AppState.selectedItems.clear();
+                        Utils.updateBatchActions();
                         await DataManager.loadData(AppState.currentDataType);
                     });
                 });
                 
-                // 搜索输入防抖
                 let searchTimeout;
                 DOM.searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
@@ -1749,7 +1870,6 @@
                     }, 500);
                 });
                 
-                // 筛选器变更
                 DOM.statusFilter.addEventListener('change', () => DataManager.applyFilters());
                 DOM.sortFilter.addEventListener('change', () => DataManager.applyFilters());
             },
@@ -1761,6 +1881,7 @@
                 }
                 
                 AppState.selectedItems.clear();
+                Utils.updateBatchActions();
                 await DataManager.loadData(AppState.currentDataType);
                 Utils.showNotification('数据已刷新', 'success');
             },
@@ -1770,6 +1891,92 @@
                     AppState.selectedItems.delete(itemId);
                 } else {
                     AppState.selectedItems.add(itemId);
+                }
+                Utils.updateBatchActions();
+            },
+
+            clearSelection() {
+                AppState.selectedItems.clear();
+                Utils.updateBatchActions();
+                
+                // 取消所有复选框的选中状态
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            },
+
+            async batchApprove() {
+                const count = AppState.selectedItems.size;
+                if (count === 0) return;
+                
+                if (!confirm(`确定要通过选中的 ${count} 个项目吗？`)) return;
+                
+                try {
+                    const itemIds = Array.from(AppState.selectedItems);
+                    let successCount = 0;
+                    
+                    for (const itemId of itemIds) {
+                        const success = await DataManager.updateItemStatus(itemId, AppState.currentDataType, 'approved');
+                        if (success) successCount++;
+                    }
+                    
+                    Utils.showNotification(`已通过 ${successCount}/${count} 个项目`, 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    this.clearSelection();
+                    
+                } catch (error) {
+                    console.error('批量批准失败:', error);
+                    Utils.showNotification('批量操作失败: ' + error.message, 'error');
+                }
+            },
+
+            async batchReject() {
+                const count = AppState.selectedItems.size;
+                if (count === 0) return;
+                
+                if (!confirm(`确定要拒绝选中的 ${count} 个项目吗？`)) return;
+                
+                try {
+                    const itemIds = Array.from(AppState.selectedItems);
+                    let successCount = 0;
+                    
+                    for (const itemId of itemIds) {
+                        const success = await DataManager.updateItemStatus(itemId, AppState.currentDataType, 'rejected');
+                        if (success) successCount++;
+                    }
+                    
+                    Utils.showNotification(`已拒绝 ${successCount}/${count} 个项目`, 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    this.clearSelection();
+                    
+                } catch (error) {
+                    console.error('批量拒绝失败:', error);
+                    Utils.showNotification('批量操作失败: ' + error.message, 'error');
+                }
+            },
+
+            async batchDelete() {
+                const count = AppState.selectedItems.size;
+                if (count === 0) return;
+                
+                if (!confirm(`⚠️ 警告：确定要删除选中的 ${count} 个项目吗？此操作不可撤销！`)) return;
+                
+                try {
+                    const itemIds = Array.from(AppState.selectedItems);
+                    let successCount = 0;
+                    
+                    for (const itemId of itemIds) {
+                        const success = await DataManager.deleteItem(itemId, AppState.currentDataType);
+                        if (success) successCount++;
+                    }
+                    
+                    Utils.showNotification(`已删除 ${successCount}/${count} 个项目`, 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    this.clearSelection();
+                    
+                } catch (error) {
+                    console.error('批量删除失败:', error);
+                    Utils.showNotification('批量操作失败: ' + error.message, 'error');
                 }
             }
         };
@@ -1783,6 +1990,10 @@
         window.rejectItem = (itemId, itemType) => BusinessLogic.rejectItem(itemId, itemType);
         window.reviewItem = (itemId, itemType) => BusinessLogic.reviewItem(itemId, itemType);
         window.deleteItem = (itemId, itemType) => BusinessLogic.deleteItem(itemId, itemType);
+        window.clearSelection = () => BusinessLogic.clearSelection();
+        window.batchApprove = () => BusinessLogic.batchApprove();
+        window.batchReject = () => BusinessLogic.batchReject();
+        window.batchDelete = () => BusinessLogic.batchDelete();
 
         // 添加CSS动画
         const style = document.createElement('style');
@@ -1805,4 +2016,5 @@
     </script>
 </body>
 </html>
+
 
