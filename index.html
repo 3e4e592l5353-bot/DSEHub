@@ -1808,11 +1808,11 @@
             // 初始化
             init: function() {
                 this.initSupabase();
-                this.initThemes();
                 this.initSubjects();
-                this.initKnowledgeGrid();
+                this.loadKnowledgeFromDB(); // 从数据库加载知识点
                 this.initMessageBoard();
                 this.initSubmissionForm();
+                this.initThemes(); // 移动到最后
                 this.showPanel('knowledge');
                 
                 // 页面加载时检查登录状态
@@ -1929,7 +1929,7 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
-                        // 设置cookie，供投稿中心使用
+                        // 设置cookie
                         this.setLoginCookie(data.session.access_token);
                         
                         this.isLoggedIn = true;
@@ -2377,7 +2377,6 @@
             },
 
             // 提交知识点投稿
-            // 提交知识点投稿
             submitKnowledge: async function() {
                 if (!this.isLoggedIn) {
                     this.showNotification('请先登录后才能投稿知识点');
@@ -2604,6 +2603,40 @@
                 this.renderKnowledgeCards(filteredData);
             },
 
+            // 从数据库加载知识点
+            loadKnowledgeFromDB: async function() {
+                try {
+                    const { data, error } = await this.supabase
+                        .from('knowledge_points')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        console.error('加载知识点出错:', error);
+                        this.initKnowledgeGrid(); // 使用本地数据
+                        return;
+                    }
+                    
+                    if (data && data.length > 0) {
+                        // 转换数据库格式为本地格式
+                        this.knowledgeData = data.map(item => ({
+                            id: item.id,
+                            subject: item.subject,
+                            title: item.title,
+                            content: item.content,
+                            tags: item.tags ? (Array.isArray(item.tags) ? item.tags : item.tags.split(',').map(tag => tag.trim())) : [],
+                            difficulty: item.difficulty || '基础',
+                            created_at: item.created_at ? item.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+                        }));
+                    }
+                    
+                    this.initKnowledgeGrid();
+                } catch (err) {
+                    console.error('加载知识点出错:', err);
+                    this.initKnowledgeGrid(); // 使用本地数据
+                }
+            },
+
             initKnowledgeGrid: function() {
                 this.renderKnowledgeCards(this.knowledgeData);
             },
@@ -2676,7 +2709,7 @@
             },
 
             // ==================== 留言板系统 ====================
-           initMessageBoard: function() {
+            initMessageBoard: function() {
                 this.renderMessages();
             },
 
@@ -2784,54 +2817,42 @@
             },
 
             // ==================== 主题系统 ====================
-            // 初始化
-            init: function() {
-                this.initSupabase();
-                this.initThemes();
-                this.initSubjects();
-                this.loadKnowledgeFromDB(); // 从数据库加载知识点
-                this.initMessageBoard();
-                this.initSubmissionForm();
-                this.showPanel('knowledge');
-                
-                // 页面加载时检查登录状态
-                this.checkSession();
-                
-                // 添加快捷键初始化
-                this.initShortcuts();
+            initThemes: function() {
+                // 主题选项已在HTML中硬编码，无需动态生成
             },
-            
-            // 从数据库加载知识点
-            loadKnowledgeFromDB: async function() {
-                try {
-                    const { data, error } = await this.supabase
-                        .from('knowledge_points')
-                        .select('*')
-                        .order('created_at', { ascending: false });
+
+            changeTheme: function(themeId, showNotification = true) {
+                document.body.classList.remove(this.currentTheme);
+                this.currentTheme = themeId;
+                document.body.classList.add(themeId);
+                
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                
+                const clickedOption = event ? event.target.closest('.theme-option') : null;
+                if (clickedOption) {
+                    clickedOption.classList.add('active');
+                } else {
+                    const themeOptions = document.querySelectorAll('.theme-option');
+                    themeOptions.forEach(option => {
+                        if (option.onclick && option.onclick.toString().includes(themeId)) {
+                            option.classList.add('active');
+                        }
+                    });
+                }
+                
+                this.saveUserTheme(themeId);
+                
+                if (showNotification) {
+                    const themeNames = {
+                        'theme-blue-purple': '蓝-紫主题',
+                        'theme-green-teal': '绿-青主题',
+                        'theme-orange-red': '橙-红主题',
+                        'theme-dark': '深色主题'
+                    };
                     
-                    if (error) {
-                        console.error('加载知识点出错:', error);
-                        this.initKnowledgeGrid(); // 使用本地数据
-                        return;
-                    }
-                    
-                    if (data && data.length > 0) {
-                        // 转换数据库格式为本地格式
-                        this.knowledgeData = data.map(item => ({
-                            id: item.id,
-                            subject: item.subject,
-                            title: item.title,
-                            content: item.content,
-                            tags: item.tags ? (Array.isArray(item.tags) ? item.tags : item.tags.split(',').map(tag => tag.trim())) : [],
-                            difficulty: item.difficulty || '基础',
-                            created_at: item.created_at ? item.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
-                        }));
-                    }
-                    
-                    this.initKnowledgeGrid();
-                } catch (err) {
-                    console.error('加载知识点出错:', err);
-                    this.initKnowledgeGrid(); // 使用本地数据
+                    this.showNotification(`已切换至${themeNames[themeId]}`);
                 }
             },
 
@@ -2873,5 +2894,3 @@
     </script>
 </body>
 </html>
-
-
