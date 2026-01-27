@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSE Hub - 管理员中心</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* 基础CSS变量 - 主题管理器会动态修改 */
         :root {
@@ -125,19 +124,19 @@
             border-radius: var(--border-radius-xl);
             padding: var(--spacing-2xl);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             box-shadow: var(--shadow-xl);
             border: 1px solid var(--border-color);
             backdrop-filter: blur(10px);
+            text-align: center;
         }
 
         .login-title {
-            text-align: center;
             margin-bottom: var(--spacing-2xl);
         }
 
         .login-title h1 {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             margin-bottom: var(--spacing-sm);
             background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
@@ -145,26 +144,37 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .login-input {
+        .login-title p {
+            color: var(--text-secondary);
+            font-size: 16px;
             margin-bottom: var(--spacing-lg);
         }
 
-        .login-input label {
-            display: block;
-            margin-bottom: var(--spacing-sm);
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 14px;
+        .auto-login-info {
+            background: rgba(90, 103, 216, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-xl);
+            text-align: left;
         }
 
-        .login-input input {
-            width: 100%;
-            padding: var(--spacing-md) var(--spacing-lg);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-md);
+        .auto-login-info h3 {
+            color: var(--accent-color);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .auto-login-info ul {
+            padding-left: var(--spacing-lg);
+            color: var(--text-secondary);
             font-size: 14px;
-            transition: all var(--transition-normal);
-            background: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .auto-login-info li {
+            margin-bottom: var(--spacing-xs);
         }
 
         .login-btn {
@@ -175,10 +185,14 @@
             border: none;
             border-radius: var(--border-radius-md);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             transition: all var(--transition-normal);
             margin-top: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
 
         .login-btn:hover {
@@ -194,6 +208,22 @@
             font-size: 14px;
             margin-top: var(--spacing-lg);
             display: none;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .login-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .login-loading p {
+            color: var(--text-secondary);
         }
 
         /* 主管理员界面 */
@@ -436,9 +466,9 @@
 
         .card-meta {
             display: flex;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-md);
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
             flex-wrap: wrap;
         }
 
@@ -446,6 +476,9 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-xs);
+            padding: 2px 6px;
+            background: var(--hover-color);
+            border-radius: var(--border-radius-sm);
         }
 
         .card-content {
@@ -492,6 +525,36 @@
             font-size: 14px;
             color: var(--text-color);
             font-weight: 500;
+        }
+
+        .submission-type {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 4px 8px;
+            background: rgba(90, 103, 216, 0.1);
+            color: var(--accent-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(90, 103, 216, 0.2);
+        }
+
+        .game-type {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 4px 8px;
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(72, 187, 120, 0.2);
         }
 
         .card-actions {
@@ -631,27 +694,51 @@
     <div class="login-container" id="loginContainer">
         <div class="login-card">
             <div class="login-title">
-                <h1>管理员登录</h1>
-                <p>请输入管理员邮箱和密码</p>
+                <h1>DSE Hub 管理员中心</h1>
+                <p>全权内容管理 · 独断裁决 · 实时主题同步</p>
             </div>
-            <div class="login-input">
-                <label for="adminEmail">管理员邮箱</label>
-                <input type="email" id="adminEmail" placeholder="admin@example.com">
+            
+            <div class="auto-login-info">
+                <h3><i class="fas fa-info-circle"></i> 自动登录说明</h3>
+                <p>如果你已经在主站登录，系统会自动检测并登录。</p>
+                <ul>
+                    <li>使用与主站相同的浏览器</li>
+                    <li>确保已在主站登录管理员账号</li>
+                    <li>系统会自动同步主题设置</li>
+                    <li>如果自动登录失败，请手动登录</li>
+                </ul>
             </div>
-            <div class="login-input">
-                <label for="adminPassword">密码</label>
-                <input type="password" id="adminPassword" placeholder="********">
+            
+            <div class="login-loading" id="autoLoginLoading" style="display: none;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color);"></i>
+                <p>正在尝试自动登录...</p>
             </div>
-            <button class="login-btn" id="loginButton">
-                <i class="fas fa-sign-in-alt"></i>
-                登录
-            </button>
+            
+            <div id="manualLoginSection">
+                <div class="login-input" style="text-align: left;">
+                    <label for="adminEmail">管理员邮箱</label>
+                    <input type="email" id="adminEmail" placeholder="admin@example.com">
+                </div>
+                <div class="login-input" style="text-align: left;">
+                    <label for="adminPassword">密码</label>
+                    <input type="password" id="adminPassword" placeholder="********">
+                </div>
+                <button class="login-btn" id="loginButton">
+                    <i class="fas fa-sign-in-alt"></i>
+                    手动登录
+                </button>
+            </div>
+            
             <div class="login-error" id="loginError">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="errorMessage">登录失败</span>
             </div>
-            <div style="margin-top: var(--spacing-xl); text-align: center; color: var(--text-secondary); font-size: 12px;">
-                <p>需要profiles表中is_admin=true的账号</p>
+            
+            <div style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-color);">
+                <p style="color: var(--text-secondary); font-size: 12px; text-align: left;">
+                    <i class="fas fa-shield-alt"></i> 
+                    <strong>权限说明：</strong>需要profiles表中is_admin=true的账号。管理员拥有所有内容的无理由审核、删除和复审权限。
+                </p>
             </div>
         </div>
     </div>
@@ -741,313 +828,277 @@
     </div>
 
     <script>
-        // 主题管理器 - 支持实时监测用户主题变化
-        class ThemeManager {
-            constructor() {
-                this.supabase = null;
-                this.currentUser = null;
-                this.currentTheme = 'theme-blue-purple';
-                this.pollingInterval = null;
-                this.isInitialized = false;
-                
-                // 主题映射
-                this.themeMapping = {
-                    'blue': 'theme-blue-purple',
-                    'green': 'theme-green-teal',
-                    'orange': 'theme-orange-red',
-                    'dark': 'theme-dark',
-                    'default': 'theme-blue-purple'
-                };
-            }
+        // 全局配置
+        const CONFIG = {
+            SUPABASE_URL: 'https://alsalyskulozwakhmzoa.supabase.co',
+            SUPABASE_KEY: 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr',
+            AUTO_LOGIN_DELAY: 1000, // 自动登录延迟
+            THEME_POLL_INTERVAL: 30000 // 主题轮询间隔
+        };
+
+        // 全局应用状态
+        const AppState = {
+            supabase: null,
+            currentUser: null,
+            currentDataType: 'submissions',
+            allItems: [],
+            selectedItems: new Set(),
+            isInitialized: false,
+            themeInterval: null
+        };
+
+        // 主题管理器
+        const ThemeManager = {
+            currentTheme: 'theme-blue-purple',
             
-            // 初始化主题管理器
-            async init(supabaseUrl, supabaseKey) {
-                if (this.isInitialized) return;
+            // 根据profile确定主题
+            determineTheme(profile) {
+                const themeValue = (profile.theme_color || profile.theme_colors || profile.theme || '').toLowerCase();
                 
-                try {
-                    // 创建Supabase客户端
-                    this.supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-                    
-                    // 监听认证状态变化
-                    this.supabase.auth.onAuthStateChange(async (event, session) => {
-                        if (event === 'SIGNED_IN') {
-                            this.currentUser = session.user;
-                            await this.loadUserTheme();
-                            this.startPolling();
-                        } else if (event === 'SIGNED_OUT') {
-                            this.currentUser = null;
-                            this.stopPolling();
-                            this.applyDefaultTheme();
-                        }
-                    });
-                    
-                    // 检查当前会话
-                    const { data: { session } } = await this.supabase.auth.getSession();
-                    if (session) {
-                        this.currentUser = session.user;
-                        await this.loadUserTheme();
-                        this.startPolling();
-                    }
-                    
-                    this.isInitialized = true;
-                    console.log('主题管理器已初始化');
-                    
-                } catch (error) {
-                    console.error('主题管理器初始化失败:', error);
-                    this.applyDefaultTheme();
-                }
-            }
-            
-            // 加载用户主题
-            async loadUserTheme() {
-                if (!this.currentUser) {
-                    this.applyDefaultTheme();
-                    return;
+                if (themeValue.includes('blue') || themeValue.includes('purple')) {
+                    return 'theme-blue-purple';
+                } else if (themeValue.includes('green') || themeValue.includes('teal')) {
+                    return 'theme-green-teal';
+                } else if (themeValue.includes('orange') || themeValue.includes('red')) {
+                    return 'theme-orange-red';
+                } else if (themeValue.includes('dark')) {
+                    return 'theme-dark';
                 }
                 
-                try {
-                    // 从profiles表获取用户主题设置
-                    const { data: profile, error } = await this.supabase
-                        .from('profiles')
-                        .select('theme_color, theme_colors, theme')
-                        .eq('auth_id', this.currentUser.id)
-                        .single();
-                    
-                    if (error) {
-                        console.warn('获取用户主题失败:', error.message);
-                        this.applyDefaultTheme();
-                        return;
-                    }
-                    
-                    // 确定主题名称
-                    let themeName = this.determineThemeName(profile);
-                    console.log('检测到用户主题:', themeName);
-                    
-                    // 应用主题
-                    this.applyTheme(themeName);
-                    
-                } catch (error) {
-                    console.error('加载用户主题时出错:', error);
-                    this.applyDefaultTheme();
-                }
-            }
-            
-            // 确定主题名称
-            determineThemeName(profile) {
-                // 优先级: theme_color > theme_colors > theme > 默认
-                let themeValue = profile.theme_color || profile.theme_colors || profile.theme;
-                
-                if (!themeValue) return 'default';
-                
-                themeValue = themeValue.toLowerCase().trim();
-                
-                // 检查主题映射
-                for (const [key, themeClass] of Object.entries(this.themeMapping)) {
-                    if (themeValue.includes(key)) {
-                        return themeClass;
-                    }
-                }
-                
-                return 'default';
-            }
+                return 'theme-blue-purple';
+            },
             
             // 应用主题
-            applyTheme(themeName) {
-                const themeClass = this.themeMapping[themeName] || this.themeMapping['default'];
+            applyTheme(themeClass) {
+                if (this.currentTheme === themeClass) return;
                 
-                if (this.currentTheme === themeClass) {
-                    return; // 主题未变化
-                }
-                
-                // 移除旧主题类
                 document.body.classList.remove(this.currentTheme);
-                
-                // 添加新主题类
                 document.body.classList.add(themeClass);
                 this.currentTheme = themeClass;
-                
-                console.log('已应用主题:', themeClass);
-            }
+            },
             
-            // 应用默认主题
-            applyDefaultTheme() {
-                this.applyTheme('default');
-            }
-            
-            // 开始轮询检查主题变化
-            startPolling() {
-                // 每30秒检查一次主题变化
-                this.pollingInterval = setInterval(async () => {
-                    if (this.currentUser) {
-                        try {
-                            await this.loadUserTheme();
-                        } catch (error) {
-                            console.warn('轮询检查主题失败:', error);
-                        }
+            // 更新用户主题
+            async updateUserTheme(userId) {
+                try {
+                    const { data: profile, error } = await AppState.supabase
+                        .from('profiles')
+                        .select('theme_color, theme_colors, theme')
+                        .eq('auth_id', userId)
+                        .single();
+                    
+                    if (!error && profile) {
+                        const themeClass = this.determineTheme(profile);
+                        this.applyTheme(themeClass);
                     }
-                }, 30000);
+                } catch (error) {
+                    console.warn('更新主题失败:', error);
+                }
+            },
+            
+            // 开始主题轮询
+            startPolling(userId) {
+                if (this.themeInterval) {
+                    clearInterval(this.themeInterval);
+                }
                 
-                // 监听页面可见性变化
+                // 立即更新一次
+                this.updateUserTheme(userId);
+                
+                // 定时更新
+                this.themeInterval = setInterval(() => {
+                    this.updateUserTheme(userId);
+                }, CONFIG.THEME_POLL_INTERVAL);
+                
+                // 页面可见时更新
                 document.addEventListener('visibilitychange', () => {
-                    if (!document.hidden && this.currentUser) {
-                        this.loadUserTheme();
+                    if (!document.hidden) {
+                        this.updateUserTheme(userId);
                     }
                 });
-            }
+            },
             
-            // 停止轮询
+            // 停止主题轮询
             stopPolling() {
-                if (this.pollingInterval) {
-                    clearInterval(this.pollingInterval);
-                    this.pollingInterval = null;
+                if (this.themeInterval) {
+                    clearInterval(this.themeInterval);
+                    this.themeInterval = null;
                 }
             }
-        }
+        };
 
-        // 主应用逻辑
-        document.addEventListener('DOMContentLoaded', function() {
-            // Supabase配置
-            const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
-            const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-            
-            // 全局变量
-            let supabaseClient = null;
-            let currentUser = null;
-            let currentDataType = 'submissions';
-            let allItems = [];
-            let selectedItems = new Set();
-            
-            // 创建主题管理器实例
-            const themeManager = new ThemeManager();
+        // DOM元素引用
+        const DOM = {
+            loginContainer: document.getElementById('loginContainer'),
+            adminContainer: document.getElementById('adminContainer'),
+            loginButton: document.getElementById('loginButton'),
+            logoutButton: document.getElementById('logoutButton'),
+            adminEmail: document.getElementById('adminEmail'),
+            adminPassword: document.getElementById('adminPassword'),
+            loginError: document.getElementById('loginError'),
+            errorMessage: document.getElementById('errorMessage'),
+            adminBadge: document.getElementById('adminBadge'),
+            contentContainer: document.getElementById('contentContainer'),
+            searchInput: document.getElementById('searchInput'),
+            statusFilter: document.getElementById('statusFilter'),
+            sortFilter: document.getElementById('sortFilter'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            autoLoginLoading: document.getElementById('autoLoginLoading'),
+            manualLoginSection: document.getElementById('manualLoginSection'),
+            tabButtons: document.querySelectorAll('.tab-btn')
+        };
 
-            // 初始化应用
-            async function initializeApp() {
-                try {
-                    // 初始化Supabase客户端
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    
-                    // 初始化主题管理器
-                    await themeManager.init(SUPABASE_URL, SUPABASE_KEY);
-                    
-                    // 检查是否已有登录会话
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session) {
-                        currentUser = session.user;
-                        await verifyAdminStatus();
-                    }
-                    
-                    setupEventListeners();
-                    
-                } catch (error) {
-                    console.error('初始化失败:', error);
-                    showLoginError('系统初始化失败');
-                }
-            }
-
-            // 管理员登录
-            async function loginAsAdmin() {
-                const email = document.getElementById('adminEmail').value;
-                const password = document.getElementById('adminPassword').value;
-                
-                if (!email || !password) {
-                    showLoginError('请输入邮箱和密码');
-                    return;
-                }
-                
-                try {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-                    
-                    if (error) throw error;
-                    
-                    currentUser = data.user;
-                    await verifyAdminStatus();
-                    
-                } catch (error) {
-                    console.error('登录失败:', error);
-                    showLoginError('登录失败: ' + error.message);
-                }
-            }
-
-            // 验证管理员状态
-            async function verifyAdminStatus() {
-                try {
-                    // 查找用户对应的profiles记录
-                    const { data: profiles, error } = await supabaseClient
-                        .from('profiles')
-                        .select('*')
-                        .eq('auth_id', currentUser.id);
-                    
-                    if (error) throw error;
-                    
-                    if (!profiles || profiles.length === 0) {
-                        showLoginError('未找到用户资料');
-                        await logout();
-                        return;
-                    }
-                    
-                    const profile = profiles[0];
-                    
-                    if (!profile.is_admin) {
-                        showLoginError('此账号不是管理员');
-                        await logout();
-                        return;
-                    }
-                    
-                    // 登录成功，显示管理员界面
-                    showAdminInterface(profile);
-                    await loadData(currentDataType);
-                    
-                } catch (error) {
-                    console.error('验证管理员状态失败:', error);
-                    showLoginError('验证管理员权限失败');
-                }
-            }
-
-            // 显示管理员界面
-            function showAdminInterface(profile) {
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('adminContainer').style.display = 'block';
-                
-                const adminBadge = document.getElementById('adminBadge');
-                adminBadge.innerHTML = `
-                    <i class="fas fa-user-shield"></i>
-                    <span>管理员: ${profile.username || profile.email}</span>
+        // 工具函数
+        const Utils = {
+            showLoading() {
+                DOM.contentContainer.innerHTML = `
+                    <div class="content-card" style="text-align: center; padding: 48px;">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
+                        <h3>正在加载数据...</h3>
+                        <p style="color: var(--text-secondary);">请稍候</p>
+                    </div>
                 `;
-            }
+            },
 
-            // 退出登录
-            async function logout() {
+            showNotification(message, type = 'info') {
+                const colors = {
+                    'success': { bg: 'var(--success-color)', icon: 'check-circle' },
+                    'error': { bg: 'var(--danger-color)', icon: 'exclamation-circle' },
+                    'info': { bg: 'var(--accent-color)', icon: 'info-circle' }
+                };
+                
+                const color = colors[type] || colors.info;
+                
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${color.bg};
+                    color: white;
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    border-radius: var(--border-radius-md);
+                    box-shadow: var(--shadow-lg);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: var(--spacing-sm);
+                    max-width: 400px;
+                `;
+                notification.innerHTML = `<i class="fas fa-${color.icon}"></i><span>${message}</span>`;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            },
+
+            showLoginError(message) {
+                DOM.errorMessage.textContent = message;
+                DOM.loginError.style.display = 'flex';
+                setTimeout(() => {
+                    DOM.loginError.style.display = 'none';
+                }, 5000);
+            },
+
+            formatDate(dateString) {
+                if (!dateString) return '未知日期';
                 try {
-                    await supabaseClient.auth.signOut();
-                    currentUser = null;
+                    const date = new Date(dateString);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHours = Math.floor(diffMs / 3600000);
+                    const diffDays = Math.floor(diffMs / 86400000);
                     
-                    document.getElementById('adminContainer').style.display = 'none';
-                    document.getElementById('loginContainer').style.display = 'flex';
-                    document.getElementById('adminPassword').value = '';
-                    
-                    // 清空数据
-                    allItems = [];
-                    selectedItems.clear();
-                    
-                } catch (error) {
-                    console.error('退出失败:', error);
+                    if (diffMins < 60) return `${diffMins}分钟前`;
+                    if (diffHours < 24) return `${diffHours}小时前`;
+                    if (diffDays < 7) return `${diffDays}天前`;
+                    return date.toLocaleDateString('zh-CN');
+                } catch (e) {
+                    return '未知日期';
                 }
-            }
+            },
 
-            // 加载数据
-            async function loadData(dataType) {
-                showLoading();
+            truncateText(text, maxLength) {
+                if (!text) return '';
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength) + '...';
+            },
+
+            getSubmissionType(submission) {
+                // 根据submission的字段判断投稿类型
+                if (submission.notes && submission.notes.trim().length > 0) {
+                    return '笔记';
+                } else if (submission.game_type) {
+                    return '游戏题目';
+                } else if (submission.question_data) {
+                    return '题目内容';
+                } else if (submission.messages) {
+                    return '消息';
+                }
+                return '普通投稿';
+            },
+
+            getStatusText(status) {
+                const map = {
+                    'pending': '待审核',
+                    'approved': '已通过',
+                    'rejected': '已拒绝',
+                    'published': '已发布',
+                    'draft': '草稿',
+                    'active': '活跃'
+                };
+                return map[status] || status || '未知';
+            },
+
+            getStatusIcon(status) {
+                const map = {
+                    'pending': 'clock',
+                    'approved': 'check-circle',
+                    'rejected': 'times-circle',
+                    'published': 'check-circle',
+                    'draft': 'clock',
+                    'active': 'user-check'
+                };
+                return map[status] || 'question-circle';
+            },
+
+            getStatusClass(status) {
+                const map = {
+                    'pending': 'status-pending',
+                    'approved': 'status-approved',
+                    'rejected': 'status-rejected',
+                    'published': 'status-approved',
+                    'draft': 'status-pending',
+                    'active': 'status-approved'
+                };
+                return map[status] || 'status-pending';
+            },
+
+            getDataTypeName(type) {
+                const map = {
+                    'submissions': '题目提交',
+                    'questions': '已发布题目',
+                    'users': '用户管理',
+                    'all': '所有内容'
+                };
+                return map[type] || '内容';
+            }
+        };
+
+        // 数据操作函数
+        const DataManager = {
+            async loadData(dataType) {
+                Utils.showLoading();
                 
                 try {
-                    let query = null;
                     let items = [];
                     
                     switch(dataType) {
-                        case 'submissions': // 题目提交（主要是未审核内容）
-                            const { data: submissions, error: subError } = await supabaseClient
+                        case 'submissions':
+                            const { data: submissions, error: subError } = await AppState.supabase
                                 .from('submissions')
                                 .select(`
                                     *,
@@ -1059,8 +1110,8 @@
                             items = submissions || [];
                             break;
                             
-                        case 'questions': // 已发布题目
-                            const { data: questions, error: qError } = await supabaseClient
+                        case 'questions':
+                            const { data: questions, error: qError } = await AppState.supabase
                                 .from('questions')
                                 .select('*')
                                 .order('created_at', { ascending: false });
@@ -1069,8 +1120,8 @@
                             items = questions || [];
                             break;
                             
-                        case 'users': // 用户管理
-                            const { data: profiles, error: pError } = await supabaseClient
+                        case 'users':
+                            const { data: profiles, error: pError } = await AppState.supabase
                                 .from('profiles')
                                 .select('*')
                                 .order('created_at', { ascending: false });
@@ -1079,30 +1130,28 @@
                             items = profiles || [];
                             break;
                             
-                        case 'all': // 所有内容（多表查询）
-                            const allData = await getAllData();
-                            items = allData;
+                        case 'all':
+                            items = await this.getAllData();
                             break;
                     }
                     
-                    allItems = items;
-                    applyFilters();
+                    AppState.allItems = items;
+                    this.applyFilters();
                     
                 } catch (error) {
                     console.error('加载数据时出错:', error);
-                    showError(`无法加载${getDataTypeName(dataType)}数据: ${error.message}`);
-                    allItems = [];
-                    renderItems();
+                    Utils.showError(`无法加载${Utils.getDataTypeName(dataType)}数据: ${error.message}`);
+                    AppState.allItems = [];
+                    this.renderItems();
                 }
-            }
+            },
 
-            // 获取所有数据
-            async function getAllData() {
+            async getAllData() {
                 const allData = [];
                 
                 try {
-                    // 获取submissions
-                    const { data: submissions } = await supabaseClient
+                    // submissions
+                    const { data: submissions } = await AppState.supabase
                         .from('submissions')
                         .select('*')
                         .order('created_at', { ascending: false })
@@ -1118,8 +1167,8 @@
                         });
                     }
                     
-                    // 获取questions
-                    const { data: questions } = await supabaseClient
+                    // questions
+                    const { data: questions } = await AppState.supabase
                         .from('questions')
                         .select('*')
                         .order('created_at', { ascending: false })
@@ -1135,8 +1184,8 @@
                         });
                     }
                     
-                    // 获取knowledge_points
-                    const { data: knowledge } = await supabaseClient
+                    // knowledge_points
+                    const { data: knowledge } = await AppState.supabase
                         .from('knowledge_points')
                         .select('*')
                         .order('created_at', { ascending: false })
@@ -1152,7 +1201,23 @@
                         });
                     }
                     
-                    // 按时间排序
+                    // chat_messages
+                    const { data: messages } = await AppState.supabase
+                        .from('chat_messages')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(30);
+                    
+                    if (messages) {
+                        messages.forEach(item => {
+                            allData.push({
+                                ...item,
+                                _type: 'message',
+                                _typeName: '聊天消息'
+                            });
+                        });
+                    }
+                    
                     allData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     
                 } catch (error) {
@@ -1160,20 +1225,19 @@
                 }
                 
                 return allData;
-            }
+            },
 
-            // 应用筛选
-            function applyFilters() {
-                const statusFilter = document.getElementById('statusFilter').value;
-                const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-                const sortFilter = document.getElementById('sortFilter').value;
+            applyFilters() {
+                const statusFilter = DOM.statusFilter.value;
+                const searchQuery = DOM.searchInput.value.toLowerCase();
+                const sortFilter = DOM.sortFilter.value;
                 
-                let filtered = allItems;
+                let filtered = AppState.allItems;
                 
                 // 状态筛选
                 if (statusFilter !== 'all') {
                     filtered = filtered.filter(item => {
-                        const status = getItemStatus(item);
+                        const status = this.getItemStatus(item);
                         return status === statusFilter;
                     });
                 }
@@ -1210,40 +1274,33 @@
                     }
                 });
                 
-                renderItems(filtered);
-            }
+                this.renderItems(filtered);
+            },
 
-            // 获取项目状态
-            function getItemStatus(item) {
-                // 处理不同表的status字段
+            getItemStatus(item) {
                 if (item.status !== undefined) {
                     return item.status;
                 }
                 
-                // 对于submissions表，检查是否已有审核记录
                 if (item.submission_reviews && item.submission_reviews.length > 0) {
                     return item.submission_reviews[0].status || 'pending';
                 }
                 
-                // 用户没有status字段
                 if (item._type === 'user') {
                     return 'active';
                 }
                 
                 return 'pending';
-            }
+            },
 
-            // 渲染项目
-            function renderItems(items = []) {
-                const container = document.getElementById('contentContainer');
-                
+            renderItems(items = []) {
                 if (items.length === 0) {
-                    container.innerHTML = `
+                    DOM.contentContainer.innerHTML = `
                         <div class="content-card" style="text-align: center; padding: 48px;">
                             <i class="fas fa-inbox fa-3x" style="color: var(--text-muted); margin-bottom: 16px;"></i>
                             <h3>没有找到内容</h3>
                             <p style="color: var(--text-secondary);">当前筛选条件下没有匹配的内容</p>
-                            <button class="btn btn-primary" onclick="window.refreshData()" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-primary" onclick="refreshData()" style="margin-top: var(--spacing-lg);">
                                 <i class="fas fa-sync-alt"></i>
                                 重新加载
                             </button>
@@ -1255,17 +1312,18 @@
                 let html = '';
                 
                 items.forEach(item => {
-                    const status = getItemStatus(item);
-                    const statusText = getStatusText(status);
-                    const statusClass = getStatusClass(status);
-                    const createdAt = formatDate(item.created_at);
-                    const previewContent = truncateText(item.content || item.question_data || item.description || '', 200);
-                    const itemType = item._typeName || getDataTypeName(currentDataType);
+                    const status = this.getItemStatus(item);
+                    const statusText = Utils.getStatusText(status);
+                    const statusClass = Utils.getStatusClass(status);
+                    const createdAt = Utils.formatDate(item.created_at);
+                    const previewContent = Utils.truncateText(item.content || item.question_data || item.description || '', 200);
+                    const itemType = item._typeName || Utils.getDataTypeName(AppState.currentDataType);
                     const itemId = item.id;
-                    const isSelected = selectedItems.has(itemId);
+                    const isSelected = AppState.selectedItems.has(itemId);
+                    const submissionType = item._type === 'submission' ? Utils.getSubmissionType(item) : null;
                     
                     html += `
-                        <div class="content-card" data-id="${itemId}" data-type="${item._type || currentDataType}">
+                        <div class="content-card" data-id="${itemId}" data-type="${item._type || AppState.currentDataType}">
                             <div class="card-header">
                                 <div class="card-title">
                                     <h3>${item.title || item.username || item.name || '未命名内容'}</h3>
@@ -1273,12 +1331,12 @@
                                         <span><i class="far fa-user"></i> ${item.author_name || item.username || item.email || '匿名用户'}</span>
                                         <span><i class="far fa-calendar"></i> ${createdAt}</span>
                                         <span><i class="fas fa-tag"></i> ${itemType}</span>
-                                        ${item.game_type ? `<span><i class="fas fa-gamepad"></i> ${item.game_type}</span>` : ''}
-                                        ${item.is_admin ? `<span style="color: var(--accent-color);"><i class="fas fa-crown"></i> 管理员</span>` : ''}
+                                        ${submissionType ? `<span class="submission-type"><i class="fas fa-flag"></i> ${submissionType}</span>` : ''}
+                                        ${item.game_type ? `<span class="game-type"><i class="fas fa-gamepad"></i> ${item.game_type}</span>` : ''}
                                     </div>
                                 </div>
                                 <div class="status-tag ${statusClass}">
-                                    <i class="fas fa-${getStatusIcon(status)}"></i>
+                                    <i class="fas fa-${Utils.getStatusIcon(status)}"></i>
                                     ${statusText}
                                 </div>
                             </div>
@@ -1318,46 +1376,46 @@
                                     </div>
                                 ` : ''}
                                 
+                                ${item.view_count !== undefined ? `
+                                    <div class="detail-item">
+                                        <span class="detail-label">浏览数</span>
+                                        <span class="detail-value">${item.view_count}</span>
+                                    </div>
+                                ` : ''}
+                                
                                 ${item.score !== undefined ? `
                                     <div class="detail-item">
                                         <span class="detail-label">积分</span>
                                         <span class="detail-value">${item.score}</span>
                                     </div>
                                 ` : ''}
-                                
-                                ${item.games_played !== undefined ? `
-                                    <div class="detail-item">
-                                        <span class="detail-label">游戏次数</span>
-                                        <span class="detail-value">${item.games_played}</span>
-                                    </div>
-                                ` : ''}
                             </div>
                             
                             <div class="card-actions">
                                 <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; margin-right: auto;">
-                                    <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="window.toggleSelection('${itemId}')">
+                                    <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelection('${itemId}')">
                                     <span>选择</span>
                                 </label>
                                 
                                 ${status !== 'approved' && item.status !== undefined ? `
-                                    <button class="btn btn-approve" onclick="window.approveItem('${itemId}', '${item._type || currentDataType}')">
+                                    <button class="btn btn-approve" onclick="approveItem('${itemId}', '${item._type || AppState.currentDataType}')">
                                         <i class="fas fa-check"></i> 通过
                                     </button>
                                 ` : ''}
                                 
                                 ${status !== 'rejected' && item.status !== undefined ? `
-                                    <button class="btn btn-reject" onclick="window.rejectItem('${itemId}', '${item._type || currentDataType}')">
+                                    <button class="btn btn-reject" onclick="rejectItem('${itemId}', '${item._type || AppState.currentDataType}')">
                                         <i class="fas fa-times"></i> 拒绝
                                     </button>
                                 ` : ''}
                                 
                                 ${status !== 'pending' && item.status !== undefined ? `
-                                    <button class="btn btn-review" onclick="window.reviewItem('${itemId}', '${item._type || currentDataType}')">
+                                    <button class="btn btn-review" onclick="reviewItem('${itemId}', '${item._type || AppState.currentDataType}')">
                                         <i class="fas fa-redo"></i> 复审
                                     </button>
                                 ` : ''}
                                 
-                                <button class="btn btn-delete" onclick="window.deleteItem('${itemId}', '${item._type || currentDataType}')">
+                                <button class="btn btn-delete" onclick="deleteItem('${itemId}', '${item._type || AppState.currentDataType}')">
                                     <i class="fas fa-trash"></i> 删除
                                 </button>
                             </div>
@@ -1365,31 +1423,178 @@
                     `;
                 });
                 
-                container.innerHTML = html;
+                DOM.contentContainer.innerHTML = html;
             }
+        };
 
-            // 切换选择
-            function toggleSelection(itemId) {
-                if (selectedItems.has(itemId)) {
-                    selectedItems.delete(itemId);
-                } else {
-                    selectedItems.add(itemId);
-                }
-            }
-
-            // 批准项目
-            async function approveItem(itemId, itemType = currentDataType) {
-                if (!confirm('确定要通过此内容吗？')) return;
-                
+        // 业务逻辑函数
+        const BusinessLogic = {
+            async initializeApp() {
                 try {
-                    const tableName = getTableName(itemType);
+                    // 动态加载Supabase客户端
+                    await this.loadSupabaseClient();
                     
-                    if (!tableName) {
-                        showError('无法确定表名');
+                    // 初始化Supabase
+                    AppState.supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+                    
+                    // 尝试自动登录
+                    await this.attemptAutoLogin();
+                    
+                    this.setupEventListeners();
+                    
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                    Utils.showLoginError('系统初始化失败');
+                }
+            },
+
+            async loadSupabaseClient() {
+                return new Promise((resolve, reject) => {
+                    if (window.supabase) {
+                        resolve();
                         return;
                     }
                     
-                    const { error } = await supabaseClient
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                    script.onload = () => setTimeout(resolve, 100);
+                    script.onerror = () => reject(new Error('无法加载Supabase客户端'));
+                    document.head.appendChild(script);
+                });
+            },
+
+            async attemptAutoLogin() {
+                DOM.autoLoginLoading.style.display = 'flex';
+                DOM.manualLoginSection.style.display = 'none';
+                
+                // 延迟以显示加载状态
+                await new Promise(resolve => setTimeout(resolve, CONFIG.AUTO_LOGIN_DELAY));
+                
+                try {
+                    // 检查现有会话
+                    const { data: { session } } = await AppState.supabase.auth.getSession();
+                    
+                    if (session) {
+                        AppState.currentUser = session.user;
+                        await this.verifyAdminStatus();
+                        return;
+                    }
+                    
+                    // 如果没有会话，显示手动登录
+                    throw new Error('没有找到登录会话');
+                    
+                } catch (error) {
+                    console.log('自动登录失败:', error.message);
+                    DOM.autoLoginLoading.style.display = 'none';
+                    DOM.manualLoginSection.style.display = 'block';
+                }
+            },
+
+            async loginAsAdmin() {
+                const email = DOM.adminEmail.value;
+                const password = DOM.adminPassword.value;
+                
+                if (!email || !password) {
+                    Utils.showLoginError('请输入邮箱和密码');
+                    return;
+                }
+                
+                try {
+                    const { data, error } = await AppState.supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    AppState.currentUser = data.user;
+                    await this.verifyAdminStatus();
+                    
+                } catch (error) {
+                    console.error('登录失败:', error);
+                    Utils.showLoginError('登录失败: ' + error.message);
+                }
+            },
+
+            async verifyAdminStatus() {
+                try {
+                    // 查找用户对应的profiles记录
+                    const { data: profiles, error } = await AppState.supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('auth_id', AppState.currentUser.id);
+                    
+                    if (error) throw error;
+                    
+                    if (!profiles || profiles.length === 0) {
+                        Utils.showLoginError('未找到用户资料');
+                        await this.logout();
+                        return;
+                    }
+                    
+                    const profile = profiles[0];
+                    
+                    if (!profile.is_admin) {
+                        Utils.showLoginError('此账号不是管理员');
+                        await this.logout();
+                        return;
+                    }
+                    
+                    // 登录成功
+                    this.showAdminInterface(profile);
+                    await DataManager.loadData(AppState.currentDataType);
+                    
+                    // 启动主题轮询
+                    ThemeManager.startPolling(AppState.currentUser.id);
+                    
+                } catch (error) {
+                    console.error('验证管理员状态失败:', error);
+                    Utils.showLoginError('验证管理员权限失败');
+                }
+            },
+
+            showAdminInterface(profile) {
+                DOM.loginContainer.style.display = 'none';
+                DOM.adminContainer.style.display = 'block';
+                
+                DOM.adminBadge.innerHTML = `
+                    <i class="fas fa-user-shield"></i>
+                    <span>管理员: ${profile.username || profile.email}</span>
+                `;
+            },
+
+            async logout() {
+                try {
+                    await AppState.supabase.auth.signOut();
+                    AppState.currentUser = null;
+                    
+                    DOM.adminContainer.style.display = 'none';
+                    DOM.loginContainer.style.display = 'flex';
+                    DOM.adminPassword.value = '';
+                    
+                    AppState.allItems = [];
+                    AppState.selectedItems.clear();
+                    
+                    // 停止主题轮询
+                    ThemeManager.stopPolling();
+                    
+                } catch (error) {
+                    console.error('退出失败:', error);
+                }
+            },
+
+            async approveItem(itemId, itemType = AppState.currentDataType) {
+                if (!confirm('确定要通过此内容吗？')) return;
+                
+                try {
+                    const tableName = this.getTableName(itemType);
+                    
+                    if (!tableName) {
+                        Utils.showError('无法确定表名');
+                        return;
+                    }
+                    
+                    const { error } = await AppState.supabase
                         .from(tableName)
                         .update({ 
                             status: 'approved',
@@ -1399,29 +1604,28 @@
                     
                     if (error) throw error;
                     
-                    showSuccess('内容已通过审核');
-                    await loadData(currentDataType);
-                    selectedItems.delete(itemId);
+                    Utils.showNotification('内容已通过审核', 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('批准内容时出错:', error);
-                    showError('操作失败: ' + error.message);
+                    Utils.showNotification('操作失败: ' + error.message, 'error');
                 }
-            }
+            },
 
-            // 拒绝项目
-            async function rejectItem(itemId, itemType = currentDataType) {
+            async rejectItem(itemId, itemType = AppState.currentDataType) {
                 if (!confirm('确定要拒绝此内容吗？')) return;
                 
                 try {
-                    const tableName = getTableName(itemType);
+                    const tableName = this.getTableName(itemType);
                     
                     if (!tableName) {
-                        showError('无法确定表名');
+                        Utils.showError('无法确定表名');
                         return;
                     }
                     
-                    const { error } = await supabaseClient
+                    const { error } = await AppState.supabase
                         .from(tableName)
                         .update({ 
                             status: 'rejected',
@@ -1431,29 +1635,28 @@
                     
                     if (error) throw error;
                     
-                    showSuccess('内容已拒绝');
-                    await loadData(currentDataType);
-                    selectedItems.delete(itemId);
+                    Utils.showNotification('内容已拒绝', 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('拒绝内容时出错:', error);
-                    showError('操作失败: ' + error.message);
+                    Utils.showNotification('操作失败: ' + error.message, 'error');
                 }
-            }
+            },
 
-            // 复审项目
-            async function reviewItem(itemId, itemType = currentDataType) {
+            async reviewItem(itemId, itemType = AppState.currentDataType) {
                 if (!confirm('确定要重新审核此内容吗？内容将恢复为待审核状态。')) return;
                 
                 try {
-                    const tableName = getTableName(itemType);
+                    const tableName = this.getTableName(itemType);
                     
                     if (!tableName) {
-                        showError('无法确定表名');
+                        Utils.showError('无法确定表名');
                         return;
                     }
                     
-                    const { error } = await supabaseClient
+                    const { error } = await AppState.supabase
                         .from(tableName)
                         .update({ 
                             status: 'pending',
@@ -1463,47 +1666,45 @@
                     
                     if (error) throw error;
                     
-                    showSuccess('内容已标记为待复审');
-                    await loadData(currentDataType);
-                    selectedItems.delete(itemId);
+                    Utils.showNotification('内容已标记为待复审', 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('复审内容时出错:', error);
-                    showError('操作失败: ' + error.message);
+                    Utils.showNotification('操作失败: ' + error.message, 'error');
                 }
-            }
+            },
 
-            // 删除项目
-            async function deleteItem(itemId, itemType = currentDataType) {
+            async deleteItem(itemId, itemType = AppState.currentDataType) {
                 if (!confirm('⚠️ 警告：确定要删除此内容吗？此操作不可撤销！')) return;
                 
                 try {
-                    const tableName = getTableName(itemType);
+                    const tableName = this.getTableName(itemType);
                     
                     if (!tableName) {
-                        showError('无法确定表名');
+                        Utils.showError('无法确定表名');
                         return;
                     }
                     
-                    const { error } = await supabaseClient
+                    const { error } = await AppState.supabase
                         .from(tableName)
                         .delete()
                         .eq('id', itemId);
                     
                     if (error) throw error;
                     
-                    showSuccess('内容已删除');
-                    await loadData(currentDataType);
-                    selectedItems.delete(itemId);
+                    Utils.showNotification('内容已删除', 'success');
+                    await DataManager.loadData(AppState.currentDataType);
+                    AppState.selectedItems.delete(itemId);
                     
                 } catch (error) {
                     console.error('删除内容时出错:', error);
-                    showError('操作失败: ' + error.message);
+                    Utils.showNotification('操作失败: ' + error.message, 'error');
                 }
-            }
+            },
 
-            // 获取表名
-            function getTableName(dataType) {
+            getTableName(dataType) {
                 const tableMap = {
                     'submission': 'submissions',
                     'question': 'questions',
@@ -1515,238 +1716,91 @@
                     'users': 'profiles'
                 };
                 return tableMap[dataType];
-            }
+            },
 
-            // 设置事件监听器
-            function setupEventListeners() {
+            setupEventListeners() {
                 // 登录按钮
-                document.getElementById('loginButton').addEventListener('click', loginAsAdmin);
+                DOM.loginButton.addEventListener('click', () => this.loginAsAdmin());
                 
                 // 退出按钮
-                document.getElementById('logoutButton').addEventListener('click', logout);
+                DOM.logoutButton.addEventListener('click', () => this.logout());
                 
                 // 刷新按钮
-                document.getElementById('refreshBtn').addEventListener('click', refreshData);
+                DOM.refreshBtn.addEventListener('click', () => this.refreshData());
                 
                 // 标签页点击
-                document.querySelectorAll('.tab-btn').forEach(button => {
+                DOM.tabButtons.forEach(button => {
                     button.addEventListener('click', async () => {
-                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        DOM.tabButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
                         
-                        currentDataType = button.dataset.type;
-                        selectedItems.clear();
-                        await loadData(currentDataType);
+                        AppState.currentDataType = button.dataset.type;
+                        AppState.selectedItems.clear();
+                        await DataManager.loadData(AppState.currentDataType);
                     });
                 });
                 
                 // 搜索输入防抖
                 let searchTimeout;
-                document.getElementById('searchInput').addEventListener('input', () => {
+                DOM.searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
-                        applyFilters();
+                        DataManager.applyFilters();
                     }, 500);
                 });
                 
                 // 筛选器变更
-                document.getElementById('statusFilter').addEventListener('change', applyFilters);
-                document.getElementById('sortFilter').addEventListener('change', applyFilters);
-            }
+                DOM.statusFilter.addEventListener('change', () => DataManager.applyFilters());
+                DOM.sortFilter.addEventListener('change', () => DataManager.applyFilters());
+            },
 
-            // 刷新数据
-            async function refreshData() {
-                if (!currentUser) {
-                    showError('请先登录');
+            async refreshData() {
+                if (!AppState.currentUser) {
+                    Utils.showNotification('请先登录', 'error');
                     return;
                 }
                 
-                selectedItems.clear();
-                await loadData(currentDataType);
-                showSuccess('数据已刷新');
-            }
+                AppState.selectedItems.clear();
+                await DataManager.loadData(AppState.currentDataType);
+                Utils.showNotification('数据已刷新', 'success');
+            },
 
-            // 辅助函数
-            function getDataTypeName(type) {
-                const names = {
-                    'submissions': '题目提交',
-                    'questions': '已发布题目',
-                    'users': '用户管理',
-                    'all': '所有内容'
-                };
-                return names[type] || '内容';
-            }
-
-            function getStatusText(status) {
-                const statusMap = {
-                    'pending': '待审核',
-                    'approved': '已通过',
-                    'rejected': '已拒绝',
-                    'published': '已发布',
-                    'draft': '草稿',
-                    'active': '活跃'
-                };
-                return statusMap[status] || status || '未知';
-            }
-
-            function getStatusIcon(status) {
-                const iconMap = {
-                    'pending': 'clock',
-                    'approved': 'check-circle',
-                    'rejected': 'times-circle',
-                    'published': 'check-circle',
-                    'draft': 'clock',
-                    'active': 'user-check'
-                };
-                return iconMap[status] || 'question-circle';
-            }
-
-            function getStatusClass(status) {
-                const classMap = {
-                    'pending': 'status-pending',
-                    'approved': 'status-approved',
-                    'rejected': 'status-rejected',
-                    'published': 'status-approved',
-                    'draft': 'status-pending',
-                    'active': 'status-approved'
-                };
-                return classMap[status] || 'status-pending';
-            }
-
-            function formatDate(dateString) {
-                if (!dateString) return '未知日期';
-                
-                try {
-                    const date = new Date(dateString);
-                    const now = new Date();
-                    const diffMs = now - date;
-                    const diffMins = Math.floor(diffMs / 60000);
-                    const diffHours = Math.floor(diffMs / 3600000);
-                    const diffDays = Math.floor(diffMs / 86400000);
-                    
-                    if (diffMins < 60) {
-                        return `${diffMins}分钟前`;
-                    } else if (diffHours < 24) {
-                        return `${diffHours}小时前`;
-                    } else if (diffDays < 7) {
-                        return `${diffDays}天前`;
-                    } else {
-                        return date.toLocaleDateString('zh-CN');
-                    }
-                } catch (e) {
-                    return '未知日期';
+            toggleSelection(itemId) {
+                if (AppState.selectedItems.has(itemId)) {
+                    AppState.selectedItems.delete(itemId);
+                } else {
+                    AppState.selectedItems.add(itemId);
                 }
             }
+        };
 
-            function truncateText(text, maxLength) {
-                if (!text) return '';
-                if (text.length <= maxLength) return text;
-                return text.substring(0, maxLength) + '...';
+        // 暴露函数到全局作用域
+        window.loginAsAdmin = () => BusinessLogic.loginAsAdmin();
+        window.logout = () => BusinessLogic.logout();
+        window.refreshData = () => BusinessLogic.refreshData();
+        window.toggleSelection = (itemId) => BusinessLogic.toggleSelection(itemId);
+        window.approveItem = (itemId, itemType) => BusinessLogic.approveItem(itemId, itemType);
+        window.rejectItem = (itemId, itemType) => BusinessLogic.rejectItem(itemId, itemType);
+        window.reviewItem = (itemId, itemType) => BusinessLogic.reviewItem(itemId, itemType);
+        window.deleteItem = (itemId, itemType) => BusinessLogic.deleteItem(itemId, itemType);
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-
-            // 显示加载状态
-            function showLoading() {
-                const container = document.getElementById('contentContainer');
-                container.innerHTML = `
-                    <div class="content-card" style="text-align: center; padding: 48px;">
-                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--accent-color); margin-bottom: 16px;"></i>
-                        <h3>正在加载数据...</h3>
-                        <p style="color: var(--text-secondary);">请稍候</p>
-                    </div>
-                `;
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
             }
+        `;
+        document.head.appendChild(style);
 
-            // 显示错误消息
-            function showLoginError(message) {
-                const errorDiv = document.getElementById('loginError');
-                const errorMsg = document.getElementById('errorMessage');
-                
-                errorMsg.textContent = message;
-                errorDiv.style.display = 'block';
-                
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 5000);
-            }
-
-            // 显示成功消息
-            function showSuccess(message) {
-                showNotification(message, 'success');
-            }
-
-            // 显示错误消息
-            function showError(message) {
-                showNotification(message, 'error');
-            }
-
-            // 显示通知
-            function showNotification(message, type = 'info') {
-                const colors = {
-                    'success': { bg: 'var(--success-color)', icon: 'check-circle' },
-                    'error': { bg: 'var(--danger-color)', icon: 'exclamation-circle' },
-                    'info': { bg: 'var(--accent-color)', icon: 'info-circle' }
-                };
-                
-                const color = colors[type] || colors.info;
-                
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: ${color.bg};
-                    color: white;
-                    padding: var(--spacing-md) var(--spacing-lg);
-                    border-radius: var(--border-radius-md);
-                    box-shadow: var(--shadow-lg);
-                    z-index: 1000;
-                    animation: slideIn 0.3s ease;
-                    display: flex;
-                    align-items: center;
-                    gap: var(--spacing-sm);
-                    max-width: 400px;
-                `;
-                notification.innerHTML = `
-                    <i class="fas fa-${color.icon}"></i>
-                    <span>${message}</span>
-                `;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }, 3000);
-                
-                // 添加CSS动画
-                if (!document.getElementById('notification-styles')) {
-                    const style = document.createElement('style');
-                    style.id = 'notification-styles';
-                    style.textContent = `
-                        @keyframes slideIn {
-                            from { transform: translateX(100%); opacity: 0; }
-                            to { transform: translateX(0); opacity: 1; }
-                        }
-                        @keyframes slideOut {
-                            from { transform: translateX(0); opacity: 1; }
-                            to { transform: translateX(100%); opacity: 0; }
-                        }
-                    `;
-                    document.head.appendChild(style);
-                }
-            }
-
-            // 暴露函数到全局作用域
-            window.loginAsAdmin = loginAsAdmin;
-            window.logout = logout;
-            window.refreshData = refreshData;
-            window.toggleSelection = toggleSelection;
-            window.approveItem = approveItem;
-            window.rejectItem = rejectItem;
-            window.reviewItem = reviewItem;
-            window.deleteItem = deleteItem;
-
-            // 初始化应用
-            initializeApp();
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            BusinessLogic.initializeApp();
         });
     </script>
 </body>
