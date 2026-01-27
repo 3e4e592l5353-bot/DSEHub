@@ -1164,26 +1164,110 @@
             return btn;
         }
 
+        // 修改后的 loadUserData 函数
         async function loadUserData() {
             try {
-                const userData = JSON.parse(localStorage.getItem('dsehub_user') || '{}');
-                if (userData && userData.id) {
-                    currentUser = userData;
-                    updateUserDisplay(userData);
+                // 检查主站的登录状态
+                const isLoggedIn = await checkMainSiteLogin();
+                
+                if (isLoggedIn) {
+                    // 从主站获取用户数据
+                    const userData = await getMainSiteUserData();
                     
-                    // 先加载用户主题
-                    await loadUserTheme();
-                    
-                    // 然后加载其他数据
-                    loadUserStats();
-                    loadKnowledgePoints();
+                    if (userData && userData.id) {
+                        currentUser = userData;
+                        updateUserDisplay(userData);
+                        
+                        // 先加载用户主题
+                        await loadUserTheme();
+                        
+                        // 然后加载其他数据
+                        loadUserStats();
+                        loadKnowledgePoints();
+                        return;
+                    } else {
+                        // 主站已登录但无法获取用户数据
+                        console.log('无法从主站获取用户数据，但主站已登录');
+                        showLoggedOutState();
+                        showMessage('info', '已检测到主站登录，但无法获取用户信息。请刷新页面重试。', 'knowledge');
+                        return;
+                    }
+                } else {
+                    // 主站未登录
+                    console.log('主站未登录，显示未登录状态');
+                    showLoggedOutState();
+                    showMessage('warning', '请先登录主站系统', 'knowledge');
                     return;
                 }
             } catch (e) {
-                console.log('无法读取用户数据:', e);
+                console.log('检查登录状态失败:', e);
+                showLoggedOutState();
+                showMessage('error', '无法检测登录状态，请刷新页面重试', 'knowledge');
             }
-            
-            // 未登录状态
+        }
+
+        // 新增函数：检查主站登录状态
+        async function checkMainSiteLogin() {
+            try {
+                // 尝试从 localStorage 检查主站的登录状态
+                // 假设主站使用 'dsehub_auth_token' 或其他标识
+                const authToken = localStorage.getItem('dsehub_auth_token');
+                const userData = localStorage.getItem('dsehub_user');
+                
+                // 如果主站没有使用 localStorage，可以尝试其他方法：
+                // 1. 检查主站设置的cookie
+                // 2. 向主站API发送验证请求
+                
+                if (authToken && userData) {
+                    // 简单验证token格式
+                    return authToken.length > 10 && userData.includes('{');
+                }
+                
+                // 尝试检查其他可能的存储位置
+                const sessionUser = sessionStorage.getItem('dsehub_user');
+                if (sessionUser && sessionUser.includes('{')) {
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('检查主站登录状态失败:', error);
+                return false;
+            }
+        }
+
+        // 新增函数：从主站获取用户数据
+        async function getMainSiteUserData() {
+            try {
+                // 从主站的存储中获取用户数据
+                const userDataStr = localStorage.getItem('dsehub_user') || 
+                                   sessionStorage.getItem('dsehub_user');
+                
+                if (userDataStr) {
+                    const userData = JSON.parse(userDataStr);
+                    console.log('从主站获取的用户数据:', userData);
+                    return userData;
+                }
+                
+                // 如果没有找到，尝试从cookie中获取（如果主站使用cookie）
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith('dsehub_user=')) {
+                        const userDataStr = decodeURIComponent(cookie.split('=')[1]);
+                        return JSON.parse(userDataStr);
+                    }
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('获取主站用户数据失败:', error);
+                return null;
+            }
+        }
+
+        // 新增函数：显示未登录状态
+        function showLoggedOutState() {
             document.getElementById('username').textContent = '未登录';
             document.getElementById('userEmail').textContent = '请先登录主站';
             
@@ -1194,7 +1278,11 @@
                 });
             });
             
-            showMessage('warning', '请先登录主站系统', 'knowledge');
+            // 隐藏需要登录的功能
+            document.querySelectorAll('.submit-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-lock"></i> 请先登录';
+            });
         }
 
         async function loadUserTheme() {
@@ -1968,6 +2056,4 @@
     </script>
 </body>
 </html>
-
-
 
