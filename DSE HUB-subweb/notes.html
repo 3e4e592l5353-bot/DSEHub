@@ -1148,58 +1148,75 @@
         // Supabase 配置
         const SUPABASE_URL = 'https://alsalyskulozwakhmzoa.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
-        const SUPABASE_AUTH_URL = `${SUPABASE_URL}/auth/v1`;
         
         // 全局变量
         let currentUser = null;
         let notes = [];
         let currentPage = 0;
         const NOTES_PER_PAGE = 20;
-        let currentTheme = 'theme-blue-purple';
         let themePollingInterval = null;
-        let authToken = null;
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('页面加载完成，开始初始化...');
-            await checkAuth();
             await initializeApp();
             setupEventListeners();
         });
 
-        // 检查认证状态
-        async function checkAuth() {
+        // 初始化应用
+        async function initializeApp() {
             try {
-                console.log('检查认证状态...');
+                console.log('尝试从URL获取登录状态...');
                 
-                // 从URL获取可能的token
+                // 从URL中检查是否有token（从主站跳转过来可能带有token）
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
                 const accessToken = hashParams.get('access_token');
                 const refreshToken = hashParams.get('refresh_token');
+                const error = hashParams.get('error');
+                const errorDescription = hashParams.get('error_description');
+                
+                if (error) {
+                    console.error('认证错误:', error, errorDescription);
+                    showMessage('登录失败: ' + errorDescription, 'error');
+                }
                 
                 if (accessToken) {
-                    console.log('从URL获取到access token');
+                    console.log('从URL获取到access token，保存到localStorage');
+                    // 保存token到localStorage
                     localStorage.setItem('supabase.auth.token', accessToken);
-                    localStorage.setItem('supabase.auth.refreshToken', refreshToken);
+                    localStorage.setItem('supabase.auth.refresh_token', refreshToken);
                     
                     // 清除URL中的token
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 
-                // 从localStorage获取token
-                authToken = localStorage.getItem('supabase.auth.token');
+                // 尝试从localStorage获取token
+                const storedToken = localStorage.getItem('supabase.auth.token');
                 
-                if (!authToken) {
-                    console.log('没有找到认证token');
-                    return false;
+                if (storedToken) {
+                    console.log('从localStorage获取到token，验证用户...');
+                    await verifyUser(storedToken);
+                } else {
+                    console.log('没有找到认证token，显示登录界面');
+                    showLoginScreen();
                 }
                 
-                console.log('找到认证token，验证用户...');
+            } catch (error) {
+                console.error('初始化错误:', error);
+                showMessage('初始化失败，请刷新页面', 'error');
+                showLoginScreen();
+            }
+        }
+
+        // 验证用户token
+        async function verifyUser(token) {
+            try {
+                console.log('验证token...');
                 
-                // 验证token并获取用户信息
-                const response = await fetch(`${SUPABASE_AUTH_URL}/user`, {
+                // 使用Supabase REST API验证用户
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
                     headers: {
-                        'Authorization': `Bearer ${authToken}`,
+                        'Authorization': `Bearer ${token}`,
                         'apikey': SUPABASE_KEY
                     }
                 });
@@ -1208,55 +1225,39 @@
                     const data = await response.json();
                     currentUser = data.user;
                     console.log('用户验证成功:', currentUser.email);
-                    return true;
+                    
+                    // 显示主界面
+                    showMainScreen();
+                    
+                    // 加载用户数据和笔记
+                    await loadUserData();
+                    await loadNotes();
+                    
                 } else {
-                    console.log('Token验证失败，清除本地存储');
+                    console.log('Token验证失败，清除本地存储并显示登录界面');
                     localStorage.removeItem('supabase.auth.token');
-                    localStorage.removeItem('supabase.auth.refreshToken');
-                    return false;
+                    localStorage.removeItem('supabase.auth.refresh_token');
+                    showLoginScreen();
                 }
                 
             } catch (error) {
-                console.error('检查认证状态失败:', error);
-                return false;
+                console.error('验证用户失败:', error);
+                showLoginScreen();
             }
         }
 
-        // 初始化应用
-        async function initializeApp() {
-            try {
-                console.log('初始化应用...');
-                
-                if (currentUser) {
-                    console.log('用户已登录:', currentUser.email);
-                    
-                    // 显示主内容，隐藏登录覆盖层
-                    document.getElementById('main-content').style.display = 'block';
-                    document.getElementById('login-overlay').style.display = 'none';
-                    
-                    // 更新用户显示
-                    document.getElementById('current-user').textContent = currentUser.email;
-                    
-                    // 获取用户资料和主题
-                    await loadUserData();
-                    
-                    // 开始主题轮询
-                    startThemePolling();
-                    
-                    // 加载笔记
-                    loadNotes();
-                    
-                } else {
-                    console.log('用户未登录，显示登录界面');
-                    document.getElementById('main-content').style.display = 'none';
-                    document.getElementById('login-overlay').style.display = 'flex';
-                    
-                    showMessage('请先登录以使用笔记功能', 'info');
-                }
-            } catch (error) {
-                console.error('初始化错误:', error);
-                showMessage('初始化失败，请刷新页面', 'error');
-            }
+        // 显示登录界面
+        function showLoginScreen() {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('login-overlay').style.display = 'flex';
+            showMessage('请登录以使用笔记功能', 'info');
+        }
+
+        // 显示主界面
+        function showMainScreen() {
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('current-user').textContent = currentUser.email;
         }
 
         // 加载用户数据
@@ -1264,7 +1265,7 @@
             try {
                 console.log('加载用户数据...');
                 
-                // 先加载用户主题
+                // 加载用户主题
                 await loadUserTheme();
                 
                 // 获取用户资料
@@ -1291,8 +1292,6 @@
                             console.log('更新用户名:', userProfile.username);
                         }
                     }
-                } else {
-                    console.log('获取用户资料失败');
                 }
             } catch (error) {
                 console.error('加载用户数据失败:', error);
@@ -1327,9 +1326,6 @@
                         
                         console.log('获取到用户主题:', themeColor);
                         
-                        // 根据 theme_color 应用对应的主题类
-                        let themeClass = 'theme-blue-purple'; // 默认
-                        
                         if (themeColor) {
                             // 清理和标准化主题名称
                             const themeLower = themeColor.toLowerCase()
@@ -1339,55 +1335,47 @@
                             
                             console.log('标准化主题名:', themeLower);
                             
-                            if (themeLower === 'blue-purple' || themeLower.includes('blue') || themeLower.includes('purple')) {
-                                themeClass = 'theme-blue-purple';
-                            } else if (themeLower === 'green-teal' || themeLower.includes('green') || themeLower.includes('teal')) {
-                                themeClass = 'theme-green-teal';
-                            } else if (themeLower === 'orange-red' || (themeLower.includes('orange') && themeLower.includes('red'))) {
-                                themeClass = 'theme-orange-red';
-                            } else if (themeLower === 'dark') {
-                                themeClass = 'theme-dark';
-                            } else if (themeLower === 'orange-teal' || (themeLower.includes('orange') && themeLower.includes('teal'))) {
-                                themeClass = 'theme-orange-teal';
-                            }
+                            // 应用主题
+                            applyTheme(themeLower);
                         } else {
                             console.log('用户没有设置主题，使用默认主题');
                         }
-                        
-                        // 如果主题改变了，应用新主题
-                        if (currentTheme !== themeClass) {
-                            currentTheme = themeClass;
-                            document.body.className = themeClass;
-                            console.log('应用主题:', themeClass);
-                            
-                            // 触发主题变化事件
-                            document.dispatchEvent(new CustomEvent('themechange', {
-                                detail: { theme: themeClass }
-                            }));
-                        } else {
-                            console.log('主题没有变化，保持当前主题:', currentTheme);
-                        }
-                    } else {
-                        console.log('没有找到用户profile，使用默认主题');
-                        applyDefaultTheme();
                     }
-                } else {
-                    console.log('获取profile失败，使用默认主题');
-                    applyDefaultTheme();
                 }
             } catch (error) {
                 console.error('加载用户主题失败:', error);
-                applyDefaultTheme();
             }
         }
 
-        // 应用默认主题
-        function applyDefaultTheme() {
-            if (currentTheme !== 'theme-blue-purple') {
-                currentTheme = 'theme-blue-purple';
-                document.body.className = 'theme-blue-purple';
-                console.log('应用默认主题: theme-blue-purple');
+        // 应用主题
+        function applyTheme(themeName) {
+            // 移除所有现有主题类
+            document.body.classList.remove(
+                'theme-blue-purple',
+                'theme-green-teal', 
+                'theme-orange-red',
+                'theme-dark',
+                'theme-orange-teal'
+            );
+            
+            let themeClass = 'theme-blue-purple'; // 默认
+            
+            if (themeName === 'green-teal' || themeName.includes('green') || themeName.includes('teal')) {
+                themeClass = 'theme-green-teal';
+            } else if (themeName === 'orange-red' || (themeName.includes('orange') && themeName.includes('red'))) {
+                themeClass = 'theme-orange-red';
+            } else if (themeName === 'dark') {
+                themeClass = 'theme-dark';
+            } else if (themeName === 'orange-teal' || (themeName.includes('orange') && themeName.includes('teal'))) {
+                themeClass = 'theme-orange-teal';
             }
+            // 默认为 theme-blue-purple
+            
+            document.body.classList.add(themeClass);
+            console.log('应用主题:', themeClass);
+            
+            // 开始主题轮询
+            startThemePolling();
         }
 
         // 开始主题轮询
@@ -1403,7 +1391,7 @@
                     console.log('轮询检查主题变化...');
                     await loadUserTheme();
                 }
-            }, 30000); // 30秒
+            }, 30000);
             
             console.log('主题轮询已启动');
             
@@ -1456,19 +1444,17 @@
                 });
             });
             
-            // 登录按钮
+            // 登录按钮 - 使用正确的Supabase登录URL
             document.getElementById('main-site-login').addEventListener('click', function(e) {
                 e.preventDefault();
                 console.log('跳转到登录页面...');
                 
-                // 重定向到Supabase登录页面
-                const returnUrl = encodeURIComponent(window.location.href);
-                window.location.href = `${SUPABASE_AUTH_URL}/authorize?provider=github&redirect_to=${returnUrl}`;
-            });
-
-            // 监听主题变化
-            document.addEventListener('themechange', (event) => {
-                console.log('主题已更改为:', event.detail.theme);
+                // 构建正确的登录URL
+                const redirectTo = encodeURIComponent(window.location.href);
+                const loginUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${redirectTo}`;
+                
+                console.log('登录URL:', loginUrl);
+                window.location.href = loginUrl;
             });
         }
 
@@ -1514,7 +1500,6 @@
                             formattedText + 
                             textarea.value.substring(end);
             
-            // 重新聚焦到textarea
             textarea.focus();
             textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
         }
@@ -1525,24 +1510,15 @@
             
             // 替换格式化标记
             let formatted = text
-                // 斜体
                 .replace(/\/([^\/\n]+)\//g, '<em>$1</em>')
-                // 粗体
                 .replace(/\*([^\*\n]+)\*/g, '<strong>$1</strong>')
-                // 下划线
                 .replace(/_([^_\n]+)_/g, '<u>$1</u>')
-                // 居中
                 .replace(/{([^}\n]+)}/g, '<div class="center">$1</div>')
-                // 链接
                 .replace(/\[a\(([^)]+)\),([^)\]]+)\]/g, '<a href="$2" target="_blank">$1</a>')
-                // HTML标题
                 .replace(/\[(h[1-6])\](.+?)\[\/\1\]/g, '<$1>$2</$1>')
-                // 列表
                 .replace(/^•\s+(.+)$/gm, '<li>$1</li>')
-                // 换行
                 .replace(/\n/g, '<br>');
             
-            // 处理列表
             formatted = formatted.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
             
             return `<div class="formatted-text">${formatted}</div>`;
@@ -1740,242 +1716,6 @@
             });
         }
 
-        // 点赞/取消点赞
-        async function toggleLike(noteId) {
-            if (!currentUser) {
-                showMessage('请先登录', 'error');
-                return;
-            }
-            
-            try {
-                // 检查是否已经点赞
-                const checkResponse = await fetch(
-                    `${SUPABASE_URL}/rest/v1/likes?user_id=eq.${currentUser.id}&target_type=eq.submission&target_id=eq.${noteId}`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    }
-                );
-                
-                let existingLike = null;
-                if (checkResponse.ok) {
-                    const likes = await checkResponse.json();
-                    existingLike = likes && likes.length > 0 ? likes[0] : null;
-                }
-                
-                if (existingLike) {
-                    // 取消点赞
-                    await fetch(`${SUPABASE_URL}/rest/v1/likes?id=eq.${existingLike.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    });
-                    
-                    // 更新点赞数（递减）
-                    await updateLikeCount(noteId, -1);
-                    
-                    showMessage('已取消点赞', 'info');
-                } else {
-                    // 添加点赞
-                    const likeData = {
-                        user_id: currentUser.id,
-                        target_type: 'submission',
-                        target_id: noteId,
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    await fetch(`${SUPABASE_URL}/rest/v1/likes`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify([likeData])
-                    });
-                    
-                    // 更新点赞数（递增）
-                    await updateLikeCount(noteId, 1);
-                    
-                    showMessage('点赞成功！', 'success');
-                }
-                
-                // 更新本地数据
-                const noteIndex = notes.findIndex(n => n.id === noteId);
-                if (noteIndex !== -1) {
-                    const currentLikes = notes[noteIndex].like_count || 0;
-                    notes[noteIndex].like_count = existingLike ? currentLikes - 1 : currentLikes + 1;
-                    
-                    // 更新显示
-                    const likeBtn = document.querySelector(`[data-id="${noteId}"] .like-btn`);
-                    const likeCountSpan = likeBtn.querySelector('.like-count');
-                    likeCountSpan.textContent = notes[noteIndex].like_count;
-                    likeBtn.classList.toggle('active', !existingLike);
-                }
-                
-            } catch (error) {
-                console.error('点赞操作错误:', error);
-                showMessage('操作失败', 'error');
-            }
-        }
-
-        // 更新点赞数
-        async function updateLikeCount(noteId, delta) {
-            try {
-                // 先获取当前点赞数
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}&select=like_count`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    }
-                );
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        const currentLikeCount = data[0].like_count || 0;
-                        const newLikeCount = Math.max(0, currentLikeCount + delta);
-                        
-                        // 更新点赞数
-                        await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'apikey': SUPABASE_KEY,
-                                'Authorization': `Bearer ${SUPABASE_KEY}`
-                            },
-                            body: JSON.stringify({ like_count: newLikeCount })
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('更新点赞数失败:', error);
-            }
-        }
-
-        // 打开举报模态框
-        function openReportModal(noteId) {
-            if (!currentUser) {
-                showMessage('请先登录', 'error');
-                return;
-            }
-            
-            document.getElementById('report-note-id').value = noteId;
-            document.getElementById('report-modal').classList.add('active');
-            document.getElementById('report-reason').value = '';
-            document.getElementById('report-reason').focus();
-        }
-
-        // 关闭举报模态框
-        function closeReportModal() {
-            document.getElementById('report-modal').classList.remove('active');
-        }
-
-        // 提交举报
-        async function submitReport() {
-            const noteId = document.getElementById('report-note-id').value;
-            const reason = document.getElementById('report-reason').value.trim();
-            
-            if (!reason) {
-                showMessage('请输入举报原因', 'error');
-                return;
-            }
-            
-            try {
-                // 获取被举报的笔记信息
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    }
-                );
-                
-                if (!response.ok) throw new Error('笔记不存在');
-                
-                const notesData = await response.json();
-                if (!notesData || notesData.length === 0) {
-                    showMessage('笔记不存在', 'error');
-                    return;
-                }
-                
-                // 更新笔记状态为待审核
-                const updateData = {
-                    status: 'pending',
-                    messages: {
-                        reported_by: currentUser.id,
-                        reported_at: new Date().toISOString(),
-                        reason: reason,
-                        reported_by_name: currentUser.email
-                    },
-                    updated_at: new Date().toISOString()
-                };
-                
-                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if (!updateResponse.ok) throw new Error('举报失败');
-                
-                showMessage('举报成功！笔记已送回审核队列', 'success');
-                closeReportModal();
-                
-                // 从列表中移除该笔记
-                notes = notes.filter(n => n.id !== noteId);
-                renderNotes();
-                
-            } catch (error) {
-                console.error('举报错误:', error);
-                showMessage('举报失败: ' + error.message, 'error');
-            }
-        }
-
-        // 加载更多笔记
-        function loadMoreNotes() {
-            currentPage++;
-            loadNotes();
-        }
-
-        // 更新笔记数量显示
-        async function updateNotesCount() {
-            try {
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/submissions?notes=eq.true&status=eq.approved&game_type=is.null&select=count`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    }
-                );
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const count = data[0]?.count || 0;
-                    document.getElementById('notes-count').textContent = 
-                        `${notes.length} / ${count}`;
-                }
-            } catch (error) {
-                console.error('获取笔记数量错误:', error);
-            }
-        }
-
         // 显示消息
         function showMessage(text, type = 'info') {
             const messageEl = document.getElementById('status-message');
@@ -2024,11 +1764,229 @@
             return div.innerHTML;
         }
 
-        // 清理函数
-        function cleanup() {
-            if (themePollingInterval) {
-                clearInterval(themePollingInterval);
-                themePollingInterval = null;
+        // 点赞/取消点赞
+        async function toggleLike(noteId) {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            try {
+                // 检查是否已经点赞
+                const checkResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/likes?user_id=eq.${currentUser.id}&target_type=eq.submission&target_id=eq.${noteId}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                let existingLike = null;
+                if (checkResponse.ok) {
+                    const likes = await checkResponse.json();
+                    existingLike = likes && likes.length > 0 ? likes[0] : null;
+                }
+                
+                if (existingLike) {
+                    // 取消点赞
+                    await fetch(`${SUPABASE_URL}/rest/v1/likes?id=eq.${existingLike.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    });
+                    
+                    await updateLikeCount(noteId, -1);
+                    showMessage('已取消点赞', 'info');
+                } else {
+                    // 添加点赞
+                    const likeData = {
+                        user_id: currentUser.id,
+                        target_type: 'submission',
+                        target_id: noteId,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    await fetch(`${SUPABASE_URL}/rest/v1/likes`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify([likeData])
+                    });
+                    
+                    await updateLikeCount(noteId, 1);
+                    showMessage('点赞成功！', 'success');
+                }
+                
+                // 更新本地数据
+                const noteIndex = notes.findIndex(n => n.id === noteId);
+                if (noteIndex !== -1) {
+                    const currentLikes = notes[noteIndex].like_count || 0;
+                    notes[noteIndex].like_count = existingLike ? currentLikes - 1 : currentLikes + 1;
+                    
+                    const likeBtn = document.querySelector(`[data-id="${noteId}"] .like-btn`);
+                    const likeCountSpan = likeBtn.querySelector('.like-count');
+                    likeCountSpan.textContent = notes[noteIndex].like_count;
+                    likeBtn.classList.toggle('active', !existingLike);
+                }
+                
+            } catch (error) {
+                console.error('点赞操作错误:', error);
+                showMessage('操作失败', 'error');
+            }
+        }
+
+        // 更新点赞数
+        async function updateLikeCount(noteId, delta) {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}&select=like_count`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const currentLikeCount = data[0].like_count || 0;
+                        const newLikeCount = Math.max(0, currentLikeCount + delta);
+                        
+                        await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            },
+                            body: JSON.stringify({ like_count: newLikeCount })
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('更新点赞数失败:', error);
+            }
+        }
+
+        // 打开举报模态框
+        function openReportModal(noteId) {
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
+            document.getElementById('report-note-id').value = noteId;
+            document.getElementById('report-modal').classList.add('active');
+            document.getElementById('report-reason').value = '';
+            document.getElementById('report-reason').focus();
+        }
+
+        // 关闭举报模态框
+        function closeReportModal() {
+            document.getElementById('report-modal').classList.remove('active');
+        }
+
+        // 提交举报
+        async function submitReport() {
+            const noteId = document.getElementById('report-note-id').value;
+            const reason = document.getElementById('report-reason').value.trim();
+            
+            if (!reason) {
+                showMessage('请输入举报原因', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) throw new Error('笔记不存在');
+                
+                const notesData = await response.json();
+                if (!notesData || notesData.length === 0) {
+                    showMessage('笔记不存在', 'error');
+                    return;
+                }
+                
+                const updateData = {
+                    status: 'pending',
+                    messages: {
+                        reported_by: currentUser.id,
+                        reported_at: new Date().toISOString(),
+                        reason: reason,
+                        reported_by_name: currentUser.email
+                    },
+                    updated_at: new Date().toISOString()
+                };
+                
+                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/submissions?id=eq.${noteId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (!updateResponse.ok) throw new Error('举报失败');
+                
+                showMessage('举报成功！笔记已送回审核队列', 'success');
+                closeReportModal();
+                
+                notes = notes.filter(n => n.id !== noteId);
+                renderNotes();
+                
+            } catch (error) {
+                console.error('举报错误:', error);
+                showMessage('举报失败: ' + error.message, 'error');
+            }
+        }
+
+        // 加载更多笔记
+        function loadMoreNotes() {
+            currentPage++;
+            loadNotes();
+        }
+
+        // 更新笔记数量显示
+        async function updateNotesCount() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/submissions?notes=eq.true&status=eq.approved&game_type=is.null&select=count`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data[0]?.count || 0;
+                    document.getElementById('notes-count').textContent = 
+                        `${notes.length} / ${count}`;
+                }
+            } catch (error) {
+                console.error('获取笔记数量错误:', error);
             }
         }
 
@@ -2038,19 +1996,25 @@
         window.closeReportModal = closeReportModal;
         window.submitReport = submitReport;
 
+        // 清理函数
+        function cleanup() {
+            if (themePollingInterval) {
+                clearInterval(themePollingInterval);
+                themePollingInterval = null;
+            }
+        }
+
         // 页面卸载时清理
         window.addEventListener('beforeunload', cleanup);
         
         // 添加调试函数
-        window.debugAuth = async function() {
-            console.log('调试认证状态:');
-            console.log('currentUser:', currentUser);
-            console.log('authToken:', authToken);
+        window.debugAuth = function() {
+            console.log('调试信息:');
+            console.log('当前用户:', currentUser);
             console.log('localStorage token:', localStorage.getItem('supabase.auth.token'));
-            console.log('localStorage refreshToken:', localStorage.getItem('supabase.auth.refreshToken'));
-            
-            await checkAuth();
-            console.log('重新检查后的currentUser:', currentUser);
+            console.log('localStorage refresh_token:', localStorage.getItem('supabase.auth.refresh_token'));
+            console.log('当前URL:', window.location.href);
+            console.log('URL hash:', window.location.hash);
         };
     </script>
 </body>
