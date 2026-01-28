@@ -1643,6 +1643,20 @@
                                 <button class="btn" onclick="DSEHub.logout()">
                                     <i class="fas fa-sign-out-alt"></i> 退出登录
                                 </button>
+                                <button class="btn btn-secondary" onclick="DSEHub.exportKnowledge()">
+                                    <i class="fas fa-download"></i> 导出数据
+                                </button>
+                            </div>
+                            
+                            <!-- 导入数据 -->
+                            <div style="margin-top: var(--spacing-xl); text-align: center;">
+                                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="DSEHub.importKnowledge(this.files[0])">
+                                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                                    <i class="fas fa-upload"></i> 导入数据
+                                </button>
+                                <div style="font-size: 12px; color: var(--text-muted); margin-top: var(--spacing-sm);">
+                                    支持JSON格式的数据文件
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1737,49 +1751,56 @@
                 { id: 'pe', name: '体育', category: 'elective', icon: 'fas fa-running' }
             ],
 
-            // 知识点数据
+            // 默认知识点数据
             knowledgeData: [
                 { 
                     id: 1, subject: 'math', title: '微积分基础', 
                     content: '微分的基本概念，包括导数的定义、计算法则和应用。导数描述了函数在某一点的变化率，是微积分的核心概念之一。',
                     tags: ['公式', '基础'],
-                    created_at: '2024-01-15'
+                    created_at: '2024-01-15',
+                    difficulty: '基础'
                 },
                 { 
                     id: 2, subject: 'phy', title: '牛顿运动定律', 
                     content: '第一定律（惯性定律）：物体在不受外力作用时，会保持静止或匀速直线运动状态。第二定律（F=ma）：物体的加速度与作用力成正比，与质量成反比。第三定律：作用力与反作用力大小相等、方向相反。',
                     tags: ['公式', '术语', '基础'],
-                    created_at: '2024-01-14'
+                    created_at: '2024-01-14',
+                    difficulty: '基础'
                 },
                 { 
                     id: 3, subject: 'chi', title: '古诗词鉴赏名句', 
                     content: '「落霞与孤鹜齐飞，秋水共长天一色」—— 王勃《滕王阁序》。这句诗描绘了壮丽的秋日景色，运用了对偶和夸张的修辞手法，展现了作者广阔的胸怀和超凡的想象力。',
                     tags: ['名言金句', '成语', '进阶'],
-                    created_at: '2024-01-13'
+                    created_at: '2024-01-13',
+                    difficulty: '进阶'
                 },
                 { 
                     id: 4, subject: 'chem', title: '化学反应速率', 
                     content: '影响化学反应速率的因素：温度、浓度、压力、催化剂、表面积等。温度每升高10°C，反应速率约增加2-4倍。',
                     tags: ['公式', '基础'],
-                    created_at: '2024-01-12'
+                    created_at: '2024-01-12',
+                    difficulty: '基础'
                 },
                 { 
                     id: 5, subject: 'bio', title: '细胞结构', 
                     content: '真核细胞的主要结构：细胞膜、细胞核、线粒体、内质网、高尔基体、核糖体等。线粒体是细胞的「动力工厂」，负责产生ATP。',
                     tags: ['术语', '基础'],
-                    created_at: '2024-01-11'
+                    created_at: '2024-01-11',
+                    difficulty: '基础'
                 },
                 { 
                     id: 6, subject: 'econ', title: '需求与供应', 
                     content: '需求定律：价格上升，需求量下降；价格下降，需求量上升。供应定律：价格上升，供应量上升；价格下降，供应量下降。市场均衡发生在需求曲线与供应曲线相交处。',
                     tags: ['公式', '基础'],
-                    created_at: '2024-01-10'
+                    created_at: '2024-01-10',
+                    difficulty: '基础'
                 },
                 { 
                     id: 7, subject: 'csd', title: '香港基本法', 
                     content: '香港特别行政区基本法的主要内容，包括中央与香港的关系、居民的基本权利和义务、政治体制等。',
                     tags: ['术语', '基础'],
-                    created_at: '2024-01-16'
+                    created_at: '2024-01-16',
+                    difficulty: '基础'
                 }
             ],
 
@@ -1805,14 +1826,15 @@
                 }
             ],
 
-            // 初始化
+            // ==================== 初始化 ====================
             init: function() {
                 this.initSupabase();
                 this.initSubjects();
-                this.loadKnowledgeFromDB(); // 从数据库加载知识点
+                this.initLocalStorage(); // 使用本地存储
+                this.initKnowledgeGrid();
                 this.initMessageBoard();
                 this.initSubmissionForm();
-                this.initThemes(); // 移动到最后
+                this.initThemes();
                 this.showPanel('knowledge');
                 
                 // 页面加载时检查登录状态
@@ -1820,6 +1842,119 @@
                 
                 // 添加快捷键初始化
                 this.initShortcuts();
+            },
+
+            // ==================== 本地存储系统 ====================
+            // 获取本地存储的知识点
+            getStoredKnowledge: function() {
+                try {
+                    const stored = localStorage.getItem('dsehub_knowledge');
+                    if (stored) {
+                        return JSON.parse(stored);
+                    }
+                } catch (err) {
+                    console.error('读取本地存储出错:', err);
+                }
+                return null;
+            },
+
+            // 保存知识点到本地存储
+            saveKnowledgeToStorage: function() {
+                try {
+                    localStorage.setItem('dsehub_knowledge', JSON.stringify(this.knowledgeData));
+                    return true;
+                } catch (err) {
+                    console.error('保存到本地存储出错:', err);
+                    return false;
+                }
+            },
+
+            // 初始化本地存储（如果为空）
+            initLocalStorage: function() {
+                try {
+                    const stored = this.getStoredKnowledge();
+                    if (!stored || !Array.isArray(stored)) {
+                        // 使用默认数据初始化
+                        this.saveKnowledgeToStorage();
+                    } else {
+                        // 验证数据格式
+                        const validData = stored.filter(item => 
+                            item && 
+                            typeof item === 'object' && 
+                            item.title && 
+                            item.subject && 
+                            item.content
+                        );
+                        
+                        if (validData.length === 0) {
+                            // 数据无效，使用默认数据
+                            this.saveKnowledgeToStorage();
+                        } else {
+                            // 加载有效的存储数据
+                            this.knowledgeData = validData;
+                        }
+                    }
+                } catch (err) {
+                    console.error('初始化本地存储出错:', err);
+                    // 出错时使用默认数据
+                    this.saveKnowledgeToStorage();
+                }
+            },
+
+            // 导出知识点数据
+            exportKnowledge: function() {
+                try {
+                    const dataStr = JSON.stringify(this.knowledgeData, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    const exportFileDefaultName = 'dsehub-knowledge-' + new Date().toISOString().split('T')[0] + '.json';
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                    
+                    this.showNotification('知识点数据导出成功！');
+                } catch (err) {
+                    console.error('导出数据出错:', err);
+                    this.showNotification('导出失败');
+                }
+            },
+
+            // 导入知识点数据
+            importKnowledge: function(file) {
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (Array.isArray(importedData)) {
+                            // 验证导入的数据格式
+                            const validData = importedData.filter(item => 
+                                item && 
+                                typeof item === 'object' && 
+                                item.title && 
+                                item.subject && 
+                                item.content
+                            );
+                            
+                            if (validData.length > 0) {
+                                this.knowledgeData = validData;
+                                this.saveKnowledgeToStorage();
+                                this.renderKnowledgeCards(this.knowledgeData);
+                                this.showNotification(`成功导入 ${validData.length} 条知识点！`);
+                            } else {
+                                this.showNotification('导入失败：数据格式不正确');
+                            }
+                        } else {
+                            this.showNotification('导入失败：数据格式不正确');
+                        }
+                    } catch (err) {
+                        console.error('解析导入文件出错:', err);
+                        this.showNotification('导入失败：文件格式错误');
+                    }
+                };
+                reader.readAsText(file);
             },
 
             // 初始化投稿表单
@@ -1835,7 +1970,7 @@
                 }
             },
 
-            // 添加快捷键初始化函数
+            // ==================== 快捷键系统 ====================
             initShortcuts: function() {
                 document.addEventListener('keydown', (e) => {
                     // Ctrl + S 或 Command + S: 切换到投稿面板
@@ -1897,7 +2032,7 @@
                 return names[panelId] || panelId;
             },
 
-            // Supabase初始化 - 启用持久会话
+            // ==================== Supabase初始化 ====================
             initSupabase: function() {
                 const supabaseUrl = 'https://alsalyskulozwakhmzoa.supabase.co';
                 const supabaseKey = 'sb_publishable_SYzZpjbWZgKUzzGQxR-jGg_B1em-5Tr';
@@ -1929,7 +2064,6 @@
                             username: data.session.user.email.split('@')[0]
                         };
                         
-                        // 设置cookie
                         this.setLoginCookie(data.session.access_token);
                         
                         this.isLoggedIn = true;
@@ -2104,7 +2238,7 @@
                 document.getElementById('statWins').textContent = profile.duel_wins || 0;
             },
 
-            // 登录
+            // ==================== 登录注册系统 ====================
             login: async function() {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
@@ -2406,11 +2540,11 @@
                 
                 // 获取当前日期
                 const now = new Date();
-                const formattedDate = now.toISOString().split('T')[0];
+                const formattedDate = now.toLocaleDateString('zh-HK');
                 
                 // 创建新知识点对象
                 const newKnowledge = {
-                    id: this.knowledgeData.length + 1,
+                    id: Date.now(), // 使用时间戳作为ID
                     subject: subject,
                     title: title,
                     content: content,
@@ -2420,39 +2554,29 @@
                 };
                 
                 try {
-                    // 保存到Supabase数据库 - 使用knowledge_points表
-                    const { data, error } = await this.supabase
-                        .from('knowledge_points')
-                        .insert([
-                            {
-                                subject: subject,
-                                title: title,
-                                content: content,
-                                tags: this.submissionTags.join(','), // 将数组转为逗号分隔字符串
-                                difficulty: difficulty,
-                                created_at: new Date().toISOString()
-                            }
-                        ]);
-                    
-                    if (error) {
-                        console.error('保存知识点出错:', error);
-                        this.showNotification('保存失败，请稍后重试');
-                        return;
-                    }
-                    
-                    // 添加到本地数据（为了即时显示）
+                    // 添加到本地数据
                     this.knowledgeData.unshift(newKnowledge);
+                    
+                    // 保存到本地存储
+                    this.saveKnowledgeToStorage();
                     
                     // 更新用户积分
                     if (this.userProfile) {
                         const newScore = (this.userProfile.score || 0) + 10;
-                        await this.supabase
-                            .from('profiles')
-                            .update({ score: newScore })
-                            .eq('auth_id', this.currentUser.id);
-                        
                         this.userProfile.score = newScore;
                         this.updateAccountUI();
+                        
+                        // 如果需要保存到数据库，可以在这里添加
+                        if (this.supabase && this.currentUser) {
+                            try {
+                                await this.supabase
+                                    .from('profiles')
+                                    .update({ score: newScore })
+                                    .eq('auth_id', this.currentUser.id);
+                            } catch (dbErr) {
+                                console.error('保存积分到数据库出错:', dbErr);
+                            }
+                        }
                     }
                     
                     // 重置表单
@@ -2469,7 +2593,7 @@
                     
                 } catch (err) {
                     console.error('投稿过程中发生错误:', err);
-                    this.showNotification('投稿失败，请检查网络连接');
+                    this.showNotification('投稿失败，请稍后重试');
                 }
             },
 
@@ -2603,40 +2727,6 @@
                 this.renderKnowledgeCards(filteredData);
             },
 
-            // 从数据库加载知识点
-            loadKnowledgeFromDB: async function() {
-                try {
-                    const { data, error } = await this.supabase
-                        .from('knowledge_points')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) {
-                        console.error('加载知识点出错:', error);
-                        this.initKnowledgeGrid(); // 使用本地数据
-                        return;
-                    }
-                    
-                    if (data && data.length > 0) {
-                        // 转换数据库格式为本地格式
-                        this.knowledgeData = data.map(item => ({
-                            id: item.id,
-                            subject: item.subject,
-                            title: item.title,
-                            content: item.content,
-                            tags: item.tags ? (Array.isArray(item.tags) ? item.tags : item.tags.split(',').map(tag => tag.trim())) : [],
-                            difficulty: item.difficulty || '基础',
-                            created_at: item.created_at ? item.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
-                        }));
-                    }
-                    
-                    this.initKnowledgeGrid();
-                } catch (err) {
-                    console.error('加载知识点出错:', err);
-                    this.initKnowledgeGrid(); // 使用本地数据
-                }
-            },
-
             initKnowledgeGrid: function() {
                 this.renderKnowledgeCards(this.knowledgeData);
             },
@@ -2672,17 +2762,9 @@
                         '<span style="background: #ff6b6b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-right: 8px; font-weight: 600;">核心</span>' :
                         '<span style="background: #4ecdc4; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-right: 8px; font-weight: 600;">选科</span>';
                     
-                    // 处理tags字段 - 可能是字符串或数组
-                    let tagsArray = [];
-                    if (Array.isArray(item.tags)) {
-                        tagsArray = item.tags;
-                    } else if (typeof item.tags === 'string' && item.tags.trim()) {
-                        tagsArray = item.tags.split(',').map(tag => tag.trim());
-                    }
-                    
-                    const tagsHTML = tagsArray.length > 0 ? `
+                    const tagsHTML = item.tags && item.tags.length > 0 ? `
                         <div class="knowledge-tags">
-                            ${tagsArray.map(tag => `<span class="knowledge-tag">${tag}</span>`).join('')}
+                            ${item.tags.map(tag => `<span class="knowledge-tag">${tag}</span>`).join('')}
                         </div>
                     ` : '';
                     
@@ -2700,7 +2782,7 @@
                         ${tagsHTML}
                         <div style="font-size: 15px; color: var(--text-color); line-height: 1.6; margin: var(--spacing-md) 0;">${item.content}</div>
                         <div style="font-size: 12px; color: var(--text-secondary); margin-top: var(--spacing-md);">
-                            <i class="far fa-calendar"></i> ${item.created_at ? item.created_at.split('T')[0] : ''}
+                            <i class="far fa-calendar"></i> ${item.created_at || ''}
                         </div>
                     `;
                     
@@ -2894,3 +2976,4 @@
     </script>
 </body>
 </html>
+
