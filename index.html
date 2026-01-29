@@ -1825,69 +1825,14 @@
                     created_at: '2024-01-15 12:20'
                 }
             ],
-                        // ==================== 留言板本地存储 ====================
-            // 获取本地存储的留言
-            getStoredMessages: function() {
-                try {
-                    const stored = localStorage.getItem('dsehub_messages');
-                    if (stored) {
-                        return JSON.parse(stored);
-                    }
-                } catch (err) {
-                    console.error('读取留言本地存储出错:', err);
-                }
-                return null;
-            },
-            
-            // 保存留言到本地存储
-            saveMessagesToStorage: function() {
-                try {
-                    localStorage.setItem('dsehub_messages', JSON.stringify(this.messages));
-                    return true;
-                } catch (err) {
-                    console.error('保存留言到本地存储出错:', err);
-                    return false;
-                }
-            },
-            
-            // 初始化留言本地存储
-            initMessagesLocalStorage: function() {
-                try {
-                    const stored = this.getStoredMessages();
-                    if (!stored || !Array.isArray(stored)) {
-                        // 使用默认数据初始化
-                        this.saveMessagesToStorage();
-                    } else {
-                        // 验证数据格式
-                        const validData = stored.filter(item => 
-                            item && 
-                            typeof item === 'object' && 
-                            item.content && 
-                            item.username
-                        );
-                        
-                        if (validData.length === 0) {
-                            // 数据无效，使用默认数据
-                            this.saveMessagesToStorage();
-                        } else {
-                            // 加载有效的存储数据
-                            this.messages = validData;
-                        }
-                    }
-                } catch (err) {
-                    console.error('初始化留言本地存储出错:', err);
-                    // 出错时使用默认数据
-                    this.saveMessagesToStorage();
-                }
-            },
+
             // ==================== 初始化 ====================
-            // 初始化
             init: function() {
                 this.initSupabase();
                 this.initSubjects();
-                this.initLocalStorage();     // 初始化知识点本地存储
+                this.initLocalStorage(); // 使用本地存储
                 this.initKnowledgeGrid();
-                this.initMessageBoard();     // 这会初始化留言本地存储
+                this.initMessageBoard();
                 this.initSubmissionForm();
                 this.initThemes();
                 this.showPanel('knowledge');
@@ -1898,6 +1843,7 @@
                 // 添加快捷键初始化
                 this.initShortcuts();
             },
+
             // ==================== 本地存储系统 ====================
             // 获取本地存储的知识点
             getStoredKnowledge: function() {
@@ -2845,44 +2791,24 @@
             },
 
             // ==================== 留言板系统 ====================
-            // ==================== 留言板系统 ====================
             initMessageBoard: function() {
-                this.initMessagesLocalStorage(); // 从本地存储加载留言
                 this.renderMessages();
             },
 
-                sendMessage: function() {
-                    if (!this.isLoggedIn) {
-                        this.showNotification('请先登录后才能留言');
-                        this.showLoginModal();
-                        return;
-                    }
-                    
-                    const input = document.getElementById('messageInput');
-                    const message = input.value.trim();
-                    
-                    if (!message) {
-                        this.showNotification('请输入留言内容');
-                        return;
-                    }
-                    
-                    const newMessage = {
-                        id: Date.now(), // 使用时间戳作为ID，避免重复
-                        username: this.currentUser.username,
-                        content: message,
-                        created_at: new Date().toLocaleString('zh-HK')
-                    };
-                    
-                    this.messages.unshift(newMessage);
-                    
-                    // 保存到本地存储
-                    this.saveMessagesToStorage();
-                    
-                    this.renderMessages();
-                    
-                    input.value = '';
-                    this.showNotification('留言发送成功！');
-                },
+            sendMessage: function() {
+                if (!this.isLoggedIn) {
+                    this.showNotification('请先登录后才能留言');
+                    this.showLoginModal();
+                    return;
+                }
+                
+                const input = document.getElementById('messageInput');
+                const message = input.value.trim();
+                
+                if (!message) {
+                    this.showNotification('请输入留言内容');
+                    return;
+                }
                 
                 const newMessage = {
                     id: this.messages.length + 1,
@@ -3050,6 +2976,3 @@
     </script>
 </body>
 </html>
-
-
-
